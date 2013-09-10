@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CVEC", "CVEC\CVEC.vcxproj", "{DA354EE4-7B84-43A4-B548-98EB170856D5}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CVES", "CVES\CVES.vcxproj", "{D19EDBA1-CA45-4816-9D2F-68E16F4E03FF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DA354EE4-7B84-43A4-B548-98EB170856D5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DA354EE4-7B84-43A4-B548-98EB170856D5}.Debug|Win32.Build.0 = Debug|Win32
+		{DA354EE4-7B84-43A4-B548-98EB170856D5}.Release|Win32.ActiveCfg = Release|Win32
+		{DA354EE4-7B84-43A4-B548-98EB170856D5}.Release|Win32.Build.0 = Release|Win32
+		{D19EDBA1-CA45-4816-9D2F-68E16F4E03FF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D19EDBA1-CA45-4816-9D2F-68E16F4E03FF}.Debug|Win32.Build.0 = Debug|Win32
+		{D19EDBA1-CA45-4816-9D2F-68E16F4E03FF}.Release|Win32.ActiveCfg = Release|Win32
+		{D19EDBA1-CA45-4816-9D2F-68E16F4E03FF}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
