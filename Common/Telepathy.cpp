@@ -37,13 +37,15 @@ UINT Server_ClientInteractionThread(LPVOID Param) {
 		if (TServer.ServerReceiving(_ClientSocket) == false)
 			break;
 	}
+
+	return 0;
 }
 #pragma endregion Threads
 
 // Server 초기화.
 bool Telepathy::Server::ServerInitialize() {
 	if (WSAStartup(0x101, &_M_WSAData) != 0)
-		return ;
+		return false;
 
 	// using IPv4
 	_M_ServerAddress.sin_family = AF_INET;
@@ -66,10 +68,12 @@ bool Telepathy::Server::ServerInitialize() {
 	// socket listen.
 	if (listen(_M_HServerSocket, LISTEN_QUEUE) != 0)
 		return false;
+
+	return true;
 }
 
 // Server 종료.
-bool Telepathy::Server::ServerClosing() {
+void Telepathy::Server::ServerClosing() {
 	closesocket(_M_HServerSocket);
 	WSACleanup();
 }
@@ -86,6 +90,7 @@ void Telepathy::Server::ServerStart() {
 }
 
 // Client가 Server 접속시 Socket List에 붙여 Listen하게 하는 과정.
+// User의 접속을 위하여 필요한 과정.
 void Telepathy::Server::ServerListentoClient() {
 	// Client 접속시, 접속 연결 기능.
 	SOCKADDR_IN _ClientAddress;
@@ -111,7 +116,7 @@ bool Telepathy::Server::ServerReceiving(int ClientSocket) {
 
 	memset(_Buffer, NULL, sizeof(_Buffer));
 	_ReadBufferLength = recv(ClientSocket, _Buffer, BUFFER_MAX_32767, 0);
-
+	
 	if (_ReadBufferLength == -1) {
 		_M_HClientSocketArray.remove(ClientSocket);
 		return false;
@@ -123,3 +128,8 @@ bool Telepathy::Server::ServerReceiving(int ClientSocket) {
 }
 // Telepathy Client Area.
 
+Telepathy::Client::Client(){
+}
+
+Telepathy::Client::~Client(){
+}

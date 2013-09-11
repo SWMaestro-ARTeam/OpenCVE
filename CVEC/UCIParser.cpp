@@ -31,46 +31,46 @@ void UCIParser::Clear_Str() {
 }
 
 void UCIParser::Command_UCI() {
-
+	printf("1\n");
 }
 
 void UCIParser::Command_Debug() {
-
+	printf("2\n");
 }
 
 void UCIParser::Command_Isready() {
-
+	printf("3\n");
 }
 
 void UCIParser::Command_Setoption() {
-
+	printf("4\n");
 }
 
 void UCIParser::Command_Ucinewgame() {
-
+	printf("5\n");
 }
 
 void UCIParser::Command_Register() {
-
+	printf("6\n");
 }
 
 void UCIParser::Command_Position() {
-
+	printf("7\n");
 }
 
 void UCIParser::Command_Go() {
-
+	printf("8\n");
 }
 
 void UCIParser::Command_Stop() {
-
+	printf("9\n");
 }
 
 void UCIParser::Command_Ponderhit() {
-
+	printf("10\n");
 }
 void UCIParser::Command_Quit() {
-
+	printf("11\n");
 }
 
 void UCIParser::Parsing_Command() {
@@ -84,48 +84,37 @@ void UCIParser::Parsing_Command() {
 		default:
 
 		case VALUE_UCI :
-			//Command_UCI();
-			printf("1\n");
+			Command_UCI();
 			break;
 		case VALUE_DEBUG :
-			//Command_Debug();
-			printf("2\n");
+			Command_Debug();
 			break;
 		case VALUE_ISREADY :
-			//Command_Isready();
-			printf("3\n");
+			Command_Isready();
 			break;
 		case VALUE_SETOPTION :
-			//Command_Setoption();
-			printf("4\n");
+			Command_Setoption();
 			break;
 		case VALUE_UCINEWGAME :
-			//Command_Ucinewgame();
-			printf("5\n");
+			Command_Ucinewgame();
 			break;
 		case VALUE_REGISTER :
-			//Command_Register();
-			printf("6\n");
+			Command_Register();
 			break;
 		case VALUE_POSITION :
-			//Command_Position();
-			printf("7\n");
+			Command_Position();
 			break;
 		case VALUE_GO :
-			//Command_Go();
-			printf("8\n");
+			Command_Go();
 			break;
 		case VALUE_STOP :
-			//Command_Stop();
-			printf("9\n");
+			Command_Stop();
 			break;
 		case VALUE_PONDERHIT :
-			//Command_Ponderhit();
-			printf("10\n");
+			Command_Ponderhit();
 			break;
 		case VALUE_QUIT :
-			//Command_Quit();
-			printf("11\n");
+			Command_Quit();
 			break;
 	}
 	// Clear UCI String.

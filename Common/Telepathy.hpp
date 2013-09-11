@@ -1,6 +1,7 @@
 #ifndef _Telepathy_hpp_
 #define _Telepathy_hpp_
 
+#define _AFXDLL
 #include <list>
 
 #include "Common.hpp"
@@ -51,7 +52,7 @@ public:
 
 		void ServerStart();
 		bool ServerInitialize();
-		bool ServerClosing();
+		void ServerClosing();
 		void ServerListentoClient();
 		bool ServerReceiving(int ClientSocket);
 	};

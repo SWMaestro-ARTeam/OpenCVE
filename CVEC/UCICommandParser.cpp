@@ -19,10 +19,16 @@ int UCICommandParser::UCIString_Seeker(const char *Str){
 		memset(_StrPtr, NULL, sizeof(_StrPtr));
 		
 		//_StrPtr = strtok((char *)Str, " ");
-		// 완전 매칭 되었을때 
-		if (strcmp(_TStr, _GUIToEngineString[i]) == 0 || strstr(_TStr, _GUIToEngineString[i]) == _TStr) {
+		// 완전 매칭 되었을 때.
+		// 처음에 두 String이 매칭 될 확률이 적기 때문에 가장 앞에서 처리.
+		if (strcmp(_TStr, _GUIToEngineString[i]) == 0) 
 			R_N(i);
-		}
+		
+		// 앞쪽만 매칭 되었을 때.
+		if (strstr(_TStr, _GUIToEngineString[i]) == _TStr)
+			R_N(i);
+
+		// 두 가지를 검사해보고 없으면 다음으로 넘어감.
 		/*
 		else if (strstr(Str, _GUIToEngineString[i]) == Str){
 
