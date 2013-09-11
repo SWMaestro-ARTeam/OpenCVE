@@ -3,6 +3,7 @@
 
 Chess_recognition::Chess_recognition(void)
 {
+
 }
 
 
