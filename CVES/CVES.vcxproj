@@ -77,6 +77,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BlobLabeling.cpp" />
+    <ClCompile Include="chess_game.cpp" />
+    <ClCompile Include="Chess_recognition.cpp" />
+    <ClCompile Include="Hand_recognition.cpp" />
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BlobLabeling.hpp" />
+    <ClInclude Include="chess_game.hpp" />
+    <ClInclude Include="Chess_recognition.hpp" />
+    <ClInclude Include="Hand_recognition.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
