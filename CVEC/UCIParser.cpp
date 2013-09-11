@@ -1,6 +1,30 @@
+Ôªø//////////////////////////////////////////////////////////////////////////////////////////////
+//	The OpenCVE Project.
+//
+//	The MIT License (MIT)
+//	Copyright ¬© 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
+//
+//	Permission is hereby granted, free of charge, to any person obtaining a copy of
+//	this software and associated documentation files (the ‚ÄúSoftware‚Äù), to deal
+//	in the Software without restriction, including without limitation the rights to
+//	use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+//	the Software, and to permit persons to whom the Software is furnished to do so,
+//	subject to the following conditions:
+//
+//	The above copyright notice and this permission notice shall be included in all
+//	copies or substantial portions of the Software.
+//
+//	THE SOFTWARE IS PROVIDED ‚ÄúAS IS‚Äù, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+//	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+//	PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+//	LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+//	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+//	OR OTHER DEALINGS IN THE SOFTWARE.
+//////////////////////////////////////////////////////////////////////////////////////////////
+
 #include "Common.hpp"
 
-// ±‚∫ª Header
+// Í∏∞Î≥∏ Header
 #include "UCIParser.hpp"
 
 UCIParser::UCIParser() {
@@ -8,7 +32,7 @@ UCIParser::UCIParser() {
 }
 
 void UCIParser::init_CommandStr() {
-	// Command¥¬ BUFFER_MAX∞™ø° ¿««ÿº≠ ∞·¡§
+	// CommandÎäî BUFFER_MAXÍ∞íÏóê ÏùòÌï¥ÏÑú Í≤∞Ï†ï
 	Command_Str = (char *)calloc(BUFFER_MAX_32767, sizeof(char));
 	Clear_Str();
 }
@@ -125,3 +149,5 @@ void UCIParser::Parsing_Engine_Start() {
 	while (1) Parsing_Command();
 }
 
+void _ClientExProc(char *Buffer){
+}

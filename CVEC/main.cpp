@@ -1,11 +1,35 @@
-// main.cpp
-// OpenCVE main ¡¯¿‘¡°.
+Ôªø//////////////////////////////////////////////////////////////////////////////////////////////
+//	The OpenCVE Project.
+//
+//	The MIT License (MIT)
+//	Copyright ¬© 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
+//
+//	Permission is hereby granted, free of charge, to any person obtaining a copy of
+//	this software and associated documentation files (the ‚ÄúSoftware‚Äù), to deal
+//	in the Software without restriction, including without limitation the rights to
+//	use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+//	the Software, and to permit persons to whom the Software is furnished to do so,
+//	subject to the following conditions:
+//
+//	The above copyright notice and this permission notice shall be included in all
+//	copies or substantial portions of the Software.
+//
+//	THE SOFTWARE IS PROVIDED ‚ÄúAS IS‚Äù, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+//	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+//	PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+//	LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+//	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+//	OR OTHER DEALINGS IN THE SOFTWARE.
+//////////////////////////////////////////////////////////////////////////////////////////////
 
-// ±‚∫ª Library
+// main.cpp
+// OpenCVE main ÏßÑÏûÖÏ†ê.
+
+// Í∏∞Î≥∏ Library
 #include <cstdio>
 #include <cstdlib>
 
-// ∞¯≈Î ªÛºˆ
+// Í≥µÌÜµ ÏÉÅÏàò
 #include "Common.hpp"
 
 // Modules
@@ -19,41 +43,41 @@ int main(int argc, char* argv[]) {
 	bool _BisProcessDoing = false;
 	bool _BisPartofServerOrClient = false; // false is Client, True is Server
 
-	// 1. Process »Æ¿Œ. && 2. Server/Client Initializing.
+	// 1. Process ÌôïÏù∏. && 2. Server/Client Initializing.
 	_BisPartofServerOrClient = _ProcessConfirm->CheckAnotherEngineProcess(ENGINE_EXEC_FILENAME);
 
 	// 2. TCP/IP Socket Start.
 	/*
 	(_BisPartofServerOrClient == true) ? 
-		// true ¿œ ∂ß «ÿ¥Á Process∞° ¿÷¥Ÿ¥¬ ∞Õ¿∏∑Œ ∞£¡÷, «ˆ¡∏«œ¥¬ Process∞° Server∂Û¥¬ ¿Ãæﬂ±‚¥Ÿ.
-		// ±◊∑Øπ«∑Œ Client Mode∞° µ«æÓæﬂ «—¥Ÿ.
+		// true Ïùº Îïå Ìï¥Îãπ ProcessÍ∞Ä ÏûàÎã§Îäî Í≤ÉÏúºÎ°ú Í∞ÑÏ£º, ÌòÑÏ°¥ÌïòÎäî ProcessÍ∞Ä ServerÎùºÎäî Ïù¥ÏïºÍ∏∞Îã§.
+		// Í∑∏Îü¨ÎØÄÎ°ú Client ModeÍ∞Ä ÎêòÏñ¥Ïïº ÌïúÎã§.
 
 		// Client Mode
 
 		:
-		// flase ¿œ ∂ß «ÿ¥Á Process∞° æ¯¥Ÿ¥¬ ∞Õ¿∏∑Œ ∞£¡÷.
-		// ±◊∑Øπ«∑Œ Server Mode∞° µ«æÓæﬂ «—¥Ÿ.
+		// flase Ïùº Îïå Ìï¥Îãπ ProcessÍ∞Ä ÏóÜÎã§Îäî Í≤ÉÏúºÎ°ú Í∞ÑÏ£º.
+		// Í∑∏Îü¨ÎØÄÎ°ú Server ModeÍ∞Ä ÎêòÏñ¥Ïïº ÌïúÎã§.
 
 		// Server Mode
 		*/
 		/*
 	if (_BisPartofServerOrClient == true) {
-		// true ¿œ ∂ß «ÿ¥Á Process∞° ¿÷¥Ÿ¥¬ ∞Õ¿∏∑Œ ∞£¡÷, «ˆ¡∏«œ¥¬ Process∞° Server∂Û¥¬ ¿Ãæﬂ±‚¥Ÿ.
-		// ±◊∑Øπ«∑Œ Client Mode∞° µ«æÓæﬂ «—¥Ÿ.
+		// true Ïùº Îïå Ìï¥Îãπ ProcessÍ∞Ä ÏûàÎã§Îäî Í≤ÉÏúºÎ°ú Í∞ÑÏ£º, ÌòÑÏ°¥ÌïòÎäî ProcessÍ∞Ä ServerÎùºÎäî Ïù¥ÏïºÍ∏∞Îã§.
+		// Í∑∏Îü¨ÎØÄÎ°ú Client ModeÍ∞Ä ÎêòÏñ¥Ïïº ÌïúÎã§.
 
 		// Client Mode
 
 	}
 	else {
-		// flase ¿œ ∂ß «ÿ¥Á Process∞° æ¯¥Ÿ¥¬ ∞Õ¿∏∑Œ ∞£¡÷.
-		// ±◊∑Øπ«∑Œ Server Mode∞° µ«æÓæﬂ «—¥Ÿ.
+		// flase Ïùº Îïå Ìï¥Îãπ ProcessÍ∞Ä ÏóÜÎã§Îäî Í≤ÉÏúºÎ°ú Í∞ÑÏ£º.
+		// Í∑∏Îü¨ÎØÄÎ°ú Server ModeÍ∞Ä ÎêòÏñ¥Ïïº ÌïúÎã§.
 
 		// Server Mode
 
 	}
 	// 
 	*/
-	// 2. Parser √ ±‚»≠.
+	// 2. Parser Ï¥àÍ∏∞Ìôî.
 	_Parser->initializing();
 	
 	// 3. Vision Engine Start.

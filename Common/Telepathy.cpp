@@ -1,3 +1,27 @@
+ï»¿//////////////////////////////////////////////////////////////////////////////////////////////
+//	The OpenCVE Project.
+//
+//	The MIT License (MIT)
+//	Copyright Â© 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
+//
+//	Permission is hereby granted, free of charge, to any person obtaining a copy of
+//	this software and associated documentation files (the â€œSoftwareâ€), to deal
+//	in the Software without restriction, including without limitation the rights to
+//	use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+//	the Software, and to permit persons to whom the Software is furnished to do so,
+//	subject to the following conditions:
+//
+//	The above copyright notice and this permission notice shall be included in all
+//	copies or substantial portions of the Software.
+//
+//	THE SOFTWARE IS PROVIDED â€œAS ISâ€, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+//	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+//	PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+//	LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+//	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+//	OR OTHER DEALINGS IN THE SOFTWARE.
+//////////////////////////////////////////////////////////////////////////////////////////////
+
 #include "Telepathy.hpp"
 
 // Telepathy Server Area.
@@ -9,11 +33,14 @@ Telepathy::Server::Server() {
 	_M_BIsConnectedServer = false;
 
 	if (ServerInitialize() == false){
-		// debug ³Ö¾îÁÖ¾î¾ß ÇÔ.
+		// debug ë„£ì–´ì£¼ì–´ì•¼ í•¨.
 		return ;
 	}
 	else
 		_M_BIsConnectedServer = true;
+
+	// Server Call ë“±ë¡
+	_T_SERVERCALLBACK _ServCall;
 }
 
 // destructor
@@ -33,7 +60,7 @@ UINT Server_ClientInteractionThread(LPVOID Param) {
 	SOCKET _ClientSocket = (SOCKET) Param;
 
 	while (1) {
-		// ÇöÀç Thread´Â °è¼Ó ¹Ş´Â´Ù.
+		// í˜„ì¬ ThreadëŠ” ê³„ì† ë°›ëŠ”ë‹¤.
 		if (TServer.ServerReceiving(_ClientSocket) == false)
 			break;
 	}
@@ -42,8 +69,11 @@ UINT Server_ClientInteractionThread(LPVOID Param) {
 }
 #pragma endregion Threads
 
-// Server ÃÊ±âÈ­.
+// Server ì´ˆê¸°í™”.
 bool Telepathy::Server::ServerInitialize() {
+	// ì´ ë¶€ë¶„ì€ í†µì§¸ë¡œ Windowsìš©
+	// ì¶”í›„ ë‹¤ë¥¸ OSë„ ì¶”ê°€.
+
 	if (WSAStartup(0x101, &_M_WSAData) != 0)
 		return false;
 
@@ -52,12 +82,12 @@ bool Telepathy::Server::ServerInitialize() {
 	// 32bit IPv4 address
 	_M_ServerAddress.sin_addr.s_addr = INADDR_ANY;
 	//_M_ServerAddress.sin_addr.s_addr = inet_addr(IP_ADDR_LOCAL);
-	// port »ç¿ë
+	// port ì‚¬ìš©
 	_M_ServerAddress.sin_port = htons((u_short)CVE_PORT);
 	// Socket Create.
 	_M_HServerSocket = socket(AF_INET, SOCK_STREAM, 0);
 	
-	// SocketÀÌ Àß¸ø µÇ¾ú´Ù¸é..
+	// Socketì´ ì˜ëª» ë˜ì—ˆë‹¤ë©´..
 	if (_M_HServerSocket = INVALID_SOCKET)
 		return false;
 
@@ -72,64 +102,97 @@ bool Telepathy::Server::ServerInitialize() {
 	return true;
 }
 
-// Server Á¾·á.
+// Server ì¢…ë£Œ.
 void Telepathy::Server::ServerClosing() {
 	closesocket(_M_HServerSocket);
 	WSACleanup();
 }
 
-// Server ±âµ¿.
+// Server ê¸°ë™.
 void Telepathy::Server::ServerStart() {
 	if (_M_BIsConnectedServer != true) {
 		// failed started server.
 	}
 	else {
-		// Client °ü¸® Thread ½ÃÀÛ.
+		// Client ê´€ë¦¬ Thread ì‹œì‘.
+#if WINDOWS
 		AfxBeginThread(Server_ConnectionThread, 0);
+#elif OTHER
+#endif
 	}
 }
 
-// Client°¡ Server Á¢¼Ó½Ã Socket List¿¡ ºÙ¿© ListenÇÏ°Ô ÇÏ´Â °úÁ¤.
-// UserÀÇ Á¢¼ÓÀ» À§ÇÏ¿© ÇÊ¿äÇÑ °úÁ¤.
+// Clientê°€ Server ì ‘ì†ì‹œ Socket Listì— ë¶™ì—¬ Listení•˜ê²Œ í•˜ëŠ” ê³¼ì •.
+// Userì˜ ì ‘ì†ì„ ìœ„í•˜ì—¬ í•„ìš”í•œ ê³¼ì •.
 void Telepathy::Server::ServerListentoClient() {
-	// Client Á¢¼Ó½Ã, Á¢¼Ó ¿¬°á ±â´É.
+	// Client ì ‘ì†ì‹œ, ì ‘ì† ì—°ê²° ê¸°ëŠ¥.
 	SOCKADDR_IN _ClientAddress;
 	int _CLen = sizeof(_ClientAddress);
 
-	// Accept¸¦ ÇÏ¿© SocketÀ» ¿¬°áÇÑ´Ù.
+	// Acceptë¥¼ í•˜ì—¬ Socketì„ ì—°ê²°í•œë‹¤.
 	_M_HClientSocket = accept(_M_HServerSocket, (struct sockaddr *)&_ClientAddress, &_CLen);
 
-	// Client Sockets¸¦ ³Ö¾îÁØ´Ù.
+	// Client Socketsë¥¼ ë„£ì–´ì¤€ë‹¤.
 	if (_M_HClientSocket != INVALID_SOCKET)
 		_M_HClientSocketArray.push_back(_M_HClientSocket);
 	else
 		return ;
 
+	// Thread Begin.
+#if WINDOWS
+	// windowsìš©.
 	AfxBeginThread(Server_ClientInteractionThread, (void *)_M_HClientSocket);
+#elif OTHER
+#endif
+
+#endif
 }
 
-// Server°¡ Clientµé¿¡°Ô Á¤º¸¸¦ ¹Ş´Â °úÁ¤.
-bool Telepathy::Server::ServerReceiving(int ClientSocket) {
+// Serverê°€ Clientë“¤ì—ê²Œ ì •ë³´ë¥¼ ë°›ëŠ” ê³¼ì •.
+bool Telepathy::Server::ServerReceiving(SOCKET ClientSocket) {
 	
 	char _Buffer[BUFFER_MAX_32767];
 	int _ReadBufferLength;
 
 	memset(_Buffer, NULL, sizeof(_Buffer));
-	_ReadBufferLength = recv(ClientSocket, _Buffer, BUFFER_MAX_32767, 0);
+
+	_ReadBufferLength =
+#if WINDOWS
+	recv(ClientSocket, _Buffer, BUFFER_MAX_32767, 0);
+#elif OTHER
+#endif
 	
 	if (_ReadBufferLength == -1) {
+		// ë§Œì•½ Lengthê°€ ì—†ë‹¤ë©´, í•´ë‹¹ Client Socket ì—°ê²° ì‚­ì œ.
 		_M_HClientSocketArray.remove(ClientSocket);
 		return false;
 	}
 	else {
+		// ë§Œì•½ ìˆë‹¤ë©´, ë‹¤ë¥¸ ê³³ì˜ ì™¸ë¶€ í•¨ìˆ˜ í˜¸ì¶œ.
+		// ì •í™•íˆ ë§í•˜ë©´, Serverë¥¼ ì“°ëŠ” ê³³ì—ì„œ í˜¸ì¶œ.
 		
+		_ServCall()
+		//_ServerExProc(_Buffer);
 	}
 	return true;
 }
-// Telepathy Client Area.
 
+// Telepathy Client Area.
 Telepathy::Client::Client(){
+	_M_BIsConnectedClient = false;
 }
 
 Telepathy::Client::~Client(){
+
 }
+
+void Telepathy::Client::ClientStart() {
+	
+}
+
+bool Telepathy::Client::ClientInitialize() {
+	
+	if (WSAStartup(0x101, &_M_WSAData) != 0)
+		return false;
+}
+

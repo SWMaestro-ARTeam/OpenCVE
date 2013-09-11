@@ -1,3 +1,27 @@
+ï»¿//////////////////////////////////////////////////////////////////////////////////////////////
+//	The OpenCVE Project.
+//
+//	The MIT License (MIT)
+//	Copyright Â© 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
+//
+//	Permission is hereby granted, free of charge, to any person obtaining a copy of
+//	this software and associated documentation files (the â€œSoftwareâ€), to deal
+//	in the Software without restriction, including without limitation the rights to
+//	use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+//	the Software, and to permit persons to whom the Software is furnished to do so,
+//	subject to the following conditions:
+//
+//	The above copyright notice and this permission notice shall be included in all
+//	copies or substantial portions of the Software.
+//
+//	THE SOFTWARE IS PROVIDED â€œAS ISâ€, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+//	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+//	PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+//	LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+//	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+//	OR OTHER DEALINGS IN THE SOFTWARE.
+//////////////////////////////////////////////////////////////////////////////////////////////
+
 #include "UCICommandParser.hpp"
 
 #define R_N(x) { return x + 1; }
@@ -7,8 +31,8 @@ UCICommandParser::UCICommandParser() {
 }
 
 int UCICommandParser::UCIString_Seeker(const char *Str){
-	// °¢ StringÀ» ÀüÃ¼ Command String°ú ºñ±³ÇØº¸°í
-	// ¸Ç ¾ÕÀÇ string°ú °°´Ù¸é ±× StringÀÇ ÃÖÁ¾ ¹øÈ£¸¦ Return.
+	// ê° Stringì„ ì „ì²´ Command Stringê³¼ ë¹„êµí•´ë³´ê³ 
+	// ë§¨ ì•ì˜ stringê³¼ ê°™ë‹¤ë©´ ê·¸ Stringì˜ ìµœì¢… ë²ˆí˜¸ë¥¼ Return.
 	char *_TStr = (char *)Str;
 
 	strtok((char *)_TStr, "\n");
@@ -19,36 +43,36 @@ int UCICommandParser::UCIString_Seeker(const char *Str){
 		memset(_StrPtr, NULL, sizeof(_StrPtr));
 		
 		//_StrPtr = strtok((char *)Str, " ");
-		// ¿ÏÀü ¸ÅÄª µÇ¾úÀ» ¶§.
-		// Ã³À½¿¡ µÎ StringÀÌ ¸ÅÄª µÉ È®·üÀÌ Àû±â ¶§¹®¿¡ °¡Àå ¾Õ¿¡¼­ Ã³¸®.
+		// ì™„ì „ ë§¤ì¹­ ë˜ì—ˆì„ ë•Œ.
+		// ì²˜ìŒì— ë‘ Stringì´ ë§¤ì¹­ ë  í™•ë¥ ì´ ì ê¸° ë•Œë¬¸ì— ê°€ì¥ ì•ì—ì„œ ì²˜ë¦¬.
 		if (strcmp(_TStr, _GUIToEngineString[i]) == 0) 
 			R_N(i);
 		
-		// ¾ÕÂÊ¸¸ ¸ÅÄª µÇ¾úÀ» ¶§.
+		// ì•ìª½ë§Œ ë§¤ì¹­ ë˜ì—ˆì„ ë•Œ.
 		if (strstr(_TStr, _GUIToEngineString[i]) == _TStr)
 			R_N(i);
 
-		// µÎ °¡Áö¸¦ °Ë»çÇØº¸°í ¾øÀ¸¸é ´ÙÀ½À¸·Î ³Ñ¾î°¨.
+		// ë‘ ê°€ì§€ë¥¼ ê²€ì‚¬í•´ë³´ê³  ì—†ìœ¼ë©´ ë‹¤ìŒìœ¼ë¡œ ë„˜ì–´ê°.
 		/*
 		else if (strstr(Str, _GUIToEngineString[i]) == Str){
 
 		}
 		*/
-		// Ã¹¹øÂ°, Ã¹ ¹®Àå¿¡¼­ ¿øÇÏ´Â ´Ü¾î°¡ ¾ÕÂÊ¿¡ ¸ÅÄª µÇ¾ú´ÂÁö?
+		// ì²«ë²ˆì§¸, ì²« ë¬¸ì¥ì—ì„œ ì›í•˜ëŠ” ë‹¨ì–´ê°€ ì•ìª½ì— ë§¤ì¹­ ë˜ì—ˆëŠ”ì§€?
 		/*
 		if (strstr(Str, _GUIToEngineString[i]) == Str) {
 			_StrMatchFirst = true;
 			if (((_StrPtr = strtok((char *)Str, " ")) != NULL) ||
 				(_StrMatchFirst == true && strcmp(Str, _GUIToEngineString[i]) == 0)) {
-				// ±×·±µ¥ µÚ¿¡ °ø¹éÀÌ Á¸ÀçÇÏ´ÂÁö?
+				// ê·¸ëŸ°ë° ë’¤ì— ê³µë°±ì´ ì¡´ì¬í•˜ëŠ”ì§€?
 				//_StrMatchFirstAfterBlank = true;
 				R_N(i);
 			}
 		}
 		*/
 		/*
-		// °ø¹éÀÌ Á¸ÀçÇÏ°Ô µÇ¸é ¿©±â±îÁö ¿À¸é ¾ÈµÇ°ÚÁö?
-		// µÎ¹øÂ°, ±× string¿¡¼­ ´Ü¾î°¡ ¿ÏÀüÈ÷ ÀÏÄ¡ÇÏ´Â°¡?
+		// ê³µë°±ì´ ì¡´ì¬í•˜ê²Œ ë˜ë©´ ì—¬ê¸°ê¹Œì§€ ì˜¤ë©´ ì•ˆë˜ê² ì§€?
+		// ë‘ë²ˆì§¸, ê·¸ stringì—ì„œ ë‹¨ì–´ê°€ ì™„ì „íˆ ì¼ì¹˜í•˜ëŠ”ê°€?
 		if (_StrMatchFirst == true && strcmp(Str, _GUIToEngineString[i]) == 0) {
 			R_N(i);
 		}

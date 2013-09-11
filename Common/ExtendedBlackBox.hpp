@@ -1,3 +1,27 @@
+ï»¿//////////////////////////////////////////////////////////////////////////////////////////////
+//	The OpenCVE Project.
+//
+//	The MIT License (MIT)
+//	Copyright Â© 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
+//
+//	Permission is hereby granted, free of charge, to any person obtaining a copy of
+//	this software and associated documentation files (the â€œSoftwareâ€), to deal
+//	in the Software without restriction, including without limitation the rights to
+//	use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+//	the Software, and to permit persons to whom the Software is furnished to do so,
+//	subject to the following conditions:
+//
+//	The above copyright notice and this permission notice shall be included in all
+//	copies or substantial portions of the Software.
+//
+//	THE SOFTWARE IS PROVIDED â€œAS ISâ€, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+//	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+//	PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+//	LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+//	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+//	OR OTHER DEALINGS IN THE SOFTWARE.
+//////////////////////////////////////////////////////////////////////////////////////////////
+
 #ifndef _ExtendedBlackBox_hpp_
 #define _ExtendedBlackBox_hpp_
 
@@ -5,24 +29,24 @@
 
 using namespace std;
 /*
- * È®Àå ±¸¹®ÀÌ ´õ ¸¹¾Æ Áø´Ù¸é Black Box·Î ¸í¸íÇÏ°í µû·Î »¬ °Í.
+ * í™•ì¥ êµ¬ë¬¸ì´ ë” ë§ì•„ ì§„ë‹¤ë©´ Black Boxë¡œ ëª…ëª…í•˜ê³  ë”°ë¡œ ëº„ ê²ƒ.
  * - GabrielKim
  */
 
 /*
  * ! Notice :
- * º» STRING_SWITCH_BEGIN ±¸¹®¿¡ ´ëÇØ¼­.
- * ÀÌ ±¸¹®À» µ¿ÀÛ½ÃÅ°±â À§ÇØ¼­´Â ¹İµå½Ã Program Database mode, Áï, Zi OptionÀ» ÁÖ°í µ¹·Á¾ß ÇÔ.
+ * ë³¸ STRING_SWITCH_BEGIN êµ¬ë¬¸ì— ëŒ€í•´ì„œ.
+ * ì´ êµ¬ë¬¸ì„ ë™ì‘ì‹œí‚¤ê¸° ìœ„í•´ì„œëŠ” ë°˜ë“œì‹œ Program Database mode, ì¦‰, Zi Optionì„ ì£¼ê³  ëŒë ¤ì•¼ í•¨.
  *
  * ! Usage :
  * STR_SWITCH_BEGIN(sz)
  * {
  *	 CASE("Name")
- *	¡¡ ...
+ *	ã€€ ...
  *		 break;
  *	 CASE("Age")
- *¡¡ ¡¡...
- * ¡¡¡¡break;
+ *ã€€ ã€€...
+ * ã€€ã€€break;
  * }
  * STR_SWITCH_END()
  */
