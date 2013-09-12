@@ -39,11 +39,12 @@
 
 using namespace std;
 
-// 우리 Telepathy에는.. Server와 Client가 있어요.. 응?! ㄷㄷㄷㄷ
+
 class Telepathy {
 private:
 	
 public:
+	// Server Class
 	class Server {
 	private:
 		typedef struct _ClientsList {
@@ -79,36 +80,45 @@ public:
 		Server();
 		~Server();
 
+		// server Callback
+		typedef void (* _T_SERVERRECEIVEDCALLBACK)(char *Buffer);
+
 		bool ServerInitialize();
 		void ServerStart();
 		void ServerClosing();
 		void ServerListentoClient();
 		bool ServerReceiving(SOCKET ClientSocket);
+		
+		// Server Receive Callback Pointer.
+		_T_SERVERRECEIVEDCALLBACK TServerReceivedCallback;
 	};
 
+	// Client Class
 	class Client {
 	private:
 		unsigned int _M_Address;
+#if WINDOWS
 		HOSTENT *_M_HostEntry;
 		WSADATA _M_WSAData;
-		SOCKADDR_IN _M_Client;
-
+		SOCKET _M_HClientSocket;
+		SOCKADDR_IN _M_ClientAddress;
+#elif OTHER
+#endif		
 		bool _M_BIsConnectedClient;
 	public:
 		Client();
 		~Client();
 
+		// client Callback
+		typedef void (* _T_CLIENTRECEIVEDCALLBACK)(char *Buffer);
+
 		bool ClientInitialize();
 		void ClientStart();
 		void ClientClosing();
-		
+		bool ClientReceiving();
+
+		// Client Receive Callback Pointer.
+		_T_CLIENTRECEIVEDCALLBACK TClientReceivedCallback;
 	};
 };
-
-// server Callback
-// __stdcall
-extern void CALLBACK _ServerExProc(char *Buffer);
-typedef void (* _T_SERVERCALLBACK)(char *Buffer);
-
-extern void _ClientExProc(char *Buffer);
 #endif
