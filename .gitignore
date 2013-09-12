@@ -1,0 +1,8 @@
+CVEC/Debug/
+CVEC/Release/
+CVES/Debug/
+CVES/Release/
+Debug/
+Release/
+*.opensdf
+*.sdf

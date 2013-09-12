@@ -24,7 +24,8 @@
 
 #include "Telepathy.hpp"
 
-// Telepathy Server Area.
+#pragma region Server Class
+// Telepathy Server Class Area.
 Telepathy::Server TServer;
 
 // constructor
@@ -181,8 +182,10 @@ bool Telepathy::Server::ServerReceiving(SOCKET ClientSocket) {
 	}
 	return true;
 }
+#pragma endregion Server Class
 
-// Telepathy Client Area.
+#pragma region Client Class
+// Telepathy Client Class Area.
 Telepathy::Client TClient;
 
 // constructor
@@ -291,3 +294,4 @@ bool Telepathy::Client::ClientReceiving() {
 	}
 	return true;
 }
+#pragma endregion Client Class
