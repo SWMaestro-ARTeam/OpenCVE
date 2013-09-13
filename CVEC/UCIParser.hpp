@@ -3,6 +3,7 @@
 //
 //	The MIT License (MIT)
 //	Copyright © 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
+//	{invi.dh.kim, munsp9103, aiaipming} at gmail.com
 //
 //	Permission is hereby granted, free of charge, to any person obtaining a copy of
 //	this software and associated documentation files (the “Software”), to deal
@@ -38,12 +39,21 @@ class UCIParser {
 private:
 	// Variables
 	char *Command_Str;
+	bool _IsSocketConnented;
+	Telepathy::Client *_TClient;
 
 	// Functions
 	void init_CommandStr();
+	bool Init_ClientSocket();
+
+	void Put_Author();
 
 	void Get_Command_Str();
 	void Clear_Str();
+
+	void Clear_ClientSocket();
+
+	void SendToGUI(const char *Str, ...);
 
 	void Command_UCI();
 	void Command_Debug();
@@ -62,11 +72,14 @@ private:
 public:
 	// Constructor
 	UCIParser();
+	~UCIParser();
 
 	bool isServerOrClient;
 	// Functions
 	void initializing();
 	void Parsing_Engine_Start();
 };
+
+void ClientReceivedCallback(char *Buffer);
 
 #endif

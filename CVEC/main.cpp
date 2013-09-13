@@ -3,6 +3,7 @@
 //
 //	The MIT License (MIT)
 //	Copyright © 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
+//	{invi.dh.kim, munsp9103, aiaipming} at gmail.com
 //
 //	Permission is hereby granted, free of charge, to any person obtaining a copy of
 //	this software and associated documentation files (the “Software”), to deal
@@ -82,10 +83,6 @@ int main(int argc, char* argv[]) {
 	
 	// 3. Vision Engine Start.
 
-
-	// 4 Parser Engine Start.
-	printf("OpenCVE Connector Ver %s Start.\n",  ENGINE_EXEC_VER);
-	printf("Engine Copyright by ARTeam.\n");
 
 	_Parser->Parsing_Engine_Start();
 

@@ -3,6 +3,7 @@
 //
 //	The MIT License (MIT)
 //	Copyright © 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
+//	{invi.dh.kim, munsp9103, aiaipming} at gmail.com
 //
 //	Permission is hereby granted, free of charge, to any person obtaining a copy of
 //	this software and associated documentation files (the “Software”), to deal
@@ -182,6 +183,27 @@ bool Telepathy::Server::ServerReceiving(SOCKET ClientSocket) {
 	}
 	return true;
 }
+
+bool Telepathy::Server::SendData(char *Str) {
+	// LIt is List Iterator.
+	list<SOCKET>::iterator _LIt;
+	int _SendStatus = 0;
+
+	for (_LIt = _M_HClientSocketArray.begin();
+		_LIt != _M_HClientSocketArray.end(); _LIt++) {
+		_SendStatus = send(*_LIt, Str, strlen(Str)+1, 0);
+
+		// Send 했을 때, Client가 끊겨 있다면(곧, _SendStatus가 -1일 때).
+		// Socket List를 지워버린다.
+		if (_SendStatus == -1)
+			_M_HClientSocketArray.remove(*_LIt);
+	}
+
+	if (_SendStatus == -1)
+		return false;
+
+	return true;
+}
 #pragma endregion Server Class
 
 #pragma region Client Class
@@ -271,7 +293,6 @@ bool Telepathy::Client::ClientInitialize() {
 }
 
 bool Telepathy::Client::ClientReceiving() {
-
 	char _Buffer[BUFFER_MAX_32767];
 	int _ReadBufferLength;
 
@@ -292,6 +313,17 @@ bool Telepathy::Client::ClientReceiving() {
 
 		TClientReceivedCallback(_Buffer);
 	}
+	return true;
+}
+
+bool Telepathy::Client::SendData(char *Str) {
+	int _SendStatus = 0;
+
+	_SendStatus = send(_M_HClientSocket, Str, strlen(Str)+1, 0);
+
+	if (_SendStatus == -1)
+		return false;
+
 	return true;
 }
 #pragma endregion Client Class

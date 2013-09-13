@@ -3,6 +3,7 @@
 //
 //	The MIT License (MIT)
 //	Copyright © 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
+//	{invi.dh.kim, munsp9103, aiaipming} at gmail.com
 //
 //	Permission is hereby granted, free of charge, to any person obtaining a copy of
 //	this software and associated documentation files (the “Software”), to deal
@@ -22,13 +23,23 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
+// 공통 상수 정의
 #include "Common.hpp"
 
 // 기본 Header
 #include "UCIParser.hpp"
 
+// Callback을 위한 Menber.
+UCIParser G_UCIParser;
+
 UCIParser::UCIParser() {
+	_IsSocketConnented = false;
 	initializing();
+}
+
+UCIParser::~UCIParser() {
+	_IsSocketConnented = false;
+	Clear_Str();
 }
 
 void UCIParser::init_CommandStr() {
@@ -37,9 +48,34 @@ void UCIParser::init_CommandStr() {
 	Clear_Str();
 }
 
-void UCIParser::initializing() {
-	// string Buffer Initialize
-	init_CommandStr();
+bool UCIParser::Init_ClientSocket() {
+	_TClient = new Telepathy::Client();
+	SendToGUI("Wait for Server Request.\n");
+	// Inititalizing Client.
+	if (_TClient->ClientInitialize() == true) {
+		// Server 연결 성공시에, ClientReceivedCallback을 묶어
+		// Receive 할 때 Server에서 전송된 내용을 받아야 한다.
+		_TClient->TClientReceivedCallback = ClientReceivedCallback;
+	}	
+	else {
+		// Server 연결 실패.
+		SendToGUI("Server connection Failed.\n");
+		return false;
+	}
+
+	// 연결 성립.
+	SendToGUI("Connected.\n");
+	return true;
+}
+
+void UCIParser::Put_Author() {
+	// 4 Parser Engine Start.
+	SendToGUI("OpenCVE Connector Ver %s Start.\n",  ENGINE_EXEC_VER);
+	SendToGUI("Engine Copyright by ARTeam.\n");
+	/*
+	printf("OpenCVE Connector Ver %s Start.\n",  ENGINE_EXEC_VER);
+	printf("Engine Copyright by ARTeam.\n");
+	*/
 }
 
 void UCIParser::Get_Command_Str() {
@@ -48,22 +84,48 @@ void UCIParser::Get_Command_Str() {
 			return ;
 		}
 	}
+
+	char *_StrPtr = strchr(Command_Str,'\n');
+	if (_StrPtr != NULL) *_StrPtr = '\0';
 }
 
 void UCIParser::Clear_Str() {
 	memset(Command_Str, NULL, sizeof(Command_Str));
 }
 
+void UCIParser::Clear_ClientSocket() {
+	if (_TClient != NULL)
+		delete _TClient;
+}
+
+void UCIParser::SendToGUI(const char *Str, ...) {
+	va_list _Argument_List;
+	char _Str[4096];
+
+	va_start(_Argument_List, Str);
+	vsprintf(_Str, Str, _Argument_List);
+	va_end(_Argument_List);
+
+	fprintf(stdout, "%s\n", _Str);
+}
+
 void UCIParser::Command_UCI() {
-	printf("1\n");
+	// 현재 Name, 저작자 보냄.
+	SendToGUI("id name OpenCVE " ENGINE_EXEC_VER);
+	SendToGUI("id author SW Maestro AR Team");
+
+	// Print Options(no option)
+
+	// send "uciok"
+	SendToGUI("uciok");
 }
 
 void UCIParser::Command_Debug() {
-	printf("2\n");
+	// No Implementation
 }
 
 void UCIParser::Command_Isready() {
-	printf("3\n");
+	SendToGUI("readyok");
 }
 
 void UCIParser::Command_Setoption() {
@@ -75,26 +137,30 @@ void UCIParser::Command_Ucinewgame() {
 }
 
 void UCIParser::Command_Register() {
-	printf("6\n");
+	// No Implementation
 }
 
+//
 void UCIParser::Command_Position() {
 	printf("7\n");
 }
 
+//
 void UCIParser::Command_Go() {
 	printf("8\n");
 }
 
 void UCIParser::Command_Stop() {
+	// 정보를 굳이 저장하지 않는다면, 이걸 할 이유가 있을까?
 	printf("9\n");
 }
 
 void UCIParser::Command_Ponderhit() {
 	printf("10\n");
 }
+
 void UCIParser::Command_Quit() {
-	printf("11\n");
+	exit(EXIT_SUCCESS);
 }
 
 void UCIParser::Parsing_Command() {
@@ -105,8 +171,6 @@ void UCIParser::Parsing_Command() {
 	int _NSeek_GUIToEngine = _UCICommandParser.UCIString_Seeker(Command_Str);
 
 	switch (_NSeek_GUIToEngine) {
-		default:
-
 		case VALUE_UCI :
 			Command_UCI();
 			break;
@@ -145,9 +209,23 @@ void UCIParser::Parsing_Command() {
 	Clear_Str();
 }
 
+void UCIParser::initializing() {
+	// Put Author string.
+	Put_Author();
+	
+	// Initialize string Buffer.
+	init_CommandStr();
+	
+	// Initialize Client Socket.
+	if (Init_ClientSocket() != true)
+		SendToGUI("Socket Initialize Failed.\n");
+}
+
+
 void UCIParser::Parsing_Engine_Start() {
 	while (1) Parsing_Command();
 }
 
-void _ClientExProc(char *Buffer){
+void ClientReceivedCallback(char *Buffer){
+	
 }

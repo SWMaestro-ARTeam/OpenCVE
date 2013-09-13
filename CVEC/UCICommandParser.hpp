@@ -25,6 +25,7 @@
 #ifndef _UCICommandParser_hpp_
 #define _UCICommandParser_hpp_
 
+#include <stdio.h>
 #include <string.h>
 
 #include "Common.hpp"
@@ -57,14 +58,47 @@
 #define VALUE_PONDERHIT 10
 #define VALUE_QUIT 11
 
-#define GUI_TO_ENGINE_COMMAND_QTY 11
+#define GUI_TO_ENGINE_COMMAND_HEAD_QTY 11
 
-using namespace std;
-
-static char *_GUIToEngineString[GUI_TO_ENGINE_COMMAND_QTY] =
+static char *_GUIToEngineString_Head[GUI_TO_ENGINE_COMMAND_HEAD_QTY] =
 	{STR_UCI, STR_DEBUG, STR_ISREADY, STR_SETOPTION, STR_UCINEWGAME,
 	STR_REGISTER, STR_POSITION, STR_GO, STR_STOP, STR_PONDERHIT,
 	STR_QUIT};
+
+#define STR_GO_BINC "binc"
+#define STR_GO_BTIME "btime"
+#define STR_GO_DEPTH "depth"
+#define STR_GO_INFINITE "infinite"
+#define STR_GO_MATE "mate"
+#define STR_GO_MOVESTOGO "movestogo"
+#define STR_GO_MOVETIME "movetime"
+#define STR_GO_NODES "nodes"
+#define STR_GO_PONDER "ponder"
+#define STR_GO_SEARCHMOVES "searchmoves"
+#define STR_GO_WINC "winc"
+#define STR_GO_WTIME "wtime"
+
+#define VALUE_GO_BINC 1
+#define VALUE_GO_BTIME 2
+#define VALUE_GO_DEPTH 3
+#define VALUE_GO_INFINITE 4
+#define VALUE_GO_MATE 5
+#define VALUE_GO_MOVESTOGO 6
+#define VALUE_GO_MOVETIME 7
+#define VALUE_GO_NODES 8
+#define VALUE_GO_PONDER 9
+#define VALUE_GO_SEARCHMOVES 10
+#define VALUE_GO_WINC 11
+#define VALUE_GO_WTIME 12
+
+#define GUI_TO_ENGINE_COMMAND_GO_QTY 12
+
+static char *_GUIToEngineString_Go[GUI_TO_ENGINE_COMMAND_GO_QTY] =
+	{STR_GO_BINC, STR_GO_BTIME, STR_GO_DEPTH, STR_GO_INFINITE, STR_GO_MATE,
+	STR_GO_MOVESTOGO, STR_GO_MOVETIME, STR_GO_NODES, STR_GO_PONDER, STR_GO_SEARCHMOVES,
+	STR_GO_WINC, STR_GO_WTIME};
+
+using namespace std;
 
 class UCICommandParser {
 private:
