@@ -50,7 +50,7 @@ void UCIParser::init_CommandStr() {
 
 bool UCIParser::Init_ClientSocket() {
 	_TClient = new Telepathy::Client();
-	SendToGUI("Wait for Server Request.\n");
+	SendToGUI("Wait for Server Request.");
 	// Inititalizing Client.
 	if (_TClient->ClientInitialize() == true) {
 		// Server 연결 성공시에, ClientReceivedCallback을 묶어
@@ -59,7 +59,7 @@ bool UCIParser::Init_ClientSocket() {
 	}	
 	else {
 		// Server 연결 실패.
-		SendToGUI("Server connection Failed.\n");
+		SendToGUI("Server connection Failed.");
 		return false;
 	}
 
@@ -70,8 +70,8 @@ bool UCIParser::Init_ClientSocket() {
 
 void UCIParser::Put_Author() {
 	// 4 Parser Engine Start.
-	SendToGUI("OpenCVE Connector Ver %s Start.\n",  ENGINE_EXEC_VER);
-	SendToGUI("Engine Copyright by ARTeam.\n");
+	SendToGUI("OpenCVE Connector Ver %s Start.",  ENGINE_EXEC_VER);
+	SendToGUI("Engine Copyright by ARTeam.");
 	/*
 	printf("OpenCVE Connector Ver %s Start.\n",  ENGINE_EXEC_VER);
 	printf("Engine Copyright by ARTeam.\n");
@@ -218,7 +218,7 @@ void UCIParser::initializing() {
 	
 	// Initialize Client Socket.
 	if (Init_ClientSocket() != true)
-		SendToGUI("Socket Initialize Failed.\n");
+		SendToGUI("Socket Initialize Failed.");
 }
 
 

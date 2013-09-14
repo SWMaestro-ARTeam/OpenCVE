@@ -34,20 +34,20 @@ void Chess_recognition::Init(int width, int height, int mode){
 
 void Chess_recognition::drawLines ( vector<pair<float, float>> lines, IplImage* image){
 	for( int i = 0; i < MIN(lines.size(),100); i++ )
-    {
+	{
 		float rho = lines.at(i).first;
-        float theta = lines.at(i).second;
-        CvPoint pt1, pt2;
-        double a = cos(theta), b = sin(theta);
-        double x0 = a*rho, y0 = b*rho;								//수직의 시작이 되는점
-        pt1.x = cvRound(x0 + 1000*(-b));							//끝까지로 쭉 그려버림
-        pt1.y = cvRound(y0 + 1000*(a));
-        pt2.x = cvRound(x0 - 1000*(-b));
-        pt2.y = cvRound(y0 - 1000*(a));
-        cvLine( image, pt1, pt2, CV_RGB(255,0,0), 1, 8 );
+		float theta = lines.at(i).second;
+		CvPoint pt1, pt2;
+		double a = cos(theta), b = sin(theta);
+		double x0 = a*rho, y0 = b*rho;								//수직의 시작이 되는점
+		pt1.x = cvRound(x0 + 1000*(-b));							//끝까지로 쭉 그려버림
+		pt1.y = cvRound(y0 + 1000*(a));
+		pt2.x = cvRound(x0 - 1000*(-b));
+		pt2.y = cvRound(y0 - 1000*(a));
+		cvLine( image, pt1, pt2, CV_RGB(255,0,0), 1, 8 );
 
 		cvDrawCircle(image, cvPoint(x0, y0), 3, cvScalar(255,255), -1);
-    }
+	}
 }
 
 void Chess_recognition::drawPoint( IplImage *src, vector<Chess_point> point){
@@ -66,28 +66,28 @@ void Chess_recognition::findIntersections ( vector<pair<float, float>> linesX, v
 	point->clear();
 
 	for( int i = 0; i < MIN(linesX.size(),100); i++ )
-    {
-        for( int j = 0; j < MIN(linesY.size(),100); j++ )
-        {                
+	{
+		for( int j = 0; j < MIN(linesY.size(),100); j++ )
+		{                
 			float rhoX = linesX.at(i).first;
 			float rhoY = linesY.at(j).first;
 			float thetaX = linesX.at(i).second, thetaY = linesY.at(j).second;
 
-            double aX = cos(thetaX), bX = sin(thetaX);
-            double aY = cos(thetaY), bY = sin(thetaY);
+			double aX = cos(thetaX), bX = sin(thetaX);
+			double aY = cos(thetaY), bY = sin(thetaY);
 
-            CvPoint c; // the intersection point of lineX[i] and lineY[j] 
-            double Cx = ( rhoX*bY - rhoY*bX ) / ( aX*bY - bX*aY ) ;
-            double Cy = ( rhoX - aX*Cx ) / bX ; 
-            c.x = cvRound(Cx);
-            c.y = cvRound(Cy);
+			CvPoint c; // the intersection point of lineX[i] and lineY[j] 
+			double Cx = ( rhoX*bY - rhoY*bX ) / ( aX*bY - bX*aY ) ;
+			double Cy = ( rhoX - aX*Cx ) / bX ; 
+			c.x = cvRound(Cx);
+			c.y = cvRound(Cy);
 
 			//save point
 			temp_cp.Cordinate = c;
 			temp_cp.index = cvPoint(j,i);
 			point->push_back(temp_cp);
-        }
-    }
+		}
+	}
 }
 
 void Chess_recognition::Get_Line(vector<pair<float, float>> *linesX, vector<pair<float, float>> *linesY){
@@ -104,45 +104,45 @@ void Chess_recognition::Get_Line(vector<pair<float, float>> *linesX, vector<pair
 
 void Chess_recognition::NMS2 ( IplImage* image, IplImage* image2, int kernel)			//이웃들의 값을 살펴보고 조건에 해당하지 않으면 지움
 {																	//조건은 이웃값보다 작음
-    float neighbor, neighbor2;
-    for ( int y = 0; y < image->height; y++ )
-    {
-        for ( int x = 0; x < image->width; x++ )
-        {
-            float intensity = CV_IMAGE_ELEM( image, float, y, x );
-            if (intensity > 0) {
-                int flag = 0;
-                
-                for ( int ky = -kernel; ky <= kernel; ky++ ) // in y-direction
-                {
-                    if ( y+ky < 0 || y+ky >= image->height ) { // border check
-                        continue;
-                    }
-                    for ( int kx = -kernel; kx <= kernel; kx++ ) // in x-direction
-                    {
-                        if ( x+kx < 0 || x+kx >= image->width ) {  // border check
-                            continue;
-                        }
-                        neighbor = CV_IMAGE_ELEM( image, float, y+ky, x+kx );
-                        neighbor2 = CV_IMAGE_ELEM( image2, float, y+ky, x+kx );
-                        //                        if ( intensity < neighbor ) {
-                        if ( intensity < neighbor || intensity < neighbor2) {
-                            CV_IMAGE_ELEM( image, float, y, x ) = 0.0;
-                            flag = 1;
-                            break;
-                        }
-                    }
-                    if ( 1 == flag ) {
-                        break;
-                    }
-                }
-            }
-            
-            else {
-                CV_IMAGE_ELEM( image, float, y, x ) = 0.0;
-            }
-        }  
-    }
+	float neighbor, neighbor2;
+	for ( int y = 0; y < image->height; y++ )
+	{
+		for ( int x = 0; x < image->width; x++ )
+		{
+			float intensity = CV_IMAGE_ELEM( image, float, y, x );
+			if (intensity > 0) {
+				int flag = 0;
+
+				for ( int ky = -kernel; ky <= kernel; ky++ ) // in y-direction
+				{
+					if ( y+ky < 0 || y+ky >= image->height ) { // border check
+						continue;
+					}
+					for ( int kx = -kernel; kx <= kernel; kx++ ) // in x-direction
+					{
+						if ( x+kx < 0 || x+kx >= image->width ) {  // border check
+							continue;
+						}
+						neighbor = CV_IMAGE_ELEM( image, float, y+ky, x+kx );
+						neighbor2 = CV_IMAGE_ELEM( image2, float, y+ky, x+kx );
+						//                        if ( intensity < neighbor ) {
+						if ( intensity < neighbor || intensity < neighbor2) {
+							CV_IMAGE_ELEM( image, float, y, x ) = 0.0;
+							flag = 1;
+							break;
+						}
+					}
+					if ( 1 == flag ) {
+						break;
+					}
+				}
+			}
+
+			else {
+				CV_IMAGE_ELEM( image, float, y, x ) = 0.0;
+			}
+		}  
+	}
 }
 
 void Chess_recognition::cast_seq(CvSeq* linesX, CvSeq* linesY){
@@ -150,22 +150,22 @@ void Chess_recognition::cast_seq(CvSeq* linesX, CvSeq* linesY){
 	vec_LineX.clear();
 	vec_LineY.clear();
 	for( int i = 0; i < MIN(linesX->total,100); i++ )
-    {
-        float* line = (float*)cvGetSeqElem(linesX,i);
-        float rho = line[0];
-        float theta = line[1];
+	{
+		float* line = (float*)cvGetSeqElem(linesX,i);
+		float rho = line[0];
+		float theta = line[1];
 
 		vec_LineX.push_back(pair<float,float>(rho, theta));
-    }
+	}
 
 	for( int i = 0; i < MIN(linesY->total,100); i++ )
-    {
-        float* line = (float*)cvGetSeqElem(linesY,i);
-        float rho = line[0];
-        float theta = line[1];
+	{
+		float* line = (float*)cvGetSeqElem(linesY,i);
+		float rho = line[0];
+		float theta = line[1];
 
 		vec_LineY.push_back(pair<float,float>(rho, theta));
-    }
+	}
 }
 
 bool sort_first(pair<float, float> a, pair<float, float> b){
@@ -216,20 +216,20 @@ UINT WINAPI Chess_recognition::thread_hough(void *arg){
 
 	CvSeq *LineX, *LineY;
 	double h[] = { -1, -7, -15, 0, 15, 7, 1 };
-    
-    CvMat DoGx = cvMat( 1, 7, CV_64FC1, h );
-    CvMat* DoGy = cvCreateMat( 7, 1, CV_64FC1 );
-    cvTranspose( &DoGx, DoGy ); // transpose(&DoGx) -> DoGy
+
+	CvMat DoGx = cvMat( 1, 7, CV_64FC1, h );
+	CvMat* DoGy = cvCreateMat( 7, 1, CV_64FC1 );
+	cvTranspose( &DoGx, DoGy ); // transpose(&DoGx) -> DoGy
 
 	double minValx, maxValx, minValy, maxValy, minValt, maxValt;
 	int kernel = 1;
 
 	IplImage *iplTemp = cvCreateImage(cvSize(p->WIDTH, p->HEIGHT), IPL_DEPTH_32F, 1);                   
-    IplImage *iplDoGx = cvCreateImage(cvGetSize(iplTemp), IPL_DEPTH_32F, 1);  
-    IplImage *iplDoGy = cvCreateImage(cvGetSize(iplTemp), IPL_DEPTH_32F, 1);  
-    IplImage *iplDoGyClone = cvCloneImage(iplDoGy), *iplDoGxClone = cvCloneImage(iplDoGx);
-    IplImage *iplEdgeX = cvCreateImage(cvGetSize(iplTemp), 8, 1);
-    IplImage *iplEdgeY = cvCreateImage(cvGetSize(iplTemp), 8, 1);
+	IplImage *iplDoGx = cvCreateImage(cvGetSize(iplTemp), IPL_DEPTH_32F, 1);  
+	IplImage *iplDoGy = cvCreateImage(cvGetSize(iplTemp), IPL_DEPTH_32F, 1);  
+	IplImage *iplDoGyClone = cvCloneImage(iplDoGy), *iplDoGxClone = cvCloneImage(iplDoGx);
+	IplImage *iplEdgeX = cvCreateImage(cvGetSize(iplTemp), 8, 1);
+	IplImage *iplEdgeY = cvCreateImage(cvGetSize(iplTemp), 8, 1);
 
 	CvMemStorage* storageX = cvCreateMemStorage(0), *storageY = cvCreateMemStorage(0);
 
@@ -259,12 +259,12 @@ UINT WINAPI Chess_recognition::thread_hough(void *arg){
 		cvConvert(iplDoGy, iplEdgeX);
 
 		double rho = 1.0; // distance resolution in pixel-related units
-        double theta = 1.0; // angle resolution measured in radians
+		double theta = 1.0; // angle resolution measured in radians
 		int threshold = 20;
 		if(threshold == 0)	threshold = 1;
 
 		LineX = cvHoughLines2(iplEdgeX, storageX, CV_HOUGH_STANDARD, 1.0*rho, CV_PI/180*theta, threshold, 0, 0);
-        LineY = cvHoughLines2(iplEdgeY, storageY, CV_HOUGH_STANDARD, 1.0*rho, CV_PI/180*theta, threshold, 0, 0);
+		LineY = cvHoughLines2(iplEdgeY, storageY, CV_HOUGH_STANDARD, 1.0*rho, CV_PI/180*theta, threshold, 0, 0);
 
 		EnterCriticalSection(&p->vec_cs);
 		p->cast_seq(LineX, LineY);

@@ -63,7 +63,7 @@ int UCICommandParser::UCIString_Seeker(const char *Str){
 		//strcat(_StrPtr, " ");
 		sprintf(_StrPtr, "%s ", Str);
 	}
-	else{
+	else {
 		// NULL 일 경우(공백이 없는 경우).
 		// 그냥 대입.
 		_StrPtr = (char *)Str;
