@@ -26,17 +26,20 @@
 #ifndef _Common_hpp_
 #define _Common_hpp_
 
+#include <afxwin.h>
+
 #define OTHER 0
 #define WINDOWS 1
 
 #define BUFFER_MAX_32767 32767
 #define BUFFER_MAX_65535 65535
 
-#define ENGINE_EXEC_FILENAME "CVEngine.exe"
+#define SERVER_ENGINE_EXEC_FILENAME "CVES.exe"
+#define CLIENT_ENGINE_EXEC_FILENAME "CVEC.exe"
 
 #define ENGINE_EXEC_VER "0.1.0"
 
-#define CVE_PORT 10080
+#define CVE_PORT 8084//10080
 #define LISTEN_QUEUE 10
 
 #define IP_ADDR_LOCAL "127.0.0.1"

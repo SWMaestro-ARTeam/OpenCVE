@@ -38,55 +38,29 @@
 #include "ProcessConfirm.hpp"
 
 int main(int argc, char* argv[]) {
-	UCIParser *_Parser = new UCIParser();
 	ProcessConfirm *_ProcessConfirm = new ProcessConfirm();
+	UCIParser *_Parser;
 	
-	bool _BisProcessDoing = false;
-	bool _BisPartofServerOrClient = false; // false is Client, True is Server
+	bool _BIsServerProcessActive = false;
+	bool _BIsAnotherClientProcessActive = false;
 
-	// 1. Process 확인. && 2. Server/Client Initializing.
-	_BisPartofServerOrClient = _ProcessConfirm->CheckAnotherEngineProcess(ENGINE_EXEC_FILENAME);
+	// 1. Process 확인. 
+	_BIsServerProcessActive = _ProcessConfirm->CheckProcess(SERVER_ENGINE_EXEC_FILENAME);
+	_BIsAnotherClientProcessActive = _ProcessConfirm->CheckProcess(CLIENT_ENGINE_EXEC_FILENAME);
 
-	// 2. TCP/IP Socket Start.
-	/*
-	(_BisPartofServerOrClient == true) ? 
-		// true 일 때 해당 Process가 있다는 것으로 간주, 현존하는 Process가 Server라는 이야기다.
-		// 그러므로 Client Mode가 되어야 한다.
+	// 2. CVES Process가 없다면 Process 실행.
+	if (_BIsServerProcessActive == false) {
+		if (_BIsAnotherClientProcessActive == false)
 
-		// Client Mode
-
-		:
-		// flase 일 때 해당 Process가 없다는 것으로 간주.
-		// 그러므로 Server Mode가 되어야 한다.
-
-		// Server Mode
-		*/
-		/*
-	if (_BisPartofServerOrClient == true) {
-		// true 일 때 해당 Process가 있다는 것으로 간주, 현존하는 Process가 Server라는 이야기다.
-		// 그러므로 Client Mode가 되어야 한다.
-
-		// Client Mode
-
+		// CVES 실행.
 	}
-	else {
-		// flase 일 때 해당 Process가 없다는 것으로 간주.
-		// 그러므로 Server Mode가 되어야 한다.
 
-		// Server Mode
-
-	}
-	// 
-	*/
-	// 2. Parser 초기화.
-	_Parser->initializing();
-	
-	// 3. Vision Engine Start.
-
-
+	// 3. CVEC Parser 실행.
+	// 이때, Client Network도 같이 실행 된다.
+	_Parser = new UCIParser();
 	_Parser->Parsing_Engine_Start();
 
-	// 5. delete pointer.
+	// 5. Delete pointer.
 	delete _Parser;
 	delete _ProcessConfirm;
 

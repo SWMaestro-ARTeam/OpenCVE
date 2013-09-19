@@ -1,4 +1,31 @@
-#pragma once
+ï»¿//////////////////////////////////////////////////////////////////////////////////////////////
+//	The OpenCVE Project.
+//
+//	The MIT License (MIT)
+//	Copyright Â© 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
+//	{invi.dh.kim, munsp9103, aiaipming} at gmail.com
+//
+//	Permission is hereby granted, free of charge, to any person obtaining a copy of
+//	this software and associated documentation files (the â€œSoftwareâ€), to deal
+//	in the Software without restriction, including without limitation the rights to
+//	use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+//	the Software, and to permit persons to whom the Software is furnished to do so,
+//	subject to the following conditions:
+//
+//	The above copyright notice and this permission notice shall be included in all
+//	copies or substantial portions of the Software.
+//
+//	THE SOFTWARE IS PROVIDED â€œAS ISâ€, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+//	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+//	PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+//	LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+//	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+//	OR OTHER DEALINGS IN THE SOFTWARE.
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+#ifndef _Chess_recognition_hpp_
+#define _Chess_recognition_hpp_
+
 #include <cv.h>
 #include <highgui.h>
 #include <Windows.h>
@@ -10,47 +37,46 @@
 using namespace std;
 
 typedef struct{
-	CvPoint Cordinate;//ÁÂÇ¥ À§Ä¡
-	CvPoint index;//ÁÂÇ¥ ÀÎµ¦½º
-}Chess_point;
+	CvPoint Cordinate;//ì¢Œí‘œ ìœ„ì¹˜
+	CvPoint index;//ì¢Œí‘œ ì¸ë±ìŠ¤
+} Chess_point;
 
-class Chess_recognition
-{
+class Chess_recognition {
 private:
 	int WIDTH, HEIGHT;
 	int MODE;
 
-	vector<Chess_point> CP;						//±³Á¡
-	vector<std::pair<float, float>> vec_LineX, vec_LineY;		//¶óÀÎ : <rho, theta>
+	vector<Chess_point> CP;						//êµì 
+	vector<std::pair<float, float>> vec_LineX, vec_LineY;		//ë¼ì¸ : <rho, theta>
 	IplImage *img_process;
 
 	HANDLE hThread;
 
-	void NMS2 ( IplImage* image, IplImage* image2, int kernel);	//
-	void cast_seq(CvSeq* linesX, CvSeq* linesY);					//º¤ÅÍ·Î º¯È¯
-	//bool sort_first(pair<float, float> a, pair<float, float> b);	//º¤ÅÍ Á¤·Ä ±ÔÄ¢
+	void NMS2(IplImage* image, IplImage* image2, int kernel);	//
+	void cast_seq(CvSeq* linesX, CvSeq* linesY);					//ë²¡í„°ë¡œ ë³€í™˜
+	//bool sort_first(pair<float, float> a, pair<float, float> b);	//ë²¡í„° ì •ë ¬ ê·œì¹™
 	void mergeLine( vector<std::pair<float, float>> *Lines);
 
-	static UINT WINAPI thread_hough(void *arg);											//¾²·¹µå ÇÔ¼ö
+	static UINT WINAPI thread_hough(void *arg);											//ì“°ë ˆë“œ í•¨ìˆ˜
 	static UINT WINAPI thread_GH(void *arg);
-	CRITICAL_SECTION cs, vec_cs;														//thread µ¿±âÈ­¸¦ À§ÇÑ cs
+	CRITICAL_SECTION cs, vec_cs;														//thread ë™ê¸°í™”ë¥¼ ìœ„í•œ cs
 
-	//////////////////////////////////////////////////////////////////////////////±ÔÈ«±ÔÈ«////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	typedef struct{
-		int x,y;
+	//////////////////////////////////////////////////////////////////////////////ê·œí™ê·œí™////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	typedef struct {
+		int x, y;
 	} MyPoint;
 
-	typedef struct{
-		int x1,y1,x2,y2;
+	typedef struct {
+		int x1, y1, x2, y2;
 	} MyLinePoint;
 
-	typedef struct{
-		int grayscale,x,y;
-	}MyGrayPoint;
+	typedef struct {
+		int grayscale, x, y;
+	} MyGrayPoint;
 
 	typedef struct{
 		MyPoint LeftTop, LeftBottom, RightTop, RightBottom;
-	}MySquarePoint;
+	} MySquarePoint;
 
 	int line_avg_x1, line_avg_x2, line_avg_y1, line_avg_y2;
 	int Linefindcount_x, Linefindcount_y;
@@ -76,23 +102,23 @@ public:
 	Chess_recognition(void);
 	~Chess_recognition(void);
 
-	//ÃÊ±âÈ­
+	//ì´ˆê¸°í™”
 	void Init(int width, int height, int mode);
-	//¶óÀÎ ±×¸®±â
-	void drawLines ( vector<pair<float, float>> lines, IplImage* image);
-	void drawPoint ( IplImage *src, vector<Chess_point> point);
-	//±³Â÷Á¡ ±¸ÇÏ±â
-	void findIntersections ( vector<pair<float, float>> linesX, vector<pair<float, float>> linesY, vector<Chess_point> *point );
-	//¶óÀÎ return
+	//ë¼ì¸ ê·¸ë¦¬ê¸°
+	void drawLines(vector<pair<float, float>> lines, IplImage* image);
+	void drawPoint(IplImage *src, vector<Chess_point> point);
+	//êµì°¨ì  êµ¬í•˜ê¸°
+	void findIntersections(vector<pair<float, float>> linesX, vector<pair<float, float>> linesY, vector<Chess_point> *point);
+	//ë¼ì¸ return
 	void Get_Line(vector<pair<float, float>> *linesX, vector<pair<float, float>> *linesY);
-	//Ã³¸®¿ë ÀÌ¹ÌÁö º¹»ç
+	//ì²˜ë¦¬ìš© ì´ë¯¸ì§€ ë³µì‚¬
 	void Copy_Img(IplImage *src);
-	//±³Â÷Á¡ º¸Á¤ÇÔ¼ö
+	//êµì°¨ì  ë³´ì •í•¨ìˆ˜
 	void Refine_CrossPoint(vector<Chess_point> *point);
-	//°ü½É¿µ¿ª ¼³Á¤
+	//ê´€ì‹¬ì˜ì—­ ì„¤ì •
 	void Set_CalculationDomain(CvCapture *Cam, int *ROI_WIDTH, int *ROI_HEIGHT);
 
-	//////////////////////////////////////////////////////////////////////////////±ÔÈ«±ÔÈ«////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////ê·œí™ê·œí™////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	void Chess_recognition_process(IplImage *src, vector<Chess_point> *point);
 	void MemoryClear();
@@ -105,4 +131,4 @@ public:
 	//wrapper method
 	void Chess_recog_wrapper(IplImage *src, vector<Chess_point> *point);
 };
-
+#endif

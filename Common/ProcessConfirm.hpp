@@ -57,7 +57,10 @@ public:
 	// Constructors
 	ProcessConfirm();
 
-	bool CheckAnotherEngineProcess(char *ProcessName);
+	bool IsProcessActive;
+
+	bool CheckProcess(char *ProcessName);
+	bool CreateProcessOnThread(char *ProcessName);
 };
 
 #endif

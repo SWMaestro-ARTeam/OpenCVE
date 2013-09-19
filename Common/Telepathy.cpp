@@ -27,32 +27,24 @@
 
 #pragma region Server Class
 // Telepathy Server Class Area.
-Telepathy::Server TServer;
+Telepathy::Server *TServer;
 
 // constructor
 Telepathy::Server::Server() {
 	_M_BIsConnectedServer = false;
-
-	if (ServerInitialize() == false){
-		// debug 넣어주어야 함.
-		return ;
-	}
-	else
-		_M_BIsConnectedServer = true;
-
-	// Server Call 등록
-	_T_SERVERRECEIVEDCALLBACK _ServCall;
 }
 
 // destructor
 Telepathy::Server::~Server() {
-	ServerClosing();
+	if (_M_BIsConnectedServer == true){
+		ServerClose();
+	}
 }
 
 #pragma region Server Threads
 UINT Server_ConnectionThread(LPVOID Param) {
 	while (1) 
-		TServer.ServerListentoClient();
+		TServer->ServerListentoClient();
 
 	return 0;
 }
@@ -62,7 +54,7 @@ UINT Server_ReceivingThread(LPVOID Param) {
 
 	while (1) {
 		// 현재 Thread는 계속 받는다.
-		if (TServer.ServerReceiving(_ClientSocket) == false)
+		if (TServer->ServerReceiving(_ClientSocket) == false)
 			break;
 	}
 
@@ -81,7 +73,7 @@ bool Telepathy::Server::ServerInitialize() {
 
 	// Socket Create.
 	_M_HServerSocket = socket(AF_INET, SOCK_STREAM, 0);
-	
+
 	// Socket이 잘못 되었다면..
 	if (_M_HServerSocket = INVALID_SOCKET)
 		return false;
@@ -96,26 +88,21 @@ bool Telepathy::Server::ServerInitialize() {
 
 	// socket bind.
 	if (bind(_M_HServerSocket, (sockaddr *)&_M_ServerAddress, sizeof(_M_ServerAddress)) != 0) {
-		ServerClosing();
+		ServerClose();
 		return false;
 	}
 
 	// socket listen.
 	if (listen(_M_HServerSocket, LISTEN_QUEUE) != 0) {
-		ServerClosing();
+		ServerClose();
 		return false;
 	}
 
-	return true;
-}
+	// 외부 Receive 함수용.
+	TServer = this;
+	_M_BIsConnectedServer = true;
 
-// Server 종료.
-void Telepathy::Server::ServerClosing() {
-	if (_M_HServerSocket != NULL){
-		closesocket(_M_HServerSocket);
-		WSACleanup();
-		_M_BIsConnectedServer = false;
-	}
+	return true;
 }
 
 // Server 기동.
@@ -129,6 +116,15 @@ void Telepathy::Server::ServerStart() {
 		AfxBeginThread(Server_ConnectionThread, 0);
 #elif OTHER
 #endif
+	}
+}
+
+// Server 종료.
+void Telepathy::Server::ServerClose() {
+	if (_M_HServerSocket != NULL){
+		closesocket(_M_HServerSocket);
+		WSACleanup();
+		_M_BIsConnectedServer = false;
 	}
 }
 
@@ -158,7 +154,6 @@ void Telepathy::Server::ServerListentoClient() {
 
 // Server가 Client들에게 정보를 받는 과정.
 bool Telepathy::Server::ServerReceiving(SOCKET ClientSocket) {
-	
 	char _Buffer[BUFFER_MAX_32767];
 	int _ReadBufferLength;
 
@@ -208,7 +203,7 @@ bool Telepathy::Server::SendData(char *Str) {
 
 #pragma region Client Class
 // Telepathy Client Class Area.
-Telepathy::Client TClient;
+Telepathy::Client *TClient;
 
 // constructor
 Telepathy::Client::Client(){
@@ -218,21 +213,62 @@ Telepathy::Client::Client(){
 // deconstructor
 Telepathy::Client::~Client(){
 	if (_M_BIsConnectedClient == true) {
-		ClientClosing();
-		_M_BIsConnectedClient = false;
+		ClientClose();
 	}
 }
 
 #pragma region Client Threads
 UINT Client_ReceivingThread(LPVOID Param) {
 	while (1) {
-		if (TClient.ClientReceiving() == false)
+		if (TClient->ClientReceiving() == false)
 			break;
 	}
 
 	return 0;
 }
 #pragma endregion Client Threads
+
+bool Telepathy::Client::ClientInitialize() {
+	// WSAStartUp
+	if (WSAStartup(0x101, &_M_WSAData) != 0)
+		return false;
+
+	// Socket Create.
+	_M_HClientSocket = socket(AF_INET, SOCK_STREAM, 0);
+
+	// Socket이 잘못 되었다면..
+	if (_M_HClientSocket == INVALID_SOCKET)
+		return false;
+
+	// Local IP Address.
+	_M_Address=inet_addr(IP_ADDR_LOCAL);
+	// get host entry.
+	_M_HostEntry=gethostbyaddr((char*)&_M_Address, sizeof(_M_Address), AF_INET);
+
+	if (_M_HostEntry == NULL){
+		ClientClose();
+		return false;
+	}
+
+	// using IPv4
+	_M_ClientAddress.sin_family = AF_INET;
+	// 32bit IPv4 address
+	_M_ClientAddress.sin_addr.s_addr = *((unsigned long*)_M_HostEntry->h_addr);
+	//_M_ServerAddress.sin_addr.s_addr = inet_addr(IP_ADDR_LOCAL);
+	// port 사용
+	_M_ClientAddress.sin_port = htons((u_short)CVE_PORT);
+
+	if (connect(_M_HClientSocket, (sockaddr *)&_M_ClientAddress, sizeof(_M_ClientAddress))){
+		ClientClose();
+		return false;
+	}
+
+	// 외부 Receive 함수용.
+	TClient = this;
+	_M_BIsConnectedClient = true;
+
+	return true;
+}
 
 void Telepathy::Client::ClientStart() {
 	if (_M_BIsConnectedClient != true) {
@@ -247,49 +283,11 @@ void Telepathy::Client::ClientStart() {
 	}
 }
 
-void Telepathy::Client::ClientClosing() {
-	if (_M_HClientSocket != NULL)
+void Telepathy::Client::ClientClose() {
+	if (_M_HClientSocket != NULL) {
 		closesocket(_M_HClientSocket);
-}
-
-bool Telepathy::Client::ClientInitialize() {
-	// WSAStartUp
-	if (WSAStartup(0x101, &_M_WSAData) != 0)
-		return false;
-
-	// Socket Create.
-	_M_HClientSocket = socket(AF_INET, SOCK_STREAM, 0);
-
-	// Socket이 잘못 되었다면..
-	if (_M_HClientSocket = INVALID_SOCKET)
-		return false;
-
-	// Local IP Address.
-	_M_Address=inet_addr(IP_ADDR_LOCAL);
-	// get host entry.
-	_M_HostEntry=gethostbyaddr((char*)&_M_Address, sizeof(_M_Address), AF_INET);
-
-	if (_M_HostEntry == NULL){
-		ClientClosing();
-		return false;
+		_M_BIsConnectedClient = false;
 	}
-
-	// using IPv4
-	_M_ClientAddress.sin_family = AF_INET;
-	// 32bit IPv4 address
-	_M_ClientAddress.sin_addr.s_addr = *((unsigned long*)_M_HostEntry->h_addr);
-	//_M_ServerAddress.sin_addr.s_addr = inet_addr(IP_ADDR_LOCAL);
-	// port 사용
-	_M_ClientAddress.sin_port = htons((u_short)CVE_PORT);
-
-	if (connect(_M_HClientSocket, (sockaddr *)&_M_ClientAddress, sizeof(_M_ClientAddress))){
-		ClientClosing();
-		return false;
-	}
-
-	_M_BIsConnectedClient = true;
-
-	return true;
 }
 
 bool Telepathy::Client::ClientReceiving() {

@@ -32,14 +32,13 @@
 #include "Common.hpp"
 
 #if WINDOWS
-#include <afxwin.h>
+//#include <afxwin.h>
 #include <winsock2.h>
 // ws2_32.lib 링크
 #pragma comment(lib, "ws2_32.lib")
 #endif
 
 using namespace std;
-
 
 class Telepathy {
 private:
@@ -65,14 +64,6 @@ public:
 		list<SOCKET> _M_HClientSocketArray;
 		//list<ClientsList> _M_HClientLists;
 		SOCKET _M_HClientSocket;
-
-		//SOCKADDR_IN _M_ClntAddr;
-
-		/*
-		WSAEVENT _M_HEventArray[WSA_MAXIMUM_WAIT_EVENTS];
-		WSAEVENT _M_NewEvent;
-		WSANETWORKEVENTS _M_NetEvents;
-		*/
 #elif OTHER
 #endif
 		bool _M_BIsConnectedServer;
@@ -86,7 +77,7 @@ public:
 
 		bool ServerInitialize();
 		void ServerStart();
-		void ServerClosing();
+		void ServerClose();
 		void ServerListentoClient();
 		bool ServerReceiving(SOCKET ClientSocket);
 
@@ -117,7 +108,7 @@ public:
 
 		bool ClientInitialize();
 		void ClientStart();
-		void ClientClosing();
+		void ClientClose();
 		bool ClientReceiving();
 
 		bool SendData(char *Str);

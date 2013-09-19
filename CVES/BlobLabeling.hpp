@@ -1,61 +1,75 @@
-////////////////////////////////////////////////////
+ï»¿//////////////////////////////////////////////////////////////////////////////////////////////
+//	The OpenCVE Project.
 //
-//  Å¬·¡½º : CBlobLabeling
+//	The MIT License (MIT)
+//	Copyright Â© 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
+//	{invi.dh.kim, munsp9103, aiaipming} at gmail.com
 //
-//                    by ¸¶Æ¾(http://martinblog.net)
-#pragma once
+//	Permission is hereby granted, free of charge, to any person obtaining a copy of
+//	this software and associated documentation files (the â€œSoftwareâ€), to deal
+//	in the Software without restriction, including without limitation the rights to
+//	use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+//	the Software, and to permit persons to whom the Software is furnished to do so,
+//	subject to the following conditions:
+//
+//	The above copyright notice and this permission notice shall be included in all
+//	copies or substantial portions of the Software.
+//
+//	THE SOFTWARE IS PROVIDED â€œAS ISâ€, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+//	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+//	PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+//	LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+//	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+//	OR OTHER DEALINGS IN THE SOFTWARE.
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+#ifndef _BlobLabeling_hpp_
+#define _BlobLabeling_hpp_
 
 #include <cv.h>
 #include <highgui.h>
 
-typedef struct 
-{
+typedef struct {
 	bool	bVisitedFlag;
 	CvPoint ptReturnPoint;
 } Visited;
 
-class  CBlobLabeling
-{
+class CBlobLabeling {
+private:
+	// ë ˆì´ë¸”ë§(ë™ì‘)
+	int Labeling(IplImage* image, int nThreshold);
+
+	// í¬ì¸íŠ¸ ì´ˆê¸°í™”
+	void InitvPoint(int nWidth, int nHeight);
+	void DeletevPoint();
+
+	// ë ˆì´ë¸”ë§ ê²°ê³¼ ì–»ê¸°
+	void DetectLabelingRegion(int nLabelNumber, unsigned char *DataBuf, int nWidth, int nHeight);
+
+	// ë ˆì´ë¸”ë§(ì‹¤ì œ ì•Œê³ ë¦¬ì¦˜)
+	int _Labeling(unsigned char *DataBuf, int nWidth, int nHeight, int nThreshold);
+
+	// _Labling ë‚´ë¶€ ì‚¬ìš© í•¨ìˆ˜
+	int __NRFIndNeighbor(unsigned char *DataBuf, int nWidth, int nHeight, int nPosX, int nPosY, int *StartX, int *StartY, int *EndX, int *EndY );
+	int __Area(unsigned char *DataBuf, int StartX, int StartY, int EndX, int EndY, int nWidth, int nLevel);
+
 public:
 	CBlobLabeling(void);
-public:
 	~CBlobLabeling(void);
 
-public:
-	IplImage*	m_Image;				// ·¹ÀÌºí¸µÀ» À§ÇÑ ÀÌ¹ÌÁö
-	int			m_nThreshold;			// ·¹ÀÌºí¸µ ½º·¹½ºÈ¦µå °ª
-	Visited*	m_vPoint;				// ·¹ÀÌºí¸µ½Ã ¹æ¹®Á¤º¸
-	int			m_nBlobs;				// ·¹ÀÌºíÀÇ °¹¼ö
-	CvRect*		m_recBlobs;				// °¢ ·¹ÀÌºí Á¤º¸
+	IplImage*	m_Image;				// ë ˆì´ë¸”ë§ì„ ìœ„í•œ ì´ë¯¸ì§€
+	int m_nThreshold;			// ë ˆì´ë¸”ë§ ìŠ¤ë ˆìŠ¤í™€ë“œ ê°’
+	Visited* m_vPoint;				// ë ˆì´ë¸”ë§ì‹œ ë°©ë¬¸ì •ë³´
+	int m_nBlobs;				// ë ˆì´ë¸”ì˜ ê°¯ìˆ˜
+	CvRect* m_recBlobs;				// ê° ë ˆì´ë¸” ì •ë³´
 
-
-public:
-	// ·¹ÀÌºí¸µ ÀÌ¹ÌÁö ¼±ÅÃ
-	void		SetParam(IplImage* image, int nThreshold);
-
-	// ·¹ÀÌºí¸µ(½ÇÇà)
-	void		DoLabeling();
-
-	// ·¹ÀÌºí ±×¸®±â
+	// ë ˆì´ë¸”ë§ ì´ë¯¸ì§€ ì„ íƒ
+	void SetParam(IplImage* image, int nThreshold);
+	// ë ˆì´ë¸”ë§(ì‹¤í–‰)
+	void DoLabeling();
+	// ë ˆì´ë¸” ê·¸ë¦¬ê¸°
 	void DrawLabel(IplImage *img, CvScalar RGB);
-	//º®¿¡ ºÙÀº ÀÌ¹ÌÁö ¿Ü¿¡ »èÁ¦ÇÔ
+	//ë²½ì— ë¶™ì€ ì´ë¯¸ì§€ ì™¸ì— ì‚­ì œí•¨
 	void GetSideBlob(IplImage *img, std::vector<int> *piece_idx);
-
-private:
-	// ·¹ÀÌºí¸µ(µ¿ÀÛ)
-	int		 Labeling(IplImage* image, int nThreshold);
-
-	// Æ÷ÀÎÆ® ÃÊ±âÈ­
-	void	 InitvPoint(int nWidth, int nHeight);
-	void	 DeletevPoint();
-
-	// ·¹ÀÌºí¸µ °á°ú ¾ò±â
-	void	 DetectLabelingRegion(int nLabelNumber, unsigned char *DataBuf, int nWidth, int nHeight);
-
-	// ·¹ÀÌºí¸µ(½ÇÁ¦ ¾Ë°í¸®Áò)
-	int		_Labeling(unsigned char *DataBuf, int nWidth, int nHeight, int nThreshold);
-	
-	// _Labling ³»ºÎ »ç¿ë ÇÔ¼ö
-	int		__NRFIndNeighbor(unsigned char *DataBuf, int nWidth, int nHeight, int nPosX, int nPosY, int *StartX, int *StartY, int *EndX, int *EndY );
-	int		__Area(unsigned char *DataBuf, int StartX, int StartY, int EndX, int EndY, int nWidth, int nLevel);
 };
+#endif

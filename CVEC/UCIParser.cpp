@@ -30,10 +30,11 @@
 #include "UCIParser.hpp"
 
 // Callback을 위한 Menber.
-UCIParser G_UCIParser;
+UCIParser *G_UCIParser;
 
 UCIParser::UCIParser() {
 	_IsSocketConnented = false;
+	G_UCIParser = this;
 	initializing();
 }
 
@@ -56,6 +57,7 @@ bool UCIParser::Init_ClientSocket() {
 		// Server 연결 성공시에, ClientReceivedCallback을 묶어
 		// Receive 할 때 Server에서 전송된 내용을 받아야 한다.
 		_TClient->TClientReceivedCallback = ClientReceivedCallback;
+		_TClient->ClientStart();
 	}	
 	else {
 		// Server 연결 실패.
@@ -168,6 +170,8 @@ void UCIParser::Parsing_Command() {
 
 	// Get UCI String.
 	Get_Command_Str();
+
+	// 단지 명령어 Matching 하여 값만 비교.
 	int _NSeek_GUIToEngine = _UCICommandParser.UCIString_Seeker(Command_Str);
 
 	switch (_NSeek_GUIToEngine) {

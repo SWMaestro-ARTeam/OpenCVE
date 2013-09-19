@@ -1,4 +1,31 @@
-#pragma once
+ï»¿//////////////////////////////////////////////////////////////////////////////////////////////
+//	The OpenCVE Project.
+//
+//	The MIT License (MIT)
+//	Copyright Â© 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
+//	{invi.dh.kim, munsp9103, aiaipming} at gmail.com
+//
+//	Permission is hereby granted, free of charge, to any person obtaining a copy of
+//	this software and associated documentation files (the â€œSoftwareâ€), to deal
+//	in the Software without restriction, including without limitation the rights to
+//	use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+//	the Software, and to permit persons to whom the Software is furnished to do so,
+//	subject to the following conditions:
+//
+//	The above copyright notice and this permission notice shall be included in all
+//	copies or substantial portions of the Software.
+//
+//	THE SOFTWARE IS PROVIDED â€œAS ISâ€, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+//	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+//	PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+//	LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+//	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+//	OR OTHER DEALINGS IN THE SOFTWARE.
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+#ifndef _Hand_recognition_hpp_
+#define _Hand_recognition_hpp_
+
 #include <iostream>
 #include <cv.h>
 #include <Windows.h>
@@ -7,8 +34,7 @@
 #define T_SKIN_NUM 10
 #define SUB_THRESHOLD 5
 
-class Hand_recognition
-{
+class Hand_recognition {
 private:
 	int img_width, img_height;
 
@@ -20,22 +46,22 @@ private:
 	bool R2(float Y, float Cr, float Cb);
 	bool R3(float H, float S, float V);
 
-	IplImage *img_YCrCb, *img_HSV;				//YCrCb, HSV »ö»ó°è
-	IplImage *prev_ground, *present_ground;			//Â÷¿µ»óÀ» ÅëÇØ Â÷ÀÌ¸¦ ±¸ÇÒ ¿¹Á¤
+	IplImage *img_YCrCb, *img_HSV;				//YCrCb, HSV ìƒ‰ìƒê³„
+	IplImage *prev_ground, *present_ground;			//ì°¨ì˜ìƒì„ í†µí•´ ì°¨ì´ë¥¼ êµ¬í•  ì˜ˆì •
 
 public:
 	Hand_recognition(void);
 	~Hand_recognition(void);
 
-	//ÃÊ±âÈ­
+	//ì´ˆê¸°í™”
 	void Init(int width, int height);
-	//ÇÇºÎ»ö Detection
+	//í”¼ë¶€ìƒ‰ Detection
 	void Detect_Skin(IplImage *src, IplImage *dst);
-	//¼Õ°ËÃâ ÆÇ´Ü - ¸éÀû ±â¹İ
+	//ì†ê²€ì¶œ íŒë‹¨ - ë©´ì  ê¸°ë°˜
 	bool is_Hand(IplImage *src);
-	//ÀÌÀü ÇÁ·¹ÀÓ°úÀÇ Â÷¿µ»ó
+	//ì´ì „ í”„ë ˆì„ê³¼ì˜ ì°¨ì˜ìƒ
 	void Sub_prevFrame(IplImage *src, IplImage *dst);
-	//Â÷¿µ»ó ÃÊ±âÈ­
+	//ì°¨ì˜ìƒ ì´ˆê¸°í™”
 	void Init_diff();
 };
-
+#endif

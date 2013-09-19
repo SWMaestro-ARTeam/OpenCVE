@@ -1,3 +1,28 @@
+Ôªø//////////////////////////////////////////////////////////////////////////////////////////////
+//	The OpenCVE Project.
+//
+//	The MIT License (MIT)
+//	Copyright ¬© 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
+//	{invi.dh.kim, munsp9103, aiaipming} at gmail.com
+//
+//	Permission is hereby granted, free of charge, to any person obtaining a copy of
+//	this software and associated documentation files (the ‚ÄúSoftware‚Äù), to deal
+//	in the Software without restriction, including without limitation the rights to
+//	use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+//	the Software, and to permit persons to whom the Software is furnished to do so,
+//	subject to the following conditions:
+//
+//	The above copyright notice and this permission notice shall be included in all
+//	copies or substantial portions of the Software.
+//
+//	THE SOFTWARE IS PROVIDED ‚ÄúAS IS‚Äù, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+//	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+//	PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+//	LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+//	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+//	OR OTHER DEALINGS IN THE SOFTWARE.
+//////////////////////////////////////////////////////////////////////////////////////////////
+
 #include <stdio.h>
 #include <cv.h>
 #include <highgui.h>
@@ -17,8 +42,8 @@
 #define RECOGNITION_MODE 2
 
 //
-IplImage *img_Cam;								//ø¯∫ª ¿ÃπÃ¡ˆ
-IplImage *img_Chess;							//√≥∏Æ«“ ∞¸Ω…øµø™ º” RGB ¿ÃπÃ¡ˆ
+IplImage *img_Cam;								//ÏõêÎ≥∏ Ïù¥ÎØ∏ÏßÄ
+IplImage *img_Chess;							//Ï≤òÎ¶¨Ìï† Í¥ÄÏã¨ÏòÅÏó≠ ÏÜç RGB Ïù¥ÎØ∏ÏßÄ
 IplImage *prev_img;
 IplImage *img_sub;
 
@@ -44,7 +69,7 @@ void Sub_image(IplImage *src1, IplImage *src2, IplImage *dst){
 	}
 }
 bool Check_InChessboard(IplImage *img, vector<Chess_point> point){
-	CvPoint LH, LL, RH, RL;			//øﬁ¬  ¿ß, øﬁ¬  æ∆∑°, ø¿∏•¬  ¿ß ø¿∏•¬  æ∆∑°
+	CvPoint LH, LL, RH, RL;			//ÏôºÏ™Ω ÏúÑ, ÏôºÏ™Ω ÏïÑÎûò, Ïò§Î•∏Ï™Ω ÏúÑ Ïò§Î•∏Ï™Ω ÏïÑÎûò
 	float tArea,t1Area, t2Area, t3Area, t4Area;
 	
 	LH = point.at(0).Cordinate;
@@ -143,7 +168,7 @@ int main(){
 	Find_Hand.Init(ROI_WIDTH, ROI_HEIGHT);
 	Find_Chess.Init(ROI_WIDTH, ROI_HEIGHT, RECOGNITION_MODE);
 
-	///∆« ¿⁄∏Æ¿‚±‚
+	///Ìåê ÏûêÎ¶¨Ïû°Í∏∞
 	while(1){
 		img_Cam = cvQueryFrame(Cam);
 		if(img_Cam == NULL){
@@ -179,46 +204,46 @@ int main(){
 	while(1){
 		int tick = GetTickCount();
 
-		//ƒ∑¿∏∑Œ∫Œ≈Õ ¿ÃπÃ¡ˆ πﬁæ∆ø¿±‚
+		//Ï∫†ÏúºÎ°úÎ∂ÄÌÑ∞ Ïù¥ÎØ∏ÏßÄ Î∞õÏïÑÏò§Í∏∞
 		img_Cam = cvQueryFrame(Cam);
 		if(img_Cam == NULL){
 			printf("Camera Disconnect!\n");
 			break;
 		}
 
-		//∞¸Ω…øµø™ º≥¡§
+		//Í¥ÄÏã¨ÏòÅÏó≠ ÏÑ§Ï†ï
 		cvSetImageROI(img_Cam, cvRect(80,0,480,480));
 		cvCopy(img_Cam, img_Chess);
 		Find_Chess.Copy_Img(img_Chess);
 
-///////////////////////////////////////////////////////////////////////////////////////√ºΩ∫∆« µø¿€ ø©∫Œ √º≈©/////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////Ï≤¥Ïä§Ìåê ÎèôÏûë Ïó¨Î∂Ä Ï≤¥ÌÅ¨/////////////////////////////////////////////////////////////////////////////////////////////
 		
-		/*//º’¿Ã ¿÷¿ª ∞ÊøÏ
+		/*//ÏÜêÏù¥ ÏûàÏùÑ Í≤ΩÏö∞
 		Find_Hand.Detect_Skin(img_Chess, img_Skin);
 		//Find_Hand.Sub_prevFrame(img_Chess, img_Skin);
 		Hand_check[0] = Find_Hand.is_Hand(img_Skin);
 
-		//º’¿Ã ¿÷¿ª ∞ÊøÏ
+		//ÏÜêÏù¥ ÏûàÏùÑ Í≤ΩÏö∞
 		if(Hand_check[0] == true){
 			printf("Hand found!\n");
-			//¿Ã¿¸ «¡∑π¿”ø°º≠¥¬ º’¿Ã πﬂ∞ﬂµ«¡ˆ æ æ“¿ª ∞ÊøÏ
+			//Ïù¥Ï†Ñ ÌîÑÎ†àÏûÑÏóêÏÑúÎäî ÏÜêÏù¥ Î∞úÍ≤¨ÎêòÏßÄ ÏïäÏïòÏùÑ Í≤ΩÏö∞
 			if(Hand_check[1] == false){
 				cvCopy(img_Cam, prev_img);
 				cvShowImage("PREV", prev_img);
 			}
 			Hand_check[1] = true;
 		}
-		//º’¿Ã æ¯¿ª ∞ÊøÏ
+		//ÏÜêÏù¥ ÏóÜÏùÑ Í≤ΩÏö∞
 		else{
 			printf("XX\n");
-			//¿Ã¿¸ «¡∑π¿”ø°º≠ º’¿Ã πﬂ∞ﬂâÁ¿ª∂ß
+			//Ïù¥Ï†Ñ ÌîÑÎ†àÏûÑÏóêÏÑú ÏÜêÏù¥ Î∞úÍ≤¨Îê¨ÏùÑÎïå
 			if(Hand_check[1] == true){
-				//¬˜øµªÛ ¡¯«‡
+				//Ï∞®ÏòÅÏÉÅ ÏßÑÌñâ
 				Sub_image(img_Chess, prev_img, img_sub);
 				cvShowImage("after", img_Chess);
 				cvShowImage("SUB", img_sub);
 			}
-			//¿Ã¿¸ «¡∑π¿”µµ º’¿Ã πÃπﬂ∞ﬂ
+			//Ïù¥Ï†Ñ ÌîÑÎ†àÏûÑÎèÑ ÏÜêÏù¥ ÎØ∏Î∞úÍ≤¨
 			else{
 				Find_Chess.Get_Line(&CH_LineX, &CH_LineY);
 				//Find_Chess.drawLines(CH_LineX, img_Cam);
@@ -230,7 +255,7 @@ int main(){
 			cvCopy(img_Cam, prev_img);
 			Hand_check[1] = false;
 		}*/
-		if(CP.size() != 81){								//√ ±‚»≠
+		if(CP.size() != 81){								//Ï¥àÍ∏∞Ìôî
 			///*Find_Chess.Get_Line(&CH_LineX, &CH_LineY);
 			//Find_Chess.drawLines(CH_LineX, img_Cam);
 			//Find_Chess.drawLines(CH_LineY, img_Cam);
@@ -239,7 +264,7 @@ int main(){
 			//Find_Chess.Chess_recognition_process(&CP);
 			//Find_Chess.Refine_CrossPoint(&CP);
 			Find_Chess.Chess_recog_wrapper(img_Cam, &CP);
-		}else if(CP.size() == 81){						//√ ±‚»≠ ¿Ã»ƒ
+		}else if(CP.size() == 81){						//Ï¥àÍ∏∞Ìôî Ïù¥ÌõÑ
 			//time_t time_sub;
 			//time(&time_sub);
 			//time_sub -= sec_time;
@@ -259,12 +284,12 @@ int main(){
 					Find_Chess.Refine_CrossPoint(&CP);*/
 					Find_Chess.Chess_recog_wrapper(img_Cam, &CP);
 				}
-			}else{ //√ﬂ»ƒ «ÿæﬂ«“ ¿€æ˜ : ∫¸¡˙∂ß æÓ∂ª∞‘ ¿€æ˜«“ ∞Õ¿Œ∞°
+			}else{ //Ï∂îÌõÑ Ìï¥ÏïºÌï† ÏûëÏóÖ : Îπ†ÏßàÎïå Ïñ¥ÎñªÍ≤å ÏûëÏóÖÌï† Í≤ÉÏù∏Í∞Ä
 				Find_Hand.Sub_prevFrame(img_Chess, img_sub);
 
-				cvShowImage("¿Ø∑πƒ´1", img_Chess);
+				cvShowImage("Ïú†Î†àÏπ¥1", img_Chess);
 				Sub_image(prev_img, img_Chess, img_Skin);
-				//∏∆˙∑Œ¡ˆ ø¨ªÍø° ¿««— ≥Î¿Ã¡Ó ¡¶∞≈
+				//Î™®Ìè¥Î°úÏßÄ Ïó∞ÏÇ∞Ïóê ÏùòÌïú ÎÖ∏Ïù¥Ï¶à Ï†úÍ±∞
 				/*cvSmooth(img_Skin, img_Skin, CV_MEDIAN, 3, 3);*/
 				//cvDilate(img_Skin, img_Skin, 0, 4);
 				//cvErode(img_Skin, img_Skin, 0, 5);
@@ -279,27 +304,27 @@ int main(){
 				CBlob.DoLabeling();
 				CBlob.DrawLabel(img_Chess, cvScalar(255,0,255));
 
-				//º’∆«¡§
+				//ÏÜêÌåêÏ†ï
 				CBlob.GetSideBlob(img_Skin, &piece_idx);
 				Compose_diffImage(img_Chess, img_Skin, cvScalar(100,100,255));
 				cvDilate(img_Skin, img_Skin, 0, 5);
-				if(Check_InChessboard(img_Skin, CP)){						//img_Skin¿∫ º’ √ﬂ¡§π∞√º∏∏ ≥≤±‰ ¿ÃπÃ¡ˆ
+				if(Check_InChessboard(img_Skin, CP)){						//img_SkinÏùÄ ÏÜê Ï∂îÏ†ïÎ¨ºÏ≤¥Îßå ÎÇ®Í∏¥ Ïù¥ÎØ∏ÏßÄ
 					//printf("IN HAND!\n");
 					InHand_Check = true;
-				}else if(InHand_Check == true){                             //º’¿Ã æ¯æÓ¡≥¿ª ∂ß¿« √≥∏Æ
-					//¿Ãµø √≥∏Æ∫Œ
-					printf("¿Ãµø ");
+				}else if(InHand_Check == true){                             //ÏÜêÏù¥ ÏóÜÏñ¥Ï°åÏùÑ ÎïåÏùò Ï≤òÎ¶¨
+					//Ïù¥Îèô Ï≤òÎ¶¨Î∂Ä
+					printf("Ïù¥Îèô ");
 
-					//¥Ÿ¿Ω≈œ ¡ÿ∫Ò∫Œ -> ¡∂∞«¿ª √ﬂ∞°∑Œ ¡‡º≠ øπø‹∏¶ ∏∑æ∆æﬂ«‘
-					if(Check_imgZero(img_sub)){								//¿¸¡¶ ¡∂∞«¿∫ º’¿Ã ∫¸¡˙∂ß¥¬ ¡ﬂ∞£ø° ∏ÿ√ﬂ¡ˆ æ ¿Ω
+					//Îã§ÏùåÌÑ¥ Ï§ÄÎπÑÎ∂Ä -> Ï°∞Í±¥ÏùÑ Ï∂îÍ∞ÄÎ°ú Ï§òÏÑú ÏòàÏô∏Î•º ÎßâÏïÑÏïºÌï®
+					if(Check_imgZero(img_sub)){								//Ï†ÑÏ†ú Ï°∞Í±¥ÏùÄ ÏÜêÏù¥ Îπ†ÏßàÎïåÎäî Ï§ëÍ∞ÑÏóê Î©àÏ∂îÏßÄ ÏïäÏùå
 						printf("ZERO\n");
 						InHand_Check = false;
 						Sub_check = false;
 
-						///////////////////////////////∏ª ¡¬«• π›»Ø//////////////////////////////////////////////////////
+						///////////////////////////////Îßê Ï¢åÌëú Î∞òÌôò//////////////////////////////////////////////////////
 						CvPoint Left, Right;
 						CvRect temp;
-						if(piece_idx.size() > 2){							//≥Î¿Ã¡Ó∞° ¿‚«˚¿ª∂ß -> ≈©±‚ ≈´∞…∑Œ ¡§∑ƒ
+						if(piece_idx.size() > 2){							//ÎÖ∏Ïù¥Ï¶àÍ∞Ä Ïû°ÌòîÏùÑÎïå -> ÌÅ¨Í∏∞ ÌÅ∞Í±∏Î°ú Ï†ïÎ†¨
 							int first_idx, second_inx;
 							int MAX_SIZE;
 							for(int j = 0; j < 2; j++){
@@ -326,7 +351,7 @@ int main(){
 							CHESS_GAME.Chess_process(Left, Right);
 							CHESS_GAME.Show_chess_board();
 						}
-						else if(piece_idx.size() == 1){						//∞„√ƒπˆ∑»¿ª∂ß
+						else if(piece_idx.size() == 1){						//Í≤πÏ≥êÎ≤ÑÎ†∏ÏùÑÎïå
 							temp = CBlob.m_recBlobs[piece_idx.at(0)];
 							Left = Get_Chessidx(cvPoint(temp.x+temp.width/2, temp.y+temp.height/2+temp.height/3*2), CP);
 							cvCircle(img_Chess, cvPoint(temp.x+temp.width/2, temp.y+temp.height/2+temp.height/3*2), 3, cvScalar(0,0,255)); 
@@ -337,7 +362,7 @@ int main(){
 							CHESS_GAME.Chess_process(Left, Right);
 							CHESS_GAME.Show_chess_board();
 						}
-						else if(piece_idx.size() == 2){						//µ¸ µŒ∞≥ √ﬂ¿˚
+						else if(piece_idx.size() == 2){						//Îî± ÎëêÍ∞ú Ï∂îÏ†Å
 							temp = CBlob.m_recBlobs[piece_idx.at(0)];
 							Left = Get_Chessidx(cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), CP);
 							cvCircle(img_Chess, cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), 3, cvScalar(0,0,255));
@@ -356,7 +381,7 @@ int main(){
 			}
 		}
 
-		//¡¬«•±◊∏Æ±‚
+		//Ï¢åÌëúÍ∑∏Î¶¨Í∏∞
 		Find_Chess.drawPoint(img_Cam, CP);
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		if(cvWaitKey(10) == 27)		break;
