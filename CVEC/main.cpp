@@ -43,15 +43,19 @@ int main(int argc, char* argv[]) {
 	
 	bool _BIsServerProcessActive = false;
 	bool _BIsAnotherClientProcessActive = false;
-
+	/*
+	std::string str;
+	str
+	*/
 	// 1. Process 확인. 
 	_BIsServerProcessActive = _ProcessConfirm->CheckProcess(SERVER_ENGINE_EXEC_FILENAME);
 	_BIsAnotherClientProcessActive = _ProcessConfirm->CheckProcess(CLIENT_ENGINE_EXEC_FILENAME);
 
 	// 2. CVES Process가 없다면 Process 실행.
 	if (_BIsServerProcessActive == false) {
-		if (_BIsAnotherClientProcessActive == false)
+		if (_BIsAnotherClientProcessActive == false) {
 
+		}
 		// CVES 실행.
 	}
 

@@ -26,10 +26,9 @@
 #ifndef _Telepathy_hpp_
 #define _Telepathy_hpp_
 
-#define _AFXDLL
-#include <list>
-
 #include "Common.hpp"
+
+#include <list>
 
 #if WINDOWS
 //#include <afxwin.h>

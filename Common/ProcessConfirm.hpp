@@ -60,7 +60,7 @@ public:
 	bool IsProcessActive;
 
 	bool CheckProcess(char *ProcessName);
-	bool CreateProcessOnThread(char *ProcessName);
+	void CreateProcessOnThread(char *ProcessName);
 };
 
 #endif

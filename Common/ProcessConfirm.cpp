@@ -86,48 +86,49 @@ bool ProcessConfirm::CheckProcess(char *ProcessName){
 	return false;
 }
 
-bool ProcessConfirm::CreateProcessOnThread(char *ProcessName){
-	AfxBeginThread(ExecProcessLoopThread, (char *)ProcessName);
-}
-
 UINT ExecProcessLoopThread(LPVOID Param) {
 	char *_Str = (char *)Param;
 	// Proess Active.
 	PC->IsProcessActive = true;
-	
+
 	//while (1) {
-		STARTUPINFO _StartUpInfo;
-		PROCESS_INFORMATION _ProcessInfo;
+	STARTUPINFO _StartUpInfo;
+	PROCESS_INFORMATION _ProcessInfo;
 
-		ZeroMemory(&_StartUpInfo, sizeof(_StartUpInfo));
-		_StartUpInfo.cb = sizeof(_StartUpInfo);
-		ZeroMemory(&_ProcessInfo, sizeof(_ProcessInfo));
+	ZeroMemory(&_StartUpInfo, sizeof(_StartUpInfo));
+	_StartUpInfo.cb = sizeof(_StartUpInfo);
+	ZeroMemory(&_ProcessInfo, sizeof(_ProcessInfo));
 
-		// Start the child process. 
-		if(!CreateProcess( NULL, // No module name (use command line). 
-			(LPWSTR)_Str, // Command line. 
-			NULL,             // Process handle not inheritable. 
-			NULL,             // Thread handle not inheritable. 
-			FALSE,            // Set handle inheritance to FALSE. 
-			0,                // No creation flags. 
-			NULL,             // Use parent's environment block. 
-			NULL,             // Use parent's starting directory. 
-			&_StartUpInfo,              // Pointer to STARTUPINFO structure.
-			&_ProcessInfo)             // Pointer to PROCESS_INFORMATION structure.
-			) 
-		{
-			PC->IsProcessActive = false;
-			return 0;
-		}
+	// Start the child process. 
+	if (!CreateProcess( NULL, // No module name (use command line). 
+		(LPWSTR)_Str, // Command line. 
+		NULL,             // Process handle not inheritable. 
+		NULL,             // Thread handle not inheritable. 
+		FALSE,            // Set handle inheritance to FALSE. 
+		0,                // No creation flags. 
+		NULL,             // Use parent's environment block. 
+		NULL,             // Use parent's starting directory. 
+		&_StartUpInfo,              // Pointer to STARTUPINFO structure.
+		&_ProcessInfo)             // Pointer to PROCESS_INFORMATION structure.
+		) 
+	{
+		PC->IsProcessActive = false;
+		return 0;
+	}
 
-		// Wait until child process exits.
-		// 기다리다가 프로세스가 죽으면 이 이후로 통과할 것이다.
-		WaitForSingleObject(_ProcessInfo.hProcess, INFINITE);
+	// Wait until child process exits.
+	// 기다리다가 프로세스가 죽으면 이 이후로 통과할 것이다.
+	WaitForSingleObject(_ProcessInfo.hProcess, INFINITE);
 
-		// Close process and thread handles. 
-		CloseHandle(_ProcessInfo.hProcess);
-		CloseHandle(_ProcessInfo.hThread);
+	// Close process and thread handles. 
+	CloseHandle(_ProcessInfo.hProcess);
+	CloseHandle(_ProcessInfo.hThread);
 	//}
 	// Process가 종료 되어 Handle이 없어졌다면, 최종적으로 Thread가 끝난다.
 	PC->IsProcessActive = false;
+	return 0;
+}
+
+void ProcessConfirm::CreateProcessOnThread(char *ProcessName) {
+	AfxBeginThread(ExecProcessLoopThread, (char *)ProcessName);
 }

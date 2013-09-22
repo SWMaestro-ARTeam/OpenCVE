@@ -26,6 +26,8 @@
 #ifndef _Common_hpp_
 #define _Common_hpp_
 
+// 전역 함수들을 위한 Define
+#define _AFXDLL
 #include <afxwin.h>
 
 #define OTHER 0
