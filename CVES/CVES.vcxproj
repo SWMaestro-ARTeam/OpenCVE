@@ -81,7 +81,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+<<<<<<< HEAD
     <ClCompile Include="..\Common\Telepathy.cpp" />
+=======
+>>>>>>> master
     <ClCompile Include="BlobLabeling.cpp" />
     <ClCompile Include="chess_game.cpp" />
     <ClCompile Include="Chess_recognition.cpp" />
@@ -89,9 +92,12 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+<<<<<<< HEAD
     <ClInclude Include="..\Common\Common.hpp" />
     <ClInclude Include="..\Common\ExtendedBlackBox.hpp" />
     <ClInclude Include="..\Common\Telepathy.hpp" />
+=======
+>>>>>>> master
     <ClInclude Include="BlobLabeling.hpp" />
     <ClInclude Include="chess_game.hpp" />
     <ClInclude Include="Chess_recognition.hpp" />

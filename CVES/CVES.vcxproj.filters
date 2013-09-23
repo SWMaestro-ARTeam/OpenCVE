@@ -27,9 +27,12 @@
     <ClCompile Include="Hand_recognition.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="..\Common\Telepathy.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+=======
+>>>>>>> master
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -47,6 +50,7 @@
     <ClInclude Include="Hand_recognition.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="..\Common\Common.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -56,5 +60,7 @@
     <ClInclude Include="..\Common\Telepathy.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+=======
+>>>>>>> master
   </ItemGroup>
 </Project>
