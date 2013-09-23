@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{D19EDBA1-CA45-4816-9D2F-68E16F4E03FF}</ProjectGuid>
+    <ProjectGuid>{1B53409D-5EA7-48FF-8899-4555D6B9E468}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>CVES</RootNamespace>
   </PropertyGroup>
@@ -43,8 +43,6 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(IncludePath)</IncludePath>
-    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -56,7 +54,6 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>./;../Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -81,27 +78,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-<<<<<<< HEAD
+    <ClInclude Include="..\Common\Common.hpp" />
+    <ClInclude Include="..\Common\ExtendedBlackBox.hpp" />
+    <ClInclude Include="..\Common\ProcessConfirm.hpp" />
+    <ClInclude Include="..\Common\Telepathy.hpp" />
+    <ClInclude Include="BlobLabeling.hpp" />
+    <ClInclude Include="chess_game.hpp" />
+    <ClInclude Include="Chess_recognition.hpp" />
+    <ClInclude Include="Hand_recognition.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Common\ProcessConfirm.cpp" />
     <ClCompile Include="..\Common\Telepathy.cpp" />
-=======
->>>>>>> master
     <ClCompile Include="BlobLabeling.cpp" />
     <ClCompile Include="chess_game.cpp" />
     <ClCompile Include="Chess_recognition.cpp" />
     <ClCompile Include="Hand_recognition.cpp" />
     <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-<<<<<<< HEAD
-    <ClInclude Include="..\Common\Common.hpp" />
-    <ClInclude Include="..\Common\ExtendedBlackBox.hpp" />
-    <ClInclude Include="..\Common\Telepathy.hpp" />
-=======
->>>>>>> master
-    <ClInclude Include="BlobLabeling.hpp" />
-    <ClInclude Include="chess_game.hpp" />
-    <ClInclude Include="Chess_recognition.hpp" />
-    <ClInclude Include="Hand_recognition.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

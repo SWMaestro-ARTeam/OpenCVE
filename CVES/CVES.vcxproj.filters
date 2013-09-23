@@ -1,13 +1,37 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="소스 파일">
+    <Filter Include="Common">
+      <UniqueIdentifier>{c7fc8b79-c7f5-45f6-9c95-5034574d408a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Header">
+      <UniqueIdentifier>{dfdc61d6-0c59-499f-9d44-914dc02bdae8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Source">
+      <UniqueIdentifier>{7bf51784-8a77-465a-93ef-c3556e18da16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Recognitions">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="헤더 파일">
+    <Filter Include="Main">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="ChessGame">
+      <UniqueIdentifier>{3effef0d-72a1-4781-9f28-67d4d5634aec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ChessGame\Header">
+      <UniqueIdentifier>{17e3dee6-6d6a-4a79-a823-513d62e12aa5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ChessGame\Source">
+      <UniqueIdentifier>{0e2670ee-300e-4780-acd9-508afac5dacd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Recognitions\Source">
+      <UniqueIdentifier>{4e4aaab7-733e-4c3c-bb17-c6a94c899b3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Recognitions\Header">
+      <UniqueIdentifier>{25c78f97-0549-4cfe-9f8d-0edbdc33df49}</UniqueIdentifier>
     </Filter>
     <Filter Include="리소스 파일">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
@@ -15,52 +39,52 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BlobLabeling.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="chess_game.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Chess_recognition.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Hand_recognition.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-<<<<<<< HEAD
-    <ClCompile Include="..\Common\Telepathy.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-=======
->>>>>>> master
-    <ClCompile Include="main.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="BlobLabeling.hpp">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="chess_game.hpp">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Chess_recognition.hpp">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Hand_recognition.hpp">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-<<<<<<< HEAD
     <ClInclude Include="..\Common\Common.hpp">
-      <Filter>헤더 파일</Filter>
+      <Filter>Common\Header</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\ExtendedBlackBox.hpp">
-      <Filter>헤더 파일</Filter>
+      <Filter>Common\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\ProcessConfirm.hpp">
+      <Filter>Common\Header</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Telepathy.hpp">
-      <Filter>헤더 파일</Filter>
+      <Filter>Common\Header</Filter>
     </ClInclude>
-=======
->>>>>>> master
+    <ClInclude Include="chess_game.hpp">
+      <Filter>ChessGame\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="BlobLabeling.hpp">
+      <Filter>Recognitions\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_recognition.hpp">
+      <Filter>Recognitions\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Hand_recognition.hpp">
+      <Filter>Recognitions\Header</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Common\ProcessConfirm.cpp">
+      <Filter>Common\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Telepathy.cpp">
+      <Filter>Common\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="chess_game.cpp">
+      <Filter>ChessGame\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="BlobLabeling.cpp">
+      <Filter>Recognitions\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Chess_recognition.cpp">
+      <Filter>Recognitions\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Hand_recognition.cpp">
+      <Filter>Recognitions\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
