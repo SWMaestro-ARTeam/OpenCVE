@@ -1,31 +1,4 @@
-﻿//////////////////////////////////////////////////////////////////////////////////////////////
-//	The OpenCVE Project.
-//
-//	The MIT License (MIT)
-//	Copyright © 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
-//	{invi.dh.kim, munsp9103, aiaipming} at gmail.com
-//
-//	Permission is hereby granted, free of charge, to any person obtaining a copy of
-//	this software and associated documentation files (the “Software”), to deal
-//	in the Software without restriction, including without limitation the rights to
-//	use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-//	the Software, and to permit persons to whom the Software is furnished to do so,
-//	subject to the following conditions:
-//
-//	The above copyright notice and this permission notice shall be included in all
-//	copies or substantial portions of the Software.
-//
-//	THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-//	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
-//	PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-//	LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-//	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
-//	OR OTHER DEALINGS IN THE SOFTWARE.
-//////////////////////////////////////////////////////////////////////////////////////////////
-
-#ifndef _Chess_recognition_hpp_
-#define _Chess_recognition_hpp_
-
+﻿#pragma once
 #include <cv.h>
 #include <highgui.h>
 #include <Windows.h>
@@ -39,9 +12,10 @@ using namespace std;
 typedef struct{
 	CvPoint Cordinate;//좌표 위치
 	CvPoint index;//좌표 인덱스
-} Chess_point;
+}Chess_point;
 
-class Chess_recognition {
+class Chess_recognition
+{
 private:
 	int WIDTH, HEIGHT;
 	int MODE;
@@ -52,7 +26,7 @@ private:
 
 	HANDLE hThread;
 
-	void NMS2(IplImage* image, IplImage* image2, int kernel);	//
+	void NMS2 ( IplImage* image, IplImage* image2, int kernel);	//
 	void cast_seq(CvSeq* linesX, CvSeq* linesY);					//벡터로 변환
 	//bool sort_first(pair<float, float> a, pair<float, float> b);	//벡터 정렬 규칙
 	void mergeLine( vector<std::pair<float, float>> *Lines);
@@ -60,31 +34,32 @@ private:
 	static UINT WINAPI thread_hough(void *arg);											//쓰레드 함수
 	static UINT WINAPI thread_GH(void *arg);
 	CRITICAL_SECTION cs, vec_cs;														//thread 동기화를 위한 cs
+	bool thread_exit;
 
 	//////////////////////////////////////////////////////////////////////////////규홍규홍////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	typedef struct {
-		int x, y;
+	typedef struct{
+		int x,y;
 	} MyPoint;
 
-	typedef struct {
-		int x1, y1, x2, y2;
+	typedef struct{
+		int x1,y1,x2,y2;
 	} MyLinePoint;
 
-	typedef struct {
-		int grayscale, x, y;
-	} MyGrayPoint;
+	typedef struct{
+		int grayscale,x,y;
+	}MyGrayPoint;
 
 	typedef struct{
 		MyPoint LeftTop, LeftBottom, RightTop, RightBottom;
-	} MySquarePoint;
+	}MySquarePoint;
 
 	int line_avg_x1, line_avg_x2, line_avg_y1, line_avg_y2;
 	int Linefindcount_x, Linefindcount_y;
 	bool flag_x, flag_y;
-	
+
 	vector<MyPoint> in_line_point_x1, in_line_point_x2, in_line_point_y1, in_line_point_y2;
 	vector<MyGrayPoint> line_x1, line_x2, line_x_mid, line_y1, line_y2, line_y_mid;
-	
+
 	MyLinePoint line_point_x1, line_point_x2, line_point_x_mid, line_point_y1, line_point_y2, line_point_y_mid;
 	MyLinePoint line_square_left, line_square_top, line_square_right, line_square_bottom;
 
@@ -105,10 +80,10 @@ public:
 	//초기화
 	void Init(int width, int height, int mode);
 	//라인 그리기
-	void drawLines(vector<pair<float, float>> lines, IplImage* image);
-	void drawPoint(IplImage *src, vector<Chess_point> point);
+	void drawLines ( vector<pair<float, float>> lines, IplImage* image);
+	void drawPoint ( IplImage *src, vector<Chess_point> point);
 	//교차점 구하기
-	void findIntersections(vector<pair<float, float>> linesX, vector<pair<float, float>> linesY, vector<Chess_point> *point);
+	void findIntersections ( vector<pair<float, float>> linesX, vector<pair<float, float>> linesY, vector<Chess_point> *point );
 	//라인 return
 	void Get_Line(vector<pair<float, float>> *linesX, vector<pair<float, float>> *linesY);
 	//처리용 이미지 복사
@@ -117,6 +92,8 @@ public:
 	void Refine_CrossPoint(vector<Chess_point> *point);
 	//관심영역 설정
 	void Set_CalculationDomain(CvCapture *Cam, int *ROI_WIDTH, int *ROI_HEIGHT);
+	//자원반환
+	void exit();
 
 	//////////////////////////////////////////////////////////////////////////////규홍규홍////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -131,4 +108,4 @@ public:
 	//wrapper method
 	void Chess_recog_wrapper(IplImage *src, vector<Chess_point> *point);
 };
-#endif
+

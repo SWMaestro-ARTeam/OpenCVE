@@ -43,6 +43,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -86,6 +88,7 @@
     <ClInclude Include="chess_game.hpp" />
     <ClInclude Include="Chess_recognition.hpp" />
     <ClInclude Include="Hand_recognition.hpp" />
+    <ClInclude Include="Img_Process.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Common\ProcessConfirm.cpp" />
@@ -94,6 +97,7 @@
     <ClCompile Include="chess_game.cpp" />
     <ClCompile Include="Chess_recognition.cpp" />
     <ClCompile Include="Hand_recognition.cpp" />
+    <ClCompile Include="Img_Process.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

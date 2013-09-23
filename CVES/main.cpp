@@ -1,29 +1,4 @@
-﻿//////////////////////////////////////////////////////////////////////////////////////////////
-//	The OpenCVE Project.
-//
-//	The MIT License (MIT)
-//	Copyright © 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
-//	{invi.dh.kim, munsp9103, aiaipming} at gmail.com
-//
-//	Permission is hereby granted, free of charge, to any person obtaining a copy of
-//	this software and associated documentation files (the “Software”), to deal
-//	in the Software without restriction, including without limitation the rights to
-//	use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-//	the Software, and to permit persons to whom the Software is furnished to do so,
-//	subject to the following conditions:
-//
-//	The above copyright notice and this permission notice shall be included in all
-//	copies or substantial portions of the Software.
-//
-//	THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-//	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
-//	PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-//	LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-//	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
-//	OR OTHER DEALINGS IN THE SOFTWARE.
-//////////////////////////////////////////////////////////////////////////////////////////////
-
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <cv.h>
 #include <highgui.h>
 #include <Windows.h>
@@ -33,6 +8,7 @@
 #include "Chess_recognition.hpp"
 #include "BlobLabeling.hpp"
 #include "chess_game.hpp"
+#include "Img_Process.hpp"
 
 #define WIDTH 640
 #define HEIGHT 480
@@ -136,7 +112,6 @@ int main(){
 	IplImage *img_Skin = cvCreateImage(cvSize(ROI_WIDTH, ROI_HEIGHT), IPL_DEPTH_8U, 1);
 	IplImage *prev_img = cvCreateImage(cvSize(ROI_WIDTH, ROI_HEIGHT), IPL_DEPTH_8U, 3);
 	IplImage *img_sub = cvCreateImage(cvSize(ROI_WIDTH, ROI_HEIGHT), IPL_DEPTH_8U, 1);
-	IplImage *img_canny = cvCreateImage(cvSize(ROI_WIDTH, ROI_HEIGHT), IPL_DEPTH_8U, 1);
 
 	char buf[32];
 	//bool Hand_check[2];
@@ -153,54 +128,16 @@ int main(){
 	CBlobLabeling CBlob;
 	chess_game CHESS_GAME;
 
-	cvNamedWindow("RGB");
-
-	//Cam init
-	Cam = cvCaptureFromCAM(0);
-	if(Cam != NULL){
-		cvSetCaptureProperty(Cam, CV_CAP_PROP_FRAME_WIDTH, WIDTH);
-		cvSetCaptureProperty(Cam, CV_CAP_PROP_FRAME_HEIGHT, HEIGHT);
-	}
-
-	//Image alloc
-	img_Chess = cvCreateImage(cvSize(ROI_WIDTH, ROI_HEIGHT), IPL_DEPTH_8U, 3);
-
-	Find_Hand.Init(ROI_WIDTH, ROI_HEIGHT);
-	Find_Chess.Init(ROI_WIDTH, ROI_HEIGHT, RECOGNITION_MODE);
-
-	///판 자리잡기
+	//test
+	Img_Process IP;
+	IP.Init_process();
 	while(1){
-		img_Cam = cvQueryFrame(Cam);
-		if(img_Cam == NULL){
-			printf("Camera Disconnect!\n");
-			break;
-		}
-		//cvFlip(img_Cam, img_Cam, -1);
+		IP.Do_imgprocess();
 
-		cvSetImageROI(img_Cam, cvRect(80,0,480,480));
-		cvCopy(img_Cam, img_Chess);
-		Find_Chess.Copy_Img(img_Chess);
-
-		//Find_Chess.Get_Line(&CH_LineX, &CH_LineY);
-		//Find_Chess.drawLines(CH_LineX, img_Cam);
-		//Find_Chess.drawLines(CH_LineY, img_Cam);
-		//Find_Chess.findIntersections(CH_LineX, CH_LineY, &CP);
-		//Find_Chess.Refine_CrossPoint(&CP);
-		//Find_Chess.drawPoint(img_Cam, CP);
-
-		///*Find_Chess.Chess_recognition_process(&CP);
-		//Find_Chess.Refine_CrossPoint(&CP);
-		//Find_Chess.drawPoint(img_Cam, CP);*/
-		Find_Chess.Chess_recog_wrapper(img_Cam, &CP);
-
-		cvResetImageROI(img_Cam);
-		cvDrawRect(img_Cam, cvPoint(80,0), cvPoint(560, 480), cvScalar(255));
-		cvPutText(img_Cam, "If U want start, Press 'ESC'", cvPoint(30, 30), &cvFont(2.0), cvScalar(0,0,255));
-		cvShowImage("RGB", img_Cam);
-
-		if(cvWaitKey(10) == 27)		break;
+		if(IP.Check_Exit())	break;
 	}
 
+	//////////////////////////////////////여기서 끝나야함/////////////////////////////////////////
 	while(1){
 		int tick = GetTickCount();
 
@@ -256,13 +193,6 @@ int main(){
 			Hand_check[1] = false;
 		}*/
 		if(CP.size() != 81){								//초기화
-			///*Find_Chess.Get_Line(&CH_LineX, &CH_LineY);
-			//Find_Chess.drawLines(CH_LineX, img_Cam);
-			//Find_Chess.drawLines(CH_LineY, img_Cam);
-			//Find_Chess.findIntersections(CH_LineX, CH_LineY, &CP);
-			//Find_Chess.Refine_CrossPoint(&CP);*/
-			//Find_Chess.Chess_recognition_process(&CP);
-			//Find_Chess.Refine_CrossPoint(&CP);
 			Find_Chess.Chess_recog_wrapper(img_Cam, &CP);
 		}else if(CP.size() == 81){						//초기화 이후
 			//time_t time_sub;
@@ -277,11 +207,6 @@ int main(){
 					printf("PREV Catch\n");
 					Sub_check = true;
 				}else{
-					/*Find_Chess.Get_Line(&CH_LineX, &CH_LineY);
-					Find_Chess.drawLines(CH_LineX, img_Cam);
-					Find_Chess.drawLines(CH_LineY, img_Cam);
-					Find_Chess.findIntersections(CH_LineX, CH_LineY, &CP);
-					Find_Chess.Refine_CrossPoint(&CP);*/
 					Find_Chess.Chess_recog_wrapper(img_Cam, &CP);
 				}
 			}else{ //추후 해야할 작업 : 빠질때 어떻게 작업할 것인가

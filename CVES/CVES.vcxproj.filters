@@ -63,6 +63,9 @@
     <ClInclude Include="Hand_recognition.hpp">
       <Filter>Recognitions\Header</Filter>
     </ClInclude>
+    <ClInclude Include="Img_Process.hpp">
+      <Filter>Recognitions\Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Common\ProcessConfirm.cpp">
@@ -85,6 +88,9 @@
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Img_Process.cpp">
+      <Filter>Recognitions\Source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
