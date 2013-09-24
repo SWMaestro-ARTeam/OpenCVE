@@ -35,30 +35,10 @@
 
 // Modules
 #include "UCIParser.hpp"
-#include "ProcessConfirm.hpp"
 
 int main(int argc, char* argv[]) {
-	ProcessConfirm *_ProcessConfirm = new ProcessConfirm();
 	UCIParser *_Parser;
 	
-	bool _BIsServerProcessActive = false;
-	bool _BIsAnotherClientProcessActive = false;
-	/*
-	std::string str;
-	str
-	*/
-	// 1. Process 확인. 
-	_BIsServerProcessActive = _ProcessConfirm->CheckProcess(SERVER_ENGINE_EXEC_FILENAME);
-	_BIsAnotherClientProcessActive = _ProcessConfirm->CheckProcess(CLIENT_ENGINE_EXEC_FILENAME);
-
-	// 2. CVES Process가 없다면 Process 실행.
-	if (_BIsServerProcessActive == false) {
-		if (_BIsAnotherClientProcessActive == false) {
-
-		}
-		// CVES 실행.
-	}
-
 	// 3. CVEC Parser 실행.
 	// 이때, Client Network도 같이 실행 된다.
 	_Parser = new UCIParser();
@@ -66,7 +46,6 @@ int main(int argc, char* argv[]) {
 
 	// 5. Delete pointer.
 	delete _Parser;
-	delete _ProcessConfirm;
-
+	
 	return 0;
 }

@@ -270,7 +270,7 @@ bool Telepathy::Client::ClientInitialize() {
 	return true;
 }
 
-void Telepathy::Client::ClientStart() {
+void Telepathy::Client::ClientReceiveStart() {
 	if (_M_BIsConnectedClient != true) {
 		// failed started Client.
 	}

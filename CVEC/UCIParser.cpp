@@ -57,7 +57,7 @@ bool UCIParser::Init_ClientSocket() {
 		// Server 연결 성공시에, ClientReceivedCallback을 묶어
 		// Receive 할 때 Server에서 전송된 내용을 받아야 한다.
 		_TClient->TClientReceivedCallback = ClientReceivedCallback;
-		_TClient->ClientStart();
+		_TClient->ClientReceiveStart();
 	}	
 	else {
 		// Server 연결 실패.
@@ -166,13 +166,15 @@ void UCIParser::Command_Quit() {
 }
 
 void UCIParser::Parsing_Command() {
-	UCICommandParser _UCICommandParser;
+
+	//StringTokenizer _UCICommandParser;
+	StringTokenizer *_StringTokenizer = new StringTokenizer();
 
 	// Get UCI String.
 	Get_Command_Str();
 
 	// 단지 명령어 Matching 하여 값만 비교.
-	int _NSeek_GUIToEngine = _UCICommandParser.UCIString_Seeker(Command_Str);
+	//int _NSeek_GUIToEngine = _UCICommandParser.UCIString_Seeker(Command_Str);
 
 	switch (_NSeek_GUIToEngine) {
 		case VALUE_UCI :
@@ -219,7 +221,7 @@ void UCIParser::initializing() {
 	
 	// Initialize string Buffer.
 	init_CommandStr();
-	
+
 	// Initialize Client Socket.
 	if (Init_ClientSocket() != true)
 		SendToGUI("Socket Initialize Failed.");
@@ -227,7 +229,34 @@ void UCIParser::initializing() {
 
 
 void UCIParser::Parsing_Engine_Start() {
-	while (1) Parsing_Command();
+	// 1. Process를
+	ProcessConfirm *_ProcessConfirm = new ProcessConfirm();
+
+	bool _BIsServerProcessActive = false;
+	bool _BIsAnotherClientProcessActive = false;
+
+	// 1. Process 확인. 
+	_BIsServerProcessActive = _ProcessConfirm->CheckProcess(SERVER_ENGINE_EXEC_FILENAME);
+	_BIsAnotherClientProcessActive = _ProcessConfirm->CheckProcess(CLIENT_ENGINE_EXEC_FILENAME);
+
+	// 2. CVES Process가 없다면 Process 실행.
+	if (_BIsServerProcessActive == false) {
+		if (_BIsAnotherClientProcessActive == false) {
+
+		}
+		// CVES 실행.
+	}
+
+	while (1) {
+		// Process가 살아있다면 도는 Loop.
+		// Process가 죽었다면, Loop를 나와야 함.
+		while (_IsProcessAlive) {
+			Parsing_Command();
+		}
+	}
+
+	delete _ProcessConfirm;
+	////
 }
 
 void ClientReceivedCallback(char *Buffer){

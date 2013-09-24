@@ -82,7 +82,9 @@
     <ClCompile Include="..\Common\ProcessConfirm.cpp" />
     <ClCompile Include="..\Common\Telepathy.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="UCICommandParser.cpp" />
+    <ClCompile Include="StringTokenizer.cpp" />
+    <ClCompile Include="UCICommandSeeker.hpp" />
+    <ClCompile Include="UCICommandSesker.cpp" />
     <ClCompile Include="UCIParser.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -90,7 +92,8 @@
     <ClInclude Include="..\Common\ExtendedBlackBox.hpp" />
     <ClInclude Include="..\Common\ProcessConfirm.hpp" />
     <ClInclude Include="..\Common\Telepathy.hpp" />
-    <ClInclude Include="UCICommandParser.hpp" />
+    <ClInclude Include="StringTokenizer.hpp" />
+    <ClInclude Include="UCICommand.hpp" />
     <ClInclude Include="UCIParser.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

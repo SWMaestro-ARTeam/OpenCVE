@@ -106,7 +106,7 @@ public:
 		typedef void (* _T_CLIENTRECEIVEDCALLBACK)(char *Buffer);
 
 		bool ClientInitialize();
-		void ClientStart();
+		void ClientReceiveStart();
 		void ClientClose();
 		bool ClientReceiving();
 

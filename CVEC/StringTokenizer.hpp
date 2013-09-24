@@ -3,7 +3,6 @@
 //
 //	The MIT License (MIT)
 //	Copyright © 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
-//	{invi.dh.kim, munsp9103, aiaipming} at gmail.com
 //
 //	Permission is hereby granted, free of charge, to any person obtaining a copy of
 //	this software and associated documentation files (the “Software”), to deal
@@ -23,71 +22,52 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _UCIParser_hpp_
-#define _UCIParser_hpp_
+#ifndef _StringTokenizer_hpp_
+#define _StringTokenizer_hpp_
 
-#include <cstdio>
-#include <cstdlib>
-
+#include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
 
-// Process Confirm Module
-#include "ProcessConfirm.hpp"
-// UCI Command Seeker
-#include "UCICommandSeeker.hpp"
-// String Tokenizer
-#include "StringTokenizer.hpp"
-// Telepathy Module
-#include "Telepathy.hpp"
+#include <list>
 
-class UCIParser {
+//#include "UCICommand.hpp"
+
+//#include "Common.hpp"
+//#include "ExtendedBlackBox.hpp"
+
+using namespace std;
+
+class StringTokenizer {
 private:
-	// Variables
-	char *Command_Str;
-	bool _IsSocketConnented;
-	bool _IsProcessAlive;
+	list<string> *_StringList;
+	//list<string> *_TokenList;
+	string _Token;
 
-	Telepathy::Client *_TClient;
-
-	// Functions
-	void init_CommandStr();
-	bool Init_ClientSocket();
-
-	void Put_Author();
-
-	void Get_Command_Str();
-	void Clear_Str();
-
-	void Clear_ClientSocket();
-
-	void SendToGUI(const char *Str, ...);
-
-	void Command_UCI();
-	void Command_Debug();
-	void Command_Isready();
-	void Command_Setoption();
-	void Command_Ucinewgame();
-	void Command_Register();
-	void Command_Position();
-	void Command_Go();
-	void Command_Stop();
-	void Command_Ponderhit();
-	void Command_Quit();
-
-	void Parsing_Command();
-
+	string _InternalInputString;
 public:
-	// Constructor
-	UCIParser();
-	~UCIParser();
+	StringTokenizer();
+	~StringTokenizer();
+	
+	// Initializers.
+	void StringTokenizerInitialize(); //
+	void StringTokenizerDeinitialize(); //
 
-	bool isServerOrClient;
-	// Functions
-	void initializing();
-	void Parsing_Engine_Start();
+	void StringListClear(); //
+
+	//void TokenClear();
+
+	// String Input Functions.
+	void SetInputCharString(const char* Str);
+	void SetInputString(string Str);
+
+	// String Token의 종류.
+	void SetSingleToken(const char *SingleToken);
+	// Implement me.
+	//void SetMultiToken(const char *, ...);
+
+	void StringTokenGo();
+	list<string> *GetTokenedStringList();
+	list<char *> *GetTokenedCharListArrays();
 };
-
-void ClientReceivedCallback(char *Buffer);
 
 #endif
