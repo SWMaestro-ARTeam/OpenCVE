@@ -22,7 +22,10 @@ void Img_Process::MouseCallback_SetROI(int event, int x, int y, int flags, void 
 			down_check = true;
 			break;
 		case CV_EVENT_LBUTTONUP:
-			p->ImgProcess_Mode++;
+			if(p->ImgProcess_ROI.height * p->ImgProcess_ROI.width > 60){
+				p->ImgProcess_Mode++;
+			}
+
 			down_check = false;
 			break;
 		case CV_EVENT_MOUSEMOVE:
@@ -92,7 +95,6 @@ void Img_Process::Do_imgprocess(){
 		Find_Chess.Chess_recog_wrapper(img_Cam, &CP);
 
 		key_wait = cvWaitKey(10);
-		printf("%d, %d\n", key_wait, ImgProcess_Mode);
 		if(key_wait == 27)					ImgProcess_Mode++;
 		else if(key_wait != -1)				ImgProcess_Mode+=2;
 
@@ -153,76 +155,76 @@ void Img_Process::Do_imgprocess(){
 						InHand_Check = true;
 					}else if(InHand_Check == true){
 						//이동 처리부
+#ifdef DEBUG
 						printf("이동 ");
+#endif
 
 						//다음턴 준비부 -> 조건을 추가로 줘서 예외를 막아야함
-						//if(Check_imgZero(img_sub)){								//전제 조건은 손이 빠질때는 중간에 멈추지 않음
-						//	printf("ZERO\n");
-						//	InHand_Check = false;
-						//	Sub_check = false;
+						if(Check_imgZero(img_sub)){								//전제 조건은 손이 빠질때는 중간에 멈추지 않음
+							InHand_Check = false;
+							Sub_check = false;
 
-						//	///////////////////////////////말 좌표 반환//////////////////////////////////////////////////////
-						//	CvPoint Left, Right;
-						//	CvRect temp;
-						//	if(piece_idx.size() > 2){							//노이즈가 잡혔을때 -> 크기 큰걸로 정렬
-						//		int first_idx, second_inx;
-						//		int MAX_SIZE;
-						//		for(int j = 0; j < 2; j++){
-						//			MAX_SIZE = -1;
-						//			for(int k = 0; k < piece_idx.size(); k++){
-						//				temp = CBlob.m_recBlobs[piece_idx.at(k)];
-						//				if(MAX_SIZE < temp.height * temp.width){
-						//					MAX_SIZE = temp.height * temp.width;
+							///////////////////////////////말 좌표 반환//////////////////////////////////////////////////////
+							CvPoint Left, Right;
+							CvRect temp;
+							if(piece_idx.size() > 2){							//노이즈가 잡혔을때 -> 크기 큰걸로 정렬
+								int first_idx, second_inx;
+								int MAX_SIZE;
+								for(int j = 0; j < 2; j++){
+									MAX_SIZE = -1;
+									for(int k = 0; k < piece_idx.size(); k++){
+										temp = CBlob.m_recBlobs[piece_idx.at(k)];
+										if(MAX_SIZE < temp.height * temp.width){
+											MAX_SIZE = temp.height * temp.width;
 
-						//					if(j == 0)		first_idx = k;
-						//					else if(j == 1 && k != first_idx)		second_inx = k;
-						//				}
-						//			}
-						//		}
+											if(j == 0)		first_idx = k;
+											else if(j == 1 && k != first_idx)		second_inx = k;
+										}
+									}
+								}
 
-						//		temp = CBlob.m_recBlobs[piece_idx.at(0)];
-						//		Left = Get_Chessidx(cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), CP);
-						//		cvCircle(img_Chess, cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), 3, cvScalar(0,0,255));
-						//		temp = CBlob.m_recBlobs[piece_idx.at(1)];
-						//		Right = Get_Chessidx(cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), CP);
-						//		cvCircle(img_Chess, cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), 3, cvScalar(0,0,255));
-						//		printf("(%d,%d), (%d,%d)\n",Left.x, Left.y, Right.x, Right.y);
+								temp = CBlob.m_recBlobs[piece_idx.at(0)];
+								Left = Get_Chessidx(cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), CP);
+								cvCircle(img_Chess, cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), 3, cvScalar(0,0,255));
+								temp = CBlob.m_recBlobs[piece_idx.at(1)];
+								Right = Get_Chessidx(cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), CP);
+								cvCircle(img_Chess, cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), 3, cvScalar(0,0,255));
+								printf("(%d,%d), (%d,%d)\n",Left.x, Left.y, Right.x, Right.y);
 
-						//		CHESS_GAME.Chess_process(Left, Right);
-						//		CHESS_GAME.Show_chess_board();
-						//	}
-						//	else if(piece_idx.size() == 1){						//겹쳐버렸을때
-						//		temp = CBlob.m_recBlobs[piece_idx.at(0)];
-						//		Left = Get_Chessidx(cvPoint(temp.x+temp.width/2, temp.y+temp.height/2+temp.height/3*2), CP);
-						//		cvCircle(img_Chess, cvPoint(temp.x+temp.width/2, temp.y+temp.height/2+temp.height/3*2), 3, cvScalar(0,0,255)); 
-						//		Right = Get_Chessidx(cvPoint(temp.x+temp.width/2, temp.y+temp.height/3), CP);
-						//		cvCircle(img_Chess, cvPoint(temp.x+temp.width/2, temp.y+temp.height/3), 3, cvScalar(0,0,255));
-						//		printf("(%d,%d), (%d,%d)\n",Left.x, Left.y, Right.x, Right.y);
+								CHESS_GAME.Chess_process(Left, Right);
+								CHESS_GAME.Show_chess_board();
+							}
+							else if(piece_idx.size() == 1){						//겹쳐버렸을때
+								temp = CBlob.m_recBlobs[piece_idx.at(0)];
+								Left = Get_Chessidx(cvPoint(temp.x+temp.width/2, temp.y+temp.height/2+temp.height/3*2), CP);
+								cvCircle(img_Chess, cvPoint(temp.x+temp.width/2, temp.y+temp.height/2+temp.height/3*2), 3, cvScalar(0,0,255)); 
+								Right = Get_Chessidx(cvPoint(temp.x+temp.width/2, temp.y+temp.height/3), CP);
+								cvCircle(img_Chess, cvPoint(temp.x+temp.width/2, temp.y+temp.height/3), 3, cvScalar(0,0,255));
+								printf("(%d,%d), (%d,%d)\n",Left.x, Left.y, Right.x, Right.y);
 
-						//		CHESS_GAME.Chess_process(Left, Right);
-						//		CHESS_GAME.Show_chess_board();
-						//	}
-						//	else if(piece_idx.size() == 2){						//딱 두개 추적
-						//		temp = CBlob.m_recBlobs[piece_idx.at(0)];
-						//		Left = Get_Chessidx(cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), CP);
-						//		cvCircle(img_Chess, cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), 3, cvScalar(0,0,255));
-						//		temp = CBlob.m_recBlobs[piece_idx.at(1)];
-						//		Right = Get_Chessidx(cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), CP);
-						//		cvCircle(img_Chess, cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), 3, cvScalar(0,0,255));
-						//		printf("(%d,%d), (%d,%d)\n",Left.x, Left.y, Right.x, Right.y);
+								CHESS_GAME.Chess_process(Left, Right);
+								CHESS_GAME.Show_chess_board();
+							}
+							else if(piece_idx.size() == 2){						//딱 두개 추적
+								temp = CBlob.m_recBlobs[piece_idx.at(0)];
+								Left = Get_Chessidx(cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), CP);
+								cvCircle(img_Chess, cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), 3, cvScalar(0,0,255));
+								temp = CBlob.m_recBlobs[piece_idx.at(1)];
+								Right = Get_Chessidx(cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), CP);
+								cvCircle(img_Chess, cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), 3, cvScalar(0,0,255));
+								printf("(%d,%d), (%d,%d)\n",Left.x, Left.y, Right.x, Right.y);
 
-						//		CHESS_GAME.Chess_process(Left, Right);
-						//		CHESS_GAME.Show_chess_board();
-						//	}
+								CHESS_GAME.Chess_process(Left, Right);
+								CHESS_GAME.Show_chess_board();
+							}
+						}
 					}
+#ifdef DEBUG
+					cvShowImage("compose_diff", img_Chess);
+#endif
 				}
 			}
 			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-			key_wait = cvWaitKey(10);
-			printf("%d, %d\n", key_wait, ImgProcess_Mode);
-			if(key_wait == 27)					ImgProcess_Mode++;
-			else if(key_wait != -1)				ImgProcess_Mode+=2;
 
 			cvResetImageROI(img_Cam);
 
@@ -314,6 +316,28 @@ void Img_Process::Compose_diffImage(IplImage *rgb, IplImage *bin, CvScalar RGB){
 				rgb->imageData[i*3 + j * rgb->widthStep + 2] = RGB.val[2];
 			}
 		}
+}
+
+bool Img_Process::Check_imgZero(IplImage *img){
+	unsigned char pixel_value;
+	for(int i = 0; i < img->width; i++)
+		for(int j = 0; j < img->height; j++){
+			pixel_value = (unsigned char)img->imageData[i + j * img->widthStep];
+			if(pixel_value != 0)
+				return false;
+		}
+
+		return true;
+}
+
+CvPoint Img_Process::Get_Chessidx(CvPoint point, vector<Chess_point> CP){
+	for(int i = 0; i < CP.size() - 10; i++){
+		if(CP.at(i).Cordinate.x <= point.x && CP.at(i).Cordinate.y <= point.y){
+			if(CP.at(i+10).Cordinate.x > point.x && CP.at(i+10).Cordinate.y > point.y)
+				return CP.at(i).index;
+		}
+	}
+	return cvPoint(-1,-1);
 }
 
 void Img_Process::Inter_imageCraete(int roi_width, int roi_height){

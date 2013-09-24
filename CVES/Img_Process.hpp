@@ -55,6 +55,8 @@ private:
 	void Sub_image(IplImage *src1, IplImage *src2, IplImage *dst);									//차영상 진행
 	void Compose_diffImage(IplImage *rgb, IplImage *bin, CvScalar RGB);							//차영상 결과 이미지에 RGB 색 씌우기
 	bool Check_InChessboard(IplImage *img, vector<Chess_point> point);							//binary image가 체스보드 안에 픽셀을 가지는지 검사
+	bool Check_imgZero(IplImage *img);																							//img가 픽셀값을 아무것도 가지지 않는지 체크
+	CvPoint	Get_Chessidx(CvPoint point, vector<Chess_point> CP);										//말이 어느 체스판에 있는지를 체크
 	float area_tri(CvPoint p, CvPoint q, CvPoint r);
 };
 
