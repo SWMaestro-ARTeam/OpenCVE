@@ -66,6 +66,9 @@ void CBlobLabeling::DoLabeling() {
 }
 
 int CBlobLabeling::Labeling(IplImage* image, int nThreshold) {
+	roi_width = image->width;
+	roi_height = image->height;
+
 	if (image->nChannels != 1)
 		return 0;
 
@@ -338,11 +341,11 @@ void CBlobLabeling::GetSideBlob(IplImage *img, std::vector<int> *piece_idx){
 			index = i;
 			continue;
 		}
-		else if (temp.x + temp.width >= 479) {
+		else if (temp.x + temp.width >= roi_width-1) {
 			index = i;
 			continue;
 		}
-		else if (temp.y + temp.height >= 479) {
+		else if (temp.y + temp.height >= roi_height-1) {
 			index = i;
 			continue;
 		}

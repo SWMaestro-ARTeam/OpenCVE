@@ -12,7 +12,6 @@
 #define WIDTH 640
 #define HEIGHT 480
 #define RECOGNITION_MODE 1				//1 : hough Line, 2 : 규홍 recognition
-#define SUB_THRESHOLD 15					//손이 나타나기 이전과 이후 차영상 threshold
 
 #define DEBUG
 

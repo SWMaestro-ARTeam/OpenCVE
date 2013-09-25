@@ -53,6 +53,9 @@ private:
 	int __NRFIndNeighbor(unsigned char *DataBuf, int nWidth, int nHeight, int nPosX, int nPosY, int *StartX, int *StartY, int *EndX, int *EndY );
 	int __Area(unsigned char *DataBuf, int StartX, int StartY, int EndX, int EndY, int nWidth, int nLevel);
 
+	//image 관심영역에 대한 사이즈
+	int roi_width, roi_height;
+
 public:
 	CBlobLabeling(void);
 	~CBlobLabeling(void);
