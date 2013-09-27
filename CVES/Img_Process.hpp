@@ -36,6 +36,7 @@ private:
 	int ImgProcess_Mode;				//모드 설정
 	bool Sub_check;
 	bool InHand_Check;
+	bool BeforeHand_first;
 
 	CvCapture *Cam;										//캠
 	IplImage *img_Cam;								//원본 이미지

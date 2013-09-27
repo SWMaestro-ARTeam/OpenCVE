@@ -60,7 +60,7 @@ public:
 	//손검출 판단 - 면적 기반
 	bool is_Hand(IplImage *src);
 	//이전 프레임과의 차영상
-	void Sub_prevFrame(IplImage *src, IplImage *dst);
+	void Sub_prevFrame(IplImage *src, IplImage *dst, bool first);
 	//차영상 초기화
 	void Init_diff();
 };

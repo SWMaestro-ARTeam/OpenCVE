@@ -20,8 +20,17 @@ void Img_Process::MouseCallback_SetROI(int event, int x, int y, int flags, void 
 			down_check = true;
 			break;
 		case CV_EVENT_LBUTTONUP:
-			if(p->ImgProcess_ROI.height * p->ImgProcess_ROI.width > 200){
+			if(abs(p->ImgProcess_ROI.height * p->ImgProcess_ROI.width) > 200){
 				p->ImgProcess_Mode++;
+
+				if(p->ImgProcess_ROI.width < 0){
+					p->ImgProcess_ROI.x += p->ImgProcess_ROI.width;
+					p->ImgProcess_ROI.width *= -1;
+				}
+				if(p->ImgProcess_ROI.height < 0){
+					p->ImgProcess_ROI.y += p->ImgProcess_ROI.height;
+					p->ImgProcess_ROI.height *= -1;
+				}
 			}
 
 			down_check = false;
@@ -30,6 +39,7 @@ void Img_Process::MouseCallback_SetROI(int event, int x, int y, int flags, void 
 			if(down_check == true){
 				p->ImgProcess_ROI.width = x - p->ImgProcess_ROI.x;
 				p->ImgProcess_ROI.height = y - p->ImgProcess_ROI.y;
+
 			}
 			break;
 		}
@@ -60,6 +70,7 @@ void Img_Process::Init_process(){
 
 	Sub_check				= false;
 	InHand_Check		= false;
+	BeforeHand_first = false;
 }
 
 void Img_Process::Do_imgprocess(){
@@ -111,22 +122,25 @@ void Img_Process::Do_imgprocess(){
 
 				//Chessboard recognition;
 				Find_Chess.Copy_Img(img_Chess);
+				Find_Chess.Chess_recog_wrapper(img_Cam, &CP);
 
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				///////////////////////////////////////////////////////차영상 및 조건판정 부분///////////////////////////////////////////////
 				if(CP.size() != 81){								//초기화			
-					Find_Chess.Chess_recog_wrapper(img_Cam, &CP);
+					//Find_Chess.Chess_recog_wrapper(img_Cam, &CP);
 				}
 				else if(CP.size() == 81) {
 					if(Sub_check == false) {
 						//손이 들어오기 직전 영상을 촬영
-						Find_Hand.Sub_prevFrame(img_Chess, img_Skin);
+						Find_Hand.Sub_prevFrame(img_Chess, img_Skin, BeforeHand_first);					//실시간 차영상->턴별 차영상
+						if(BeforeHand_first)	BeforeHand_first = false;
 						cvDilate(img_Skin, img_Skin, 0, 10);
 #ifdef DEBUG
 						cvShowImage("img_Skin",img_Skin);
 #endif
+						//물체가 체스보드 위로 들어옴
 						if(Check_InChessboard(img_Skin, CP)){
-							cvCopy(img_Cam, prev_img);
+							cvCopy(img_Chess, prev_img);
 	#ifdef DEBUG
 							cvShowImage("PREV", prev_img);
 							printf("PREV Catch\n");
@@ -134,21 +148,21 @@ void Img_Process::Do_imgprocess(){
 							Sub_check = true;
 						}
 						else {
-							Find_Chess.Chess_recog_wrapper(img_Cam, &CP);
+							//Find_Chess.Chess_recog_wrapper(img_Cam, &CP);
 						}
 					}
 					else {
 						//추후 해야할 작업 : 빠질때 어떻게 작업할 것인가
 						//손이 들어옴 판정 이후 작업
-						Find_Hand.Sub_prevFrame(img_Chess, img_sub);
+						/*Find_Hand.Sub_prevFrame(img_Chess, img_sub);*/
 
 	#ifdef DEBUG
 						cvShowImage("유레카1", img_Chess);
 	#endif
 						Sub_image(prev_img, img_Chess, img_Skin);
-						cvErode(img_Skin, img_Skin, 0, 1);
+						/*cvErode(img_Skin, img_Skin, 0, 1);
 						cvDilate(img_Skin, img_Skin, 0, 2);
-						cvErode(img_Skin, img_Skin, 0, 1);
+						cvErode(img_Skin, img_Skin, 0, 1);*/
 						Compose_diffImage(img_Chess, img_Skin, cvScalar(0,255,255));
 
 						//BlobLabeling
@@ -170,9 +184,10 @@ void Img_Process::Do_imgprocess(){
 	#endif
 
 							//다음턴 준비부 -> 조건을 추가로 줘서 예외를 막아야함
-							if(Check_imgZero(img_sub)) {								//전제 조건은 손이 빠질때는 중간에 멈추지 않음
+							if(Check_imgZero(img_Skin)) {								//전제 조건은 손이 빠질때는 중간에 멈추지 않음
 								InHand_Check = false;
 								Sub_check = false;
+								BeforeHand_first = true;
 
 								///////////////////////////////말 좌표 반환//////////////////////////////////////////////////////
 								//CvPoint Left, Right;
@@ -310,6 +325,10 @@ void Img_Process::Sub_image(IplImage *src1, IplImage *src2, IplImage *dst){
 			}
 		}
 	}
+
+	cvSmooth(dst, dst, CV_MEDIAN,3,3);
+	cvErode(dst, dst, 0, 2);
+	cvDilate(dst, dst, 0, 2);
 }
 
 void Img_Process::Compose_diffImage(IplImage *rgb, IplImage *bin, CvScalar RGB){

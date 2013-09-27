@@ -10,9 +10,6 @@
 #include "chess_game.hpp"
 #include "Img_Process.hpp"
 
-#define WIDTH 640
-#define HEIGHT 480
-
 int main(){
 
 	Img_Process IP;

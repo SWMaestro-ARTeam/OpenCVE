@@ -124,10 +124,13 @@ bool Hand_recognition::is_Hand(IplImage *src) {
 	return false;
 }
 
-void Hand_recognition::Sub_prevFrame(IplImage *src, IplImage *dst) {
+void Hand_recognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
 	static int frame_count = 0;
-	//IplImage *HSL = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 3);
-	//cvCvtColor(src, HSL, CV_BGR2HLS);
+
+	if(first){
+		cvReleaseImage(&prev_ground);
+		prev_ground = NULL;
+	}
 
 	if (prev_ground == NULL) {
 		prev_ground = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 3);
@@ -156,7 +159,7 @@ void Hand_recognition::Sub_prevFrame(IplImage *src, IplImage *dst) {
 				}
 			}
 		}
-		cvCopy(present_ground, prev_ground);
+		//cvCopy(present_ground, prev_ground);
 
 		cvSmooth(dst, dst, CV_MEDIAN,3,3);
 		cvErode(dst, dst, 0, 2);
@@ -166,8 +169,6 @@ void Hand_recognition::Sub_prevFrame(IplImage *src, IplImage *dst) {
 	}
 
 	frame_count++;
-
-	//cvReleaseImage(&HSL);
 }
 
 void Hand_recognition::Init_diff() {
