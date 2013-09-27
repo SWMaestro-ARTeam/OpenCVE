@@ -107,7 +107,8 @@ public:
 	//교차점 보정함수
 	void Refine_CrossPoint(vector<Chess_point> *point);
 	//관심영역 설정
-	void Set_CalculationDomain(CvCapture *Cam, int *ROI_WIDTH, int *ROI_HEIGHT);
+	void Set_CalculationDomain(CvCapture *
+		, int *ROI_WIDTH, int *ROI_HEIGHT);
 	//자원반환
 	void exit();
 
