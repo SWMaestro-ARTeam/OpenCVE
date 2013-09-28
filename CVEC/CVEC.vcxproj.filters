@@ -27,28 +27,49 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="Main\Header">
+      <UniqueIdentifier>{368a755a-3b51-413a-86e8-e274f98e379e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Main\Source">
+      <UniqueIdentifier>{7e7bee56-f737-4098-953d-4d80a500ab14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{5b0c08e7-50c9-4bbf-b3ac-fcd66f30fd83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Header">
+      <UniqueIdentifier>{cb4c2da5-1ac7-4e14-9f8b-ecb1b455567c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Source">
+      <UniqueIdentifier>{e2e13681-1a99-4bc7-bbc1-38acb2a0b3eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
     <ClCompile Include="..\Common\ProcessConfirm.cpp">
       <Filter>Common\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\Telepathy.cpp">
       <Filter>Common\Source</Filter>
     </ClCompile>
-    <ClCompile Include="UCIParser.cpp">
-      <Filter>UCI\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="StringTokenizer.cpp">
-      <Filter>UCI\Source</Filter>
-    </ClCompile>
     <ClCompile Include="UCICommandSesker.cpp">
       <Filter>UCI\Source</Filter>
     </ClCompile>
     <ClCompile Include="UCICommandSeeker.hpp">
       <Filter>UCI\Header</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Main\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\StringTokenizer.cpp">
+      <Filter>Common\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine.cpp">
+      <Filter>Engine\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Option.cpp">
+      <Filter>Engine\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="InternalProtocolSeeker.cpp">
+      <Filter>Common\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -64,14 +85,26 @@
     <ClInclude Include="..\Common\Telepathy.hpp">
       <Filter>Common\Header</Filter>
     </ClInclude>
-    <ClInclude Include="UCIParser.hpp">
-      <Filter>UCI\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="StringTokenizer.hpp">
-      <Filter>UCI\Header</Filter>
-    </ClInclude>
     <ClInclude Include="UCICommand.hpp">
       <Filter>UCI\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\StringTokenizer.hpp">
+      <Filter>Common\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine.hpp">
+      <Filter>Engine\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Option.hpp">
+      <Filter>Engine\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="InternalProtocol.hpp">
+      <Filter>Common\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="GlobalVariables.hpp">
+      <Filter>Common\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="InternalProtocolSeeker.hpp">
+      <Filter>Common\Header</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

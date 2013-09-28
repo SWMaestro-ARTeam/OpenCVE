@@ -23,19 +23,17 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _UCICommandSeeker_hpp_
-#define _UCICommandSeeker_hpp_
+#ifndef _InternalProtocolSeeker_hpp_
+#define _InternalProtocolSeeker_hpp_
 
-#include "UCICommand.hpp"
+#include "InternalProtocol.hpp"
 #include "ExtendedBlackBox.hpp"
 
 #include <string>
 
-class UCICommandSeeker {
+class InternalProtocolSeeker {
 private:
-
 public:
-	int UCIString_Seeker(const char *Str);
+	int InternalProtocolString_Seeker(const char *Str);
 };
-
 #endif

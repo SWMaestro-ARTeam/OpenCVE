@@ -25,13 +25,8 @@
 
 #include "Chess_recognition.hpp"
 
-<<<<<<< HEAD
-Chess_recognition::Chess_recognition(void) {
-=======
 Chess_recognition::Chess_recognition(void)
 {
-
->>>>>>> master
 }
 
 Chess_recognition::~Chess_recognition(void) {

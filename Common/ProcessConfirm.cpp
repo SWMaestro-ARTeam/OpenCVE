@@ -100,7 +100,7 @@ UINT ExecProcessLoopThread(LPVOID Param) {
 	ZeroMemory(&_ProcessInfo, sizeof(_ProcessInfo));
 
 	// Start the child process. 
-	if (!CreateProcess( NULL, // No module name (use command line). 
+	if (!CreateProcess(NULL, // No module name (use command line). 
 		(LPWSTR)_Str, // Command line. 
 		NULL,             // Process handle not inheritable. 
 		NULL,             // Thread handle not inheritable. 

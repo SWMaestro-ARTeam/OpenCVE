@@ -22,52 +22,57 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _StringTokenizer_hpp_
-#define _StringTokenizer_hpp_
+#ifndef _InternalProtocol_hpp_
+#define _InternalProtocol_hpp_
 
-#include <stdio.h>
-#include <string.h>
+// CVEC -> CVES
+#define STR_SREVERKILL "ServerKill"
+#define STR_SERVERISALIVE "ServerIsAlive"
+#define STR_IMFIRST "ImFirst"
+#define STR_STOP "Stop"
+#define STR_START "Start"
+#define STR_ISRESTOREPOSSIBLE "IsRestorePossible"
 
-#include <list>
+// CVES -> CVEC
+#define STR_ALIVE "Alive"
+#define STR_BUSY "Busy"
+#define STR_MOVE "Move"
+#define STR_RESTOREOK "RestoreOK"
+#define STR_RESTORENOT "RestoreNOT"
 
-//#include "UCICommand.hpp"
+// CVES -> Observer
+#define STR_STATUSNOW "StatusNow"
+#define STR_TICTOKON "TicTokOn"
+#define STR_TICTOKOFF "TicTokOff"
 
-//#include "Common.hpp"
-//#include "ExtendedBlackBox.hpp"
+// Observer -> CVES
+#define STR_TICTOK "TicTok"
+#define STR_TICTOKISON "TicTokisOn"
+#define STR_TICTOKISOFF "TicTokisOff"
 
-using namespace std;
+// CVEC -> CVES
+#define VALUE_SERVERKILL 1
+#define VALUE_SERVERISALIVE 2
+#define VALUE_IMFIRST 3
+#define VALUE_STOP 4
+#define VALUE_START 5
+#define VALUE_ISRESTOREPOSSIBLE 6
 
-class StringTokenizer {
-private:
-	list<string> *_StringList;
-	//list<string> *_TokenList;
-	string _Token;
+// CVES -> CVEC
+#define VALUE_ALIVE 7
+#define VALUE_BUSY 8
+#define VALUE_MOVE 9
+#define VALUE_RESTOREOK 10
+#define VALUE_RESTORENOT 11
 
-	string _InternalInputString;
-public:
-	StringTokenizer();
-	~StringTokenizer();
-	
-	// Initializers.
-	void StringTokenizerInitialize(); //
-	void StringTokenizerDeinitialize(); //
+// CVES -> Observer
+#define VALUE_STATUSNOW 12
+#define VALUE_TICTOKON 13
+#define VALUE_TICTOKOFF 14
 
-	void StringListClear(); //
-
-	//void TokenClear();
-
-	// String Input Functions.
-	void SetInputCharString(const char* Str);
-	void SetInputString(string Str);
-
-	// String Token의 종류.
-	void SetSingleToken(const char *SingleToken);
-	// Implement me.
-	//void SetMultiToken(const char *, ...);
-
-	void StringTokenGo();
-	list<string> *GetTokenedStringList();
-	list<char *> *GetTokenedCharListArrays();
-};
+// Observer -> CVES
+#define VALUE_TICTOK 15
+#define VALUE_TICTOKISON 16
+#define VALUE_TICTOKISOFF 17
 
 #endif

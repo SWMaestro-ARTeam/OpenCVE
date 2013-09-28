@@ -63,6 +63,9 @@
     <ClInclude Include="Hand_recognition.hpp">
       <Filter>Recognitions\Header</Filter>
     </ClInclude>
+    <ClInclude Include="..\Common\StringTokenizer.hpp">
+      <Filter>Common\Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Common\ProcessConfirm.cpp">
@@ -85,6 +88,9 @@
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\StringTokenizer.cpp">
+      <Filter>Common\Source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

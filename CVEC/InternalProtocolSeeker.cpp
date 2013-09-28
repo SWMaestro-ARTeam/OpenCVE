@@ -23,71 +23,72 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _UCIParser_hpp_
-#define _UCIParser_hpp_
+#include "InternalProtocolSeeker.hpp"
 
-#include <cstdio>
-#include <cstdlib>
+int InternalProtocolSeeker::InternalProtocolString_Seeker(const char *Str) {
+	int _SeekedNumber = 0;
 
-#include <string.h>
-#include <stdlib.h>
+	STRING_SWITCH_BEGIN(string((char *)Str)) {
+		CASE(STR_SREVERKILL)
+			_SeekedNumber = VALUE_SERVERKILL;
+			break;
+		CASE(STR_SERVERISALIVE)
+			_SeekedNumber = VALUE_SERVERISALIVE;
+			break;
+		CASE(STR_IMFIRST)
+			_SeekedNumber = VALUE_IMFIRST;
+			break;
+		CASE(STR_STOP)
+			_SeekedNumber = VALUE_STOP;
+			break;
+		CASE(STR_START)
+			_SeekedNumber = VALUE_START;
+			break;
+		CASE(STR_ISRESTOREPOSSIBLE)
+			_SeekedNumber = VALUE_ISRESTOREPOSSIBLE;
+			break;
 
-// Process Confirm Module
-#include "ProcessConfirm.hpp"
-// UCI Command Seeker
-#include "UCICommandSeeker.hpp"
-// String Tokenizer
-#include "StringTokenizer.hpp"
-// Telepathy Module
-#include "Telepathy.hpp"
+		CASE(STR_ALIVE)
+			_SeekedNumber = VALUE_ALIVE;
+		break;
+		CASE(STR_BUSY)
+			_SeekedNumber = VALUE_BUSY;
+		break;
+		CASE(STR_MOVE)
+			_SeekedNumber = VALUE_MOVE;
+		break;
+		CASE(STR_RESTOREOK)
+			_SeekedNumber = VALUE_RESTOREOK;
+		break;
+		CASE(STR_RESTORENOT)
+			_SeekedNumber = VALUE_RESTORENOT;
+		break;
 
-class UCIParser {
-private:
-	// Variables
-	char *Command_Str;
-	bool _IsSocketConnented;
-	bool _IsProcessAlive;
+		CASE(STR_STATUSNOW)
+			_SeekedNumber = VALUE_STATUSNOW;
+		break;
+		CASE(STR_TICTOKON)
+			_SeekedNumber = VALUE_TICTOKON;
+		break;
+		CASE(STR_TICTOKOFF)
+			_SeekedNumber = VALUE_TICTOKOFF;
 
-	Telepathy::Client *_TClient;
+		break;
+		CASE(STR_TICTOK)
+			_SeekedNumber = VALUE_TICTOK;
+		break;
+		CASE(STR_TICTOKISON)
+			_SeekedNumber = VALUE_TICTOKISON;
+		break;
+		CASE(STR_TICTOKISOFF)
+			_SeekedNumber = VALUE_TICTOKISOFF;
+		break;
+		
+		// Here is No Command string.
+		DEFAULT()
+			_SeekedNumber = -1;
+	}
+	STRING_SWITCH_END()
 
-	// Functions
-	void init_CommandStr();
-	bool Init_ClientSocket();
-
-	void Put_Author();
-
-	void Get_Command_Str();
-	void Clear_Str();
-
-	void Clear_ClientSocket();
-
-	void SendToGUI(const char *Str, ...);
-
-	void Command_UCI();
-	void Command_Debug();
-	void Command_Isready();
-	void Command_Setoption();
-	void Command_Ucinewgame();
-	void Command_Register();
-	void Command_Position();
-	void Command_Go();
-	void Command_Stop();
-	void Command_Ponderhit();
-	void Command_Quit();
-
-	void Parsing_Command();
-
-public:
-	// Constructor
-	UCIParser();
-	~UCIParser();
-
-	bool isServerOrClient;
-	// Functions
-	void initializing();
-	void Parsing_Engine_Start();
-};
-
-void ClientReceivedCallback(char *Buffer);
-
-#endif
+	return _SeekedNumber;
+}

@@ -3,7 +3,6 @@
 //
 //	The MIT License (MIT)
 //	Copyright © 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
-//	{invi.dh.kim, munsp9103, aiaipming} at gmail.com
 //
 //	Permission is hereby granted, free of charge, to any person obtaining a copy of
 //	this software and associated documentation files (the “Software”), to deal
@@ -23,19 +22,53 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _UCICommandSeeker_hpp_
-#define _UCICommandSeeker_hpp_
+#ifndef _StringTokenizer_hpp_
+#define _StringTokenizer_hpp_
 
-#include "UCICommand.hpp"
-#include "ExtendedBlackBox.hpp"
+#include <stdio.h>
+#include <string.h>
 
 #include <string>
+#include <list>
 
-class UCICommandSeeker {
+//#include "UCICommand.hpp"
+
+//#include "Common.hpp"
+//#include "ExtendedBlackBox.hpp"
+
+using namespace std;
+
+class StringTokenizer {
 private:
+	list<string> *_StringList;
+	//list<string> *_TokenList;
+	string _Token;
 
+	string _InternalInputString;
 public:
-	int UCIString_Seeker(const char *Str);
+	StringTokenizer();
+	~StringTokenizer();
+	
+	// Initializers.
+	void StringTokenizerInitialize();
+	void StringTokenizerDeinitialize();
+
+	void StringListClear();
+
+	void TokenClear();
+
+	// String Input Functions.
+	void SetInputCharString(const char* Str);
+	void SetInputString(string Str);
+
+	// String Token의 종류.
+	void SetSingleToken(const char *SingleToken);
+	// Implement me.
+	//void SetMultiToken(const char *, ...);
+
+	bool StringTokenGo();
+	list<string> *GetTokenedStringList();
+	list<char *> *GetTokenedCharListArrays();
 };
 
 #endif

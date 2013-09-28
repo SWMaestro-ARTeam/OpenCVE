@@ -36,6 +36,7 @@ StringTokenizer::~StringTokenizer() {
 // 초기에 초기화 할 것에 대한 모든 것을 담는다.
 void StringTokenizer::StringTokenizerInitialize() {
 	//_Token = new list<string>();
+	TokenClear();
 	_StringList = new list<string>();
 
 }
@@ -51,12 +52,12 @@ void StringTokenizer::StringListClear() {
 	_StringList->clear();
 }
 
-/*
-void StringTokenizer::TokenListClear() {
+
+void StringTokenizer::TokenClear() {
 	// Token List Clear.
-	_Token->clear();
+	_Token = "";
 }
-*/
+
 // String Input Functions.
 void StringTokenizer::SetInputCharString(const char* Str) {
 	_InternalInputString.append(Str);
@@ -81,17 +82,14 @@ void StringTokenizer::SetMultiToken(const char *, ...) {
 }
 */
 
-void StringTokenizer::StringTokenGo() {
+bool StringTokenizer::StringTokenGo() {
 	string _TempString = _InternalInputString;
 	int _TTokenPointer = 0;
 	list<string>::iterator _StringIter;
 
-	/*
-	for (_StringIter = _TokenList->begin();
-		_StringIter != _TokenList->end(); _StringIter++) {
-	
-	}
-	*/
+	if (_TempString.c_str() == "\r" || _TempString.c_str() == "" || _TempString.empty())
+		return false;
+
 	while ((_TTokenPointer = _TempString.find_first_of(_Token)) != _TempString.npos) {
 		if (_TTokenPointer > 0)
 			_StringList->push_back(_TempString.substr(0, _TTokenPointer));
@@ -108,14 +106,14 @@ list<string> *StringTokenizer::GetTokenedStringList() {
 }
 
 list<char *> *StringTokenizer::GetTokenedCharListArrays() {
-	list<char *> *_TempTokenedCharList;
+	list<char *> *_TempTokenedCharList = new list<char *>();
 	list<string>::iterator _TStringIter;
 
 	for (_TStringIter = _StringList->begin();
 		_TStringIter != _StringList->end(); _TStringIter++) {
-		char *_TCharArray = (char *)*_TStringIter->c_str();
+			char *_TCharArray = (char *)(_TStringIter->c_str());
 
-		_TempTokenedCharList->push_back(_TCharArray);
+			_TempTokenedCharList->push_back(_TCharArray);
 	}
 
 	return _TempTokenedCharList;

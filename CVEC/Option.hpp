@@ -23,19 +23,64 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _UCICommandSeeker_hpp_
-#define _UCICommandSeeker_hpp_
+#ifndef _Option_hpp_
+#define _Option_hpp_
 
-#include "UCICommand.hpp"
-#include "ExtendedBlackBox.hpp"
+#include "Common.hpp"
 
-#include <string>
+#include <list>
 
-class UCICommandSeeker {
+using namespace std;
+
+typedef struct EngineOptions {
+	const char *_VariableName;
+	// Is it Option Viewing?
+	bool _OptionEnable;
+	const char *_InitializeValue;
+	// It's variables for Windows(Winboard)/Linux(xboard)
+	const char *_ControlerType;
+	const char *_VariableOptionString;
+	const char *_CurrentVariable;
+
+	EngineOptions() {
+		EOInitialize();
+	}
+
+	EngineOptions(const char *_VariableName_, bool _OptionEnable_,
+		const char *_InitializeValue_, const char *_ControlerType_,
+		const char *_VariableOptionString_, const char *_ExtraVariable_) {
+		EOInitialize();
+		_VariableName = _VariableName_;
+		_OptionEnable = _OptionEnable_;
+		_InitializeValue = _InitializeValue_;
+		_ControlerType = _ControlerType_;
+		_VariableOptionString = _VariableOptionString_;
+		_CurrentVariable = _ExtraVariable_;
+	}
+
+	void EOInitialize() {
+		_VariableName = new char[BUFFER_MAX_1024];
+		_OptionEnable = false;
+		_InitializeValue = new char[BUFFER_MAX_1024];
+		_ControlerType = new char[BUFFER_MAX_1024];
+		_CurrentVariable = new char[BUFFER_MAX_1024];
+	}
+} EO;
+
+class Option {
 private:
-
+	list<EO> _EngineOptionValues;
 public:
-	int UCIString_Seeker(const char *Str);
+	Option();
+	~Option();
+
+	void InitializeOptionValues();
+	void ClearEngineOptionValues();
+	void SetEngineValues(EO _EngineOptions);
+	list<EO> GetEngineValues();
+
+	// Implement me.
+	void ReadOptionToINIFile();
 };
 
 #endif

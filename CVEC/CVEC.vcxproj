@@ -53,6 +53,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>./;../Common</AdditionalIncludeDirectories>
       <FunctionLevelLinking>false</FunctionLevelLinking>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -80,21 +81,27 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Common\ProcessConfirm.cpp" />
+    <ClCompile Include="..\Common\StringTokenizer.cpp" />
     <ClCompile Include="..\Common\Telepathy.cpp" />
+    <ClCompile Include="InternalProtocolSeeker.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="StringTokenizer.cpp" />
+    <ClCompile Include="Option.cpp" />
     <ClCompile Include="UCICommandSeeker.hpp" />
     <ClCompile Include="UCICommandSesker.cpp" />
-    <ClCompile Include="UCIParser.cpp" />
+    <ClCompile Include="Engine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\Common.hpp" />
     <ClInclude Include="..\Common\ExtendedBlackBox.hpp" />
     <ClInclude Include="..\Common\ProcessConfirm.hpp" />
+    <ClInclude Include="..\Common\StringTokenizer.hpp" />
     <ClInclude Include="..\Common\Telepathy.hpp" />
-    <ClInclude Include="StringTokenizer.hpp" />
+    <ClInclude Include="GlobalVariables.hpp" />
+    <ClInclude Include="InternalProtocol.hpp" />
+    <ClInclude Include="InternalProtocolSeeker.hpp" />
+    <ClInclude Include="Option.hpp" />
     <ClInclude Include="UCICommand.hpp" />
-    <ClInclude Include="UCIParser.hpp" />
+    <ClInclude Include="Engine.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

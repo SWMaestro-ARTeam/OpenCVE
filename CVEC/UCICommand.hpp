@@ -93,6 +93,8 @@
 #define VALUE_SETOPTION_NAME 1301
 #define VALUE_SETOPTION_VALUE 1302
 
+#define VALUE_ANYVALUES -1
+
 // summation commnad string with "Head", "go", "position", "setoption"
 #define GUI_TO_ENGINE_COMMAND_HEAD_QTY (11 + 12 + 3 + 2)
 
