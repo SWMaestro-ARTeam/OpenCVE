@@ -85,6 +85,7 @@ void Img_Process::Do_imgprocess(){
 			if(img_createCheck == true){ cvReleaseImage(&img_Chess), img_createCheck = false;}
 			cvDrawRect(img_Cam, cvPoint(ImgProcess_ROI.x, ImgProcess_ROI.y), cvPoint(ImgProcess_ROI.x + ImgProcess_ROI.width, ImgProcess_ROI.y + ImgProcess_ROI.height), cvScalar(255), 2);
 			cvShowImage("CVES", img_Cam);
+			cvSaveImage("chess.jpg", img_Cam);
 			cvWaitKey(33);
 			break;
 		case 1:							//관심영역 재설정 선택 OR 체스보드 인식 확인부
@@ -179,12 +180,10 @@ void Img_Process::Do_imgprocess(){
 						}
 						else if (InHand_Check == true) {
 							//이동 처리부
-	#ifdef DEBUG
-							printf("이동 ");
-	#endif
 
 							//다음턴 준비부 -> 조건을 추가로 줘서 예외를 막아야함
 							if(Check_imgZero(img_Skin)) {								//전제 조건은 손이 빠질때는 중간에 멈추지 않음
+								printf("Hand escape!\n");
 								InHand_Check = false;
 								Sub_check = false;
 								BeforeHand_first = true;

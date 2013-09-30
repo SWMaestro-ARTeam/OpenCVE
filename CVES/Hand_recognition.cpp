@@ -128,7 +128,8 @@ void Hand_recognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
 	static int frame_count = 0;
 
 	if(first){
-		cvReleaseImage(&prev_ground);
+		if(prev_ground != NULL)
+			cvReleaseImage(&prev_ground);
 		prev_ground = NULL;
 	}
 
