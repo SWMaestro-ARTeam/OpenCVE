@@ -37,41 +37,57 @@ private:
 	bool thread_exit;
 
 	//////////////////////////////////////////////////////////////////////////////규홍규홍////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// 점의 위치를 저장하기 위한 구조체
 	typedef struct{
 		int x,y;
 	} MyPoint;
 
+	// 라인의 양끝 점을 저장하기 위한 구조체
 	typedef struct{
 		int x1,y1,x2,y2;
 	} MyLinePoint;
 
+	// 해당 위치와 함께 grayscale 의 값을 저장하기 위한 구조체
 	typedef struct{
 		int grayscale,x,y;
 	}MyGrayPoint;
 
+	// 사각형의 네 꼭지점을 저장하기 위한 구조체
 	typedef struct{
 		MyPoint LeftTop, LeftBottom, RightTop, RightBottom;
 	}MySquarePoint;
-
+	
 	int line_avg_x1, line_avg_x2, line_avg_y1, line_avg_y2;
+	
+	// 모든 체스판 라인이 검출되기 위한 위치는 찾는데 사용되는 변수
 	int Linefindcount_x, Linefindcount_y;
-	bool flag_x, flag_y;
 
+	// Linefindcount 함수들의 증감을 결정하는 변수
+	bool flag_x, flag_y;
+	
 	vector<MyPoint> in_line_point_x1, in_line_point_x2, in_line_point_y1, in_line_point_y2;
 	vector<MyGrayPoint> line_x1, line_x2, line_x_mid, line_y1, line_y2, line_y_mid;
-
+	
 	MyLinePoint line_point_x1, line_point_x2, line_point_x_mid, line_point_y1, line_point_y2, line_point_y_mid;
 	MyLinePoint line_square_left, line_square_top, line_square_right, line_square_bottom;
 
 	MySquarePoint main_square;
 
+	// 영상에서 해당 부분의 grayscale 추출
 	void GetLinegrayScale(IplImage *gray_image, int linefindcount_x, int linefindcount_y);
+	// 체스판에서 각 체스판의 경계를 추출
 	void GetgraySidelinesPoint(IplImage *chess_image);
+	// 양 끝의 점을 이용해 사각형을 구함
 	void GetSquarePoint(IplImage *chess_image);
+	// 추출된 모든 수직이 되는 모든 선들의 교차점을 구함
 	void GetInCrossPoint(IplImage *chess_image, vector<Chess_point> *point);
+	// 해당 위치의 grayscale을 반환
 	int Getgrayscale(IplImage *gray_image, int x, int y);
+	// 두 라인의 교차점을 반환
 	bool GetCrossPoint(MyLinePoint line1, MyLinePoint line2, MyPoint *out);
+	// 정보들을 MyLinePoint 형식 반환
 	void SetMyLinePoint(int x1, int y1, int x2, int y2, MyLinePoint *setLinePoint);
+
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 	Chess_recognition(void);
@@ -91,7 +107,8 @@ public:
 	//교차점 보정함수
 	void Refine_CrossPoint(vector<Chess_point> *point);
 	//관심영역 설정
-	void Set_CalculationDomain(CvCapture *Cam, int *ROI_WIDTH, int *ROI_HEIGHT);
+	void Set_CalculationDomain(CvCapture *
+		, int *ROI_WIDTH, int *ROI_HEIGHT);
 	//자원반환
 	void exit();
 
