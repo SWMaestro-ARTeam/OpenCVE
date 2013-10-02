@@ -70,7 +70,7 @@ void Engine::Deinitialize_CVEOption() {
 		delete _Option;
 }
 
-bool Engine::Initialize_ClientSocket() {
+bool Engine::Initialize_TClient() {
 	_TClient = new Telepathy::Client();
 	// SendToGUI("Wait for Server Request.");
 	// Inititalizing Client.
@@ -92,7 +92,7 @@ bool Engine::Initialize_ClientSocket() {
 	return true;
 }
 
-void Engine::Deinitialize_ClientSocket() {
+void Engine::Deinitialize_TClient() {
 	if (_TClient != NULL)
 		delete _TClient;
 }
@@ -159,6 +159,14 @@ void Engine::Get_Command_Str() {
 
 void Engine::Clear_Str() {
 	memset(Command_Str, NULL, sizeof(Command_Str));
+}
+
+bool Engine::Connect_Server() {
+	return _TClient->ClientConnect();
+}
+
+void Engine::Disconnect_Server() {
+	_TClient->ClientDisconnect();
 }
 
 void Engine::Clear_ClientSocket() {
@@ -408,11 +416,10 @@ void Engine::Parsing_Command() {
 	
 	// Get UCI String.
 	Get_Command_Str();
-	FILE *ofp = fopen("OpenCVE_Log.txt","a+");
+	//FILE *ofp = fopen("OpenCVE_Log.txt","a+");
 
-	fprintf(ofp, "%s\n", Command_Str);
-
-	fclose(ofp);
+	//fprintf(ofp, "%s\n", Command_Str);
+	//fclose(ofp);
 
 	_StringTokenizer->SetInputCharString((const char *)Command_Str);
 	_StringTokenizer->SetSingleToken(" ");
@@ -493,7 +500,7 @@ UINT CVEC_CVESCheckingThread(LPVOID Param) {
 		}
 		if (G_Parser->IsSocketConnented != true) {
 			// CVES에 접속할 때까지 계속 돈다.
-			while () ;
+			while (!G_Parser->Connect_Server()) ;
 			//G_Parser->
 			if (_Urgency == true) {
 				// Socket이 유효할 때, 복구가 가능한지를 CVES에 물어본다.
@@ -501,6 +508,7 @@ UINT CVEC_CVESCheckingThread(LPVOID Param) {
 			}
 		}
 	}
+	return 0;
 }
 
 bool Engine::Get_CVESProcessStatus() {
@@ -509,6 +517,7 @@ bool Engine::Get_CVESProcessStatus() {
 
 bool Engine::Get_CVESConnectionStatus() {
 	//return _TClient->
+	return _TClient->IsConnectedClient;
 }
 
 Telepathy::Client* Engine::Get_Client() {
@@ -527,6 +536,9 @@ bool Engine::CheckingCVESProcess() {
 	if (IsGetCVESProcess == true) {
 		// 하지만 이미 있다면?
 		// 본 Process가 CVES Process를 가지고 있으므로, 무조건 Process를 실행.
+		// Check File Exists.
+		if (!_File.CheckFileExist(SERVER_ENGINE_EXEC_FILENAME))
+			return false;
 		_ProcessConfirm->CreateProcessOnThread(SERVER_ENGINE_EXEC_FILENAME);
 		return true;
 	}
@@ -539,6 +551,10 @@ bool Engine::CheckingCVESProcess() {
 				CVEC_CVESControlInitial = false;
 			}
 			*/
+			// Check File Exists.
+			if (!_File.CheckFileExist(SERVER_ENGINE_EXEC_FILENAME))
+				return false;
+
 			// CVES Process를 이 Process가 갖는다.
 			IsGetCVESProcess = true;
 			// CVES 실행.

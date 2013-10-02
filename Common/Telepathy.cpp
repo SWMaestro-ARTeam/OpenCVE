@@ -207,12 +207,12 @@ Telepathy::Client *TClient;
 
 // constructor
 Telepathy::Client::Client(){
-	_M_BIsConnectedClient = false;
+	IsConnectedClient = false;
 }
 
 // deconstructor
 Telepathy::Client::~Client(){
-	if (_M_BIsConnectedClient == true) {
+	if (IsConnectedClient == true) {
 		ClientClose();
 	}
 }
@@ -258,20 +258,11 @@ bool Telepathy::Client::ClientInitialize() {
 	// port 사용
 	_M_ClientAddress.sin_port = htons((u_short)CVE_PORT);
 
-	if (connect(_M_HClientSocket, (sockaddr *)&_M_ClientAddress, sizeof(_M_ClientAddress))){
-		ClientClose();
-		return false;
-	}
-
-	// 외부 Receive 함수용.
-	TClient = this;
-	_M_BIsConnectedClient = true;
-
 	return true;
 }
 
 void Telepathy::Client::ClientReceiveStart() {
-	if (_M_BIsConnectedClient != true) {
+	if (IsConnectedClient != true) {
 		// failed started Client.
 	}
 	else {
@@ -286,8 +277,8 @@ void Telepathy::Client::ClientReceiveStart() {
 void Telepathy::Client::ClientClose() {
 	if (_M_HClientSocket != NULL) {
 		closesocket(_M_HClientSocket);
-		_M_BIsConnectedClient = false;
 	}
+	IsConnectedClient = false;
 }
 
 bool Telepathy::Client::ClientReceiving() {
@@ -314,6 +305,23 @@ bool Telepathy::Client::ClientReceiving() {
 	return true;
 }
 
+bool Telepathy::Client::ClientConnect() {
+	if (connect(_M_HClientSocket, (sockaddr *)&_M_ClientAddress, sizeof(_M_ClientAddress))){
+		ClientClose();
+		return false;
+	}
+
+	// 외부 Receive 함수용.
+	TClient = this;
+	IsConnectedClient = true;
+
+	return true;
+}
+
+void Telepathy::Client::ClientDisconnect() {
+	ClientClose();
+}
+
 bool Telepathy::Client::SendData(char *Str) {
 	int _SendStatus = 0;
 
@@ -324,4 +332,5 @@ bool Telepathy::Client::SendData(char *Str) {
 
 	return true;
 }
+
 #pragma endregion Client Class

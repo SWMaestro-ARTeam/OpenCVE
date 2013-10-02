@@ -87,9 +87,11 @@ bool StringTokenizer::StringTokenGo() {
 	int _TTokenPointer = 0;
 	list<string>::iterator _StringIter;
 
+	// if, return Key or Empty that return false.
 	if (_TempString.c_str() == "\r" || _TempString.c_str() == "" || _TempString.empty())
 		return false;
 
+	// Go Tokening.
 	while ((_TTokenPointer = _TempString.find_first_of(_Token)) != _TempString.npos) {
 		if (_TTokenPointer > 0)
 			_StringList->push_back(_TempString.substr(0, _TTokenPointer));

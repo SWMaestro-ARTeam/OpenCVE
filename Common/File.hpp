@@ -23,47 +23,30 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ProcessConfirm_hpp_
-#define _ProcessConfirm_hpp_
+#ifndef _File_hpp_
+#define _File_hpp_
 
-#include "Common.hpp"
+#define WINDOWS 1
+//#include "Common.hpp"
+#include "CodeConverter.hpp"
 
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
-
-// Process Confirm용 Windows Library.
 #if WINDOWS
 #include <windows.h>
-#include <TlHelp32.h>
-#elif OTHER
+#else
+#include <unistd.h>
+#include <sys/types.h>
+#include <dirent.h>
 #endif
 
-class ProcessConfirm {
+class File {
 private:
-#if WINDOWS
-	// Windows에서의 Process를 위한 Handle, Process Entry.
-	HANDLE _HProcess;
-	PROCESSENTRY32 _PE32;
-#elif OTHER
-#endif
-
-	bool FindProcess(char *szNameOfProcess);
-#if WINDOWS
-	bool GetProcess(DWORD PID, char *ProcessName); // windows용 함수.
-#elif OTHER
-#endif
 public:
-	// Constructor
-	ProcessConfirm();
-	// Destructor
-	~ProcessConfirm();
+	char *GetCurrentPath();
+	char *GetCurrentFullPath();
+	char *GetCurrentProcessName();
 
-	bool IsProcessActive;
-
-	bool CheckFileExist(char *ProcessName);
-	bool CheckProcess(char *ProcessName);
-	void CreateProcessOnThread(char *ProcessName);
+	bool CheckFileExist(char *FileName);
 };
-
 #endif

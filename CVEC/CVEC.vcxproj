@@ -80,10 +80,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Common\CodeConverter.cpp" />
+    <ClCompile Include="..\Common\File.cpp" />
+    <ClCompile Include="..\Common\InternalProtocolSeeker.cpp" />
     <ClCompile Include="..\Common\ProcessConfirm.cpp" />
     <ClCompile Include="..\Common\StringTokenizer.cpp" />
     <ClCompile Include="..\Common\Telepathy.cpp" />
-    <ClCompile Include="InternalProtocolSeeker.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Option.cpp" />
     <ClCompile Include="UCICommandSeeker.hpp" />
@@ -91,14 +93,16 @@
     <ClCompile Include="Engine.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Common\CodeConverter.hpp" />
     <ClInclude Include="..\Common\Common.hpp" />
     <ClInclude Include="..\Common\ExtendedBlackBox.hpp" />
+    <ClInclude Include="..\Common\File.hpp" />
+    <ClInclude Include="..\Common\GlobalVariables.hpp" />
+    <ClInclude Include="..\Common\InternalProtocol.hpp" />
+    <ClInclude Include="..\Common\InternalProtocolSeeker.hpp" />
     <ClInclude Include="..\Common\ProcessConfirm.hpp" />
     <ClInclude Include="..\Common\StringTokenizer.hpp" />
     <ClInclude Include="..\Common\Telepathy.hpp" />
-    <ClInclude Include="GlobalVariables.hpp" />
-    <ClInclude Include="InternalProtocol.hpp" />
-    <ClInclude Include="InternalProtocolSeeker.hpp" />
     <ClInclude Include="Option.hpp" />
     <ClInclude Include="UCICommand.hpp" />
     <ClInclude Include="Engine.hpp" />

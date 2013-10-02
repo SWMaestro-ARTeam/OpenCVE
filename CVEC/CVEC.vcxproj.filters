@@ -68,7 +68,13 @@
     <ClCompile Include="Option.cpp">
       <Filter>Engine\Source</Filter>
     </ClCompile>
-    <ClCompile Include="InternalProtocolSeeker.cpp">
+    <ClCompile Include="..\Common\InternalProtocolSeeker.cpp">
+      <Filter>Common\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\File.cpp">
+      <Filter>Common\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\CodeConverter.cpp">
       <Filter>Common\Source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -97,13 +103,19 @@
     <ClInclude Include="Option.hpp">
       <Filter>Engine\Header</Filter>
     </ClInclude>
-    <ClInclude Include="InternalProtocol.hpp">
+    <ClInclude Include="..\Common\GlobalVariables.hpp">
       <Filter>Common\Header</Filter>
     </ClInclude>
-    <ClInclude Include="GlobalVariables.hpp">
+    <ClInclude Include="..\Common\InternalProtocol.hpp">
       <Filter>Common\Header</Filter>
     </ClInclude>
-    <ClInclude Include="InternalProtocolSeeker.hpp">
+    <ClInclude Include="..\Common\InternalProtocolSeeker.hpp">
+      <Filter>Common\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\File.hpp">
+      <Filter>Common\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\CodeConverter.hpp">
       <Filter>Common\Header</Filter>
     </ClInclude>
   </ItemGroup>

@@ -23,47 +23,22 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ProcessConfirm_hpp_
-#define _ProcessConfirm_hpp_
+#ifndef _CodeConverter_hpp_
+#define _CodeConverter_hpp_
 
 #include "Common.hpp"
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-
-// Process Confirm용 Windows Library.
 #if WINDOWS
 #include <windows.h>
-#include <TlHelp32.h>
-#elif OTHER
 #endif
+#include <cstdio>
 
-class ProcessConfirm {
+#define ASSERT(x)
+
+class CodeConverter {
 private:
-#if WINDOWS
-	// Windows에서의 Process를 위한 Handle, Process Entry.
-	HANDLE _HProcess;
-	PROCESSENTRY32 _PE32;
-#elif OTHER
-#endif
-
-	bool FindProcess(char *szNameOfProcess);
-#if WINDOWS
-	bool GetProcess(DWORD PID, char *ProcessName); // windows용 함수.
-#elif OTHER
-#endif
 public:
-	// Constructor
-	ProcessConfirm();
-	// Destructor
-	~ProcessConfirm();
-
-	bool IsProcessActive;
-
-	bool CheckFileExist(char *ProcessName);
-	bool CheckProcess(char *ProcessName);
-	void CreateProcessOnThread(char *ProcessName);
+	wchar_t *CharToWChar(const char *pstrSrc);
+	char *WCharToChar(const wchar_t* pwstrSrc);
 };
-
 #endif

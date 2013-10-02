@@ -42,6 +42,8 @@
 #include "InternalProtocolSeeker.hpp"
 // Process Confirm Module
 #include "ProcessConfirm.hpp"
+// File Utility
+#include "File.hpp"
 // UCI Command Seeker
 #include "UCICommandSeeker.hpp"
 // String Tokenizer
@@ -60,6 +62,7 @@ private:
 	Telepathy::Client *_TClient;
 	ProcessConfirm *_ProcessConfirm;
 	UCICommandSeeker _UCICommandSeeker;
+	File _File;
 
 	// Functions
 	void Initialize_CommandStr();
@@ -68,8 +71,8 @@ private:
 	void Initialize_CVEOption();
 	void Deinitialize_CVEOption();
 
-	bool Initialize_ClientSocket();
-	void Deinitialize_ClientSocket();
+	bool Initialize_TClient();
+	void Deinitialize_TClient();
 
 	void Initialize_ProcessConfirm();
 	void Deinitialize_ProcessConfirm();
@@ -115,6 +118,9 @@ public:
 	//bool isServerOrClient;
 	bool ParserEnable;
 	// Functions
+	bool Connect_Server();
+	void Disconnect_Server();
+
 	bool Get_CVESProcessStatus();
 	bool Get_CVESConnectionStatus();
 	Telepathy::Client* Get_Client();

@@ -29,6 +29,7 @@
 #include <list>
 #include <string>
 
+using namespace std;
 #pragma region struct_CommandString
 // Define UCICommandString
 typedef struct CommandString {

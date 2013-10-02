@@ -35,6 +35,9 @@ ProcessConfirm::ProcessConfirm() {
 	PC = this;
 }
 
+ProcessConfirm::~ProcessConfirm() {
+}
+
 bool ProcessConfirm::GetProcess(DWORD PID, char *ProcessName) {
 #if WINDOWS
 	HANDLE _HModuleSnap = NULL; 
@@ -88,8 +91,6 @@ bool ProcessConfirm::CheckProcess(char *ProcessName){
 
 UINT ExecProcessLoopThread(LPVOID Param) {
 	char *_Str = (char *)Param;
-	// Proess Active.
-	PC->IsProcessActive = true;
 
 	//while (1) {
 	STARTUPINFO _StartUpInfo;
@@ -115,6 +116,8 @@ UINT ExecProcessLoopThread(LPVOID Param) {
 		PC->IsProcessActive = false;
 		return 0;
 	}
+	// Proess Active.
+	PC->IsProcessActive = true;
 
 	// Wait until child process exits.
 	// 기다리다가 프로세스가 죽으면 이 이후로 통과할 것이다.
@@ -130,5 +133,6 @@ UINT ExecProcessLoopThread(LPVOID Param) {
 }
 
 void ProcessConfirm::CreateProcessOnThread(char *ProcessName) {
+	//UINT _TThreadValue;
 	AfxBeginThread(ExecProcessLoopThread, (char *)ProcessName);
 }

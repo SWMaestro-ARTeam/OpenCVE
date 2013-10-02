@@ -97,10 +97,11 @@ public:
 		SOCKADDR_IN _M_ClientAddress;
 #elif OTHER
 #endif		
-		bool _M_BIsConnectedClient;
 	public:
 		Client();
 		~Client();
+
+		bool IsConnectedClient;
 
 		// client Callback
 		typedef void (* _T_CLIENTRECEIVEDCALLBACK)(char *Buffer);
@@ -109,6 +110,9 @@ public:
 		void ClientReceiveStart();
 		void ClientClose();
 		bool ClientReceiving();
+
+		bool ClientConnect();
+		void ClientDisconnect();
 
 		bool SendData(char *Str);
 
