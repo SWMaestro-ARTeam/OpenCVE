@@ -85,7 +85,6 @@ void Img_Process::Do_imgprocess(){
 			if(img_createCheck == true){ cvReleaseImage(&img_Chess), img_createCheck = false;}
 			cvDrawRect(img_Cam, cvPoint(ImgProcess_ROI.x, ImgProcess_ROI.y), cvPoint(ImgProcess_ROI.x + ImgProcess_ROI.width, ImgProcess_ROI.y + ImgProcess_ROI.height), cvScalar(255), 2);
 			cvShowImage("CVES", img_Cam);
-			cvSaveImage("chess.jpg", img_Cam);
 			cvWaitKey(33);
 			break;
 		case 1:							//관심영역 재설정 선택 OR 체스보드 인식 확인부
@@ -103,7 +102,7 @@ void Img_Process::Do_imgprocess(){
 
 			//Chessboard recognition;
 			Find_Chess.Copy_Img(img_Chess);
-			Find_Chess.Chess_recog_wrapper(img_Cam, &CP);
+			Find_Chess.Chess_recog_wrapper(img_Cam, &cross_point);
 
 			key_wait = cvWaitKey(10);
 			if(key_wait == 27)					ImgProcess_Mode++;
@@ -123,14 +122,14 @@ void Img_Process::Do_imgprocess(){
 
 				//Chessboard recognition;
 				Find_Chess.Copy_Img(img_Chess);
-				Find_Chess.Chess_recog_wrapper(img_Cam, &CP);
+				Find_Chess.Chess_recog_wrapper(img_Cam, &cross_point);
 
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				///////////////////////////////////////////////////////차영상 및 조건판정 부분///////////////////////////////////////////////
-				if(CP.size() != 81){								//초기화			
-					//Find_Chess.Chess_recog_wrapper(img_Cam, &CP);
+				if(cross_point.size() != 81){								//초기화			
+					//Find_Chess.Chess_recog_wrapper(img_Cam, &cross_point);
 				}
-				else if(CP.size() == 81) {
+				else if(cross_point.size() == 81) {
 					if(Sub_check == false) {
 						//손이 들어오기 직전 영상을 촬영
 						Find_Hand.Sub_prevFrame(img_Chess, img_Skin, BeforeHand_first);					//실시간 차영상->턴별 차영상
@@ -140,7 +139,7 @@ void Img_Process::Do_imgprocess(){
 						cvShowImage("img_Skin",img_Skin);
 #endif
 						//물체가 체스보드 위로 들어옴
-						if(Check_InChessboard(img_Skin, CP)){
+						if(Check_InChessboard(img_Skin, cross_point)){
 							cvCopy(img_Chess, prev_img);
 	#ifdef DEBUG
 							cvShowImage("PREV", prev_img);
@@ -149,7 +148,7 @@ void Img_Process::Do_imgprocess(){
 							Sub_check = true;
 						}
 						else {
-							//Find_Chess.Chess_recog_wrapper(img_Cam, &CP);
+							//Find_Chess.Chess_recog_wrapper(img_Cam, &cross_point);
 						}
 					}
 					else {
@@ -175,7 +174,7 @@ void Img_Process::Do_imgprocess(){
 						CBlob.GetSideBlob(img_Skin, &piece_idx);
 						Compose_diffImage(img_Chess, img_Skin, cvScalar(100,100,255));
 						cvDilate(img_Skin, img_Skin, 0, 5);
-						if (Check_InChessboard(img_Skin, CP)) {						//img_Skin은 손 추정물체만 남긴 이미지
+						if (Check_InChessboard(img_Skin, cross_point)) {						//img_Skin은 손 추정물체만 남긴 이미지
 							InHand_Check = true;
 						}
 						else if (InHand_Check == true) {
@@ -208,10 +207,10 @@ void Img_Process::Do_imgprocess(){
 								//	}
 
 								//	temp = CBlob.m_recBlobs[piece_idx.at(0)];
-								//	Left = Get_Chessidx(cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), CP);
+								//	Left = Get_Chessidx(cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), cross_point);
 								//	cvCircle(img_Chess, cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), 3, cvScalar(0,0,255));
 								//	temp = CBlob.m_recBlobs[piece_idx.at(1)];
-								//	Right = Get_Chessidx(cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), CP);
+								//	Right = Get_Chessidx(cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), cross_point);
 								//	cvCircle(img_Chess, cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), 3, cvScalar(0,0,255));
 								//	printf("(%d,%d), (%d,%d)\n",Left.x, Left.y, Right.x, Right.y);
 
@@ -221,9 +220,9 @@ void Img_Process::Do_imgprocess(){
 								//else if(piece_idx.size() == 1) {
 								//	//겹쳐버렸을때
 								//	temp = CBlob.m_recBlobs[piece_idx.at(0)];
-								//	Left = Get_Chessidx(cvPoint(temp.x+temp.width/2, temp.y+temp.height/2+temp.height/3*2), CP);
+								//	Left = Get_Chessidx(cvPoint(temp.x+temp.width/2, temp.y+temp.height/2+temp.height/3*2), cross_point);
 								//	cvCircle(img_Chess, cvPoint(temp.x+temp.width/2, temp.y+temp.height/2+temp.height/3*2), 3, cvScalar(0,0,255)); 
-								//	Right = Get_Chessidx(cvPoint(temp.x+temp.width/2, temp.y+temp.height/3), CP);
+								//	Right = Get_Chessidx(cvPoint(temp.x+temp.width/2, temp.y+temp.height/3), cross_point);
 								//	cvCircle(img_Chess, cvPoint(temp.x+temp.width/2, temp.y+temp.height/3), 3, cvScalar(0,0,255));
 								//	printf("(%d,%d), (%d,%d)\n",Left.x, Left.y, Right.x, Right.y);
 
@@ -232,10 +231,10 @@ void Img_Process::Do_imgprocess(){
 								//}
 								//else if(piece_idx.size() == 2) {						//딱 두개 추적
 								//	temp = CBlob.m_recBlobs[piece_idx.at(0)];
-								//	Left = Get_Chessidx(cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), CP);
+								//	Left = Get_Chessidx(cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), cross_point);
 								//	cvCircle(img_Chess, cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), 3, cvScalar(0,0,255));
 								//	temp = CBlob.m_recBlobs[piece_idx.at(1)];
-								//	Right = Get_Chessidx(cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), CP);
+								//	Right = Get_Chessidx(cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), cross_point);
 								//	cvCircle(img_Chess, cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), 3, cvScalar(0,0,255));
 								//	printf("(%d,%d), (%d,%d)\n",Left.x, Left.y, Right.x, Right.y);
 
@@ -355,11 +354,11 @@ bool Img_Process::Check_imgZero(IplImage *img){
 		return true;
 }
 
-CvPoint Img_Process::Get_Chessidx(CvPoint point, vector<Chess_point> CP){
-	for(int i = 0; i < CP.size() - 10; i++){
-		if(CP.at(i).Cordinate.x <= point.x && CP.at(i).Cordinate.y <= point.y){
-			if(CP.at(i+10).Cordinate.x > point.x && CP.at(i+10).Cordinate.y > point.y)
-				return CP.at(i).index;
+CvPoint Img_Process::Get_Chessidx(CvPoint point, vector<Chess_point> cross_point){
+	for(int i = 0; i < cross_point.size() - 10; i++){
+		if(cross_point.at(i).Cordinate.x <= point.x && cross_point.at(i).Cordinate.y <= point.y){
+			if(cross_point.at(i+10).Cordinate.x > point.x && cross_point.at(i+10).Cordinate.y > point.y)
+				return cross_point.at(i).index;
 		}
 	}
 	return cvPoint(-1,-1);

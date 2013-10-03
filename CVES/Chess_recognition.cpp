@@ -320,12 +320,17 @@ UINT WINAPI Chess_recognition::thread_GH(void *arg){
 
 	while(1){
 		EnterCriticalSection(&(p->cs));
-		cvConvert(p->img_process, gray);
+		if(p->img_process->nChannels != 1)
+			cvConvert(p->img_process, gray);
+		else
+			cvCopy(p->img_process, gray);
 		LeaveCriticalSection(&p->cs);
 
 		EnterCriticalSection(&p->vec_cs);
 		p->Chess_recognition_process(gray, &p->CP);
 		LeaveCriticalSection(&p->vec_cs);
+
+		Sleep(10);
 
 		if(p->thread_exit == true)	break;
 	}
@@ -393,11 +398,11 @@ void Chess_recognition::Chess_recognition_process(IplImage *src, vector<Chess_po
 	GetLinegrayScale(src, Linefindcount_x, Linefindcount_y);
 	GetgraySidelinesPoint(src);
 
-	if((src->height/5)*3 + Linefindcount_x >= src->height - 5 && (in_line_point_x1.size() != 9 || in_line_point_x2.size() != 9)) flag_x = false;
-	if(Linefindcount_y > 150 && (in_line_point_y1.size() != 9 || in_line_point_y2.size() != 9)) flag_y = false;
+	if(Linefindcount_x >= 150 && (in_line_point_x1.size() != 9 || in_line_point_x2.size() != 9)) flag_x = false;
+	if(Linefindcount_y >= 150 && (in_line_point_y1.size() != 9 || in_line_point_y2.size() != 9)) flag_y = false;
 
-	if((src->height/5)*2 - Linefindcount_x <= 1 && (in_line_point_x1.size() != 9 || in_line_point_x2.size() != 9)) flag_x = true;
-	if(Linefindcount_y < 1 && (in_line_point_y1.size() != 9 || in_line_point_y2.size() != 9)) flag_y = true;
+	if(Linefindcount_x <= 1 && (in_line_point_x1.size() != 9 || in_line_point_x2.size() != 9)) flag_x = true;
+	if(Linefindcount_y <= 1 && (in_line_point_y1.size() != 9 || in_line_point_y2.size() != 9)) flag_y = true;
 
 	if(in_line_point_x1.size() == 9 && in_line_point_x2.size() ==  9 && in_line_point_y1.size() == 9 && in_line_point_y2.size() == 9){
 		GetSquarePoint(src);
@@ -866,7 +871,7 @@ void Chess_recognition::Chess_recog_wrapper(IplImage *src, vector<Chess_point> *
 		EnterCriticalSection(&vec_cs);
 		copy(CP.begin(), CP.end(),  back_inserter(*point));
 		LeaveCriticalSection(&vec_cs);
-		/*Chess_recognition_process(point);*/
+		//Chess_recognition_process(point);
 		Refine_CrossPoint(point);
 		drawPoint(src, *point);
 	}
