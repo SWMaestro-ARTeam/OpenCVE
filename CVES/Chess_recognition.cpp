@@ -398,8 +398,8 @@ void Chess_recognition::Chess_recognition_process(IplImage *src, vector<Chess_po
 	GetLinegrayScale(src, Linefindcount_x, Linefindcount_y);
 	GetgraySidelinesPoint(src);
 
-	if(Linefindcount_x >= 150 && (in_line_point_x1.size() != 9 || in_line_point_x2.size() != 9)) flag_x = false;
-	if(Linefindcount_y >= 150 && (in_line_point_y1.size() != 9 || in_line_point_y2.size() != 9)) flag_y = false;
+	if(Linefindcount_x >= (src->width/5)*2 && (in_line_point_x1.size() != 9 || in_line_point_x2.size() != 9)) flag_x = false;
+	if(Linefindcount_y >= (src->height/5)*2 && (in_line_point_y1.size() != 9 || in_line_point_y2.size() != 9)) flag_y = false;
 
 	if(Linefindcount_x <= 1 && (in_line_point_x1.size() != 9 || in_line_point_x2.size() != 9)) flag_x = true;
 	if(Linefindcount_y <= 1 && (in_line_point_y1.size() != 9 || in_line_point_y2.size() != 9)) flag_y = true;
@@ -483,10 +483,10 @@ void Chess_recognition::GetgraySidelinesPoint(IplImage *chess_image){
 	line_point_x1.x1 = line_point_x1.x2 = line_point_x2.x1 = line_point_x2.x2 = line_point_x_mid.x1 = line_point_x_mid.x2 = chess_image->width/2;
 	line_point_y1.y1 = line_point_y1.y2 = line_point_y2.y1 = line_point_y2.y2 = line_point_y_mid.y1 = line_point_y_mid.y1 = chess_image->height/2;
 
-	bool change_flag_line_x1_t, change_flag_line_x1_t1, change_flag_line_x1_t2;
-
-	change_flag_line_x1_t1 = 127 > line_x1[0].grayscale ? true : false;
-	change_flag_line_x1_t2 = 127 > line_x1[1].grayscale ? true : false;
+// 	bool change_flag_line_x1_t, change_flag_line_x1_t1, change_flag_line_x1_t2;
+// 
+// 	change_flag_line_x1_t1 = 127 > line_x1[0].grayscale ? true : false;
+// 	change_flag_line_x1_t2 = 127 > line_x1[1].grayscale ? true : false;
 
 	for(int i=0;i<line_x1.size()-10;i++){
 		if((i%2 == 1) && (jump_count_p1 > 0)){
@@ -496,13 +496,13 @@ void Chess_recognition::GetgraySidelinesPoint(IplImage *chess_image){
 			jump_count_m1--;
 		}
 		else{
-			bool change_flag_t;
-			change_flag_t = 127 > line_x1[i].grayscale ? true : false;
+// 			bool change_flag_t;
+// 			change_flag_t = 127 > line_x1[i].grayscale ? true : false;
+// 
+// 			if(i%2 == 0) change_flag_line_x1_t = change_flag_line_x1_t1;
+// 			else change_flag_line_x1_t = change_flag_line_x1_t2;
 
-			if(i%2 == 0) change_flag_line_x1_t = change_flag_line_x1_t1;
-			else change_flag_line_x1_t = change_flag_line_x1_t2;
-			
-			if(abs(line_x1[i].grayscale - line_x1[i+2].grayscale) >= 30 && change_flag_t == change_flag_line_x1_t){
+			if(abs(line_x1[i].grayscale - line_x1[i+2].grayscale) >= 30 /*&& change_flag_t == change_flag_line_x1_t*/){
 				int flag = true;
 				for(int j=1;j<=3;j++){
 					if(abs(line_x1[i].grayscale - line_x1[i+(j*2)].grayscale) < 30){
@@ -527,11 +527,11 @@ void Chess_recognition::GetgraySidelinesPoint(IplImage *chess_image){
 						line_count_x1++;
 						cvCircle(chess_image, cvPoint(line_x1[i].x, line_x1[i].y),5,cvScalar(255,255,255));
 
-						if(i%2 == 0) change_flag_line_x1_t1 = !change_flag_t;
-						else change_flag_line_x1_t2 = !change_flag_t;
+// 						if(i%2 == 0) change_flag_line_x1_t1 = !change_flag_t;
+// 						else change_flag_line_x1_t2 = !change_flag_t;
 					}
-					if(i%2 == 1) jump_count_p1 = jump_count_x;
-					else jump_count_m1 = jump_count_x;	
+					if(i%2 == 1) jump_count_p1 = 30;
+					else jump_count_m1 = 30;	
 				}
 			}
 		}
@@ -549,13 +549,13 @@ void Chess_recognition::GetgraySidelinesPoint(IplImage *chess_image){
 			jump_count_m2--;
 		}
 		else{
-			bool change_flag_t;
-			change_flag_t = 127 > line_x2[i].grayscale ? true : false;
+// 			bool change_flag_t;
+// 			change_flag_t = 127 > line_x2[i].grayscale ? true : false;
+// 
+// 			if(i%2 == 0) change_flag_line_x2_t = change_flag_line_x2_t1;
+// 			else change_flag_line_x2_t = change_flag_line_x2_t2;
 
-			if(i%2 == 0) change_flag_line_x2_t = change_flag_line_x2_t1;
-			else change_flag_line_x2_t = change_flag_line_x2_t2;
-
-			if(abs(line_x2[i].grayscale - line_x2[i+2].grayscale) >= 30 && change_flag_t == change_flag_line_x2_t){
+			if(abs(line_x2[i].grayscale - line_x2[i+2].grayscale) >= 30 /*&& change_flag_t == change_flag_line_x2_t*/){
 				int flag = true;
 				for(int j=1;j<=3;j++){
 					if(abs(line_x2[i].grayscale - line_x2[i+(j*2)].grayscale) < 30){
@@ -580,11 +580,11 @@ void Chess_recognition::GetgraySidelinesPoint(IplImage *chess_image){
 						line_count_x2++;
 						cvCircle(chess_image, cvPoint(line_x2[i].x, line_x2[i].y),5,cvScalar(255,255,255));
 
-						if(i%2 == 0) change_flag_line_x2_t1 = !change_flag_t;
-						else change_flag_line_x2_t2 = !change_flag_t;
+// 						if(i%2 == 0) change_flag_line_x2_t1 = !change_flag_t;
+// 						else change_flag_line_x2_t2 = !change_flag_t;
 					}
-					if(i%2 == 1) jump_count_p2 = jump_count_x;
-					else jump_count_m2 = jump_count_x;
+					if(i%2 == 1) jump_count_p2 = 30;
+					else jump_count_m2 = 30;
 				}
 			}
 		}
@@ -595,10 +595,10 @@ void Chess_recognition::GetgraySidelinesPoint(IplImage *chess_image){
 
 	jump_count_p1 = jump_count_p2 = jump_count_p3 = jump_count_m1 = jump_count_m2 = jump_count_m3 = 0;
 
-	bool change_flag_line_y1_t, change_flag_line_y1_t1, change_flag_line_y1_t2;
-
-	change_flag_line_y1_t1 = 127 > line_y1[0].grayscale ? true : false;
-	change_flag_line_y1_t2 = 127 > line_y1[1].grayscale ? true : false;
+// 	bool change_flag_line_y1_t, change_flag_line_y1_t1, change_flag_line_y1_t2;
+// 
+// 	change_flag_line_y1_t1 = 127 > line_y1[0].grayscale ? true : false;
+// 	change_flag_line_y1_t2 = 127 > line_y1[1].grayscale ? true : false;
 
 
 	for(int i=0;i<line_y1.size()-10;i++){
@@ -609,13 +609,13 @@ void Chess_recognition::GetgraySidelinesPoint(IplImage *chess_image){
 			jump_count_m1--;
 		}
 		else{
-			bool change_flag_t;
-			change_flag_t = 127 > line_y1[i].grayscale ? true : false;
+// 			bool change_flag_t;
+// 			change_flag_t = 127 > line_y1[i].grayscale ? true : false;
+// 
+// 			if(i%2 == 0) change_flag_line_y1_t = change_flag_line_y1_t1;
+// 			else change_flag_line_y1_t = change_flag_line_y1_t2;
 
-			if(i%2 == 0) change_flag_line_y1_t = change_flag_line_y1_t1;
-			else change_flag_line_y1_t = change_flag_line_y1_t2;
-
-			if(abs(line_y1[i].grayscale - line_y1[i+2].grayscale) >= 30 && change_flag_t == change_flag_line_y1_t){
+			if(abs(line_y1[i].grayscale - line_y1[i+2].grayscale) >= 30/* && change_flag_t == change_flag_line_y1_t*/){
 				int flag = true;
 				for(int j=1;j<=3;j++){
 					if(abs(line_y1[i].grayscale - line_y1[i+j*2].grayscale) < 30){
@@ -640,19 +640,19 @@ void Chess_recognition::GetgraySidelinesPoint(IplImage *chess_image){
 						line_count_y1++;
 						cvCircle(chess_image, cvPoint(line_y1[i].x, line_y1[i].y),5,cvScalar(255,255,255));
 
-						if(i%2 == 0) change_flag_line_y1_t1 = !change_flag_t;
-						else change_flag_line_y1_t2 = !change_flag_t;
+// 						if(i%2 == 0) change_flag_line_y1_t1 = !change_flag_t;
+// 						else change_flag_line_y1_t2 = !change_flag_t;
 					}
-					if(i%2 == 1) jump_count_p1 = jump_count_y;
-					else jump_count_m1 = jump_count_y;
+					if(i%2 == 1) jump_count_p1 = 30;
+					else jump_count_m1 = 30;
 				}
 			}
 		}
 
-		bool change_flag_line_y2_t, change_flag_line_y2_t1, change_flag_line_y2_t2;
-
-		change_flag_line_y2_t1 = 127 > line_y2[0].grayscale ? true : false;
-		change_flag_line_y2_t2 = 127 > line_y2[1].grayscale ? true : false;
+// 		bool change_flag_line_y2_t, change_flag_line_y2_t1, change_flag_line_y2_t2;
+// 
+// 		change_flag_line_y2_t1 = 127 > line_y2[0].grayscale ? true : false;
+// 		change_flag_line_y2_t2 = 127 > line_y2[1].grayscale ? true : false;
 
 		if((i%2 == 1) && (jump_count_p2 > 0)){
 			jump_count_p2--;
@@ -661,13 +661,13 @@ void Chess_recognition::GetgraySidelinesPoint(IplImage *chess_image){
 			jump_count_m2--;
 		}
 		else{
-			bool change_flag_t;
-			change_flag_t = 127 > line_y2[i].grayscale ? true : false;
+// 			bool change_flag_t;
+// 			change_flag_t = 127 > line_y2[i].grayscale ? true : false;
+// 
+// 			if(i%2 == 0) change_flag_line_y2_t = change_flag_line_y2_t1;
+// 			else change_flag_line_y2_t = change_flag_line_y2_t2;
 
-			if(i%2 == 0) change_flag_line_y2_t = change_flag_line_y2_t1;
-			else change_flag_line_y2_t = change_flag_line_y2_t2;
-
-			if(abs(line_y2[i].grayscale - line_y2[i+2].grayscale) >= 30 && change_flag_t == change_flag_line_y2_t){
+			if(abs(line_y2[i].grayscale - line_y2[i+2].grayscale) >= 30 /*&& change_flag_t == change_flag_line_y2_t*/){
 				int flag = true;
 				for(int j=1;j<=3;j++){
 					if(abs(line_y2[i].grayscale - line_y2[i+j*2].grayscale) < 30){
@@ -692,12 +692,12 @@ void Chess_recognition::GetgraySidelinesPoint(IplImage *chess_image){
 						line_count_y2++;
 						cvCircle(chess_image, cvPoint(line_y2[i].x, line_y2[i].y),5,cvScalar(255,255,255));
 
-						if(i%2 == 0) change_flag_line_y2_t1 = !change_flag_t;
-						else change_flag_line_y2_t2 = !change_flag_t;
+// 						if(i%2 == 0) change_flag_line_y2_t1 = !change_flag_t;
+// 						else change_flag_line_y2_t2 = !change_flag_t;
 					}
 
-					if(i%2 == 1) jump_count_p2 = jump_count_y;
-					else jump_count_m2 = jump_count_y;
+					if(i%2 == 1) jump_count_p2 = 30;
+					else jump_count_m2 = 30;
 				}
 			}
 		}

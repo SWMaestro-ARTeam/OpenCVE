@@ -99,6 +99,7 @@ void Img_Process::Do_imgprocess(){
 			}
 			cvSetImageROI(img_Cam, ImgProcess_ROI);
 			cvCopy(img_Cam, img_Chess);
+			cvResetImageROI(img_Cam);
 
 			//Chessboard recognition;
 			Find_Chess.Copy_Img(img_Chess);
@@ -108,7 +109,6 @@ void Img_Process::Do_imgprocess(){
 			if(key_wait == 27)					ImgProcess_Mode++;
 			else if(key_wait != -1)				ImgProcess_Mode+=2;
 
-			cvResetImageROI(img_Cam);
 			cvDrawRect(img_Cam, cvPoint(ImgProcess_ROI.x, ImgProcess_ROI.y), cvPoint(ImgProcess_ROI.x + ImgProcess_ROI.width, ImgProcess_ROI.y + ImgProcess_ROI.height), cvScalar(255), 2);
 			cvPutText(img_Cam, "If U want start, Press 'ESC' else Press Any Key", cvPoint(30, 30), &cvFont(1.0), cvScalar(0,100,100));
 			cvShowImage("CVES", img_Cam);
