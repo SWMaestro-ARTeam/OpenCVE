@@ -26,25 +26,12 @@
 #ifndef _Common_hpp_
 #define _Common_hpp_
 
-#if defined(_WIN32) || defined(_WIN64)
-#define WINDOWS 1
-#elif
-#define OTHER 1
-#endif
+#include "SystemDependency.hpp"
 
-#define BUFFER_MAX_1024 1024
-#define BUFFER_MAX_32767 32767
-#define BUFFER_MAX_65535 65535
-
-// 전역 함수들을 위한 Define
-#if WINDOWS
-#define _AFXDLL
-#include <afxwin.h>
-
+#if WINDOWS_SYS
 #define SERVER_ENGINE_EXEC_FILENAME "CVES.exe"
 #define CLIENT_ENGINE_EXEC_FILENAME "CVEC.exe"
-#elif
-
+#elif POSIX_SYS
 #define SERVER_ENGINE_EXEC_FILENAME "CVES"
 #define CLIENT_ENGINE_EXEC_FILENAME "CVEC"
 #endif

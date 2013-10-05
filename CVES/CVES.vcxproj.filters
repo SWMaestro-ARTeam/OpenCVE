@@ -45,9 +45,6 @@
     <ClInclude Include="..\Common\ExtendedBlackBox.hpp">
       <Filter>Common\Header</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\ProcessConfirm.hpp">
-      <Filter>Common\Header</Filter>
-    </ClInclude>
     <ClInclude Include="..\Common\Telepathy.hpp">
       <Filter>Common\Header</Filter>
     </ClInclude>
@@ -68,9 +65,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Common\ProcessConfirm.cpp">
-      <Filter>Common\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\Common\Telepathy.cpp">
       <Filter>Common\Source</Filter>
     </ClCompile>

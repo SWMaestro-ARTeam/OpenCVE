@@ -29,7 +29,8 @@
 char *File::GetCurrentPath() {
 	char *_TStrFullPath = GetCurrentFullPath();
 	char *_TStrProcess = GetCurrentProcessName();
-	char *_TStrBuff = new char[MAX_PATH];
+	//char *_TStrBuff = new char[MAX_PATH];
+	char _TStrBuff[MAX_PATH];
 
 	memset(_TStrBuff, NULL, sizeof(_TStrBuff));
 	strncpy(_TStrBuff, _TStrFullPath, strlen(_TStrFullPath) - strlen(_TStrProcess));
@@ -44,7 +45,7 @@ char *File::GetCurrentFullPath() {
 	//char *_TStr = new char[MAX_PATH];
 	//char _TStr[MAX_PATH];
 #if UNICODE
-#if WINDOWS
+#if WINDOWS_SYS
 	// for windows unicode.
 	LPWSTR _TStr = new WCHAR[MAX_PATH];
 #endif
@@ -52,7 +53,7 @@ char *File::GetCurrentFullPath() {
 	char *_TStr = new char[MAX_PATH];
 #endif
 	memset(_TStr, NULL, sizeof(_TStr));
-#if WINDOWS
+#if WINDOWS_SYS
 	GetModuleFileName(NULL,
 #if	UNICODE
 		// for windows unicode.
@@ -61,7 +62,7 @@ char *File::GetCurrentFullPath() {
 		(LPSTR)
 #endif
 		_TStr, MAX_PATH);
-#else
+#elif POSIX_SYS
 	// POSIX 표준.
 	getcwd(_TStr, _MAX_PATH);
 #endif
@@ -85,7 +86,7 @@ char *File::GetCurrentProcessName() {
 	// 가장 마지막에 있는 '\' 뒤에는 반드시 파일이 있기 때문이다.
 	// 고로 맨 앞은 현재 파일의 Directory Path.
 	strcpy(_TStrBuff, strrchr(_TStr, '\\') + 1);
-
+	_TStrBuff[strlen(_TStrBuff)] = '\0';
 	return _TStrBuff;
 }
 
@@ -95,17 +96,21 @@ bool File::CheckFileExist(char *FileName) {
 		return false;
 
 	char *_TStr = GetCurrentPath();
+	char _TStrBuff[MAX_PATH];
 	//size_t _TLengthFileNameStr = strlen(FileName) + 1;
 	//size_t _TLengthPathStr = strlen(_TStr) + 1;
-
-	strcat(_TStr, FileName);
+	strcpy(_TStrBuff, _TStr);
+	//strcat(_TStr, FileName);
+	strcat(_TStrBuff, FileName);
+	_TStrBuff[strlen(_TStrBuff)] = '\0';
 	//strncat(_TStr, FileName, _TLengthFileNameStr + 1); 
 
-#if WINDOWS
+#if WINDOWS_SYS
 	CodeConverter _TCodeConverter;
 #if	UNICODE
 	// for windows unicode.
-	LPWSTR _TWCHARStr = _TCodeConverter.CharToWChar((const char *)_TStr);
+	LPWSTR _TWCHARStr = _TCodeConverter.CharToWChar((const char *)_TStrBuff);
+	//LPWSTR _TWCHARStr = _TCodeConverter.CharToWChar((const char *)_TStr);
 #endif
 	DWORD _TDWORD = ::GetFileAttributes(
 #if	UNICODE
@@ -125,7 +130,7 @@ bool File::CheckFileExist(char *FileName) {
 
 	if (_TDWORD == 0xFFFFFFFFL)
 		return false;
-#else
+#elif POSIX_SYS
 	DIR *_TDirPointer = NULL;
 
 	if ((_TDirPointer = opendir(_TStr)) == NULL)

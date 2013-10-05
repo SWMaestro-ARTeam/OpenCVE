@@ -27,32 +27,45 @@
 #define _ProcessConfirm_hpp_
 
 #include "Common.hpp"
+#include "CodeConverter.hpp"
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
 // Process Confirm용 Windows Library.
-#if WINDOWS
+#if WINDOWS_SYS
+	#ifdef _AFXDLL
+#include <afxwin.h>
+	#else
 #include <windows.h>
+	#endif
 #include <TlHelp32.h>
-#elif OTHER
+#elif POSIX_SYS
+
+#include <pthread.h>
+#include <unistd.h>
 #endif
 
 class ProcessConfirm {
 private:
-#if WINDOWS
+#if WINDOWS_SYS
 	// Windows에서의 Process를 위한 Handle, Process Entry.
 	HANDLE _HProcess;
 	PROCESSENTRY32 _PE32;
-#elif OTHER
+	
+#elif POSIX_SYS
+	
 #endif
 
-	bool FindProcess(char *szNameOfProcess);
-#if WINDOWS
-	bool GetProcess(DWORD PID, char *ProcessName); // windows용 함수.
-#elif OTHER
+	bool FindProcess(char *NameOfProcess);
+	bool GetProcess(
+#if WINDOWS_SYS
+		DWORD 
+#elif POSIX_SYS
+		unsigned long
 #endif
+		PID, char *ProcessName); // windows용 함수.
 public:
 	// Constructor
 	ProcessConfirm();

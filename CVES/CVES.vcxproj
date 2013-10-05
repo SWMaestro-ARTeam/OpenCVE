@@ -80,7 +80,6 @@
   <ItemGroup>
     <ClInclude Include="..\Common\Common.hpp" />
     <ClInclude Include="..\Common\ExtendedBlackBox.hpp" />
-    <ClInclude Include="..\Common\ProcessConfirm.hpp" />
     <ClInclude Include="..\Common\StringTokenizer.hpp" />
     <ClInclude Include="..\Common\Telepathy.hpp" />
     <ClInclude Include="BlobLabeling.hpp" />
@@ -89,7 +88,6 @@
     <ClInclude Include="Hand_recognition.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Common\ProcessConfirm.cpp" />
     <ClCompile Include="..\Common\StringTokenizer.cpp" />
     <ClCompile Include="..\Common\Telepathy.cpp" />
     <ClCompile Include="BlobLabeling.cpp" />

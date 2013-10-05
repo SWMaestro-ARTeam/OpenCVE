@@ -42,14 +42,40 @@ Telepathy::Server::~Server() {
 }
 
 #pragma region Server Threads
-UINT Server_ConnectionThread(LPVOID Param) {
+#if WINDOWS_SYS
+	#ifdef _AFXDLL
+//UINT 
+DWORD WINAPI
+	#endif
+#elif POSIX_SYS
+void *
+#endif
+	Server_ConnectionThread(
+#if WINDOWS_SYS
+	LPVOID
+#elif POSIX_SYS
+	void *
+#endif
+	Param) {
 	while (1) 
 		TServer->ServerListentoClient();
 
 	return 0;
 }
 
-UINT Server_ReceivingThread(LPVOID Param) {
+#if WINDOWS_SYS
+//UINT 
+DWORD WINAPI
+#elif POSIX_SYS
+void *
+#endif
+	Server_ReceivingThread(
+#if WINDOWS_SYS
+	LPVOID
+#elif POSIX_SYS
+	void *
+#endif
+	Param) {
 	SOCKET _ClientSocket = (SOCKET) Param;
 
 	while (1) {
@@ -112,9 +138,13 @@ void Telepathy::Server::ServerStart() {
 	}
 	else {
 		// Client 관리 Thread 시작.
-#if WINDOWS
-		AfxBeginThread(Server_ConnectionThread, 0);
-#elif OTHER
+#if WINDOWS_SYS
+	#ifdef _AFXDLL
+		//AfxBeginThread(Server_ConnectionThread, 0);
+		DWORD _TThreadID = 0;
+		CreateThread(NULL, 0, Server_ConnectionThread, 0, 0, &_TThreadID);
+	#endif
+#elif POSIX_SYS
 #endif
 	}
 }
@@ -145,10 +175,24 @@ void Telepathy::Server::ServerListentoClient() {
 		return ;
 
 	// Thread Begin.
-#if WINDOWS
+#if WINDOWS_SYS
 	// windows용.
-	AfxBeginThread(Server_ReceivingThread, (void *)_M_HClientSocket);
-#elif OTHER
+	#ifdef _AFXDLL
+	//AfxBeginThread(Server_ReceivingThread, (void *)_M_HClientSocket);
+	DWORD _TThreadID = 0;
+	CreateThread(NULL, 0, Server_ReceivingThread, (LPVOID)_M_HClientSocket, 0, &_TThreadID);
+	#endif // _AFXDLL
+#elif POSIX_SYS
+	pthread_t _TThread;
+	pthread_attr_t _TThreadAttr;
+	// pthread attribute initialize.
+	pthread_attr_init(&_TThreadAttr);
+	// Detached thread.
+	pthread_attr_setdetachstate(&_TThreadAttr, PTHREAD_CREATE_DETACHED);
+	// User space thread.
+	pthread_attr_setscope(&_TThreadAttr, PTHREAD_SCOPE_SYSTEM);
+	// Create thread.
+	pthread_create(&_TThread, NULL, Server_ReceivingThread, (void *)_M_HClientSocket);
 #endif
 }
 
@@ -160,9 +204,10 @@ bool Telepathy::Server::ServerReceiving(SOCKET ClientSocket) {
 	memset(_Buffer, NULL, sizeof(_Buffer));
 
 	_ReadBufferLength =
-#if WINDOWS
-	recv(ClientSocket, _Buffer, BUFFER_MAX_32767, 0);
-#elif OTHER
+#if WINDOWS_SYS
+		recv(ClientSocket, _Buffer, BUFFER_MAX_32767, 0);
+#elif POSIX_SYS
+
 #endif
 	
 	if (_ReadBufferLength == -1) {
@@ -207,18 +252,33 @@ Telepathy::Client *TClient;
 
 // constructor
 Telepathy::Client::Client(){
+	IsInitializeClient = false;
 	IsConnectedClient = false;
 }
 
 // deconstructor
 Telepathy::Client::~Client(){
-	if (IsConnectedClient == true) {
+	if (IsConnectedClient == true)
 		ClientClose();
-	}
+	IsInitializeClient = false;
 }
 
 #pragma region Client Threads
-UINT Client_ReceivingThread(LPVOID Param) {
+#if WINDOWS_SYS
+	#ifdef _AFXDLL
+//UINT 
+DWORD WINAPI
+	#endif
+#elif POSIX_SYS
+void *
+#endif
+	Client_ReceivingThread(
+#if WINDOWS_SYS
+	LPVOID
+#elif POSIX_SYS
+	void *
+#endif
+	Param) {
 	while (1) {
 		if (TClient->ClientReceiving() == false)
 			break;
@@ -258,6 +318,7 @@ bool Telepathy::Client::ClientInitialize() {
 	// port 사용
 	_M_ClientAddress.sin_port = htons((u_short)CVE_PORT);
 
+	IsInitializeClient = true;
 	return true;
 }
 
@@ -267,9 +328,23 @@ void Telepathy::Client::ClientReceiveStart() {
 	}
 	else {
 		// Client 관리 Thread 시작.
-#if WINDOWS
-		AfxBeginThread(Client_ReceivingThread, 0);
-#elif OTHER
+#if WINDOWS_SYS
+	#ifdef _AFXDLL
+		//AfxBeginThread(Client_ReceivingThread, 0);
+		DWORD _TThreadID = 0;
+		CreateThread(NULL, 0, Client_ReceivingThread, 0, 0, &_TThreadID);
+	#endif
+#elif POSIX_SYS
+		pthread_t _TThread;
+		pthread_attr_t _TThreadAttr;
+		// pthread attribute initialize.
+		pthread_attr_init(&_TThreadAttr);
+		// Detached thread.
+		pthread_attr_setdetachstate(&_TThreadAttr, PTHREAD_CREATE_DETACHED);
+		// User space thread.
+		pthread_attr_setscope(&_TThreadAttr, PTHREAD_SCOPE_SYSTEM);
+		// Create thread.
+		pthread_create(&_TThread, NULL, Server_ReceivingThread, (void *)_M_HClientSocket);
 #endif
 	}
 }
@@ -288,9 +363,10 @@ bool Telepathy::Client::ClientReceiving() {
 	memset(_Buffer, NULL, sizeof(_Buffer));
 
 	_ReadBufferLength =
-#if WINDOWS
+#if WINDOWS_SYS
 		recv(_M_HClientSocket, _Buffer, BUFFER_MAX_32767, 0);
-#elif OTHER
+#elif POSIX_SYS
+
 #endif
 
 	if (_ReadBufferLength == -1) {

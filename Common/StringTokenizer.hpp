@@ -31,11 +31,6 @@
 #include <string>
 #include <list>
 
-//#include "UCICommand.hpp"
-
-//#include "Common.hpp"
-//#include "ExtendedBlackBox.hpp"
-
 using namespace std;
 
 class StringTokenizer {

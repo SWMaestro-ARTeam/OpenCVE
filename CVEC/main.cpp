@@ -26,13 +26,6 @@
 // main.cpp
 // OpenCVE main 진입점.
 
-// 기본 Library
-#include <cstdio>
-#include <cstdlib>
-
-// 공통 상수
-//#include "Common.hpp"
-
 // Modules
 #include "Engine.hpp"
 
@@ -43,7 +36,7 @@ int main(int argc, char* argv[]) {
 	// 이때, Client Network도 같이 실행 된다.
 	_UCIEngine = new Engine();
 	// 처음에 이것을 실행해 주어야 내부에서 Parser가 Enable 된다.
-	_UCIEngine->ParserEnable = true;
+	_UCIEngine->EngineEnable = true;
 	_UCIEngine->Parser_Engine_Start();
 
 	// 5. Delete pointer.

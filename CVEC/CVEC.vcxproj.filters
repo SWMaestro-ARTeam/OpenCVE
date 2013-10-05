@@ -118,5 +118,8 @@
     <ClInclude Include="..\Common\CodeConverter.hpp">
       <Filter>Common\Header</Filter>
     </ClInclude>
+    <ClInclude Include="..\Common\SystemDependency.hpp">
+      <Filter>Common\Header</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

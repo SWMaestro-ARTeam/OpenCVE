@@ -27,25 +27,27 @@
 #include "Engine.hpp"
 
 // Callback을 위한 Menber.
-Engine *G_Parser;
+Engine *G_Engine;
 
 #pragma region Constructor & Destructor
 // Constructor
 Engine::Engine() {
-	IsSocketConnented = false;
-	IsGetCVESProcess = false;
-	ParserEnable = false;
+	//IsSocketInitialize = false;
+	//IsSocketConnented = false;
+	//IsGetCVESProcess = false;
+	EngineEnable = false;
 	CVEC_CVESControlInitial = true;
-	G_Parser = this;
+	G_Engine = this;
 }
 
 // Destructor
 Engine::~Engine() {
-	IsSocketConnented = false;
-	IsGetCVESProcess = false;
-	ParserEnable = false;
+	//IsSocketInitialize = false;
+	//IsSocketConnented = false;
+	//IsGetCVESProcess = false;
+	EngineEnable = false;
 	CVEC_CVESControlInitial = false;
-	G_Parser = NULL;
+	G_Engine = NULL;
 }
 #pragma endregion Constructor & Destructor
 
@@ -71,30 +73,29 @@ void Engine::Deinitialize_CVEOption() {
 }
 
 bool Engine::Initialize_TClient() {
-	_TClient = new Telepathy::Client();
+	_TelepathyClient = new Telepathy::Client();
 	// SendToGUI("Wait for Server Request.");
 	// Inititalizing Client.
+	/*
 	if (_TClient->ClientInitialize() == true) {
-		// Server 연결 성공시에, ClientReceivedCallback을 묶어
-		// Receive 할 때 Server에서 전송된 내용을 받아야 한다.
-		_TClient->TClientReceivedCallback = ClientReceivedCallback;
-		_TClient->ClientReceiveStart();
-		IsSocketConnented = true;
+		//IsSocketInitialize = true;
 	}	
 	else {
+	*/
+	if (_TelepathyClient->ClientInitialize() != true) {
 		// Server 연결 실패.
-		SendToGUI("Server connection Failed.");
+		SendToGUI("Client Initialize Failed.");
 		return false;
 	}
 
 	// 연결 성립.
-	SendToGUI("Connected.");
+	//SendToGUI("Connected.");
 	return true;
 }
 
 void Engine::Deinitialize_TClient() {
-	if (_TClient != NULL)
-		delete _TClient;
+	if (_TelepathyClient != NULL)
+		delete _TelepathyClient;
 }
 
 void Engine::Initialize_ProcessConfirm() {
@@ -108,9 +109,10 @@ void Engine::Deinitialize_ProcessConfirm() {
 
 void Engine::Put_Author() {
 	// 4 Parser Engine Start.
-	SendToGUI("OpenCVE %s CVEC UCI Engine by {Doohoon Kim, Sungpil Moon, Kyuhong Choi} in ARTeam of SW Maestro 4th", ENGINE_EXEC_VER);
-	SendToGUI("Copyright by ARTeam.");
+	SendToGUI("OpenCVE Client Engine Version %s.", ENGINE_EXEC_VER);
+	SendToGUI("{Doohoon Kim, Sungpil Moon, Kyuhong Choi} Copyright All right reserved.");
 	/*
+	// in ARTeam of SW Maestro 4th.
 	printf("OpenCVE Connector Ver %s Start.\n",  ENGINE_EXEC_VER);
 	printf("Engine Copyright by ARTeam.\n");
 	*/
@@ -132,11 +134,11 @@ void Engine::Engine_Initializing() {
 	Initialize_CVEOption();
 	// Initialize ProcessConfirm.
 	Initialize_ProcessConfirm();
-	/*
+	
 	// Initialize Client Socket.
-	if (Initialize_ClientSocket() != true)
+	if (Initialize_TClient() != true)
 		SendToGUI("Socket Initialize Failed.");
-	*/
+	
 }
 
 void Engine::Engine_DeInitializing() {
@@ -162,21 +164,29 @@ void Engine::Clear_Str() {
 }
 
 bool Engine::Connect_Server() {
-	return _TClient->ClientConnect();
+	bool _TIsConnected = false;
+	if (_TelepathyClient->IsInitializeClient == true) {
+		// Server 연결 성공시에, ClientReceivedCallback을 묶어
+		// Receive 할 때 Server에서 전송된 내용을 받아야 한다.
+		_TelepathyClient->TClientReceivedCallback = ClientReceivedCallback;
+		_TelepathyClient->ClientReceiveStart();
+		//IsSocketConnented = true;
+	}
+	//return _TClient->ClientConnect();
 }
 
 void Engine::Disconnect_Server() {
-	_TClient->ClientDisconnect();
+	_TelepathyClient->ClientDisconnect();
 }
 
 void Engine::Clear_ClientSocket() {
-	if (_TClient != NULL)
-		delete _TClient;
+	if (_TelepathyClient != NULL)
+		delete _TelepathyClient;
 }
 
 void Engine::SendToGUI(const char *Str, ...) {
 	va_list _Argument_List;
-	char _Str[4096];
+	char _Str[BUFFER_MAX_4096];
 
 	va_start(_Argument_List, Str);
 	vsprintf(_Str, Str, _Argument_List);
@@ -398,8 +408,8 @@ void Engine::Command_Quit() {
 	// 1. 내가 Server Process를 가지고 있는지 확인.
 	if (_ProcessConfirm->IsProcessActive == true) {
 		// 2. 가지고 있다면 Server Process 종료 명령.
-		if (IsSocketConnented == true)
-			_TClient->SendData("ServerKill");
+		if (_TelepathyClient->IsConnectedClient == true)
+			_TelepathyClient->SendData("ServerKill");
 	}
 
 	// 3. Server의 완전 종료를 위해서 Server가 살아있는지, 아닌지를 판별하고,
@@ -407,7 +417,7 @@ void Engine::Command_Quit() {
 	// 그러기 위해서는 Thread를 쓴다.
 
 	// 3. 완전 종료.
-	ParserEnable = false;
+	EngineEnable = false;
 	//exit(EXIT_SUCCESS);
 }
 
@@ -479,37 +489,53 @@ void Engine::Parsing_Command() {
 	delete _StringTokenizer;
 }
 
+#pragma region CVEC_CVESCheckingThread
 // CVEC와는 별개로 CVES 및 CVES의 통신이 죽으면 안 되므로,
 // 이를 방지하기 위해 별도의 Thread를 두어 이들을 Checking 한다.
-UINT CVEC_CVESCheckingThread(LPVOID Param) {
+#if WINDOWS_SYS
+//UINT
+DWORD WINAPI
+#elif POSIX_SYS
+void *
+#endif
+ CVEC_CVESCheckingThread(
+#if WINDOWS_SYS
+	 LPVOID
+#elif POSIX_SYS
+	 void *
+#endif
+	 Param) {
 	// 맨 처음에 해야 할 일.
 	// 1. Process Checking.
-	G_Parser->CheckingCVESProcess();
+	G_Engine->CheckingCVESProcess();
 	// 2. Process Enable 뒤 Server 접속.
 
 	// 3. Parser가 살아있을 때 까지 무조건 계속 while 돌며 Process가 살아있는지, 통신이 살아있는지 Check 함.
-	while (G_Parser->ParserEnable) {
+	while (G_Engine->EngineEnable) {
 		bool _Urgency = false;
 
 		// 만약 여기서 끊기면, 게임이 끊겼다고 생각하고 재실행 및 재접속 작업에 돌입한다.
 		// 일단 될 때까지 무한 반복.
-		if (G_Parser->Get_CVESProcessStatus() != true) {
+		if (G_Engine->Get_CVESProcessStatus() != true) {
 			// CVES 없어지고 다시 실행할 때까지 계속 돈다.
-			while (!G_Parser->CheckingCVESProcess()) ;
+			while (!G_Engine->CheckingCVESProcess()) ;
+			// Server와 통신해야 하는 긴급한 상황(죽은 경우기 때문에).
 			_Urgency = true;
 		}
-		if (G_Parser->IsSocketConnented != true) {
+		if (G_Engine->Get_TelepathyClient()->IsConnectedClient != true) {
 			// CVES에 접속할 때까지 계속 돈다.
-			while (!G_Parser->Connect_Server()) ;
+			while (!G_Engine->Connect_Server()) ;
 			//G_Parser->
 			if (_Urgency == true) {
+				// 긴급한 상황.
 				// Socket이 유효할 때, 복구가 가능한지를 CVES에 물어본다.
-				G_Parser->Get_Client()->SendData("IsRestorePossible");
+				G_Engine->Get_TelepathyClient()->SendData("IsRestorePossible");
 			}
 		}
 	}
 	return 0;
 }
+#pragma endregion CVEC_CVESCheckingThread
 
 bool Engine::Get_CVESProcessStatus() {
 	return _ProcessConfirm->IsProcessActive;
@@ -517,34 +543,44 @@ bool Engine::Get_CVESProcessStatus() {
 
 bool Engine::Get_CVESConnectionStatus() {
 	//return _TClient->
-	return _TClient->IsConnectedClient;
+	return _TelepathyClient->IsConnectedClient;
 }
 
-Telepathy::Client* Engine::Get_Client() {
-	return _TClient;
+Telepathy::Client* Engine::Get_TelepathyClient() {
+	return _TelepathyClient;
 }
 
 bool Engine::CheckingCVESProcess() {
-	bool _BIsCVESProcessActive = false;
-	bool _BIsAnotherCVECProcessActive = false;
+	bool _IsCVESProcessActive = false;
+	bool _IsAnotherCVECProcessActive = false;
 
 	// 1. CVES Process 확인. 
-	_BIsCVESProcessActive = _ProcessConfirm->CheckProcess(SERVER_ENGINE_EXEC_FILENAME);
-	_BIsAnotherCVECProcessActive = _ProcessConfirm->CheckProcess(CLIENT_ENGINE_EXEC_FILENAME);
+	_IsCVESProcessActive = _ProcessConfirm->CheckProcess(SERVER_ENGINE_EXEC_FILENAME);
+	_IsAnotherCVECProcessActive = _ProcessConfirm->CheckProcess(CLIENT_ENGINE_EXEC_FILENAME);
 
 	// 2. CVES Process가 없다면 Process 실행.
-	if (IsGetCVESProcess == true) {
+	// 여기서 주의 할 점 정리.
+	// (1) 초반에 실행될 때는 CVES Process가 없고, 내가 Process를 가지고 있지 않을 때.
+	// (2) 내게 CVES Process가 없고, 다른 CVES Process가 떠 있을 때(다른 Client가 가지고 있을 때).
+	// (3) 내가 Process를 가지고 있어서 이미 실행 중일 때.
+
+	// 이건 내가 Process를 가지고 있다는 이야기 이므로..
+	if (_ProcessConfirm->IsProcessActive == true) {
+	//if (IsGetCVESProcess == true) {
 		// 하지만 이미 있다면?
 		// 본 Process가 CVES Process를 가지고 있으므로, 무조건 Process를 실행.
+
 		// Check File Exists.
+		// 여기에 걸리는 경우는.. 아마 갑자기 파일이 삭제 되었을 때 정도.
 		if (!_File.CheckFileExist(SERVER_ENGINE_EXEC_FILENAME))
 			return false;
+
 		_ProcessConfirm->CreateProcessOnThread(SERVER_ENGINE_EXEC_FILENAME);
 		return true;
 	}
 	else {
-		// CVES가 없다면..
-		if (_BIsCVESProcessActive == false) {
+		// CVES가 없다면(Engine이 시작되고 초반)..
+		if (_IsCVESProcessActive == false) {
 			/*
 			if (_BIsAnotherCVECProcessActive == false) {
 				// 어차피 In
@@ -556,7 +592,7 @@ bool Engine::CheckingCVESProcess() {
 				return false;
 
 			// CVES Process를 이 Process가 갖는다.
-			IsGetCVESProcess = true;
+			//IsGetCVESProcess = true;
 			// CVES 실행.
 			_ProcessConfirm->CreateProcessOnThread(SERVER_ENGINE_EXEC_FILENAME);
 			return true;
@@ -572,14 +608,21 @@ void Engine::Parser_Engine_Start() {
 	Engine_Initializing();
 	
 	// CVES의 Process와 CVES <-> CVEC 간의 통신이 끊기지 않도록 Check 하는 Thread.
-	AfxBeginThread(CVEC_CVESCheckingThread, 0);
+#if WINDOWS_SYS
+	DWORD _TThreadID = 0;
+	#ifdef _AFXDLL
+	//AfxBeginThread(CVEC_CVESCheckingThread, 0);
+	CreateThread(NULL, 0, CVEC_CVESCheckingThread, 0, 0, &_TThreadID);
+	#endif
+#elif POSIX_SYS
 
-	while (ParserEnable) Parsing_Command();
+#endif
+	while (EngineEnable) Parsing_Command();
 
 	Engine_DeInitializing();
 }
 
-void ClientReceivedCallback(char *Buffer){
+void ClientReceivedCallback(char *Buffer) {
 	// 내부 Protocol 송신(CVEC -> CVES).
 	StringTokenizer *_StringTokenizer = new StringTokenizer();
 	InternalProtocolSeeker _InternalProtocolSeeker;

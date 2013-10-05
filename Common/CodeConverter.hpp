@@ -26,10 +26,15 @@
 #ifndef _CodeConverter_hpp_
 #define _CodeConverter_hpp_
 
-#include "Common.hpp"
+#include "SystemDependency.hpp"
+//#include "Common.hpp"
 
-#if WINDOWS
+#if WINDOWS_SYS
+	#ifdef _AFXDLL
+#include <afxwin.h>
+	#else
 #include <windows.h>
+	#endif
 #endif
 #include <cstdio>
 

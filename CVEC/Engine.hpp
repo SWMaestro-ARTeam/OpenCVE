@@ -59,7 +59,7 @@ private:
 	char *Command_Str;
 
 	Option *_Option;
-	Telepathy::Client *_TClient;
+	Telepathy::Client *_TelepathyClient;
 	ProcessConfirm *_ProcessConfirm;
 	UCICommandSeeker _UCICommandSeeker;
 	File _File;
@@ -112,18 +112,19 @@ public:
 	~Engine();
 
 	bool CVEC_CVESControlInitial;
-	bool IsCVESProcessAlive;
-	bool IsSocketConnented;
-	bool IsGetCVESProcess;
+	//bool IsCVESProcessAlive;
+	//bool IsSocketInitialize;
+	//bool IsSocketConnented;
+	//bool IsGetCVESProcess;
 	//bool isServerOrClient;
-	bool ParserEnable;
+	bool EngineEnable;
 	// Functions
 	bool Connect_Server();
 	void Disconnect_Server();
 
 	bool Get_CVESProcessStatus();
 	bool Get_CVESConnectionStatus();
-	Telepathy::Client* Get_Client();
+	Telepathy::Client* Get_TelepathyClient();
 	bool CheckingCVESProcess();
 	void Parser_Engine_Start();
 };

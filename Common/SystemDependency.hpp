@@ -3,7 +3,6 @@
 //
 //	The MIT License (MIT)
 //	Copyright © 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
-//	{invi.dh.kim, munsp9103, aiaipming} at gmail.com
 //
 //	Permission is hereby granted, free of charge, to any person obtaining a copy of
 //	this software and associated documentation files (the “Software”), to deal
@@ -23,35 +22,27 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _File_hpp_
-#define _File_hpp_
+#ifndef _SystemDependency_hpp_
+#define _SystemDependency_hpp_
 
-#include "SystemDependency.hpp"
-//#define WINDOWS 1
-//#include "Common.hpp"
-#include "CodeConverter.hpp"
-
-#include <stdio.h>
-#include <string.h>
-#if WINDOWS_SYS
-	#ifdef _AFXDLL
-#include <afxwin.h>
-	#else
-#include <windows.h>
-	#endif
+#if defined(_WIN32) || defined(_WIN64)
+// using windows
+#define WINDOWS_SYS 1
 #else
-#include <unistd.h>
-#include <sys/types.h>
-#include <dirent.h>
+// using Linux, FreeBSD, Mac OSX
+#define POSIX_SYS 1
 #endif
 
-class File {
-private:
-public:
-	char *GetCurrentPath();
-	char *GetCurrentFullPath();
-	char *GetCurrentProcessName();
+#define BUFFER_MAX_1024 1024
+#define BUFFER_MAX_2048 (BUFFER_MAX_1024 * 2)
+#define BUFFER_MAX_4096 (BUFFER_MAX_1024 * 4)
+#define BUFFER_MAX_32767 ((BUFFER_MAX_1024 * 32) - 1)
+#define BUFFER_MAX_65535 ((BUFFER_MAX_1024 * 64) - 1)
 
-	bool CheckFileExist(char *FileName);
-};
+#if WINDOWS_SYS
+// using MFC.
+#define _AFXDLL
+// or no MFC.
+#endif
+
 #endif
