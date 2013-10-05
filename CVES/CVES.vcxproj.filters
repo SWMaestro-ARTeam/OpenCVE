@@ -1,80 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Common">
-      <UniqueIdentifier>{c7fc8b79-c7f5-45f6-9c95-5034574d408a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Common\Header">
-      <UniqueIdentifier>{dfdc61d6-0c59-499f-9d44-914dc02bdae8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Common\Source">
-      <UniqueIdentifier>{7bf51784-8a77-465a-93ef-c3556e18da16}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Recognitions">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Main">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="ChessGame">
-      <UniqueIdentifier>{3effef0d-72a1-4781-9f28-67d4d5634aec}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ChessGame\Header">
-      <UniqueIdentifier>{17e3dee6-6d6a-4a79-a823-513d62e12aa5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ChessGame\Source">
-      <UniqueIdentifier>{0e2670ee-300e-4780-acd9-508afac5dacd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Recognitions\Source">
-      <UniqueIdentifier>{4e4aaab7-733e-4c3c-bb17-c6a94c899b3f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Recognitions\Header">
-      <UniqueIdentifier>{25c78f97-0549-4cfe-9f8d-0edbdc33df49}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="리소스 파일">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\Common\Common.hpp">
-      <Filter>Common\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\ExtendedBlackBox.hpp">
-      <Filter>Common\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Telepathy.hpp">
-      <Filter>Common\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="chess_game.hpp">
-      <Filter>ChessGame\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="BlobLabeling.hpp">
-      <Filter>Recognitions\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Chess_recognition.hpp">
-      <Filter>Recognitions\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Hand_recognition.hpp">
-      <Filter>Recognitions\Header</Filter>
-    </ClInclude>
-<<<<<<< HEAD
-    <ClInclude Include="Img_Process.hpp">
-      <Filter>Recognitions\Header</Filter>
-=======
-    <ClInclude Include="..\Common\StringTokenizer.hpp">
-      <Filter>Common\Header</Filter>
->>>>>>> CVEC
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\Common\Telepathy.cpp">
-      <Filter>Common\Source</Filter>
-    </ClCompile>
     <ClCompile Include="chess_game.cpp">
       <Filter>ChessGame\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\StringTokenizer.cpp">
+      <Filter>Common\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Telepathy.cpp">
+      <Filter>Common\Source</Filter>
     </ClCompile>
     <ClCompile Include="BlobLabeling.cpp">
       <Filter>Recognitions\Source</Filter>
@@ -85,16 +19,78 @@
     <ClCompile Include="Hand_recognition.cpp">
       <Filter>Recognitions\Source</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
-<<<<<<< HEAD
     <ClCompile Include="Img_Process.cpp">
       <Filter>Recognitions\Source</Filter>
-=======
-    <ClCompile Include="..\Common\StringTokenizer.cpp">
-      <Filter>Common\Source</Filter>
->>>>>>> CVEC
     </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Main\Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="chess_game.hpp">
+      <Filter>ChessGame\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\StringTokenizer.hpp">
+      <Filter>Common\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Common.hpp">
+      <Filter>Common\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Telepathy.hpp">
+      <Filter>Common\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\SystemDependency.hpp">
+      <Filter>Common\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="BlobLabeling.hpp">
+      <Filter>Recognitions\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess_recognition.hpp">
+      <Filter>Recognitions\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Hand_recognition.hpp">
+      <Filter>Recognitions\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Img_Process.hpp">
+      <Filter>Recognitions\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\ExtendedBlackBox.hpp">
+      <Filter>Common\Header</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Common">
+      <UniqueIdentifier>{2c9a0e40-1670-49ea-b0fe-026a82daee6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Source">
+      <UniqueIdentifier>{bd7fd967-73a7-4c1e-822f-739cd73b946c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Header">
+      <UniqueIdentifier>{b36b6c18-1d77-4be5-ac0d-9b49ce17950b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ChessGame">
+      <UniqueIdentifier>{ed6c186a-4d6a-4617-8f8d-3b09d2c8a53c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ChessGame\Header">
+      <UniqueIdentifier>{2f6e38ec-d676-491e-befe-0088140bbe1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ChessGame\Source">
+      <UniqueIdentifier>{caa25ecb-36f9-48ca-977b-26c5b964fbca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Recognitions">
+      <UniqueIdentifier>{14c84c1e-ea68-4841-857d-3f7ce942d514}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Recognitions\Header">
+      <UniqueIdentifier>{b41915f8-a684-41a0-a28f-d9f3328123a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Recognitions\Source">
+      <UniqueIdentifier>{1883e58b-dd5f-4e1c-9a08-e2c8c96482d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Main">
+      <UniqueIdentifier>{a1405153-60c9-4510-8e19-960ec282c4c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Main\Source">
+      <UniqueIdentifier>{02632896-ce6a-43cd-9c1d-2f904d8e107e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
