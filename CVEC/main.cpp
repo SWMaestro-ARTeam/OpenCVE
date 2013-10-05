@@ -26,47 +26,21 @@
 // main.cpp
 // OpenCVE main 진입점.
 
-// 기본 Library
-#include <cstdio>
-#include <cstdlib>
-
-// 공통 상수
-#include "Common.hpp"
-
 // Modules
-#include "UCIParser.hpp"
-#include "ProcessConfirm.hpp"
+#include "Engine.hpp"
 
 int main(int argc, char* argv[]) {
-	ProcessConfirm *_ProcessConfirm = new ProcessConfirm();
-	UCIParser *_Parser;
+	Engine *_UCIEngine;
 	
-	bool _BIsServerProcessActive = false;
-	bool _BIsAnotherClientProcessActive = false;
-	/*
-	std::string str;
-	str
-	*/
-	// 1. Process 확인. 
-	_BIsServerProcessActive = _ProcessConfirm->CheckProcess(SERVER_ENGINE_EXEC_FILENAME);
-	_BIsAnotherClientProcessActive = _ProcessConfirm->CheckProcess(CLIENT_ENGINE_EXEC_FILENAME);
-
-	// 2. CVES Process가 없다면 Process 실행.
-	if (_BIsServerProcessActive == false) {
-		if (_BIsAnotherClientProcessActive == false) {
-
-		}
-		// CVES 실행.
-	}
-
 	// 3. CVEC Parser 실행.
 	// 이때, Client Network도 같이 실행 된다.
-	_Parser = new UCIParser();
-	_Parser->Parsing_Engine_Start();
+	_UCIEngine = new Engine();
+	// 처음에 이것을 실행해 주어야 내부에서 Parser가 Enable 된다.
+	_UCIEngine->EngineEnable = true;
+	_UCIEngine->Parser_Engine_Start();
 
 	// 5. Delete pointer.
-	delete _Parser;
-	delete _ProcessConfirm;
-
+	delete _UCIEngine;
+	
 	return 0;
 }

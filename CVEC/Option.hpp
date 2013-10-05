@@ -23,60 +23,64 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ProcessConfirm_hpp_
-#define _ProcessConfirm_hpp_
+#ifndef _Option_hpp_
+#define _Option_hpp_
 
 #include "Common.hpp"
-#include "CodeConverter.hpp"
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include <list>
 
-// Process Confirm용 Windows Library.
-#if WINDOWS_SYS
-	#ifdef _AFXDLL
-#include <afxwin.h>
-	#else
-#include <windows.h>
-	#endif
-#include <TlHelp32.h>
-#elif POSIX_SYS
+using namespace std;
 
-#include <pthread.h>
-#include <unistd.h>
-#endif
+typedef struct EngineOptions {
+	const char *_VariableName;
+	// Is it Option Viewing?
+	bool _OptionEnable;
+	const char *_InitializeValue;
+	// It's variables for Windows(Winboard)/Linux(xboard)
+	const char *_ControlerType;
+	const char *_VariableOptionString;
+	const char *_CurrentVariable;
 
-class ProcessConfirm {
+	EngineOptions() {
+		EOInitialize();
+	}
+
+	EngineOptions(const char *_VariableName_, bool _OptionEnable_,
+		const char *_InitializeValue_, const char *_ControlerType_,
+		const char *_VariableOptionString_, const char *_ExtraVariable_) {
+		EOInitialize();
+		_VariableName = _VariableName_;
+		_OptionEnable = _OptionEnable_;
+		_InitializeValue = _InitializeValue_;
+		_ControlerType = _ControlerType_;
+		_VariableOptionString = _VariableOptionString_;
+		_CurrentVariable = _ExtraVariable_;
+	}
+
+	void EOInitialize() {
+		_VariableName = new char[BUFFER_MAX_1024];
+		_OptionEnable = false;
+		_InitializeValue = new char[BUFFER_MAX_1024];
+		_ControlerType = new char[BUFFER_MAX_1024];
+		_CurrentVariable = new char[BUFFER_MAX_1024];
+	}
+} EO;
+
+class Option {
 private:
-#if WINDOWS_SYS
-	// Windows에서의 Process를 위한 Handle, Process Entry.
-	HANDLE _HProcess;
-	PROCESSENTRY32 _PE32;
-	
-#elif POSIX_SYS
-	
-#endif
-
-	bool FindProcess(char *NameOfProcess);
-	bool GetProcess(
-#if WINDOWS_SYS
-		DWORD 
-#elif POSIX_SYS
-		unsigned long
-#endif
-		PID, char *ProcessName); // windows용 함수.
+	list<EO> _EngineOptionValues;
 public:
-	// Constructor
-	ProcessConfirm();
-	// Destructor
-	~ProcessConfirm();
+	Option();
+	~Option();
 
-	bool IsProcessActive;
+	void InitializeOptionValues();
+	void ClearEngineOptionValues();
+	void SetEngineValues(EO _EngineOptions);
+	list<EO> GetEngineValues();
 
-	bool CheckFileExist(char *ProcessName);
-	bool CheckProcess(char *ProcessName);
-	void CreateProcessOnThread(char *ProcessName);
+	// Implement me.
+	void ReadOptionToINIFile();
 };
 
 #endif

@@ -26,18 +26,15 @@
 #ifndef _Common_hpp_
 #define _Common_hpp_
 
-// 전역 함수들을 위한 Define
-#define _AFXDLL
-#include <afxwin.h>
+#include "SystemDependency.hpp"
 
-#define OTHER 0
-#define WINDOWS 1
-
-#define BUFFER_MAX_32767 32767
-#define BUFFER_MAX_65535 65535
-
+#if WINDOWS_SYS
 #define SERVER_ENGINE_EXEC_FILENAME "CVES.exe"
 #define CLIENT_ENGINE_EXEC_FILENAME "CVEC.exe"
+#elif POSIX_SYS
+#define SERVER_ENGINE_EXEC_FILENAME "CVES"
+#define CLIENT_ENGINE_EXEC_FILENAME "CVEC"
+#endif
 
 #define ENGINE_EXEC_VER "0.1.0"
 

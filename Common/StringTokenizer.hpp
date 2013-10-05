@@ -3,7 +3,6 @@
 //
 //	The MIT License (MIT)
 //	Copyright © 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
-//	{invi.dh.kim, munsp9103, aiaipming} at gmail.com
 //
 //	Permission is hereby granted, free of charge, to any person obtaining a copy of
 //	this software and associated documentation files (the “Software”), to deal
@@ -23,60 +22,48 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ProcessConfirm_hpp_
-#define _ProcessConfirm_hpp_
-
-#include "Common.hpp"
-#include "CodeConverter.hpp"
+#ifndef _StringTokenizer_hpp_
+#define _StringTokenizer_hpp_
 
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
 
-// Process Confirm용 Windows Library.
-#if WINDOWS_SYS
-	#ifdef _AFXDLL
-#include <afxwin.h>
-	#else
-#include <windows.h>
-	#endif
-#include <TlHelp32.h>
-#elif POSIX_SYS
+#include <string>
+#include <list>
 
-#include <pthread.h>
-#include <unistd.h>
-#endif
+using namespace std;
 
-class ProcessConfirm {
+class StringTokenizer {
 private:
-#if WINDOWS_SYS
-	// Windows에서의 Process를 위한 Handle, Process Entry.
-	HANDLE _HProcess;
-	PROCESSENTRY32 _PE32;
-	
-#elif POSIX_SYS
-	
-#endif
+	list<string> *_StringList;
+	//list<string> *_TokenList;
+	string _Token;
 
-	bool FindProcess(char *NameOfProcess);
-	bool GetProcess(
-#if WINDOWS_SYS
-		DWORD 
-#elif POSIX_SYS
-		unsigned long
-#endif
-		PID, char *ProcessName); // windows용 함수.
+	string _InternalInputString;
 public:
-	// Constructor
-	ProcessConfirm();
-	// Destructor
-	~ProcessConfirm();
+	StringTokenizer();
+	~StringTokenizer();
+	
+	// Initializers.
+	void StringTokenizerInitialize();
+	void StringTokenizerDeinitialize();
 
-	bool IsProcessActive;
+	void StringListClear();
 
-	bool CheckFileExist(char *ProcessName);
-	bool CheckProcess(char *ProcessName);
-	void CreateProcessOnThread(char *ProcessName);
+	void TokenClear();
+
+	// String Input Functions.
+	void SetInputCharString(const char* Str);
+	void SetInputString(string Str);
+
+	// String Token의 종류.
+	void SetSingleToken(const char *SingleToken);
+	// Implement me.
+	//void SetMultiToken(const char *, ...);
+
+	bool StringTokenGo();
+	list<string> *GetTokenedStringList();
+	list<char *> *GetTokenedCharListArrays();
 };
 
 #endif

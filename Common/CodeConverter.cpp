@@ -23,60 +23,42 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ProcessConfirm_hpp_
-#define _ProcessConfirm_hpp_
-
-#include "Common.hpp"
 #include "CodeConverter.hpp"
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+//  char -> wchar
+wchar_t *CodeConverter::CharToWChar(const char *CharStr) {
+	ASSERT(CharStr);
+	wchar_t* _TWStr = NULL;
+	int _TWStrLength, _TCharLength;
 
-// Process Confirm용 Windows Library.
-#if WINDOWS_SYS
-	#ifdef _AFXDLL
-#include <afxwin.h>
-	#else
-#include <windows.h>
-	#endif
-#include <TlHelp32.h>
-#elif POSIX_SYS
+	_TCharLength = strlen(CharStr);
+	_TWStrLength = MultiByteToWideChar(CP_ACP, 0, CharStr, _TCharLength, NULL, 0);
 
-#include <pthread.h>
-#include <unistd.h>
-#endif
+	if(_TWStrLength > 0) {
+		_TWStr = (wchar_t*)malloc(sizeof(wchar_t) * (_TWStrLength+1));
+		MultiByteToWideChar(CP_ACP, 0, CharStr, _TCharLength, _TWStr, _TWStrLength);
+	}
 
-class ProcessConfirm {
-private:
-#if WINDOWS_SYS
-	// Windows에서의 Process를 위한 Handle, Process Entry.
-	HANDLE _HProcess;
-	PROCESSENTRY32 _PE32;
-	
-#elif POSIX_SYS
-	
-#endif
+	_TWStr[_TWStrLength] = 0;
 
-	bool FindProcess(char *NameOfProcess);
-	bool GetProcess(
-#if WINDOWS_SYS
-		DWORD 
-#elif POSIX_SYS
-		unsigned long
-#endif
-		PID, char *ProcessName); // windows용 함수.
-public:
-	// Constructor
-	ProcessConfirm();
-	// Destructor
-	~ProcessConfirm();
+	return _TWStr;
+}
 
-	bool IsProcessActive;
+// wchar -> char
+char *CodeConverter::WCharToChar(const wchar_t* WcharStr) {
+	ASSERT(WcharStr);
+	char* _TStr = NULL;
+	int _TWStrLength, _TCharLength;
 
-	bool CheckFileExist(char *ProcessName);
-	bool CheckProcess(char *ProcessName);
-	void CreateProcessOnThread(char *ProcessName);
-};
+	_TWStrLength = wcslen(WcharStr);
+	_TCharLength = WideCharToMultiByte(CP_ACP, 0, WcharStr, _TWStrLength, NULL, 0, NULL, FALSE);
 
-#endif
+	if(_TCharLength > 0) {
+		_TStr = (char*)malloc(sizeof(char) * (_TCharLength+1));
+		WideCharToMultiByte(CP_ACP, 0, WcharStr, _TWStrLength, _TStr, _TCharLength, NULL, FALSE);
+	}
+
+	_TStr[_TCharLength] = 0;
+
+	return _TStr;
+}

@@ -26,7 +26,8 @@
 #ifndef _ExtendedBlackBox_hpp_
 #define _ExtendedBlackBox_hpp_
 
-#include <hash_map>
+#include <string>
+#include <map>
 
 using namespace std;
 /*
@@ -38,9 +39,11 @@ using namespace std;
  * ! Notice :
  * 본 STRING_SWITCH_BEGIN 구문에 대해서.
  * 이 구문을 동작시키기 위해서는 반드시 Program Database mode, 즉, Zi Option을 주고 돌려야 함.
+ * 반드시, 쓰기전 <string>을 include 하고 쓸 것.
+ * Release 에서 잘 작동.
  *
  * ! Usage :
- * STR_SWITCH_BEGIN(sz)
+ * STRING_SWITCH_BEGIN(sz)
  * {
  *	 CASE("Name")
  *	　 ...
@@ -49,23 +52,23 @@ using namespace std;
  *　 　...
  * 　　break;
  * }
- * STR_SWITCH_END()
+ * STRING_SWITCH_BEGIN()
  */
 
 #define STRING_SWITCH_BEGIN(Str) \
 { \
-	static stdext::hash_map<string, int> _SHashMap; \
+	static std::map<string, int> _SMap; \
 	static bool _SBInit = false; \
 	bool _BLoop = true; \
 	while (_BLoop) \
 	{ \
 		int _NStr = -1; \
-		if(_SBInit) { _NStr=_SHashMap[Str]; _BLoop = false; } \
+		if(_SBInit) { _NStr=_SMap[Str]; _BLoop = false; } \
 		switch(_NStr) \
 		{ \
 			case -1: {
 
-#define CASE(_StrToken) } case __LINE__: if(!_SBInit) _SHashMap[_StrToken] = __LINE__; else {
+#define CASE(_StrToken) } case __LINE__: if(!_SBInit) _SMap[_StrToken] = __LINE__; else {
 #define DEFAULT() } case 0: default: if(_SBInit) {
 
 #define STRING_SWITCH_END() \
@@ -75,4 +78,12 @@ using namespace std;
 	} \
 }
 
+// Iter name using "_TVal"
+#define for_IterToEnd(_TTemplate, _TType, _TTypeObject) \
+	for(_TTemplate<_TType>::iterator _TVal = _TTypeObject.begin(); \
+		_TVal != _TTypeObject.end(); _TVal++)
+
+#define for_IterToBegin(_TTemplate, _TType, _TTypeObject) \
+	for(_TTemplate<_TType>::iterator _TVal = _TTypeObject.end(); \
+		_TVal != _TTypeObject.begin(); _TVal--)
 #endif

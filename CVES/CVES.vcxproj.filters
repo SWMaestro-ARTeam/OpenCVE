@@ -45,9 +45,6 @@
     <ClInclude Include="..\Common\ExtendedBlackBox.hpp">
       <Filter>Common\Header</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\ProcessConfirm.hpp">
-      <Filter>Common\Header</Filter>
-    </ClInclude>
     <ClInclude Include="..\Common\Telepathy.hpp">
       <Filter>Common\Header</Filter>
     </ClInclude>
@@ -63,14 +60,16 @@
     <ClInclude Include="Hand_recognition.hpp">
       <Filter>Recognitions\Header</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="Img_Process.hpp">
       <Filter>Recognitions\Header</Filter>
+=======
+    <ClInclude Include="..\Common\StringTokenizer.hpp">
+      <Filter>Common\Header</Filter>
+>>>>>>> CVEC
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Common\ProcessConfirm.cpp">
-      <Filter>Common\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\Common\Telepathy.cpp">
       <Filter>Common\Source</Filter>
     </ClCompile>
@@ -89,8 +88,13 @@
     <ClCompile Include="main.cpp">
       <Filter>Main</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="Img_Process.cpp">
       <Filter>Recognitions\Source</Filter>
+=======
+    <ClCompile Include="..\Common\StringTokenizer.cpp">
+      <Filter>Common\Source</Filter>
+>>>>>>> CVEC
     </ClCompile>
   </ItemGroup>
 </Project>

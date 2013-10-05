@@ -1,54 +1,125 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="소스 파일">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="헤더 파일">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
     <Filter Include="리소스 파일">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{a51bfe60-54b8-412a-ba6c-ca06706e0e91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Header">
+      <UniqueIdentifier>{6f623609-1dd8-4f52-a2d6-958accdb0cf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Source">
+      <UniqueIdentifier>{a534ef49-d4d2-4d2e-9d90-a9d1ea03b167}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UCI">
+      <UniqueIdentifier>{50f65e19-5914-48a3-8f2e-450d383b5b79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UCI\Header">
+      <UniqueIdentifier>{b3fce9e0-cd7d-45f2-bf48-d8de573cf72c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UCI\Source">
+      <UniqueIdentifier>{d52ebf7f-570a-4d7c-8035-f5858f0b33f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Main">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Main\Header">
+      <UniqueIdentifier>{368a755a-3b51-413a-86e8-e274f98e379e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Main\Source">
+      <UniqueIdentifier>{7e7bee56-f737-4098-953d-4d80a500ab14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{5b0c08e7-50c9-4bbf-b3ac-fcd66f30fd83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Header">
+      <UniqueIdentifier>{cb4c2da5-1ac7-4e14-9f8b-ecb1b455567c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Source">
+      <UniqueIdentifier>{e2e13681-1a99-4bc7-bbc1-38acb2a0b3eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="UCICommandParser.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="UCIParser.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="..\Common\ProcessConfirm.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>Common\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\Telepathy.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>Common\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="UCICommandSesker.cpp">
+      <Filter>UCI\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="UCICommandSeeker.hpp">
+      <Filter>UCI\Header</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Main\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\StringTokenizer.cpp">
+      <Filter>Common\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine.cpp">
+      <Filter>Engine\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Option.cpp">
+      <Filter>Engine\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\InternalProtocolSeeker.cpp">
+      <Filter>Common\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\File.cpp">
+      <Filter>Common\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\CodeConverter.cpp">
+      <Filter>Common\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="UCICommandParser.hpp">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="UCIParser.hpp">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\ProcessConfirm.hpp">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="..\Common\Common.hpp">
-      <Filter>헤더 파일</Filter>
+      <Filter>Common\Header</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\ExtendedBlackBox.hpp">
-      <Filter>헤더 파일</Filter>
+      <Filter>Common\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\ProcessConfirm.hpp">
+      <Filter>Common\Header</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Telepathy.hpp">
-      <Filter>헤더 파일</Filter>
+      <Filter>Common\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="UCICommand.hpp">
+      <Filter>UCI\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\StringTokenizer.hpp">
+      <Filter>Common\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine.hpp">
+      <Filter>Engine\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Option.hpp">
+      <Filter>Engine\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\GlobalVariables.hpp">
+      <Filter>Common\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\InternalProtocol.hpp">
+      <Filter>Common\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\InternalProtocolSeeker.hpp">
+      <Filter>Common\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\File.hpp">
+      <Filter>Common\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\CodeConverter.hpp">
+      <Filter>Common\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\SystemDependency.hpp">
+      <Filter>Common\Header</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

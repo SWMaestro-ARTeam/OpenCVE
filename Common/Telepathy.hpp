@@ -30,11 +30,20 @@
 
 #include <list>
 
-#if WINDOWS
-//#include <afxwin.h>
+#if WINDOWS_SYS
+	#ifdef _AFXDLL
+#include <afxwin.h>
+	#else
+#include <windows.h>
 #include <winsock2.h>
+	#endif
 // ws2_32.lib 링크
 #pragma comment(lib, "ws2_32.lib")
+#elif POSIX_SYS
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/types.h> 
+#include <sys/socket.h>
 #endif
 
 using namespace std;
@@ -47,15 +56,16 @@ public:
 	class Server {
 	private:
 		typedef struct _ClientsList {
-#if WINDOWS
+#if WINDOWS_SYS
 			SOCKADDR_IN ClientAddress;
 			SOCKET ClientSocket;
-#elif OTHER
+#elif POSIX_SYS
+
 #endif
 			int UserNumber;
 			char *UserName;
 		} ClientsList;
-#if WINDOWS
+#if WINDOWS_SYS
 		WSADATA _M_WSAData;
 		SOCKET _M_HServerSocket;
 		SOCKADDR_IN _M_ServerAddress;
@@ -63,7 +73,8 @@ public:
 		list<SOCKET> _M_HClientSocketArray;
 		//list<ClientsList> _M_HClientLists;
 		SOCKET _M_HClientSocket;
-#elif OTHER
+#elif POSIX_SYS
+
 #endif
 		bool _M_BIsConnectedServer;
 
@@ -90,25 +101,31 @@ public:
 	class Client {
 	private:
 		unsigned int _M_Address;
-#if WINDOWS
+#if WINDOWS_SYS
 		HOSTENT *_M_HostEntry;
 		WSADATA _M_WSAData;
 		SOCKET _M_HClientSocket;
 		SOCKADDR_IN _M_ClientAddress;
-#elif OTHER
+#elif POSIX_SYS
+
 #endif		
-		bool _M_BIsConnectedClient;
 	public:
 		Client();
 		~Client();
+
+		bool IsInitializeClient;
+		bool IsConnectedClient;
 
 		// client Callback
 		typedef void (* _T_CLIENTRECEIVEDCALLBACK)(char *Buffer);
 
 		bool ClientInitialize();
-		void ClientStart();
+		void ClientReceiveStart();
 		void ClientClose();
 		bool ClientReceiving();
+
+		bool ClientConnect();
+		void ClientDisconnect();
 
 		bool SendData(char *Str);
 
