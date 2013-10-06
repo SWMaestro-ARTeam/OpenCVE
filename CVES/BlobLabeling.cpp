@@ -324,9 +324,10 @@ void CBlobLabeling::DrawLabel(IplImage *img, CvScalar RGB){
 	}
 }
 
-void CBlobLabeling::GetSideBlob(IplImage *img, std::vector<int> *piece_idx){
+void CBlobLabeling::GetSideBlob(IplImage *img, std::vector<int> *piece_idx, IplImage *other){
 	int index = 0;
 	piece_idx->clear();
+	cvZero(other);
 
 	for (int i = 0; i < m_nBlobs; i++) {
 		CvRect temp = m_recBlobs[i];
@@ -357,8 +358,12 @@ void CBlobLabeling::GetSideBlob(IplImage *img, std::vector<int> *piece_idx){
 						img->imageData[(temp.x + j) + (temp.y + k) * img->widthStep] = 255;
 				}*/
 			cvSetImageROI(img, temp);
+			cvSetImageROI(other, temp);
+			cvCopy(img, other);
 			cvZero(img);
 			cvResetImageROI(img);
+			cvResetImageROI(other);
+
 
 			piece_idx->push_back(i);
 		}

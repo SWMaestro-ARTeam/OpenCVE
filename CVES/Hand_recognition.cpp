@@ -148,9 +148,6 @@ void Hand_recognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
 
 		for (int i = 0; i < src->width; i++) {
 			for (int j = 0; j < src->height; j++) {
-				/*int pixel_sub = abs((unsigned char)prev_ground->imageData[i + j * prev_ground->widthStep] - (unsigned char)present_ground->imageData[i + j * present_ground->widthStep]);
-				if (pixel_sub > SUB_THRESHOLD)
-					dst->imageData[i + j * dst->widthStep] = (unsigned char)255;*/
 				unsigned char SUB_B = abs((unsigned char)src->imageData[(i * 3) + j * src->widthStep] - (unsigned char)prev_ground->imageData[(i * 3) + j * prev_ground->widthStep]);
 				unsigned char SUB_G = abs((unsigned char)src->imageData[(i * 3) + j * src->widthStep + 1] - (unsigned char)prev_ground->imageData[(i * 3) + j * prev_ground->widthStep + 1]);
 				unsigned char SUB_R = abs((unsigned char)src->imageData[(i * 3) + j * src->widthStep + 2] - (unsigned char)prev_ground->imageData[(i * 3) + j * prev_ground->widthStep + 2]);

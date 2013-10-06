@@ -90,6 +90,9 @@ void Img_Process::Do_imgprocess(){
 		case 1:							//관심영역 재설정 선택 OR 체스보드 인식 확인부
 			if(img_createCheck == false){
 				img_Chess = cvCreateImage(cvSize(ImgProcess_ROI.width, ImgProcess_ROI.height), IPL_DEPTH_8U, 3);
+				temp_prev = cvCreateImage(cvSize(ImgProcess_ROI.width, ImgProcess_ROI.height), IPL_DEPTH_8U, 3);
+				temp_prev2 = cvCreateImage(cvSize(ImgProcess_ROI.width, ImgProcess_ROI.height), IPL_DEPTH_8U, 3);
+				other = cvCreateImage(cvSize(ImgProcess_ROI.width, ImgProcess_ROI.height), IPL_DEPTH_8U, 1);
 				img_createCheck = true;
 				Find_Chess.Init(ImgProcess_ROI.width, ImgProcess_ROI.height, RECOGNITION_MODE);
 				Find_Hand.Init(ImgProcess_ROI.width, ImgProcess_ROI.height);
@@ -99,11 +102,11 @@ void Img_Process::Do_imgprocess(){
 			}
 			cvSetImageROI(img_Cam, ImgProcess_ROI);
 			cvCopy(img_Cam, img_Chess);
-			cvResetImageROI(img_Cam);
 
 			//Chessboard recognition;
 			Find_Chess.Copy_Img(img_Chess);
 			Find_Chess.Chess_recog_wrapper(img_Cam, &cross_point);
+			cvResetImageROI(img_Cam);
 
 			key_wait = cvWaitKey(10);
 			if(key_wait == 27)					ImgProcess_Mode++;
@@ -120,10 +123,6 @@ void Img_Process::Do_imgprocess(){
 				cvSetImageROI(img_Cam, ImgProcess_ROI);
 				cvCopy(img_Cam, img_Chess);
 
-				//Chessboard recognition;
-				Find_Chess.Copy_Img(img_Chess);
-				Find_Chess.Chess_recog_wrapper(img_Cam, &cross_point);
-
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				///////////////////////////////////////////////////////차영상 및 조건판정 부분///////////////////////////////////////////////
 				if(cross_point.size() != 81){								//초기화			
@@ -131,6 +130,10 @@ void Img_Process::Do_imgprocess(){
 				}
 				else if(cross_point.size() == 81) {
 					if(Sub_check == false) {
+						//Chessboard recognition;
+						Find_Chess.Copy_Img(img_Chess);
+						Find_Chess.Chess_recog_wrapper(img_Cam, &cross_point);
+
 						//손이 들어오기 직전 영상을 촬영
 						Find_Hand.Sub_prevFrame(img_Chess, img_Skin, BeforeHand_first);					//실시간 차영상->턴별 차영상
 						if(BeforeHand_first)	BeforeHand_first = false;
@@ -138,13 +141,13 @@ void Img_Process::Do_imgprocess(){
 #ifdef DEBUG
 						cvShowImage("img_Skin",img_Skin);
 #endif
-						//물체가 체스보드 위로 들어옴
 						if(Check_InChessboard(img_Skin, cross_point)){
-							cvCopy(img_Chess, prev_img);
-	#ifdef DEBUG
+							//물체가 체스보드 위로 들어옴
+							cvCopy(temp_prev2, prev_img);
+#ifdef DEBUG
 							cvShowImage("PREV", prev_img);
 							printf("PREV Catch\n");
-	#endif
+#endif
 							Sub_check = true;
 						}
 						else {
@@ -156,9 +159,10 @@ void Img_Process::Do_imgprocess(){
 						//손이 들어옴 판정 이후 작업
 						/*Find_Hand.Sub_prevFrame(img_Chess, img_sub);*/
 
-	#ifdef DEBUG
+
+#ifdef DEBUG
 						cvShowImage("유레카1", img_Chess);
-	#endif
+#endif
 						Sub_image(prev_img, img_Chess, img_Skin);
 						/*cvErode(img_Skin, img_Skin, 0, 1);
 						cvDilate(img_Skin, img_Skin, 0, 2);
@@ -171,9 +175,11 @@ void Img_Process::Do_imgprocess(){
 						CBlob.DrawLabel(img_Chess, cvScalar(255,0,255));
 
 						//손판정
-						CBlob.GetSideBlob(img_Skin, &piece_idx);
+						CBlob.GetSideBlob(img_Skin, &piece_idx, other);
 						Compose_diffImage(img_Chess, img_Skin, cvScalar(100,100,255));
 						cvDilate(img_Skin, img_Skin, 0, 5);
+						cvShowImage("sibal skin!!", img_Skin);
+						Find_Chess.drawPoint(img_Chess, cross_point);
 						if (Check_InChessboard(img_Skin, cross_point)) {						//img_Skin은 손 추정물체만 남긴 이미지
 							InHand_Check = true;
 						}
@@ -181,11 +187,13 @@ void Img_Process::Do_imgprocess(){
 							//이동 처리부
 
 							//다음턴 준비부 -> 조건을 추가로 줘서 예외를 막아야함
-							if(Check_imgZero(img_Skin)) {								//전제 조건은 손이 빠질때는 중간에 멈추지 않음
+							//if(Check_imgZero(img_Skin)) {								//전제 조건은 손이 빠질때는 중간에 멈추지 않음
 								printf("Hand escape!\n");
 								InHand_Check = false;
 								Sub_check = false;
 								BeforeHand_first = true;
+
+								//좌표 계산부
 
 								///////////////////////////////말 좌표 반환//////////////////////////////////////////////////////
 								//CvPoint Left, Right;
@@ -241,15 +249,17 @@ void Img_Process::Do_imgprocess(){
 								//	CHESS_GAME.Chess_process(Left, Right);
 								//	CHESS_GAME.Show_chess_board();
 								//}
-							}
+							//}
 						}
 	#ifdef DEBUG
 						cvShowImage("compose_diff", img_Chess);
+						cvShowImage("other", other);
 	#endif
 					}
 				}
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+				cvCopy(temp_prev, temp_prev2);
+				cvCopy(img_Chess, temp_prev);
 				cvResetImageROI(img_Cam);
 
 				if(cvWaitKey(10) == 27)	ImgProcess_Mode++;
@@ -267,6 +277,9 @@ void Img_Process::Exit_imgProcess(){
 	cvDestroyAllWindows();
 
 	cvReleaseCapture(&Cam);
+
+	cvReleaseImage(&temp_prev);
+	cvReleaseImage(&temp_prev2);
 
 	cvReleaseImage(&img_Chess);
 	cvReleaseImage(&img_Skin);
