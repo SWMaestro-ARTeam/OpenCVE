@@ -33,13 +33,13 @@
     <Filter Include="Main\Source">
       <UniqueIdentifier>{7e7bee56-f737-4098-953d-4d80a500ab14}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine">
+    <Filter Include="EngineC">
       <UniqueIdentifier>{5b0c08e7-50c9-4bbf-b3ac-fcd66f30fd83}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Header">
+    <Filter Include="EngineC\Header">
       <UniqueIdentifier>{cb4c2da5-1ac7-4e14-9f8b-ecb1b455567c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Source">
+    <Filter Include="EngineC\Source">
       <UniqueIdentifier>{e2e13681-1a99-4bc7-bbc1-38acb2a0b3eb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -62,11 +62,8 @@
     <ClCompile Include="..\Common\StringTokenizer.cpp">
       <Filter>Common\Source</Filter>
     </ClCompile>
-    <ClCompile Include="Engine.cpp">
-      <Filter>Engine\Source</Filter>
-    </ClCompile>
     <ClCompile Include="Option.cpp">
-      <Filter>Engine\Source</Filter>
+      <Filter>EngineC\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\InternalProtocolSeeker.cpp">
       <Filter>Common\Source</Filter>
@@ -76,6 +73,9 @@
     </ClCompile>
     <ClCompile Include="..\Common\CodeConverter.cpp">
       <Filter>Common\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineC.cpp">
+      <Filter>EngineC\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -97,11 +97,8 @@
     <ClInclude Include="..\Common\StringTokenizer.hpp">
       <Filter>Common\Header</Filter>
     </ClInclude>
-    <ClInclude Include="Engine.hpp">
-      <Filter>Engine\Header</Filter>
-    </ClInclude>
     <ClInclude Include="Option.hpp">
-      <Filter>Engine\Header</Filter>
+      <Filter>EngineC\Header</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\GlobalVariables.hpp">
       <Filter>Common\Header</Filter>
@@ -120,6 +117,9 @@
     </ClInclude>
     <ClInclude Include="..\Common\SystemDependency.hpp">
       <Filter>Common\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineC.hpp">
+      <Filter>EngineC\Header</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -56,6 +56,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>./;../Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -88,8 +89,8 @@
     <ClInclude Include="BlobLabeling.hpp" />
     <ClInclude Include="chess_game.hpp" />
     <ClInclude Include="Chess_recognition.hpp" />
+    <ClInclude Include="EngineS.hpp" />
     <ClInclude Include="Hand_recognition.hpp" />
-    <ClInclude Include="Img_Process.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Common\StringTokenizer.cpp" />
@@ -97,8 +98,8 @@
     <ClCompile Include="BlobLabeling.cpp" />
     <ClCompile Include="chess_game.cpp" />
     <ClCompile Include="Chess_recognition.cpp" />
+    <ClCompile Include="EngineS.cpp" />
     <ClCompile Include="Hand_recognition.cpp" />
-    <ClCompile Include="Img_Process.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -27,20 +27,19 @@
 // OpenCVE main 진입점.
 
 // Modules
-#include "Engine.hpp"
+#include "EngineC.hpp"
 
 int main(int argc, char* argv[]) {
-	Engine *_UCIEngine;
+	EngineC *_EngineC;
 	
-	// 3. CVEC Parser 실행.
-	// 이때, Client Network도 같이 실행 된다.
-	_UCIEngine = new Engine();
-	// 처음에 이것을 실행해 주어야 내부에서 Parser가 Enable 된다.
-	_UCIEngine->EngineEnable = true;
-	_UCIEngine->Parser_Engine_Start();
-
-	// 5. Delete pointer.
-	delete _UCIEngine;
+	// 1. CVEC Engine 생성.
+	_EngineC = new EngineC();
+	// 2. Engine Enable.
+	_EngineC->EngineEnable = true;
+	// 3. Engine Start.
+	_EngineC->EngineC_Start();
+	// 4. Delete pointer.
+	delete _EngineC;
 	
 	return 0;
 }

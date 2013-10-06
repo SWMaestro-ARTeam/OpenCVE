@@ -24,14 +24,14 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 // 기본 Header
-#include "Engine.hpp"
+#include "EngineC.hpp"
 
 // Callback을 위한 Menber.
-Engine *G_Engine;
+EngineC *G_Engine;
 
 #pragma region Constructor & Destructor
 // Constructor
-Engine::Engine() {
+EngineC::EngineC() {
 	//IsSocketInitialize = false;
 	//IsSocketConnented = false;
 	//IsGetCVESProcess = false;
@@ -41,7 +41,7 @@ Engine::Engine() {
 }
 
 // Destructor
-Engine::~Engine() {
+EngineC::~EngineC() {
 	//IsSocketInitialize = false;
 	//IsSocketConnented = false;
 	//IsGetCVESProcess = false;
@@ -52,27 +52,27 @@ Engine::~Engine() {
 #pragma endregion Constructor & Destructor
 
 #pragma region Initialize & Deinitialize Functions
-void Engine::Initialize_CommandStr() {
+void EngineC::Initialize_CommandStr() {
 	// Command는 BUFFER_MAX값에 의해서 결정
 	Command_Str = (char *)calloc(BUFFER_MAX_32767, sizeof(char));
 	Clear_Str();
 }
 
-void Engine::Deinitialize_CommandStr() {
+void EngineC::Deinitialize_CommandStr() {
 	Clear_Str();
 	free(Command_Str);
 }
 
-void Engine::Initialize_CVEOption() {
+void EngineC::Initialize_CVEOption() {
 	_Option = new Option();
 }
 
-void Engine::Deinitialize_CVEOption() {
+void EngineC::Deinitialize_CVEOption() {
 	if (_Option != NULL)
 		delete _Option;
 }
 
-bool Engine::Initialize_TClient() {
+bool EngineC::Initialize_TClient() {
 	_TelepathyClient = new Telepathy::Client();
 	// SendToGUI("Wait for Server Request.");
 	// Inititalizing Client.
@@ -93,21 +93,21 @@ bool Engine::Initialize_TClient() {
 	return true;
 }
 
-void Engine::Deinitialize_TClient() {
+void EngineC::Deinitialize_TClient() {
 	if (_TelepathyClient != NULL)
 		delete _TelepathyClient;
 }
 
-void Engine::Initialize_ProcessConfirm() {
+void EngineC::Initialize_ProcessConfirm() {
 	_ProcessConfirm = new ProcessConfirm();
 }
 
-void Engine::Deinitialize_ProcessConfirm() {
+void EngineC::Deinitialize_ProcessConfirm() {
 	if (_ProcessConfirm != NULL)
 		delete _ProcessConfirm;
 }
 
-void Engine::Put_Author() {
+void EngineC::Put_Author() {
 	// 4 Parser Engine Start.
 	SendToGUI("OpenCVE Client Engine Version %s.", ENGINE_EXEC_VER);
 	SendToGUI("{Doohoon Kim, Sungpil Moon, Kyuhong Choi} Copyright All right reserved.");
@@ -118,7 +118,7 @@ void Engine::Put_Author() {
 	*/
 }
 
-void Engine::Engine_Initializing() {
+void EngineC::Engine_Initializing() {
 	// Defect #24
 	// _IOLBF가 Windows에서는 깨지는 난감한 현상이 생김.
 	// 이 구문은 본 Engine의 Command Line에서 반드시 써야 하는 중요한 구문.
@@ -141,14 +141,14 @@ void Engine::Engine_Initializing() {
 	
 }
 
-void Engine::Engine_DeInitializing() {
+void EngineC::Engine_DeInitializing() {
 	Deinitialize_CommandStr();
 	Deinitialize_CVEOption();
 	Deinitialize_ProcessConfirm();
 }
 #pragma endregion Initialize & Deinitialize Functions
 
-void Engine::Get_Command_Str() {
+void EngineC::Get_Command_Str() {
 	if (fgets(Command_Str, BUFFER_MAX_32767, stdin) == NULL) {
 		if (feof(stdin)) {
 			return ;
@@ -159,11 +159,11 @@ void Engine::Get_Command_Str() {
 	if (_StrPtr != NULL) *_StrPtr = '\0';
 }
 
-void Engine::Clear_Str() {
+void EngineC::Clear_Str() {
 	memset(Command_Str, NULL, sizeof(Command_Str));
 }
 
-bool Engine::Connect_Server() {
+bool EngineC::Connect_Server() {
 	bool _TIsConnected = false;
 	if (_TelepathyClient->IsInitializeClient == true) {
 		// Server 연결 성공시에, ClientReceivedCallback을 묶어
@@ -175,16 +175,16 @@ bool Engine::Connect_Server() {
 	//return _TClient->ClientConnect();
 }
 
-void Engine::Disconnect_Server() {
+void EngineC::Disconnect_Server() {
 	_TelepathyClient->ClientDisconnect();
 }
 
-void Engine::Clear_ClientSocket() {
+void EngineC::Clear_ClientSocket() {
 	if (_TelepathyClient != NULL)
 		delete _TelepathyClient;
 }
 
-void Engine::SendToGUI(const char *Str, ...) {
+void EngineC::SendToGUI(const char *Str, ...) {
 	va_list _Argument_List;
 	char _Str[BUFFER_MAX_4096];
 
@@ -195,7 +195,7 @@ void Engine::SendToGUI(const char *Str, ...) {
 	fprintf(stdout, "%s\n", _Str);
 }
 
-void Engine::Command_UCI() {
+void EngineC::Command_UCI() {
 	// 1. 현재 Name, 저작자 보냄.
 	SendToGUI("id name OpenCVE " ENGINE_EXEC_VER);
 	SendToGUI("id author {Doohoon Kim, Sungpil Moon, Kyuhong Choi} in ARTeam of SW Maestro 4th");
@@ -232,14 +232,14 @@ void Engine::Command_UCI() {
 	SendToGUI("uciok");
 }
 
-void Engine::Command_Debug() {
+void EngineC::Command_Debug() {
 	// Debug용이긴 하나 실제로 UCI에서 무엇을 Debugging하는지 의미 자체를 알 수 없으므로,
 	// 이 Option은 구현하지 않는다.
 
 	// No Implementation.
 }
 
-void Engine::Command_Isready() {
+void EngineC::Command_Isready() {
 	// CVES, CVEC가 Ready 되어 있느냐, 그렇지 않느냐를 판단하여 정리한다.
 
 	// 1. CVES의 준비상태를 물어본다.
@@ -250,7 +250,7 @@ void Engine::Command_Isready() {
 	SendToGUI("readyok");
 }
 
-void Engine::Command_Setoption(CS *_UCICS) {
+void EngineC::Command_Setoption(CS *_UCICS) {
 	bool _IsName = false;
 	bool _IsValue = false;
 
@@ -280,19 +280,19 @@ void Engine::Command_Setoption(CS *_UCICS) {
 	}
 }
 
-void Engine::Command_Ucinewgame() {
+void EngineC::Command_Ucinewgame() {
 	// Game의 모든 변수를 Setting 한다.
 	// 
 }
 
-void Engine::Command_Register() {
+void EngineC::Command_Register() {
 	// Register를 쓸 일이 없다.
 
 	// No Implementation
 }
 
 //
-void Engine::Command_Position(CS *_UCICS) {
+void EngineC::Command_Position(CS *_UCICS) {
 	bool _IsFen = false;
 	bool _IsStartpos = false;
 	bool _IsMoves = false;
@@ -320,7 +320,7 @@ void Engine::Command_Position(CS *_UCICS) {
 }
 
 //
-void Engine::Command_Go(CS *_UCICS) {
+void EngineC::Command_Go(CS *_UCICS) {
 	bool _IsBinc = false;
 	bool _IsBtime = false;
 	bool _IsWinc = false;
@@ -389,20 +389,20 @@ void Engine::Command_Go(CS *_UCICS) {
 	}
 }
 
-void Engine::Command_Stop() {
+void EngineC::Command_Stop() {
 	// CVES의 인식을 멈춘다.
 
 	// 
 }
 
-void Engine::Command_Ponderhit() {
+void EngineC::Command_Ponderhit() {
 	// AI가 아니기 때문에 ponderhit은 구현 하지 않는다.
   // 이 명령어는 AI가 예측 했던게 맞았냐, 틀렸냐에 따라 오는 명령어이기 때문이다.
 
 	// No Implementation
 }
 
-void Engine::Command_Quit() {
+void EngineC::Command_Quit() {
 	// 모든 Process를 종료한다.
 	// Server Process를 가지고 있다면 같이 종료 시킨다.
 	// 1. 내가 Server Process를 가지고 있는지 확인.
@@ -421,7 +421,7 @@ void Engine::Command_Quit() {
 	//exit(EXIT_SUCCESS);
 }
 
-void Engine::Parsing_Command() {
+void EngineC::Parsing_Command() {
 	StringTokenizer *_StringTokenizer = new StringTokenizer();
 	
 	// Get UCI String.
@@ -537,20 +537,20 @@ void *
 }
 #pragma endregion CVEC_CVESCheckingThread
 
-bool Engine::Get_CVESProcessStatus() {
+bool EngineC::Get_CVESProcessStatus() {
 	return _ProcessConfirm->IsProcessActive;
 }
 
-bool Engine::Get_CVESConnectionStatus() {
+bool EngineC::Get_CVESConnectionStatus() {
 	//return _TClient->
 	return _TelepathyClient->IsConnectedClient;
 }
 
-Telepathy::Client* Engine::Get_TelepathyClient() {
+Telepathy::Client* EngineC::Get_TelepathyClient() {
 	return _TelepathyClient;
 }
 
-bool Engine::CheckingCVESProcess() {
+bool EngineC::CheckingCVESProcess() {
 	bool _IsCVESProcessActive = false;
 	bool _IsAnotherCVECProcessActive = false;
 
@@ -604,7 +604,7 @@ bool Engine::CheckingCVESProcess() {
 	return false;
 }
 
-void Engine::Parser_Engine_Start() {
+void EngineC::EngineC_Start() {
 	Engine_Initializing();
 	
 	// CVES의 Process와 CVES <-> CVEC 간의 통신이 끊기지 않도록 Check 하는 Thread.

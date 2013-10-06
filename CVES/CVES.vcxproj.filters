@@ -19,11 +19,11 @@
     <ClCompile Include="Hand_recognition.cpp">
       <Filter>Recognitions\Source</Filter>
     </ClCompile>
-    <ClCompile Include="Img_Process.cpp">
-      <Filter>Recognitions\Source</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Main\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineS.cpp">
+      <Filter>EngineS\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -51,11 +51,11 @@
     <ClInclude Include="Hand_recognition.hpp">
       <Filter>Recognitions\Header</Filter>
     </ClInclude>
-    <ClInclude Include="Img_Process.hpp">
-      <Filter>Recognitions\Header</Filter>
-    </ClInclude>
     <ClInclude Include="..\Common\ExtendedBlackBox.hpp">
       <Filter>Common\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineS.hpp">
+      <Filter>EngineS\Header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -91,6 +91,15 @@
     </Filter>
     <Filter Include="Main\Source">
       <UniqueIdentifier>{02632896-ce6a-43cd-9c1d-2f904d8e107e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EngineS">
+      <UniqueIdentifier>{0d4d3e39-4e41-43f1-9afd-41abcd5c8774}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EngineS\Header">
+      <UniqueIdentifier>{6332a42e-ee45-4263-a264-daea5e781f8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EngineS\Source">
+      <UniqueIdentifier>{2a8a55aa-a8a1-4b34-8760-c08e1957a6e1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

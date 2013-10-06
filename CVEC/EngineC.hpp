@@ -23,8 +23,8 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _Engine_hpp_
-#define _Engine_hpp_
+#ifndef _EngineC_hpp_
+#define _EngineC_hpp_
 
 #include <cstdio>
 #include <cstdlib>
@@ -53,7 +53,7 @@
 // Option Module
 #include "Option.hpp"
 
-class Engine {
+class EngineC {
 private:
 	// Variables
 	char *Command_Str;
@@ -108,8 +108,8 @@ private:
 
 public:
 	// Constructor
-	Engine();
-	~Engine();
+	EngineC();
+	~EngineC();
 
 	bool CVEC_CVESControlInitial;
 	//bool IsCVESProcessAlive;
@@ -126,7 +126,7 @@ public:
 	bool Get_CVESConnectionStatus();
 	Telepathy::Client* Get_TelepathyClient();
 	bool CheckingCVESProcess();
-	void Parser_Engine_Start();
+	void EngineC_Start();
 };
 
 void ClientReceivedCallback(char *Buffer);

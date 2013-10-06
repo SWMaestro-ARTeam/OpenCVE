@@ -90,7 +90,7 @@
     <ClCompile Include="Option.cpp" />
     <ClCompile Include="UCICommandSeeker.hpp" />
     <ClCompile Include="UCICommandSesker.cpp" />
-    <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="EngineC.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\CodeConverter.hpp" />
@@ -106,7 +106,7 @@
     <ClInclude Include="..\Common\Telepathy.hpp" />
     <ClInclude Include="Option.hpp" />
     <ClInclude Include="UCICommand.hpp" />
-    <ClInclude Include="Engine.hpp" />
+    <ClInclude Include="EngineC.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
