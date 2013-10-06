@@ -416,10 +416,11 @@ void Chess_recognition::Set_CalculationDomain(CvCapture *Cam, int *ROI_WIDTH, in
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 void Chess_recognition::Chess_recognition_process(IplImage *src, vector<Chess_point> *point){
+	
+	GrayImageBinarization(src);
+
 	GetLinegrayScale(src, Linefindcount_x, Linefindcount_y);
 	GetgraySidelinesPoint(src);
-
-	GrayImageBinarization(src);
 
 	if(Linefindcount_x >= (src->width/5)*2 && (in_line_point_x1.size() != 9 || in_line_point_x2.size() != 9)) flag_x = false;
 	if(Linefindcount_y >= (src->height/5)*2 && (in_line_point_y1.size() != 9 || in_line_point_y2.size() != 9)) flag_y = false;
@@ -873,26 +874,32 @@ bool Chess_recognition::GetCrossPoint(MyLinePoint line1, MyLinePoint line2, MyPo
 }
 
 void Chess_recognition::GrayImageBinarization(IplImage *gray_image){
+
 	float hist[256]={0,};
 
 	int temp[256];
 	memset(temp,0,sizeof(int)*256);
 
+	bool flag = true;
+
 	for(int i=0;i<gray_image->width;i++){
 		for(int j=0;j<gray_image->height;j++){
 			temp[Getgrayscale(gray_image,i,j)]++;
+			if(Getgrayscale(gray_image,i,j) != 0) flag = false;
 		}
 	}
 
+	if(flag) return;
+
 	float area = (float)gray_image->width*gray_image->height;
 
-	for(int i=0;i<256;i++)
+	for(int i=1;i<256;i++)
 		hist[i] = temp[i]/area;
 
 	int T, Told;
 
 	float sum = 0.f;
-	for(int i=0;i<256;i++)
+	for(int i=1;i<256;i++)
 		sum+=(i*hist[i]);
 
 	T = (int)sum;
@@ -922,7 +929,6 @@ void Chess_recognition::GrayImageBinarization(IplImage *gray_image){
 
 		T=(int)((u1+u2)/2);
 	}while(T!=Told);
-
 	uchar *data = (uchar *)gray_image->imageData;
 
 	for(int i=0;i<gray_image->width;i++){
