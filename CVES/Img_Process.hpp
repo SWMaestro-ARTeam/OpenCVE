@@ -43,7 +43,10 @@ private:
 	IplImage *img_Chess;							//처리할 관심영역 속 RGB 이미지
 	IplImage *img_Skin;								//차영상 결과 이미지
 	IplImage *prev_img;								//차영상을 위해 필요한 이미지
-	IplImage *img_sub;								//차영상 촬영이후 
+	IplImage *img_sub;								//차영상 촬영이후
+	IplImage *temp_prev;							//임시 이전 영상 저장 이미지
+	IplImage *temp_prev2;							//임시 이전 영상 저장 이미지
+	IplImage *other;									//손을 제외한 나머지 이진 영상
 	CvRect ImgProcess_ROI;						//관심영역 크기
 
 	vector<Chess_point> cross_point;

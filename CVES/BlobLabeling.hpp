@@ -72,7 +72,7 @@ public:
 	void DoLabeling();
 	// 레이블 그리기
 	void DrawLabel(IplImage *img, CvScalar RGB);
-	//벽에 붙은 이미지 외에 삭제함
-	void GetSideBlob(IplImage *img, std::vector<int> *piece_idx);
+	//벽에 붙은 이미지 외에 other에 저장
+	void GetSideBlob(IplImage *img, std::vector<int> *piece_idx, IplImage *other);
 };
 #endif
