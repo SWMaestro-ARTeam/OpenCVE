@@ -453,7 +453,6 @@ void Chess_recognition::Chess_recognition_process(IplImage *src, vector<Chess_po
 			Linefindcount_x += 5;
 		else
 			Linefindcount_x -= 5;
-		//if(flag_reset) flag_reset = true;
 	}
 	else if(in_line_point_y1.size() != 9 || in_line_point_y2.size() != 9) {
 		if (flag_y)
@@ -471,11 +470,8 @@ void Chess_recognition::GetLinegrayScale(IplImage *gray_image, int linefindcount
 	int image_y = gray_image->height, image_x = gray_image->width;
 	int x1, x2, x_mid, y1, y2, y_mid;
 
-	// x축 라인
-	// 연산 Error의 소지가 있음.
-	// 수정 바람.
-	y1 = (image_y / 5) * 2 - linefindcount_x;
-	y2 = (image_y / 5) * 3 + linefindcount_x;
+	y1 = ((image_y / 5) * 2) - linefindcount_x;
+	y2 = ((image_y / 5) * 3) + linefindcount_x;
 	y_mid = (image_y / 5) * 2;
 
 	line_x1.push_back(setMyGrayPoint(Getgrayscale(gray_image, image_x / 2, y1), image_x / 2, y1));
@@ -483,23 +479,18 @@ void Chess_recognition::GetLinegrayScale(IplImage *gray_image, int linefindcount
 	line_x_mid.push_back(setMyGrayPoint(Getgrayscale(gray_image, image_x / 2, y_mid),image_x / 2, y_mid));
 
 	for (register int x = 1; x <= image_x / 2; x++) {
-		// 연산 Error의 소지가 있음.
-		// 수정 바람.
-		line_x1.push_back(setMyGrayPoint(Getgrayscale(gray_image, image_x / 2 + x, y1), image_x / 2 + x, y1));
-		line_x1.push_back(setMyGrayPoint(Getgrayscale(gray_image, image_x / 2 - x, y1), image_x / 2 - x, y1));
+		line_x1.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) + x, y1), (image_x / 2) + x, y1));
+		line_x1.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) - x, y1), (image_x / 2) - x, y1));
 
-		line_x2.push_back(setMyGrayPoint(Getgrayscale(gray_image, image_x / 2 + x, y2) ,image_x / 2 + x, y2));
-		line_x2.push_back(setMyGrayPoint(Getgrayscale(gray_image, image_x / 2 - x, y2), image_x / 2 - x, y2));
+		line_x2.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) + x, y2) ,(image_x / 2) + x, y2));
+		line_x2.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) - x, y2) ,(image_x / 2) - x, y2));
 
-		line_x_mid.push_back(setMyGrayPoint(Getgrayscale(gray_image, image_x / 2 + x, y_mid), image_x / 2 + x, y_mid));
-		line_x_mid.push_back(setMyGrayPoint(Getgrayscale(gray_image, image_x / 2 - x, y_mid), image_x / 2 - x, y_mid));
+		line_x_mid.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) + x, y_mid), (image_x / 2) + x, y_mid));
+		line_x_mid.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) - x, y_mid), (image_x / 2) - x, y_mid));
 	}
 
-	// y축 라인
-	// 연산 Error의 소지가 있음.
-	// 수정 바람.
-	x1 = (image_x / 5) * 2 - linefindcount_y;
-	x2 = (image_x / 5) * 3 + linefindcount_y;
+	x1 = ((image_x / 5) * 2) - linefindcount_y;
+	x2 = ((image_x / 5) * 3) + linefindcount_y;
 	x_mid = (image_x / 5) * 2;
 
 	line_y1.push_back(setMyGrayPoint(Getgrayscale(gray_image, x1, image_y / 2), x1, image_y / 2));
@@ -507,16 +498,14 @@ void Chess_recognition::GetLinegrayScale(IplImage *gray_image, int linefindcount
 	line_y_mid.push_back(setMyGrayPoint(Getgrayscale(gray_image, x_mid, image_y / 2), x_mid, image_y / 2));
 
 	for (register int y = 1; y <= image_y / 2; y++) {
-		// 연산 Error의 소지가 있음.
-		// 수정 바람.
-		line_y1.push_back(setMyGrayPoint(Getgrayscale(gray_image, x1, image_y / 2 + y), x1, image_y / 2 + y));
-		line_y1.push_back(setMyGrayPoint(Getgrayscale(gray_image, x1, image_y / 2 - y), x1, image_y / 2 - y));
+		line_y1.push_back(setMyGrayPoint(Getgrayscale(gray_image, x1, (image_y / 2) + y), x1, (image_y / 2) + y));
+		line_y1.push_back(setMyGrayPoint(Getgrayscale(gray_image, x1, (image_y / 2) - y), x1, (image_y / 2) - y));
 
-		line_y2.push_back(setMyGrayPoint(Getgrayscale(gray_image, x2, image_y / 2 + y), x2, image_y / 2 + y));
-		line_y2.push_back(setMyGrayPoint(Getgrayscale(gray_image, x2, image_y / 2 - y), x2, image_y / 2 - y));
+		line_y2.push_back(setMyGrayPoint(Getgrayscale(gray_image, x2, (image_y / 2) + y), x2, (image_y / 2) + y));
+		line_y2.push_back(setMyGrayPoint(Getgrayscale(gray_image, x2, (image_y / 2) - y), x2, (image_y / 2) - y));
 
-		line_y_mid.push_back(setMyGrayPoint(Getgrayscale(gray_image, x_mid, image_y / 2 + y), x_mid, image_y / 2 + y));
-		line_y_mid.push_back(setMyGrayPoint(Getgrayscale(gray_image, x_mid, image_y / 2 - y), x_mid, image_y / 2 - y));
+		line_y_mid.push_back(setMyGrayPoint(Getgrayscale(gray_image, x_mid, (image_y / 2) + y), x_mid, (image_y / 2) + y));
+		line_y_mid.push_back(setMyGrayPoint(Getgrayscale(gray_image, x_mid, (image_y / 2) - y), x_mid, (image_y / 2) - y));
 	}
 }
 
@@ -578,7 +567,7 @@ void Chess_recognition::GetgraySidelinesPoint(IplImage *chess_image) {
 						in_line_point_x1.push_back(setMyPoint(line_x1[i].x, line_x1[i].y));
 
 						line_count_x1++;
-						cvCircle(chess_image, cvPoint(line_x1[i].x, line_x1[i].y), 5, cvScalar(255,255,255));
+						//cvCircle(chess_image, cvPoint(line_x1[i].x, line_x1[i].y), 5, cvScalar(255,255,255));
 
 						if (i % 2 == 0)
 							change_flag_line_x1_t1 = !change_flag_t;
@@ -637,7 +626,7 @@ void Chess_recognition::GetgraySidelinesPoint(IplImage *chess_image) {
 						in_line_point_x2.push_back(setMyPoint(line_x2[i].x, line_x2[i].y));
 
 						line_count_x2++;
-						cvCircle(chess_image, cvPoint(line_x2[i].x, line_x2[i].y), 5, cvScalar(255, 255, 255));
+						//cvCircle(chess_image, cvPoint(line_x2[i].x, line_x2[i].y), 5, cvScalar(255, 255, 255));
 
 						if (i % 2 == 0)
 							change_flag_line_x2_t1 = !change_flag_t;
@@ -683,10 +672,6 @@ void Chess_recognition::GetgraySidelinesPoint(IplImage *chess_image) {
 				int flag = true;
 
 				for(register int j = 1; j <= 3; j++) {
-					// 연산 Error의 소지가 있음.
-					// 수정 바람.
-					// if 구문 오류? Bug 소지가 있음.
-					// if (line_y1[i].grayscale == line_y1[i + j * 2].grayscale && change_flag_t == change_flag_line_y1_t) {
 					if (line_y1[i].grayscale == line_y1[i + (j * 2)].grayscale && change_flag_t == change_flag_line_y1_t) {
 						flag = false;
 						break;
@@ -707,7 +692,7 @@ void Chess_recognition::GetgraySidelinesPoint(IplImage *chess_image) {
 						in_line_point_y1.push_back(setMyPoint(line_y1[i].x, line_y1[i].y));
 
 						line_count_y1++;
-						cvCircle(chess_image, cvPoint(line_y1[i].x, line_y1[i].y), 5, cvScalar(255, 255, 255));
+						//cvCircle(chess_image, cvPoint(line_y1[i].x, line_y1[i].y), 5, cvScalar(255, 255, 255));
 
 						if (i % 2 == 0)
 							change_flag_line_y1_t1 = !change_flag_t;
@@ -746,10 +731,6 @@ void Chess_recognition::GetgraySidelinesPoint(IplImage *chess_image) {
 				int flag = true;
 
 				for (register int j = 1; j <= 3; j++) {
-					// 연산 Error의 소지가 있음.
-					// 수정 바람.
-					// if 구문 오류? Bug 소지가 있음.
-					// if (line_y2[i].grayscale == line_y2[i+j*2].grayscale && change_flag_t == change_flag_line_y2_t) {
 					if (line_y2[i].grayscale == line_y2[i + (j * 2)].grayscale && change_flag_t == change_flag_line_y2_t) {
 						flag = false;
 						break;
@@ -770,7 +751,7 @@ void Chess_recognition::GetgraySidelinesPoint(IplImage *chess_image) {
 						in_line_point_y2.push_back(setMyPoint(line_y2[i].x, line_y2[i].y));
 
 						line_count_y2++;
-						cvCircle(chess_image, cvPoint(line_y2[i].x, line_y2[i].y), 5, cvScalar(255, 255, 255));
+						//cvCircle(chess_image, cvPoint(line_y2[i].x, line_y2[i].y), 5, cvScalar(255, 255, 255));
 
 						if (i % 2 == 0)
 							change_flag_line_y2_t1 = !change_flag_t;
@@ -827,28 +808,24 @@ void Chess_recognition::GetInCrossPoint(IplImage *chess_image, vector<Chess_poin
 				in_line_point_x1[i] = in_line_point_x1[j];
 				in_line_point_x1[j] = t_point;
 			}
-			//MyPointSwap(&in_line_point_x1[i], &in_line_point_x1[j]);
 			if (in_line_point_x2[i].x > in_line_point_x2[j].x) {
 				MyPoint t_point = in_line_point_x2[i];
 
 				in_line_point_x2[i] = in_line_point_x2[j];
 				in_line_point_x2[j] = t_point;
 			}
-			//MyPointSwap(&in_line_point_x2[i], &in_line_point_x2[j]);
 			if (in_line_point_y1[i].y > in_line_point_y1[j].y) {
 				MyPoint t_point = in_line_point_y1[i];
 
 				in_line_point_y1[i] = in_line_point_y1[j];
 				in_line_point_y1[j] = t_point;
 			}
-			//MyPointSwap(&in_line_point_y1[i], &in_line_point_y1[j]);
 			if (in_line_point_y2[i].y > in_line_point_y2[j].y) {
 				MyPoint t_point = in_line_point_y2[i];
 
 				in_line_point_y2[i] = in_line_point_y2[j];
 				in_line_point_y2[j] = t_point;
 			}
-			//MyPointSwap(&in_line_point_y2[i], &in_line_point_y2[j]);
 		}
 	}
 
@@ -861,7 +838,6 @@ void Chess_recognition::GetInCrossPoint(IplImage *chess_image, vector<Chess_poin
 			SetMyLinePoint(in_line_point_y1[j].x, in_line_point_y1[j].y, in_line_point_y2[j].x, in_line_point_y2[j].y, &t_in_line_point_y);
 
 			GetCrossPoint(t_in_line_point_x, t_in_line_point_y, &t_in_point);
-			//cvCircle(chess_image, cvPoint(t_in_point.x, t_in_point.y),5,cvScalar(0, 0, 0));
 
 			Chess_point temp;
 			temp.Cordinate = cvPoint(t_in_point.x, t_in_point.y);
@@ -909,30 +885,17 @@ bool Chess_recognition::GetCrossPoint(MyLinePoint line1, MyLinePoint line2, MyPo
 	float y12 = line1.y1 - line1.y2;
 	float y34 = line2.y1 - line2.y2;
 
-	// 연산 Error의 소지가 있음.
-	// 수정 바람.
-	// 연산에서 문제의 소지가 있음.
-	float c = x12 * y34 - y12 * x34;
+	float c = (x12 * y34) - (y12 * x34);
 
 	if (fabs(c) < 0.01)	{
 		// No intersection
 		return false;
 	}
 	else {
-		// 연산 Error의 소지가 있음.
-		// 수정 바람.
-		// 연산에서 문제의 소지가 있음.
 		// Intersection
-		float a = line1.x1 * line1.y2 - line1.y1 * line1.x2;
-		float b = line2.x1 * line2.y2 - line2.y1 * line2.x2;
+		float a = (line1.x1 * line1.y2) - (line1.y1 * line1.x2);
+		float b = (line2.x1 * line2.y2) - (line2.y1 * line2.x2);
 
-		// 연산 Error의 소지가 있음.
-		// 수정 바람.
-		// 역시 여기도 연산에서 문제의 소지가 있음.
-		/*
-		float x = (a * x34 - b * x12) / c;
-		float y = (a * y34 - b * y12) / c;
-		*/
 		float x = ((a * x34) - (b * x12)) / c;
 		float y = ((a * y34) - (b * y12)) / c;
 		out->x = (int)x;
@@ -1004,9 +967,7 @@ void Chess_recognition::GrayImageBinarization(IplImage *gray_image) {
 
 	for(register int i=0; i < gray_image->width; i++) {
 		for(register int j=0; j < gray_image->height; j++) {
-			// 연산 Error의 소지가 있음.
-			// 수정 바람.
-			int index = i + j * gray_image->widthStep;
+			int index = i + (j * gray_image->widthStep);
 
 			gray_image->imageData[index] = Getgrayscale(gray_image, i, j) > T ? 255 : 0;
 		}
