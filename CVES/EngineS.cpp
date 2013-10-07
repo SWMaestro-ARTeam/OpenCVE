@@ -357,9 +357,7 @@ bool EngineS::Check_InChessboard(IplImage *img, vector<Chess_point> point){
 }
 
 float EngineS::area_tri(CvPoint p, CvPoint q, CvPoint r) {
-	// 연산 Error의 소지가 있음.
-	// 수정 바람.
-	return (float)abs((p.x * q.y + q.x * r.y + r.x * p.y)-(p.y * q.x + q.y * r.x + r.y * p.x)) / 2.0;
+	return (float)abs(((p.x * q.y) + (q.x * r.y) + (r.x * p.y))-((p.y * q.x) + (q.y * r.x) + (r.y * p.x))) / 2.0;
 }
 
 void EngineS::Sub_image(IplImage *src1, IplImage *src2, IplImage *dst) {
@@ -367,16 +365,12 @@ void EngineS::Sub_image(IplImage *src1, IplImage *src2, IplImage *dst) {
 
 	for (register int i = 0; i < src1->width; i++) {
 		for (register int j = 0; j < src1->height; j++) {
-			// 연산 Error의 소지가 있음.
-			// 수정 바람.
-			unsigned char SUB_B = abs((unsigned char)src1->imageData[(i * 3) + j * src1->widthStep] - (unsigned char)src2->imageData[(i * 3) + j * src2->widthStep]);
-			unsigned char SUB_G = abs((unsigned char)src1->imageData[(i * 3) + j * src1->widthStep + 1] - (unsigned char)src2->imageData[(i * 3) + j * src2->widthStep + 1]);
-			unsigned char SUB_R = abs((unsigned char)src1->imageData[(i * 3) + j * src1->widthStep + 2] - (unsigned char)src2->imageData[(i * 3) + j * src2->widthStep + 2]);
+			unsigned char SUB_B = abs((unsigned char)src1->imageData[(i * 3) + (j * src1->widthStep)] - (unsigned char)src2->imageData[(i * 3) + (j * src2->widthStep)]);
+			unsigned char SUB_G = abs((unsigned char)src1->imageData[(i * 3) + (j * src1->widthStep) + 1] - (unsigned char)src2->imageData[(i * 3) + (j * src2->widthStep) + 1]);
+			unsigned char SUB_R = abs((unsigned char)src1->imageData[(i * 3) + (j * src1->widthStep) + 2] - (unsigned char)src2->imageData[(i * 3) + (j * src2->widthStep) + 2]);
 
 			if (SUB_B > SUB_THRESHOLD || SUB_G > SUB_THRESHOLD || SUB_R > SUB_THRESHOLD) {
-				// 연산 Error의 소지가 있음.
-				// 수정 바람.
-				dst->imageData[i + j * dst->widthStep] = (unsigned char)255;
+				dst->imageData[i + (j * dst->widthStep)] = (unsigned char)255;
 			}
 		}
 	}
@@ -394,11 +388,9 @@ void EngineS::Compose_diffImage(IplImage *rgb, IplImage *bin, CvScalar RGB) {
 			bin_value = (unsigned char)bin->imageData[i + j * bin->widthStep];
 
 			if (bin_value == 255) {
-				// 연산 Error의 소지가 있음.
-				// 수정 바람.
-				rgb->imageData[i * 3 + j * rgb->widthStep] = RGB.val[0];
-				rgb->imageData[i * 3 + j * rgb->widthStep + 1] = RGB.val[1];
-				rgb->imageData[i * 3 + j * rgb->widthStep + 2] = RGB.val[2];
+				rgb->imageData[(i * 3) + (j * rgb->widthStep)] = RGB.val[0];
+				rgb->imageData[(i * 3) + (j * rgb->widthStep) + 1] = RGB.val[1];
+				rgb->imageData[(i * 3) + (j * rgb->widthStep) + 2] = RGB.val[2];
 			}
 		}
 }
@@ -407,9 +399,8 @@ bool EngineS::Check_imgZero(IplImage *img){
 	unsigned char pixel_value;
 	for (register int i = 0; i < img->width; i++)
 		for (register int j = 0; j < img->height; j++) {
-			// 연산 Error의 소지가 있음.
-			// 수정 바람.
-			pixel_value = (unsigned char)img->imageData[i + j * img->widthStep];
+
+			pixel_value = (unsigned char)img->imageData[i + (j * img->widthStep)];
 
 			if (pixel_value != 0)
 				return false;

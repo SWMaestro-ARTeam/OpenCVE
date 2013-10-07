@@ -83,12 +83,10 @@ void Chess_recognition::drawLines(vector<pair<float, float>> lines, IplImage* im
 		double a = cos(theta), b = sin(theta);
 		double x0 = a*rho, y0 = b*rho;								//수직의 시작이 되는점
 		
-		// 연산 Error의 소지가 있음.
-		// 수정 바람.
-		pt1.x = cvRound(x0 + 1000 * (-b));							//끝까지로 쭉 그려버림
-		pt1.y = cvRound(y0 + 1000 * (a));
-		pt2.x = cvRound(x0 - 1000 * (-b));
-		pt2.y = cvRound(y0 - 1000 * (a));
+		pt1.x = cvRound(x0 + (1000 * (-b)));							//끝까지로 쭉 그려버림
+		pt1.y = cvRound(y0 + (1000 * (a)));
+		pt2.x = cvRound(x0 - (1000 * (-b)));
+		pt2.y = cvRound(y0 - (1000 * (a)));
 		cvLine(image, pt1, pt2, CV_RGB(255, 0, 0), 1, 8);
 
 		cvDrawCircle(image, cvPoint(x0, y0), 3, cvScalar(255, 255), -1);
@@ -121,10 +119,9 @@ void Chess_recognition::findIntersections(vector<pair<float, float>> linesX, vec
 			double aY = cos(thetaY), bY = sin(thetaY);
 
 			CvPoint c; // the intersection point of lineX[i] and lineY[j] 
-			// 연산 Error의 소지가 있음.
-			// 수정 바람.
-			double Cx = (rhoX * bY - rhoY * bX) / (aX * bY - bX * aY);
-			double Cy = (rhoX - aX * Cx) / bX;
+
+			double Cx = ((rhoX * bY) - (rhoY * bX)) / ((aX * bY) - (bX * aY));
+			double Cy = (rhoX - (aX * Cx)) / bX;
 
 			c.x = cvRound(Cx);
 			c.y = cvRound(Cy);
@@ -407,10 +404,9 @@ void Chess_recognition::Refine_CrossPoint(vector<Chess_point> *point){
 		}
 		else {
 			for (register int i = 0; i < 81; i++) {
-				// 연산 Error의 소지가 있음.
-				// 수정 바람.
-				point->at(i).Cordinate.x = cvRound(Refine_const * (float)prev_point.at(i).x + (1.0 - Refine_const) * (float)point->at(i).Cordinate.x);
-				point->at(i).Cordinate.y = cvRound(Refine_const * (float)prev_point.at(i).y + (1.0 - Refine_const) * (float)point->at(i).Cordinate.y);
+
+				point->at(i).Cordinate.x = cvRound((Refine_const * (float)prev_point.at(i).x) + ((1.0 - Refine_const) * (float)point->at(i).Cordinate.x));
+				point->at(i).Cordinate.y = cvRound((Refine_const * (float)prev_point.at(i).y) + ((1.0 - Refine_const) * (float)point->at(i).Cordinate.y));
 				//printf("after: %d %d\n", point->at(i).Cordinate.x, point->at(i).Cordinate.y);
 
 				//prev_point.clear();

@@ -35,10 +35,8 @@ Hand_recognition::~Hand_recognition(void) {
 	if (prev_ground != NULL)
 		cvReleaseImage(&prev_ground);
 
-	// if (present_ground != NULL)의 옆쪽 ';'은 무슨 의미? Release 안시킨다는 의미?
-	// 수정 바람.
-	if (present_ground != NULL);
-	cvReleaseImage(&present_ground);
+	if (present_ground != NULL)
+		cvReleaseImage(&present_ground);
 }
 
 void Hand_recognition::Init(int width, int height) {
@@ -53,21 +51,17 @@ void Hand_recognition::Init(int width, int height) {
 }
 
 bool Hand_recognition::R1(int R, int G, int B) {
-	// 연산 Error의 소지가 있음.
-	// 수정 바람.
 	bool e1 = (R > 95) && (G > 40) && (B > 20) && ((max(R, max(G, B)) - min(R, min(G , B))) > 15) && (abs(R - G) > 15) && (R > G) && (R > B);
 	bool e2 = (R > 220) && (G > 210) && (B > 170) && (abs(R - G) <= 15) && (R > B) && (G > B);
 	return (e1||e2);
 }
 
 bool Hand_recognition::R2(float Y, float Cr, float Cb) {
-	// 연산 Error의 소지가 있음.
-	// 수정 바람.
-	bool e3 = Cr <= 1.5862 * Cb + 20;
-	bool e4 = Cr >= 0.3448 * Cb + 76.2069;
-	bool e5 = Cr >= -4.5652 * Cb + 234.5652;
-	bool e6 = Cr <= -1.15 * Cb + 301.75;
-	bool e7 = Cr <= -2.2857 * Cb + 432.85;
+	bool e3 = Cr <= (1.5862 * Cb) + 20;
+	bool e4 = Cr >= (0.3448 * Cb) + 76.2069;
+	bool e5 = Cr >= (-4.5652 * Cb) + 234.5652;
+	bool e6 = Cr <= (-1.15 * Cb) + 301.75;
+	bool e7 = Cr <= (-2.2857 * Cb) + 432.85;
 	return e3 && e4 && e5 && e6 && e7;
 }
 
@@ -83,36 +77,28 @@ void Hand_recognition::Detect_Skin(IplImage *src, IplImage *dst) {
 
 	for (register int i = 0; i < dst->height; i++) {
 		for (register int j = 0; j < dst->width; j++) {
-			// 연산 Error의 소지가 있음.
-			// 수정 바람.
-			B = (unsigned char)src->imageData[(j * 3) + i * src->widthStep];
-			G = (unsigned char)src->imageData[(j * 3) + i * src->widthStep + 1];
-			R = (unsigned char)src->imageData[(j * 3) + i * src->widthStep + 2];
+			B = (unsigned char)src->imageData[(j * 3) + (i * src->widthStep)];
+			G = (unsigned char)src->imageData[(j * 3) + (i * src->widthStep) + 1];
+			R = (unsigned char)src->imageData[(j * 3) + (i * src->widthStep) + 2];
 
 			bool a = R1(R, G, B);
 
 			if (a) {
-				// 연산 Error의 소지가 있음.
-				// 수정 바람.
-				H = (unsigned char)img_HSV->imageData[(j * 3) + i * img_HSV->widthStep];
-				S = (unsigned char)img_HSV->imageData[(j * 3) + i * img_HSV->widthStep + 1];
-				V = (unsigned char)img_HSV->imageData[(j * 3) + i * img_HSV->widthStep + 2];
+				H = (unsigned char)img_HSV->imageData[(j * 3) + (i * img_HSV->widthStep)];
+				S = (unsigned char)img_HSV->imageData[(j * 3) + (i * img_HSV->widthStep) + 1];
+				V = (unsigned char)img_HSV->imageData[(j * 3) + (i * img_HSV->widthStep) + 2];
 
 				bool c = R3(H, S, V);
 
 				if (c) {
-					// 연산 Error의 소지가 있음.
-					// 수정 바람.
-					Y = (unsigned char)img_YCrCb->imageData[(j * 3) + i * img_YCrCb->widthStep];
-					Cr = (unsigned char)img_YCrCb->imageData[(j * 3) + i * img_YCrCb->widthStep + 1];
-					Cb = (unsigned char)img_YCrCb->imageData[(j * 3) + i * img_YCrCb->widthStep + 2];
+					Y = (unsigned char)img_YCrCb->imageData[(j * 3) + (i * img_YCrCb->widthStep)];
+					Cr = (unsigned char)img_YCrCb->imageData[(j * 3) + (i * img_YCrCb->widthStep) + 1];
+					Cb = (unsigned char)img_YCrCb->imageData[(j * 3) + (i * img_YCrCb->widthStep) + 2];
 
 					bool b = R2(Y, Cr, Cb);
 
 					if (b) {
-						// 연산 Error의 소지가 있음.
-						// 수정 바람.
-						dst->imageData[j + i * dst->widthStep] = (unsigned char) 255;
+						dst->imageData[j + (i * dst->widthStep)] = (unsigned char) 255;
 					}
 				}
 			}
@@ -128,9 +114,7 @@ bool Hand_recognition::is_Hand(IplImage *src) {
 
 	for (register int i = 0; i < src->width; i++) {
 		for (register int j = 0; j < src->height; j++) {
-			// 연산 Error의 소지가 있음.
-			// 수정 바람.
-			if ((unsigned char)src->imageData[i + j * src->widthStep] == 255)
+			if ((unsigned char)src->imageData[i + (j * src->widthStep)] == 255)
 				count++;
 		}
 	}
@@ -145,11 +129,10 @@ void Hand_recognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
 	static int frame_count = 0;
 
 	if (first) {
-		if (prev_ground != NULL)
+		if (prev_ground != NULL){
 			cvReleaseImage(&prev_ground);
-		// 여기도 Error의 소지가 있음.
-		// 고려 바람.
-		prev_ground = NULL;
+			prev_ground = NULL;
+		}
 	}
 
 	if (prev_ground == NULL) {
@@ -167,16 +150,12 @@ void Hand_recognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
 
 		for (int i = 0; i < src->width; i++) {
 			for (int j = 0; j < src->height; j++) {
-				// 연산 Error의 소지가 있음.
-				// 수정 바람.
-				unsigned char SUB_B = abs((unsigned char)src->imageData[(i * 3) + j * src->widthStep] - (unsigned char)prev_ground->imageData[(i * 3) + j * prev_ground->widthStep]);
-				unsigned char SUB_G = abs((unsigned char)src->imageData[(i * 3) + j * src->widthStep + 1] - (unsigned char)prev_ground->imageData[(i * 3) + j * prev_ground->widthStep + 1]);
-				unsigned char SUB_R = abs((unsigned char)src->imageData[(i * 3) + j * src->widthStep + 2] - (unsigned char)prev_ground->imageData[(i * 3) + j * prev_ground->widthStep + 2]);
+				unsigned char SUB_B = abs((unsigned char)src->imageData[(i * 3) + (j * src->widthStep)] - (unsigned char)prev_ground->imageData[(i * 3) + (j * prev_ground->widthStep)]);
+				unsigned char SUB_G = abs((unsigned char)src->imageData[(i * 3) + (j * src->widthStep) + 1] - (unsigned char)prev_ground->imageData[(i * 3) + (j * prev_ground->widthStep) + 1]);
+				unsigned char SUB_R = abs((unsigned char)src->imageData[(i * 3) + (j * src->widthStep) + 2] - (unsigned char)prev_ground->imageData[(i * 3) + (j * prev_ground->widthStep) + 2]);
 
 				if(SUB_B > SUB_THRESHOLD || SUB_G > SUB_THRESHOLD || SUB_R > SUB_THRESHOLD) {
-					// 연산 Error의 소지가 있음.
-					// 수정 바람.
-					dst->imageData[i + j * dst->widthStep] = (unsigned char)255;
+					dst->imageData[i + (j * dst->widthStep)] = (unsigned char)255;
 				}
 			}
 		}

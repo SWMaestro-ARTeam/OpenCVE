@@ -81,9 +81,7 @@ int CBlobLabeling::Labeling(IplImage* image, int nThreshold) {
 
 	for (register int j = 0; j < nHeight; j++)
 		for (register int i = 0; i < nWidth; i++) {
-			// 연산 Error의 소지가 있음.
-			// 수정 바람.
-			tmpBuf[j * nWidth + i] = (unsigned char)image->imageData[j * image->widthStep + i];
+			tmpBuf[(j * nWidth) + i] = (unsigned char)image->imageData[(j * image->widthStep) + i];
 		}
 	
 	// 레이블링을 위한 포인트 초기화
@@ -103,9 +101,8 @@ int CBlobLabeling::Labeling(IplImage* image, int nThreshold) {
 
 	for (register int j = 0; j < nHeight; j++)
 		for (register int i = 0; i < nWidth; i++) {
-			// 연산 Error의 소지가 있음.
-			// 수정 바람.
-			image->imageData[j * image->widthStep + i] = tmpBuf[j * nWidth + i];
+
+			image->imageData[(j * image->widthStep) + i] = tmpBuf[(j * nWidth) + i];
 		}
 
 	delete tmpBuf;
@@ -118,11 +115,9 @@ void CBlobLabeling::InitvPoint(int nWidth, int nHeight) {
 
 	for(int nY = 0; nY < nHeight; nY++) {
 		for(int nX = 0; nX < nWidth; nX++) {
-			// 연산 Error의 소지가 있음.
-			// 수정 바람.
-			m_vPoint[nY * nWidth + nX].bVisitedFlag = false;
-			m_vPoint[nY * nWidth + nX].ptReturnPoint.x	= nX;
-			m_vPoint[nY * nWidth + nX].ptReturnPoint.y	= nY;
+			m_vPoint[(nY * nWidth) + nX].bVisitedFlag = false;
+			m_vPoint[(nY * nWidth) + nX].ptReturnPoint.x	= nX;
+			m_vPoint[(nY * nWidth) + nX].ptReturnPoint.y	= nY;
 		}
 	}
 }
@@ -142,14 +137,10 @@ int CBlobLabeling::_Labeling(unsigned char *DataBuf, int nWidth, int nHeight, in
 	for (register int nY = 0; nY < nHeight; nY++)	{
 		for (register int nX = 0; nX < nWidth; nX++) {
 			// Is this a new component?, 255 == Object
-			// 연산 Error의 소지가 있음.
-			// 수정 바람.
-			if (DataBuf[nY * nWidth + nX] == 255) {
+			if (DataBuf[(nY * nWidth) + nX] == 255) {
 				num++;
 
-				// 연산 Error의 소지가 있음.
-				// 수정 바람.
-				DataBuf[nY * nWidth + nX] = num;
+				DataBuf[(nY * nWidth) + nX] = num;
 				
 				StartX = nX, StartY = nY, EndX = nX, EndY= nY;
 
@@ -158,10 +149,8 @@ int CBlobLabeling::_Labeling(unsigned char *DataBuf, int nWidth, int nHeight, in
 				if (__Area(DataBuf, StartX, StartY, EndX, EndY, nWidth, num) < nThreshold) {
 		 			for (register int k = StartY; k <= EndY; k++) {
 						for (register int l = StartX; l <= EndX; l++)	{
-							// 연산 Error의 소지가 있음.
-							// 수정 바람.
-							if (DataBuf[k * nWidth + l] == num)
-								DataBuf[k * nWidth + l] = 0;
+							if (DataBuf[(k * nWidth) + l] == num)
+								DataBuf[(k * nWidth) + l] = 0;
 						}
 					}
 					--num;
@@ -185,9 +174,7 @@ void CBlobLabeling::DetectLabelingRegion(int nLabelNumber, unsigned char *DataBu
 	
 	for (register int nY = 1; nY < nHeight - 1; nY++) {
 		for (register int nX = 1; nX < nWidth - 1; nX++) {
-			// 연산 Error의 소지가 있음.
-			// 수정 바람.
-			nLabelIndex = DataBuf[nY * nWidth + nX];
+			nLabelIndex = DataBuf[(nY * nWidth) + nX];
 
 			// Is this a new component?, 255 == Object
 			if (nLabelIndex != 0) {
@@ -230,23 +217,17 @@ int CBlobLabeling::__NRFIndNeighbor(unsigned char *DataBuf, int nWidth, int nHei
 	CurrentPoint.x = nPosX;
 	CurrentPoint.y = nPosY;
 
-	// 연산 오류의 소지가 있음.
-	// 수정 바람.
-	m_vPoint[CurrentPoint.y * nWidth +  CurrentPoint.x].bVisitedFlag = true;
-	m_vPoint[CurrentPoint.y * nWidth +  CurrentPoint.x].ptReturnPoint.x = nPosX;
-	m_vPoint[CurrentPoint.y * nWidth +  CurrentPoint.x].ptReturnPoint.y = nPosY;
+	m_vPoint[(CurrentPoint.y * nWidth) +  CurrentPoint.x].bVisitedFlag = true;
+	m_vPoint[(CurrentPoint.y * nWidth) +  CurrentPoint.x].ptReturnPoint.x = nPosX;
+	m_vPoint[(CurrentPoint.y * nWidth) +  CurrentPoint.x].ptReturnPoint.y = nPosY;
 			
 	while (1) {
 		// -X 방향
-		// 연산 Error의 소지가 있음.
-		// 수정 바람.
-		if ((CurrentPoint.x != 0) && (DataBuf[CurrentPoint.y * nWidth + CurrentPoint.x - 1] == 255)) {
-			if (m_vPoint[CurrentPoint.y * nWidth +  CurrentPoint.x - 1].bVisitedFlag == false) {
-				// 연산 Error의 소지가 있음.
-				// 수정 바람.
-				DataBuf[CurrentPoint.y * nWidth + CurrentPoint.x - 1] = DataBuf[CurrentPoint.y * nWidth + CurrentPoint.x];	// If so, mark it
-				m_vPoint[CurrentPoint.y * nWidth + CurrentPoint.x - 1].bVisitedFlag = true;
-				m_vPoint[CurrentPoint.y * nWidth + CurrentPoint.x - 1].ptReturnPoint	= CurrentPoint;
+		if ((CurrentPoint.x != 0) && (DataBuf[(CurrentPoint.y * nWidth) + CurrentPoint.x - 1] == 255)) {
+			if (m_vPoint[(CurrentPoint.y * nWidth) +  CurrentPoint.x - 1].bVisitedFlag == false) {
+				DataBuf[(CurrentPoint.y * nWidth) + CurrentPoint.x - 1] = DataBuf[(CurrentPoint.y * nWidth) + CurrentPoint.x];	// If so, mark it
+				m_vPoint[(CurrentPoint.y * nWidth) + CurrentPoint.x - 1].bVisitedFlag = true;
+				m_vPoint[(CurrentPoint.y * nWidth) + CurrentPoint.x - 1].ptReturnPoint	= CurrentPoint;
 				CurrentPoint.x--;
 				
 				if (CurrentPoint.x <= 0)
@@ -260,15 +241,12 @@ int CBlobLabeling::__NRFIndNeighbor(unsigned char *DataBuf, int nWidth, int nHei
 		}
 
 		// -X 방향
-		// 연산 Error의 소지가 있음.
-		// 수정 바람.
-		if ((CurrentPoint.x != nWidth - 1) && (DataBuf[CurrentPoint.y * nWidth + CurrentPoint.x + 1] == 255)) {
-			if (m_vPoint[CurrentPoint.y * nWidth +  CurrentPoint.x + 1].bVisitedFlag == false) {
-				// 연산 Error의 소지가 있음.
-				// 수정 바람.
-				DataBuf[CurrentPoint.y * nWidth + CurrentPoint.x + 1]	= DataBuf[CurrentPoint.y * nWidth + CurrentPoint.x];	// If so, mark it
-				m_vPoint[CurrentPoint.y * nWidth + CurrentPoint.x + 1].bVisitedFlag	= true;
-				m_vPoint[CurrentPoint.y * nWidth + CurrentPoint.x + 1].ptReturnPoint	= CurrentPoint;
+		if ((CurrentPoint.x != nWidth - 1) && (DataBuf[(CurrentPoint.y * nWidth) + CurrentPoint.x + 1] == 255)) {
+			if (m_vPoint[(CurrentPoint.y * nWidth) +  CurrentPoint.x + 1].bVisitedFlag == false) {
+
+				DataBuf[(CurrentPoint.y * nWidth) + CurrentPoint.x + 1]	= DataBuf[(CurrentPoint.y * nWidth) + CurrentPoint.x];	// If so, mark it
+				m_vPoint[(CurrentPoint.y * nWidth) + CurrentPoint.x + 1].bVisitedFlag	= true;
+				m_vPoint[(CurrentPoint.y * nWidth) + CurrentPoint.x + 1].ptReturnPoint	= CurrentPoint;
 				CurrentPoint.x++;
 
 				if (CurrentPoint.x >= nWidth - 1)
@@ -282,15 +260,11 @@ int CBlobLabeling::__NRFIndNeighbor(unsigned char *DataBuf, int nWidth, int nHei
 		}
 
 		// -X 방향
-		// 연산 Error의 소지가 있음.
-		// 수정 바람.
-		if ((CurrentPoint.y != 0) && (DataBuf[(CurrentPoint.y - 1) * nWidth + CurrentPoint.x] == 255)) {
-			if (m_vPoint[(CurrentPoint.y - 1) * nWidth +  CurrentPoint.x].bVisitedFlag == false) {
-				// 연산 Error의 소지가 있음.
-				// 수정 바람.
-				DataBuf[(CurrentPoint.y - 1) * nWidth + CurrentPoint.x] = DataBuf[CurrentPoint.y * nWidth + CurrentPoint.x];	// If so, mark it
-				m_vPoint[(CurrentPoint.y - 1) * nWidth + CurrentPoint.x].bVisitedFlag = true;
-				m_vPoint[(CurrentPoint.y - 1) * nWidth + CurrentPoint.x].ptReturnPoint = CurrentPoint;
+		if ((CurrentPoint.y != 0) && (DataBuf[((CurrentPoint.y - 1) * nWidth) + CurrentPoint.x] == 255)) {
+			if (m_vPoint[((CurrentPoint.y - 1) * nWidth) +  CurrentPoint.x].bVisitedFlag == false) {
+				DataBuf[((CurrentPoint.y - 1) * nWidth) + CurrentPoint.x] = DataBuf[(CurrentPoint.y * nWidth) + CurrentPoint.x];	// If so, mark it
+				m_vPoint[((CurrentPoint.y - 1) * nWidth) + CurrentPoint.x].bVisitedFlag = true;
+				m_vPoint[((CurrentPoint.y - 1) * nWidth) + CurrentPoint.x].ptReturnPoint = CurrentPoint;
 				CurrentPoint.y--;
 
 				if(CurrentPoint.y <= 0)
@@ -304,15 +278,11 @@ int CBlobLabeling::__NRFIndNeighbor(unsigned char *DataBuf, int nWidth, int nHei
 		}
 	
 		// -X 방향
-		// 연산 Error의 소지가 있음.
-		// 수정 바람.
-		if ((CurrentPoint.y != nHeight - 1) && (DataBuf[(CurrentPoint.y + 1) * nWidth + CurrentPoint.x] == 255)) {
-			if (m_vPoint[(CurrentPoint.y + 1) * nWidth +  CurrentPoint.x].bVisitedFlag == false) {
-				// 연산 Error의 소지가 있음.
-				// 수정 바람.
-				DataBuf[(CurrentPoint.y + 1) * nWidth + CurrentPoint.x] = DataBuf[CurrentPoint.y * nWidth + CurrentPoint.x];	// If so, mark it
-				m_vPoint[(CurrentPoint.y + 1) * nWidth +  CurrentPoint.x].bVisitedFlag	= true;
-				m_vPoint[(CurrentPoint.y + 1) * nWidth +  CurrentPoint.x].ptReturnPoint = CurrentPoint;
+		if ((CurrentPoint.y != nHeight - 1) && (DataBuf[((CurrentPoint.y + 1) * nWidth) + CurrentPoint.x] == 255)) {
+			if (m_vPoint[((CurrentPoint.y + 1) * nWidth) +  CurrentPoint.x].bVisitedFlag == false) {
+				DataBuf[((CurrentPoint.y + 1) * nWidth) + CurrentPoint.x] = DataBuf[(CurrentPoint.y * nWidth) + CurrentPoint.x];	// If so, mark it
+				m_vPoint[((CurrentPoint.y + 1) * nWidth) +  CurrentPoint.x].bVisitedFlag	= true;
+				m_vPoint[((CurrentPoint.y + 1) * nWidth) +  CurrentPoint.x].ptReturnPoint = CurrentPoint;
 				CurrentPoint.y++;
 
 				if (CurrentPoint.y >= nHeight - 1)
@@ -324,15 +294,13 @@ int CBlobLabeling::__NRFIndNeighbor(unsigned char *DataBuf, int nWidth, int nHei
 				continue;
 			}
 		}
-		
-		// 연산 Error의 소지가 있음.
-		// 수정 바람.
-		if ((CurrentPoint.x == m_vPoint[CurrentPoint.y * nWidth + CurrentPoint.x].ptReturnPoint.x) 
-			&& (CurrentPoint.y == m_vPoint[CurrentPoint.y * nWidth + CurrentPoint.x].ptReturnPoint.y)) {
+
+		if ((CurrentPoint.x == m_vPoint[(CurrentPoint.y * nWidth) + CurrentPoint.x].ptReturnPoint.x) 
+			&& (CurrentPoint.y == m_vPoint[(CurrentPoint.y * nWidth) + CurrentPoint.x].ptReturnPoint.y)) {
 			break;
 		}
 		else {
-			CurrentPoint = m_vPoint[CurrentPoint.y * nWidth + CurrentPoint.x].ptReturnPoint;
+			CurrentPoint = m_vPoint[(CurrentPoint.y * nWidth) + CurrentPoint.x].ptReturnPoint;
 		}
 	}
 
@@ -345,9 +313,8 @@ int CBlobLabeling::__Area(unsigned char *DataBuf, int StartX, int StartY, int En
 
 	for (register int nY = StartY; nY < EndY; nY++)
 		for (register int nX = StartX; nX < EndX; nX++) {
-			// 연산 Error의 소지가 있음.
-			// 수정 바람.
-			if (DataBuf[nY * nWidth + nX] == nLevel)
+
+			if (DataBuf[(nY * nWidth) + nX] == nLevel)
 				++nArea;
 		}
 
@@ -415,9 +382,7 @@ void CBlobLabeling::GetSideBlob(IplImage *img, std::vector<int> *piece_idx, IplI
 			if (m_recBlobs[index].x <= i && m_recBlobs[index].x + m_recBlobs[index].width >= i && m_recBlobs[index].y <= j && m_recBlobs[index].y + m_recBlobs[index].height >= j)
 				continue;
 			else {
-				// 연산 Error의 소지가 있음.
-				// 수정 바람.
-				img->imageData[i + j * img->widthStep];
+				img->imageData[i + (j * img->widthStep)];
 			}
 		}
 }
