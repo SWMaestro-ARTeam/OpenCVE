@@ -25,11 +25,11 @@
 
 #include "Chess_recognition.hpp"
 
-Chess_recognition::Chess_recognition(void) {
+Chess_recognition::Chess_recognition() {
 }
 
 
-Chess_recognition::~Chess_recognition(void) {
+Chess_recognition::~Chess_recognition() {
 	CloseHandle(hThread);
 	DeleteCriticalSection(&cs);
 	DeleteCriticalSection(&vec_cs);
@@ -45,7 +45,7 @@ void Chess_recognition::exit() {
 	cvReleaseImage(&img_process);
 }
 
-void Chess_recognition::Init(int width, int height, int mode) {
+void Chess_recognition::Initialize_ChessRecognition(int width, int height, int mode) {
 	static bool first_check = false;
 
 	thread_exit = false;
@@ -72,7 +72,7 @@ void Chess_recognition::Init(int width, int height, int mode) {
 	MODE = mode;
 	cvZero(img_process);
 
-	WIDTH = width;	HEIGHT = height;
+	_Width = width;	_Height = height;
 }
 
 void Chess_recognition::drawLines(vector<pair<float, float>> lines, IplImage* image) {
@@ -267,7 +267,7 @@ UINT WINAPI Chess_recognition::thread_hough(void *arg) {
 	double minValx, maxValx, minValy, maxValy, minValt, maxValt;
 	int kernel = 1;
 
-	IplImage *iplTemp = cvCreateImage(cvSize(p->WIDTH, p->HEIGHT), IPL_DEPTH_32F, 1);                   
+	IplImage *iplTemp = cvCreateImage(cvSize(p->_Width, p->_Height), IPL_DEPTH_32F, 1);                   
 	IplImage *iplDoGx = cvCreateImage(cvGetSize(iplTemp), IPL_DEPTH_32F, 1);  
 	IplImage *iplDoGy = cvCreateImage(cvGetSize(iplTemp), IPL_DEPTH_32F, 1);  
 	IplImage *iplDoGyClone = cvCloneImage(iplDoGy), *iplDoGxClone = cvCloneImage(iplDoGx);
@@ -341,7 +341,7 @@ UINT WINAPI Chess_recognition::thread_hough(void *arg) {
 UINT WINAPI Chess_recognition::thread_GH(void *arg) {
 	Chess_recognition* p = (Chess_recognition*)arg;
 
-	IplImage *gray = cvCreateImage(cvSize(p->WIDTH, p->HEIGHT), IPL_DEPTH_8U, 1);
+	IplImage *gray = cvCreateImage(cvSize(p->_Width, p->_Height), IPL_DEPTH_8U, 1);
 
 	while (1) {
 		EnterCriticalSection(&(p->cs));
@@ -522,7 +522,7 @@ void Chess_recognition::GetgraySidelinesPoint(IplImage *chess_image) {
 	change_flag_line_x1_t1 = 127 > line_x1[0].grayscale ? true : false;
 	change_flag_line_x1_t2 = 127 > line_x1[1].grayscale ? true : false;
 
-	for(register int i=0; i<line_x1.size() - 10; i++) {
+	for (register int i = 0; i < line_x1.size() - 10; i++) {
 		if ((i % 2 == 1) && (jump_count_p1 > 0)) {
 			jump_count_p1--;
 		}
@@ -664,10 +664,10 @@ void Chess_recognition::GetgraySidelinesPoint(IplImage *chess_image) {
 			else
 				change_flag_line_y1_t = change_flag_line_y1_t2;
 
-			if (line_y1[i].grayscale != line_y1[i+2].grayscale) {
+			if (line_y1[i].grayscale != line_y1[i + 2].grayscale) {
 				int flag = true;
 
-				for(register int j = 1; j <= 3; j++) {
+				for (register int j = 1; j <= 3; j++) {
 					if (line_y1[i].grayscale == line_y1[i + (j * 2)].grayscale && change_flag_t == change_flag_line_y1_t) {
 						flag = false;
 						break;
@@ -796,8 +796,8 @@ void Chess_recognition::GetInCrossPoint(IplImage *chess_image, vector<Chess_poin
 	point->clear();
 
 	// in_line_point 오름차순 정렬
-	for (register int i = 0; i < in_line_point_x1.size(); i++){
-		for (register int j = i + 1; j < in_line_point_x1.size(); j++){
+	for (register int i = 0; i < in_line_point_x1.size(); i++) {
+		for (register int j = i + 1; j < in_line_point_x1.size(); j++) {
 			if (in_line_point_x1[i].x > in_line_point_x1[j].x) {
 				MyPoint t_point = in_line_point_x1[i];
 
@@ -905,7 +905,7 @@ void Chess_recognition::GrayImageBinarization(IplImage *gray_image) {
 	float hist[256]={0,};
 	int temp[256];
 
-	memset(temp,0,sizeof(int)*256);
+	memset(temp, 0, sizeof(int) * 256);
 
 	bool flag = true;
 

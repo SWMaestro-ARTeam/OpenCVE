@@ -83,6 +83,8 @@
   <ItemGroup>
     <ClInclude Include="..\Common\Common.hpp" />
     <ClInclude Include="..\Common\ExtendedBlackBox.hpp" />
+    <ClInclude Include="..\Common\InternalProtocol.hpp" />
+    <ClInclude Include="..\Common\InternalProtocolSeeker.hpp" />
     <ClInclude Include="..\Common\StringTokenizer.hpp" />
     <ClInclude Include="..\Common\SystemDependency.hpp" />
     <ClInclude Include="..\Common\Telepathy.hpp" />
@@ -93,6 +95,7 @@
     <ClInclude Include="Hand_recognition.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Common\InternalProtocolSeeker.cpp" />
     <ClCompile Include="..\Common\StringTokenizer.cpp" />
     <ClCompile Include="..\Common\Telepathy.cpp" />
     <ClCompile Include="BlobLabeling.cpp" />

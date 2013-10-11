@@ -25,72 +25,45 @@
 
 #include "EngineS.hpp"
 
+EngineS *G_EngineS;
+
 EngineS::EngineS() {
+	EngineEnable = false;
+	IsStarted = false;
+	IsTictokEnable = false;
+	G_EngineS = this;
 }
 
 EngineS::~EngineS() {
+	EngineEnable = false;
+	IsStarted = false;
+	IsTictokEnable = false;
+	G_EngineS = NULL;
 }
 
-void EngineS::Engine_Initializing() {
+bool EngineS::Initialize_TServer() {
+	_TelepathyServer = new Telepathy::Server();
 
-}
-
-void EngineS::Engine_DeInitializing() {
-
-}
-
-void EngineS::MouseCallback_SetROI(int event, int x, int y, int flags, void *param) {
-	EngineS* p = (EngineS*)param;
-	static bool down_check = false;
-
-	if (p->ImgProcess_Mode == 0) {
-		switch (event) {
-			case CV_EVENT_LBUTTONDOWN:
-				p->ImgProcess_ROI.x = x;
-				p->ImgProcess_ROI.y = y;
-				down_check = true;
-				break;
-			case CV_EVENT_LBUTTONUP:
-				if (abs(p->ImgProcess_ROI.height * p->ImgProcess_ROI.width) > 200) {
-					p->ImgProcess_Mode++;
-
-					if (p->ImgProcess_ROI.width < 0) {
-						p->ImgProcess_ROI.x += p->ImgProcess_ROI.width;
-						p->ImgProcess_ROI.width *= -1;
-					}
-					if (p->ImgProcess_ROI.height < 0) {
-						p->ImgProcess_ROI.y += p->ImgProcess_ROI.height;
-						p->ImgProcess_ROI.height *= -1;
-					}
-				}
-
-				down_check = false;
-				break;
-			case CV_EVENT_MOUSEMOVE:
-				if (down_check == true) {
-					p->ImgProcess_ROI.width = x - p->ImgProcess_ROI.x;
-					p->ImgProcess_ROI.height = y - p->ImgProcess_ROI.y;
-				}
-				break;
-		}
-	}
-}
-
-bool EngineS::Check_Exit() {
-	if (ImgProcess_Mode == 3)
-		return true;
-	else
+	if (_TelepathyServer->ServerInitialize() != true)
 		return false;
+
+	return true;
 }
 
-void EngineS::Init_process() {
+void EngineS::Deinitialize_TServer() {
+	if (_TelepathyServer != NULL)
+		delete _TelepathyServer;
+}
+
+void EngineS::Initialize_ImageProcessing() {
 	//Cam init
+	// Engine의 Cam을 가져온다. 그것도 0번째.
 	Cam = cvCaptureFromCAM(0);
 	if (Cam != NULL) {
 		cvSetCaptureProperty(Cam, CV_CAP_PROP_FRAME_WIDTH, WIDTH);
 		cvSetCaptureProperty(Cam, CV_CAP_PROP_FRAME_HEIGHT, HEIGHT);
 	}
-	
+
 	//모드 초기화
 	ImgProcess_Mode = 0;
 
@@ -105,7 +78,40 @@ void EngineS::Init_process() {
 	BeforeHand_first = false;
 }
 
-void EngineS::Do_imgprocess(){
+void EngineS::Deinitialize_ImageProcessing(){
+	cvDestroyAllWindows();
+
+	cvReleaseCapture(&Cam);
+
+	cvReleaseImage(&temp_prev);
+	cvReleaseImage(&temp_prev2);
+
+	cvReleaseImage(&img_Chess);
+	cvReleaseImage(&img_Skin);
+	cvReleaseImage(&prev_img);
+	cvReleaseImage(&img_sub);
+}
+
+void EngineS::Engine_Initializing() {
+	// 1. Server Start.
+	Initialize_TServer();
+
+	if (_TelepathyServer->IsInitializeServer == true)
+		_TelepathyServer->ServerStart();
+}
+
+void EngineS::Engine_DeInitializing() {
+	Deinitialize_TServer();
+}
+
+bool EngineS::Check_Exit() {
+	if (ImgProcess_Mode == 3)
+		return true;
+	else
+		return false;
+}
+
+void EngineS::Go_ImageProcessing(){
 	char key_wait, buf[32];
 	static bool img_createCheck = false;
 
@@ -113,7 +119,7 @@ void EngineS::Do_imgprocess(){
 
 	switch (ImgProcess_Mode) {
 		case 0:	
-			//관심영역 설정부
+			// 관심영역 설정부
 			if (img_createCheck == true) {
 				cvReleaseImage(&img_Chess);
 				img_createCheck = false;
@@ -122,14 +128,15 @@ void EngineS::Do_imgprocess(){
 			cvShowImage("CVES", img_Cam);
 			cvWaitKey(33);
 			break;
-		case 1:							//관심영역 재설정 선택 OR 체스보드 인식 확인부
+		case 1:
+			// 관심영역 재설정 선택 OR 체스보드 인식 확인부
 			if (img_createCheck == false) {
 				img_Chess = cvCreateImage(cvSize(ImgProcess_ROI.width, ImgProcess_ROI.height), IPL_DEPTH_8U, 3);
 				temp_prev = cvCreateImage(cvSize(ImgProcess_ROI.width, ImgProcess_ROI.height), IPL_DEPTH_8U, 3);
 				temp_prev2 = cvCreateImage(cvSize(ImgProcess_ROI.width, ImgProcess_ROI.height), IPL_DEPTH_8U, 3);
 				other = cvCreateImage(cvSize(ImgProcess_ROI.width, ImgProcess_ROI.height), IPL_DEPTH_8U, 1);
 				img_createCheck = true;
-				Find_Chess.Init(ImgProcess_ROI.width, ImgProcess_ROI.height, RECOGNITION_MODE);
+				Find_Chess.Initialize_ChessRecognition(ImgProcess_ROI.width, ImgProcess_ROI.height, RECOGNITION_MODE);
 				Find_Hand.Init(ImgProcess_ROI.width, ImgProcess_ROI.height);
 
 				//연산에 필요한 이미지 할당
@@ -312,52 +319,47 @@ void EngineS::Do_imgprocess(){
 	}
 }
 
-void EngineS::Exit_imgProcess(){
-	cvDestroyAllWindows();
+void EngineS::MouseCallback_SetROI(int event, int x, int y, int flags, void *param) {
+	EngineS* p = (EngineS*)param;
+	static bool down_check = false;
 
-	cvReleaseCapture(&Cam);
+	if (p->ImgProcess_Mode == 0) {
+		switch (event) {
+			case CV_EVENT_LBUTTONDOWN:
+				p->ImgProcess_ROI.x = x;
+				p->ImgProcess_ROI.y = y;
+				down_check = true;
+				break;
+			case CV_EVENT_LBUTTONUP:
+				if (abs(p->ImgProcess_ROI.height * p->ImgProcess_ROI.width) > 200) {
+					p->ImgProcess_Mode++;
 
-	cvReleaseImage(&temp_prev);
-	cvReleaseImage(&temp_prev2);
+					if (p->ImgProcess_ROI.width < 0) {
+						p->ImgProcess_ROI.x += p->ImgProcess_ROI.width;
+						p->ImgProcess_ROI.width *= -1;
+					}
+					if (p->ImgProcess_ROI.height < 0) {
+						p->ImgProcess_ROI.y += p->ImgProcess_ROI.height;
+						p->ImgProcess_ROI.height *= -1;
+					}
+				}
 
-	cvReleaseImage(&img_Chess);
-	cvReleaseImage(&img_Skin);
-	cvReleaseImage(&prev_img);
-	cvReleaseImage(&img_sub);
-}
-
-bool EngineS::Check_InChessboard(IplImage *img, vector<Chess_point> point){
-	CvPoint LH, LL, RH, RL;			//왼쪽 위, 왼쪽 아래, 오른쪽 위 오른쪽 아래
-	float tArea, t1Area, t2Area, t3Area, t4Area;
-	
-	LH = point.at(0).Cordinate;
-	RH = point.at(8).Cordinate;
-	LL = point.at(72).Cordinate;
-	RL = point.at(80).Cordinate;
-	tArea = area_tri(LH, LL, RH) + area_tri(RH, RL, LL);
-
-	for (register int i = 0; i < img->width; i++) {
-		for (register int j = 0; j < img->height; j++) {
-			UCHAR pixel_value = (UCHAR)img->imageData[i + j * img->widthStep];
-			
-			if (pixel_value == 255) {
-				t1Area = area_tri(cvPoint(i,j), LH, RH);
-				t2Area = area_tri(cvPoint(i,j), RH, RL);
-				t3Area = area_tri(cvPoint(i,j), RL, LL);
-				t4Area = area_tri(cvPoint(i,j), LL, LH);
-
-				float totalArea = t1Area + t2Area + t3Area + t4Area;
-				if (fabs(tArea - totalArea) < 2)
-					return true;
-			}
+				down_check = false;
+				break;
+			case CV_EVENT_MOUSEMOVE:
+				if (down_check == true) {
+					p->ImgProcess_ROI.width = x - p->ImgProcess_ROI.x;
+					p->ImgProcess_ROI.height = y - p->ImgProcess_ROI.y;
+				}
+				break;
 		}
 	}
-
-	return false;
 }
 
-float EngineS::area_tri(CvPoint p, CvPoint q, CvPoint r) {
-	return (float)abs(((p.x * q.y) + (q.x * r.y) + (r.x * p.y))-((p.y * q.x) + (q.y * r.x) + (r.y * p.x))) / 2.0;
+void EngineS::Inter_imageCraete(int roi_width, int roi_height){
+	img_Skin = cvCreateImage(cvSize(roi_width, roi_height), IPL_DEPTH_8U, 1);
+	prev_img = cvCreateImage(cvSize(roi_width, roi_height), IPL_DEPTH_8U, 3);
+	img_sub = cvCreateImage(cvSize(roi_width, roi_height), IPL_DEPTH_8U, 1);
 }
 
 void EngineS::Sub_image(IplImage *src1, IplImage *src2, IplImage *dst) {
@@ -395,11 +397,46 @@ void EngineS::Compose_diffImage(IplImage *rgb, IplImage *bin, CvScalar RGB) {
 		}
 }
 
+float EngineS::area_tri(CvPoint p, CvPoint q, CvPoint r) {
+	return (float)abs(((p.x * q.y) + (q.x * r.y) + (r.x * p.y)) - ((p.y * q.x) + (q.y * r.x) + (r.y * p.x))) / 2.0;
+}
+
+bool EngineS::Check_InChessboard(IplImage *img, vector<Chess_point> point){
+	CvPoint LH, LL, RH, RL;			//왼쪽 위, 왼쪽 아래, 오른쪽 위 오른쪽 아래
+	float tArea, t1Area, t2Area, t3Area, t4Area;
+	
+	LH = point.at(0).Cordinate;
+	RH = point.at(8).Cordinate;
+	LL = point.at(72).Cordinate;
+	RL = point.at(80).Cordinate;
+	tArea = area_tri(LH, LL, RH) + area_tri(RH, RL, LL);
+
+	for (register int i = 0; i < img->width; i++) {
+		for (register int j = 0; j < img->height; j++) {
+			UCHAR pixel_value = (UCHAR)img->imageData[i + j * img->widthStep];
+			
+			if (pixel_value == 255) {
+				t1Area = area_tri(cvPoint(i,j), LH, RH);
+				t2Area = area_tri(cvPoint(i,j), RH, RL);
+				t3Area = area_tri(cvPoint(i,j), RL, LL);
+				t4Area = area_tri(cvPoint(i,j), LL, LH);
+
+				float totalArea = t1Area + t2Area + t3Area + t4Area;
+
+				if (fabs(tArea - totalArea) < 2)
+					return true;
+			}
+		}
+	}
+
+	return false;
+}
+
 bool EngineS::Check_imgZero(IplImage *img){
 	unsigned char pixel_value;
+
 	for (register int i = 0; i < img->width; i++)
 		for (register int j = 0; j < img->height; j++) {
-
 			pixel_value = (unsigned char)img->imageData[i + (j * img->widthStep)];
 
 			if (pixel_value != 0)
@@ -419,20 +456,118 @@ CvPoint EngineS::Get_Chessidx(CvPoint point, vector<Chess_point> cross_point){
 	return cvPoint(-1, -1);
 }
 
-void EngineS::Inter_imageCraete(int roi_width, int roi_height){
-	img_Skin = cvCreateImage(cvSize(roi_width, roi_height), IPL_DEPTH_8U, 1);
-	prev_img = cvCreateImage(cvSize(roi_width, roi_height), IPL_DEPTH_8U, 3);
-	img_sub = cvCreateImage(cvSize(roi_width, roi_height), IPL_DEPTH_8U, 1);
+bool EngineS::Start_Server() {
+	bool _TIsStarted = false;
+
+	if (_TelepathyServer->IsInitializeServer == true) {
+		_TelepathyServer->TServerReceivedCallback = ServerReceivedCallback;
+		_TelepathyServer->ServerStart();
+		_TIsStarted = true;
+	}
+	return _TIsStarted;
+}
+
+void EngineS::Stop_Server() {
+
+}
+
+Telepathy::Server *EngineS::Get_Telepathy_Server() {
+	return _TelepathyServer;
 }
 
 void EngineS::EngineS_Start() {
-	//EngineS IP;
-	Init_process();
-	while (EngineEnable) {
-		Do_imgprocess();
+	// 1. Engine이 Start 되면, 우선 Server 기동부터 한다.
+	Engine_Initializing();
+	// 2. CVEC에서 "ServerIsAlive"가 날아오면, 
+	Initialize_ImageProcessing();
+	Start_Server();
 
-		if (Check_Exit()) break;
+	while (EngineEnable) {
+		// Image Processing Engine이 시작되지 않았다면 대기한다.
+		// 전체적인 구문에 영향을 줄 수 있으므로 다른 구문을 강구해보는 것도 괜찮은 생각이다.
+		if (IsStarted != true) {
+			// Image 처리 중이었다면, 모든 처리를 중단하고 화면에 Stop을 넣고 중단시킨다.
+			cvPutText(img_Cam, "Stop", cvPoint(30, 30), &cvFont(1.0), cvScalar(0, 100, 100));
+			while (!IsStarted) ;
+		}
+
+		// Chess Recognition 및 Hand Recognition을 처리하는 단계가 포함된 함수.
+		Go_ImageProcessing();
+
+		// 이 구분은 나중에 삭제 해야할 것 같다.
+		// 회의 뒤 삭제.
+		if (Check_Exit() == true)
+			EngineEnable = false;
 	}
 
-	Exit_imgProcess();
+	Deinitialize_ImageProcessing();
+}
+
+void ServerReceivedCallback(char *Buffer, SOCKET ClientSocket) {
+	// 내부 Protocol 송신(CVES -> CVEC).
+	StringTokenizer *_StringTokenizer = new StringTokenizer();
+	InternalProtocolSeeker _InternalProtocolSeeker;
+
+	_StringTokenizer->SetInputCharString((const char *)Buffer);
+	_StringTokenizer->SetSingleToken(" ");
+	if (_StringTokenizer->StringTokenGo() == false)
+		return ;
+
+	CS *_InternalProtocolCS = new CS(_StringTokenizer->GetTokenedCharListArrays());
+
+	int _NSeek_AnyToCVES = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*_InternalProtocolCS->CharArrayListIter);
+
+	switch (_NSeek_AnyToCVES) {
+		// CVEC -> CVES
+		case VALUE_SERVERKILL :
+			// Server를 죽인다.
+			// 이유를 불문하고 이 명령이 들어오면 바로 죽인다.
+			G_EngineS->EngineEnable = false;
+			break;
+		case VALUE_SERVERISALIVE :
+			// CVEC가 Server가 살아있냐는 질문에 2가지 응답으로 답해야 한다.
+			// 그런데 실제로, Server가 'Busy' 한다는건 '살아있냐'라는 질의에 대한 응답으로 좀 맞지 않으므로,
+			// 'Alive'만 날려준다.
+			G_EngineS->Get_Telepathy_Server()->SendDataToOne("Alive", ClientSocket);
+			break;
+		case VALUE_IMFIRST :
+			// Server에 Socket 중, White에 Naming을 할 Socket이 필요.
+			// 어떤 Socket인지 검색하여 찾아 Naming 한다.
+			for_IterToBegin(list, ClientsList, G_EngineS->Get_Telepathy_Server()->ClientList) {
+				if (_TVal->ClientSocket == ClientSocket) {
+					_TVal->ClientName = "White";
+				}
+			}
+			
+			break;
+		case VALUE_STOP :
+			// Stop the Server Image Processing.
+			G_EngineS->IsStarted = false;
+			break;
+		case VALUE_START :
+			// Start the Server Image Processing.
+			G_EngineS->IsStarted = true;
+			break;
+		case VALUE_ISRESTOREPOSSIBLE :
+			// 복구가 가능한가?
+			// 만약 이 Message가 왔다면, 이미 한번 죽어서 다시 실행되었다는 뜻이므로, 이전 Chess판의
+			// 정보가 있는지 없는지를 검사해야 한다.
+			// 만약 Data가 없거나, Data의 Checksum이 맞지 않아 복원에 실패하였다면, 'No'.
+			// 그게 아니라면 'Yes'를 날려준다.
+			break;
+
+		// Observer -> CVES
+		case VALUE_STATUSNOW :
+			// Status를 요청했으므로, 정보를 날려준다.
+			G_EngineS->IsStarted = false;
+			break;
+		case VALUE_TICTOKON :
+			// Tictok is On.
+			G_EngineS->IsTictokEnable = true;
+			break;
+		case VALUE_TICTOKOFF :
+			// Tictok is Off.
+			G_EngineS->IsTictokEnable = false;
+			break;
+	}
 }

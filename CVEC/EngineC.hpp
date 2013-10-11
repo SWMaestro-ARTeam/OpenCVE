@@ -36,9 +36,9 @@
 
 // 공통 상수 정의
 #include "Common.hpp"
-
+// 공용 변수 정의
 #include "GlobalVariables.hpp"
-
+// Internal Protocol Seeker
 #include "InternalProtocolSeeker.hpp"
 // Process Confirm Module
 #include "ProcessConfirm.hpp"
@@ -87,8 +87,6 @@ private:
 
 	void Clear_ClientSocket();
 
-	void SendToGUI(const char *Str, ...);
-
 	void Command_UCI();
 	void Command_Debug();
 	void Command_Isready();
@@ -118,13 +116,16 @@ public:
 	//bool IsGetCVESProcess;
 	//bool isServerOrClient;
 	bool EngineEnable;
+	bool EnginePause;
 	// Functions
 	bool Connect_Server();
 	void Disconnect_Server();
 
+	void SendToGUI(const char *Str, ...);
+
 	bool Get_CVESProcessStatus();
 	bool Get_CVESConnectionStatus();
-	Telepathy::Client* Get_TelepathyClient();
+	Telepathy::Client *Get_TelepathyClient();
 	bool CheckingCVESProcess();
 	void EngineC_Start();
 };

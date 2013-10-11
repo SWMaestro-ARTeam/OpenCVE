@@ -26,19 +26,27 @@
 #ifndef _EngineS_hpp_
 #define _EngineS_hpp_
 
+// 공통 상수 정의
 #include "Common.hpp"
-
+// 공용 변수 정의
 #include "GlobalVariables.hpp"
-
+// Internal Protocol Seeker
 #include "InternalProtocolSeeker.hpp"
-
+// String Tokenizer
+#include "StringTokenizer.hpp"
+// Telepathy Module
 #include "Telepathy.hpp"
+// Time Module
+#include "Time.hpp"
 
+// 손 인식
 #include "Hand_recognition.hpp"
+// Chess Board 인식
 #include "Chess_recognition.hpp"
+// 레이블링
 #include "BlobLabeling.hpp"
+// Chess Game을 위한 좌표
 #include "chess_game.hpp"
-//#include "Img_Process.hpp"
 
 #include <stdio.h>
 #include <cv.h>
@@ -63,50 +71,70 @@ private:
 	CBlobLabeling CBlob;
 	chess_game CHESS_GAME;
 
+	Telepathy::Server *_TelepathyServer;
+
 	int ImgProcess_Mode;				//모드 설정
 	bool Sub_check;
 	bool InHand_Check;
 	bool BeforeHand_first;
 
-	CvCapture *Cam;										//캠
-	IplImage *img_Cam;								//원본 이미지
-	IplImage *img_Chess;							//처리할 관심영역 속 RGB 이미지
-	IplImage *img_Skin;								//차영상 결과 이미지
-	IplImage *prev_img;								//차영상을 위해 필요한 이미지
-	IplImage *img_sub;								//차영상 촬영이후
-	IplImage *temp_prev;							//임시 이전 영상 저장 이미지
-	IplImage *temp_prev2;							//임시 이전 영상 저장 이미지
-	IplImage *other;									//손을 제외한 나머지 이진 영상
-	CvRect ImgProcess_ROI;						//관심영역 크기
+	CvCapture *Cam; // 캠
+	IplImage *img_Cam; // 원본 이미지
+	IplImage *img_Chess; // 처리할 관심영역 속 RGB 이미지
+	IplImage *img_Skin; // 차영상 결과 이미지
+	IplImage *prev_img; // 차영상을 위해 필요한 이미지
+	IplImage *img_sub; // 차영상 촬영이후
+	IplImage *temp_prev; // 임시 이전 영상 저장 이미지
+	IplImage *temp_prev2; // 임시 이전 영상 저장 이미지
+	IplImage *other; // 손을 제외한 나머지 이진 영상
+	CvRect ImgProcess_ROI; // 관심영역 크기
 
 	vector<Chess_point> cross_point;
 	vector<int> piece_idx;
 
+	void Initialize_ImageProcessing(); // image process 초기화
+	void Deinitialize_ImageProcessing(); // 이미지 프로세스를 종료함
+
+	bool Initialize_TServer();
+	void Deinitialize_TServer();
+
 	void Engine_Initializing();
 	void Engine_DeInitializing();
 
+	void Get_History(); // 여태 이동한 경로 큐를 가져옴 -- 미구현
+	bool Check_Exit();
+
+	void Go_ImageProcessing(); // 매 루프에서 호출되는 image process 함수
+
 	static void MouseCallback_SetROI(int event, int x, int y, int flags, void *param);
 
-	void Inter_imageCraete(int roi_width, int roi_height);													//연산에 필요한 이미지 할당
-	void Sub_image(IplImage *src1, IplImage *src2, IplImage *dst);									//차영상 진행
-	void Compose_diffImage(IplImage *rgb, IplImage *bin, CvScalar RGB);							//차영상 결과 이미지에 RGB 색 씌우기
-	bool Check_InChessboard(IplImage *img, vector<Chess_point> point);							//binary image가 체스보드 안에 픽셀을 가지는지 검사
-	bool Check_imgZero(IplImage *img);																							//img가 픽셀값을 아무것도 가지지 않는지 체크
-	CvPoint	Get_Chessidx(CvPoint point, vector<Chess_point> cross_point);										//말이 어느 체스판에 있는지를 체크
+	void Inter_imageCraete(int roi_width, int roi_height); //연산에 필요한 이미지 할당
+	void Sub_image(IplImage *src1, IplImage *src2, IplImage *dst); // 차영상 진행
+	void Compose_diffImage(IplImage *rgb, IplImage *bin, CvScalar RGB); // 차영상 결과 이미지에 RGB 색 씌우기
+	
 	float area_tri(CvPoint p, CvPoint q, CvPoint r);
+
+	bool Check_InChessboard(IplImage *img, vector<Chess_point> point); // binary image가 체스보드 안에 픽셀을 가지는지 검사
+	bool Check_imgZero(IplImage *img); // img가 픽셀값을 아무것도 가지지 않는지 체크
+	
+	CvPoint	Get_Chessidx(CvPoint point, vector<Chess_point> cross_point); // 말이 어느 체스판에 있는지를 체크
+	
 public:
 	EngineS();
 	~EngineS();
 
 	bool EngineEnable;
+	bool IsStarted;
+	bool IsTictokEnable;
 
-	void Init_process();			//image process 초기화
-	void Get_History();				//여태 이동한 경로 큐를 가져옴 -- 미구현
-	void Exit_imgProcess();			//이미지 프로세스를 종료함
-	void Do_imgprocess();			//매 루프에서 호출되는 image process 함수
-	bool Check_Exit();
+	bool Start_Server();
+	void Stop_Server();
+
+	Telepathy::Server *Get_Telepathy_Server();
 
 	void EngineS_Start();
 };
+
+void ServerReceivedCallback(char *Buffer, SOCKET ClientSocket);
 
 #endif

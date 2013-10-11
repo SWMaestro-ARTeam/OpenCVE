@@ -77,6 +77,12 @@
     <ClCompile Include="EngineC.cpp">
       <Filter>EngineC\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\Common\Debug.cpp">
+      <Filter>Common\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Time.cpp">
+      <Filter>Common\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\Common.hpp">
@@ -120,6 +126,12 @@
     </ClInclude>
     <ClInclude Include="EngineC.hpp">
       <Filter>EngineC\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Debug.hpp">
+      <Filter>Common\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Time.hpp">
+      <Filter>Common\Header</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

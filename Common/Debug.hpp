@@ -3,6 +3,7 @@
 //
 //	The MIT License (MIT)
 //	Copyright © 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
+//	{invi.dh.kim, munsp9103, aiaipming} at gmail.com
 //
 //	Permission is hereby granted, free of charge, to any person obtaining a copy of
 //	this software and associated documentation files (the “Software”), to deal
@@ -22,35 +23,20 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _SystemDependency_hpp_
-#define _SystemDependency_hpp_
+#ifndef _Debug_hpp_
+#define _Debug_hpp_
 
-#if defined(_WIN32) || defined(_WIN64)
-// using windows
-#define WINDOWS_SYS 1
-#else
-// using Linux, FreeBSD, Mac OSX
-#define POSIX_SYS 1
-#endif
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+/*
+#define _DebugString(...)
 
-// If defined Debug mode by compiler
-#if defined(_DEBUG)
-#define DEBUG_MODE
-#endif
+class Debug {
+private:
 
-#define BUFFER_MAX_16 16
-#define BUFFER_MAX_32 32
-#define BUFFER_MAX_128 128
-#define BUFFER_MAX_1024 1024
-#define BUFFER_MAX_2048 (BUFFER_MAX_1024 * 2)
-#define BUFFER_MAX_4096 (BUFFER_MAX_1024 * 4)
-#define BUFFER_MAX_32767 ((BUFFER_MAX_1024 * 32) - 1)
-#define BUFFER_MAX_65535 ((BUFFER_MAX_1024 * 64) - 1)
- 
-#if WINDOWS_SYS
-// using MFC.
-#define _AFXDLL
-// or no MFC.
-#endif
-
+public:
+	void OutputDebugString();
+};
+*/
 #endif

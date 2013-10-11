@@ -27,7 +27,7 @@
 #include "EngineC.hpp"
 
 // Callback을 위한 Menber.
-EngineC *G_Engine;
+EngineC *G_EngineC;
 
 #pragma region Constructor & Destructor
 // Constructor
@@ -36,8 +36,9 @@ EngineC::EngineC() {
 	//IsSocketConnented = false;
 	//IsGetCVESProcess = false;
 	EngineEnable = false;
+	EnginePause = false;
 	CVEC_CVESControlInitial = true;
-	G_Engine = this;
+	G_EngineC = this;
 }
 
 // Destructor
@@ -46,8 +47,9 @@ EngineC::~EngineC() {
 	//IsSocketConnented = false;
 	//IsGetCVESProcess = false;
 	EngineEnable = false;
+	EnginePause = false;
 	CVEC_CVESControlInitial = false;
-	G_Engine = NULL;
+	G_EngineC = NULL;
 }
 #pragma endregion Constructor & Destructor
 
@@ -170,9 +172,11 @@ bool EngineC::Connect_Server() {
 		// Receive 할 때 Server에서 전송된 내용을 받아야 한다.
 		_TelepathyClient->TClientReceivedCallback = ClientReceivedCallback;
 		_TelepathyClient->ClientReceiveStart();
+		_TIsConnected = true;
 		//IsSocketConnented = true;
 	}
 	//return _TClient->ClientConnect();
+	return _TIsConnected;
 }
 
 void EngineC::Disconnect_Server() {
@@ -301,6 +305,7 @@ void EngineC::Command_Position(CS *_UCICS) {
 		int _NSeek_GUIToEngine = _UCICommandSeeker.UCIString_Seeker((const char *)*_UCICS->CharArrayListIter);
 		switch (_NSeek_GUIToEngine) {
 			case VALUE_POSITION_FEN :
+				// 당장에 필요가 없을 것 같다.
 				_IsFen = true;
 				break;
 			case VALUE_POSITION_STARTPOS :
@@ -391,7 +396,7 @@ void EngineC::Command_Go(CS *_UCICS) {
 
 void EngineC::Command_Stop() {
 	// CVES의 인식을 멈춘다.
-
+	_TelepathyClient->SendData("Stop");
 	// 
 }
 
@@ -507,29 +512,30 @@ void *
 	 Param) {
 	// 맨 처음에 해야 할 일.
 	// 1. Process Checking.
-	G_Engine->CheckingCVESProcess();
+	G_EngineC->CheckingCVESProcess();
 	// 2. Process Enable 뒤 Server 접속.
 
 	// 3. Parser가 살아있을 때 까지 무조건 계속 while 돌며 Process가 살아있는지, 통신이 살아있는지 Check 함.
-	while (G_Engine->EngineEnable) {
+	// 간혹 Loop에 걸렸을때 갑자기 종료가 될 수 있기 때문에, 항상 전제를 Engine이 Enable일 때만 돌게 끔 작업.
+	while (G_EngineC->EngineEnable) {
 		bool _Urgency = false;
 
 		// 만약 여기서 끊기면, 게임이 끊겼다고 생각하고 재실행 및 재접속 작업에 돌입한다.
 		// 일단 될 때까지 무한 반복.
-		if (G_Engine->Get_CVESProcessStatus() != true) {
+		if (G_EngineC->Get_CVESProcessStatus() != true && G_EngineC->EngineEnable == true) {
 			// CVES 없어지고 다시 실행할 때까지 계속 돈다.
-			while (!G_Engine->CheckingCVESProcess()) ;
+			while (!G_EngineC->CheckingCVESProcess() & G_EngineC->EngineEnable == true) ;
 			// Server와 통신해야 하는 긴급한 상황(죽은 경우기 때문에).
 			_Urgency = true;
 		}
-		if (G_Engine->Get_TelepathyClient()->IsConnectedClient != true) {
+		if (G_EngineC->Get_TelepathyClient()->IsConnectedClient != true && G_EngineC->EngineEnable == true) {
 			// CVES에 접속할 때까지 계속 돈다.
-			while (!G_Engine->Connect_Server()) ;
+			while (!G_EngineC->Connect_Server() & G_EngineC->EngineEnable == true) ;
 			//G_Parser->
 			if (_Urgency == true) {
 				// 긴급한 상황.
 				// Socket이 유효할 때, 복구가 가능한지를 CVES에 물어본다.
-				G_Engine->Get_TelepathyClient()->SendData("IsRestorePossible");
+				G_EngineC->Get_TelepathyClient()->SendData("IsRestorePossible");
 			}
 		}
 	}
@@ -546,7 +552,7 @@ bool EngineC::Get_CVESConnectionStatus() {
 	return _TelepathyClient->IsConnectedClient;
 }
 
-Telepathy::Client* EngineC::Get_TelepathyClient() {
+Telepathy::Client *EngineC::Get_TelepathyClient() {
 	return _TelepathyClient;
 }
 
@@ -617,7 +623,11 @@ void EngineC::EngineC_Start() {
 #elif POSIX_SYS
 
 #endif
-	while (EngineEnable) Parsing_Command();
+	while (EngineEnable) {
+		// Parser Engine Pause.
+		while (EnginePause) ;
+		Parsing_Command();
+	}
 
 	Engine_DeInitializing();
 }
@@ -639,20 +649,27 @@ void ClientReceivedCallback(char *Buffer) {
 	switch (_NSeek_CVESToCVEC) {
 		case VALUE_ALIVE :
 			// 게임 재개.
+			G_EngineC->EnginePause = true;
 			break;
 		case VALUE_BUSY :
 			// No Implement.
 			break;
 		case VALUE_MOVE :
 			// UCI로 좌표 송신.
+			_InternalProtocolCS->NextCharArrayIter();
+			G_EngineC->SendToGUI("bestmove %s", _InternalProtocolCS->CharArrayListIter);
 			break;
 		case VALUE_RESTOREOK :
 			// 복구 완료.
 			// 게임 재개.
+			G_EngineC->Get_TelepathyClient()->SendData("Start");
 			break;
 		case VALUE_RESTORENOT :
 			// 복구 미완료.
 			// 게임 All Stop.
+			G_EngineC->Get_TelepathyClient()->SendData("Stop");
+			G_EngineC->Get_TelepathyClient()->SendData("ServerKill");
+			G_EngineC->EngineEnable = false;
 			break;
 	}
 }

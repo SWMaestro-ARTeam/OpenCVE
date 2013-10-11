@@ -28,6 +28,8 @@
 
 #include "Common.hpp"
 
+#include "ExtendedBlackBox.hpp"
+
 #include <list>
 
 #if WINDOWS_SYS
@@ -48,6 +50,31 @@
 
 using namespace std;
 
+typedef struct _ClientsList {
+#if WINDOWS_SYS
+	SOCKADDR_IN ClientAddress;
+	SOCKET ClientSocket;
+#elif POSIX_SYS
+
+#endif
+	int ClientNumber;
+	// 이름 및 type의 최대 길이는 32까지.
+	char *ClientType;
+	char *ClientName;
+
+	void ClientsListInitialize() {
+		ClientNumber = -1;
+		ClientType = new char[BUFFER_MAX_32];
+		ClientName = new char[BUFFER_MAX_32];
+	}
+
+	void ClientsListDeinitialize() {
+		ClientNumber = -1;
+		delete ClientType;
+		delete ClientName;
+	}
+} ClientsList;
+
 class Telepathy {
 private:
 	
@@ -55,35 +82,26 @@ public:
 	// Server Class
 	class Server {
 	private:
-		typedef struct _ClientsList {
 #if WINDOWS_SYS
-			SOCKADDR_IN ClientAddress;
-			SOCKET ClientSocket;
+		WSADATA _WSAData;
+		SOCKET _ServerSocket;
+		SOCKADDR_IN _ServerAddress;
 #elif POSIX_SYS
 
 #endif
-			int UserNumber;
-			char *UserName;
-		} ClientsList;
-#if WINDOWS_SYS
-		WSADATA _M_WSAData;
-		SOCKET _M_HServerSocket;
-		SOCKADDR_IN _M_ServerAddress;
-
-		list<SOCKET> _M_HClientSocketArray;
-		//list<ClientsList> _M_HClientLists;
-		SOCKET _M_HClientSocket;
-#elif POSIX_SYS
-
-#endif
-		bool _M_BIsConnectedServer;
 
 	public:
 		Server();
 		~Server();
 
+		//list<SOCKET> ConnectorsSocketList;
+		list<ClientsList> ClientList;
+
+		bool IsInitializeServer;
+		bool IsServerStarted;
+
 		// server Callback
-		typedef void (* _T_SERVERRECEIVEDCALLBACK)(char *Buffer);
+		typedef void (* _T_SERVERRECEIVEDCALLBACK)(char *Buffer, SOCKET ClientSocket);
 
 		bool ServerInitialize();
 		void ServerStart();
@@ -91,7 +109,8 @@ public:
 		void ServerListentoClient();
 		bool ServerReceiving(SOCKET ClientSocket);
 
-		bool SendData(char *Str);
+		bool SendDataToOne(char *Str, SOCKET ClientSocket);
+		void SendDataToAll(char *Str);
 
 		// Server Receive Callback Pointer.
 		_T_SERVERRECEIVEDCALLBACK TServerReceivedCallback;
@@ -100,12 +119,12 @@ public:
 	// Client Class
 	class Client {
 	private:
-		unsigned int _M_Address;
+		unsigned int _Address;
 #if WINDOWS_SYS
-		HOSTENT *_M_HostEntry;
-		WSADATA _M_WSAData;
-		SOCKET _M_HClientSocket;
-		SOCKADDR_IN _M_ClientAddress;
+		HOSTENT *_HostEntry;
+		WSADATA _WSAData;
+		SOCKET _ClientSocket;
+		SOCKADDR_IN _ClientAddress;
 #elif POSIX_SYS
 
 #endif		

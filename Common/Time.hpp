@@ -3,6 +3,7 @@
 //
 //	The MIT License (MIT)
 //	Copyright © 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
+//	{invi.dh.kim, munsp9103, aiaipming} at gmail.com
 //
 //	Permission is hereby granted, free of charge, to any person obtaining a copy of
 //	this software and associated documentation files (the “Software”), to deal
@@ -22,35 +23,45 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _SystemDependency_hpp_
-#define _SystemDependency_hpp_
+#ifndef _Time_hpp_
+#define _Time_hpp_
 
-#if defined(_WIN32) || defined(_WIN64)
-// using windows
-#define WINDOWS_SYS 1
-#else
-// using Linux, FreeBSD, Mac OSX
-#define POSIX_SYS 1
-#endif
+#include "SystemDependency.hpp"
 
-// If defined Debug mode by compiler
-#if defined(_DEBUG)
-#define DEBUG_MODE
-#endif
+#include <stdio.h>
 
-#define BUFFER_MAX_16 16
-#define BUFFER_MAX_32 32
-#define BUFFER_MAX_128 128
-#define BUFFER_MAX_1024 1024
-#define BUFFER_MAX_2048 (BUFFER_MAX_1024 * 2)
-#define BUFFER_MAX_4096 (BUFFER_MAX_1024 * 4)
-#define BUFFER_MAX_32767 ((BUFFER_MAX_1024 * 32) - 1)
-#define BUFFER_MAX_65535 ((BUFFER_MAX_1024 * 64) - 1)
- 
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+
 #if WINDOWS_SYS
-// using MFC.
-#define _AFXDLL
-// or no MFC.
+#include <windows.h>
+#elif POSIX_SYS
+#include <sys/resource.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
 #endif
+
+#define DEFAULT_UTC_HOUR 0
+#define DEFAULT_MST_HOUR -7
+#define DEFAULT_CCT_HOUR 8 
+
+#define YEAR_DEFAULT_1900 1900
+
+class Time {
+private:
+	time_t _RawTime;
+public:
+	tm *TimeInformation;
+
+	char *GetASCTime();
+	char *GetCTime();
+	char *GetUTCTime();
+	char *GetUTCTime_Hour();
+	double GetNowCPUTimeOfProcessStarted();
+	double GetRealTime();
+};
 
 #endif

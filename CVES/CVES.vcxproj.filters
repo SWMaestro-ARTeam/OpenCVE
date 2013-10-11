@@ -25,6 +25,9 @@
     <ClCompile Include="EngineS.cpp">
       <Filter>EngineS\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\Common\InternalProtocolSeeker.cpp">
+      <Filter>Common\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="chess_game.hpp">
@@ -56,6 +59,12 @@
     </ClInclude>
     <ClInclude Include="EngineS.hpp">
       <Filter>EngineS\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\InternalProtocolSeeker.hpp">
+      <Filter>Common\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\InternalProtocol.hpp">
+      <Filter>Common\Header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
