@@ -25,10 +25,10 @@
 
 #include "Hand_recognition.hpp"
 
-Hand_recognition::Hand_recognition(void) {
+Hand_recognition::Hand_recognition() {
 }
 
-Hand_recognition::~Hand_recognition(void) {
+Hand_recognition::~Hand_recognition() {
 	cvReleaseImage(&img_YCrCb);
 	cvReleaseImage(&img_HSV);
 
@@ -129,7 +129,7 @@ void Hand_recognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
 	static int frame_count = 0;
 
 	if (first) {
-		if (prev_ground != NULL){
+		if (prev_ground != NULL) {
 			cvReleaseImage(&prev_ground);
 			prev_ground = NULL;
 		}
@@ -161,7 +161,7 @@ void Hand_recognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
 		}
 		//cvCopy(present_ground, prev_ground);
 
-		cvSmooth(dst, dst, CV_MEDIAN,3,3);
+		cvSmooth(dst, dst, CV_MEDIAN, 3, 3);
 		cvErode(dst, dst, 0, 2);
 		cvDilate(dst, dst, 0, 2);
 

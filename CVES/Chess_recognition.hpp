@@ -36,10 +36,10 @@
 
 using namespace std;
 
-typedef struct{
+typedef struct {
 	CvPoint Cordinate; // 좌표 위치
 	CvPoint index; // 좌표 인덱스
-}Chess_point;
+} Chess_point;
 
 class Chess_recognition {
 private:
@@ -69,12 +69,12 @@ private:
 	} MyPoint;
 
 	// 라인의 양끝 점을 저장하기 위한 구조체
-	typedef struct{
+	typedef struct {
 		int x1, y1, x2, y2;
 	} MyLinePoint;
 
 	// 해당 위치와 함께 grayscale 의 값을 저장하기 위한 구조체
-	typedef struct{
+	typedef struct {
 		int grayscale, x, y;
 	} MyGrayPoint;
 
@@ -124,10 +124,10 @@ public:
 	//초기화
 	void Initialize_ChessRecognition(int width, int height, int mode);
 	//라인 그리기
-	void drawLines ( vector<pair<float, float>> lines, IplImage* image);
-	void drawPoint ( IplImage *src, vector<Chess_point> point);
+	void drawLines(vector<pair<float, float>> lines, IplImage* image);
+	void drawPoint(IplImage *src, vector<Chess_point> point);
 	//교차점 구하기
-	void findIntersections ( vector<pair<float, float>> linesX, vector<pair<float, float>> linesY, vector<Chess_point> *point );
+	void findIntersections(vector<pair<float, float>> linesX, vector<pair<float, float>> linesY, vector<Chess_point> *point);
 	//라인 return
 	void Get_Line(vector<pair<float, float>> *linesX, vector<pair<float, float>> *linesY);
 	//처리용 이미지 복사

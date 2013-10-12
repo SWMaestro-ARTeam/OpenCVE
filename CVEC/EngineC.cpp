@@ -611,9 +611,10 @@ bool EngineC::CheckingCVESProcess() {
 }
 
 void EngineC::EngineC_Start() {
+	// 1. EngineC 초기화.
 	Engine_Initializing();
 	
-	// CVES의 Process와 CVES <-> CVEC 간의 통신이 끊기지 않도록 Check 하는 Thread.
+	// 2. CVES의 Process와 CVES <-> CVEC 간의 통신이 끊기지 않도록 Check 하는 Thread.
 #if WINDOWS_SYS
 	DWORD _TThreadID = 0;
 	#ifdef _AFXDLL
@@ -623,12 +624,14 @@ void EngineC::EngineC_Start() {
 #elif POSIX_SYS
 
 #endif
+	// 3. EngineC go Parsing.
 	while (EngineEnable) {
 		// Parser Engine Pause.
-		while (EnginePause) ;
+		//while (EnginePause) ;
 		Parsing_Command();
 	}
 
+	// 4. EngineC Deinitializing.
 	Engine_DeInitializing();
 }
 
@@ -643,13 +646,13 @@ void ClientReceivedCallback(char *Buffer) {
 		return ;
 
 	CS *_InternalProtocolCS = new CS(_StringTokenizer->GetTokenedCharListArrays());
-
 	int _NSeek_CVESToCVEC = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*_InternalProtocolCS->CharArrayListIter);
 	
 	switch (_NSeek_CVESToCVEC) {
 		case VALUE_ALIVE :
 			// 게임 재개.
-			G_EngineC->EnginePause = true;
+			//G_EngineC->EnginePause = true;
+			G_EngineC->Get_TelepathyClient()->SendData("Start");
 			break;
 		case VALUE_BUSY :
 			// No Implement.
@@ -666,10 +669,14 @@ void ClientReceivedCallback(char *Buffer) {
 			break;
 		case VALUE_RESTORENOT :
 			// 복구 미완료.
-			// 게임 All Stop.
+			// All Stop the game.
+			// CVES Process를 죽인다.
 			G_EngineC->Get_TelepathyClient()->SendData("Stop");
 			G_EngineC->Get_TelepathyClient()->SendData("ServerKill");
 			G_EngineC->EngineEnable = false;
 			break;
 	}
+
+	delete _InternalProtocolCS;
+	delete _StringTokenizer;
 }

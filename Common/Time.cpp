@@ -70,7 +70,8 @@ double Time::GetRealTime() {
 double Time::GetNowCPUTimeOfProcessStarted() {
 	double _TCPUTime = 0.0f;
 	// Process 하나가 실행된 이후에 걸린 총 시간이 대한 시간을 구한다.
-	// 유휴 상태에서는 clock을 쓰면 안된다는 점에 주의.
+	// 유휴 상태(wait 함수, sleep 함수 등)에서는 clock을 쓰면 안된다는 점에 주의.
+	// 고로 GetNowCPUTimeOfProcessStarted 함수는, 유휴 상태에서는 쓸 수 없다는 점에 유의해라.
 	double _TNowClock = clock();
 #if WINDOWS_SYS
 	_TCPUTime = _TNowClock / double(CLOCKS_PER_SEC);

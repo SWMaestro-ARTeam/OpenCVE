@@ -86,7 +86,7 @@ typedef struct CommandString {
 		IsInitialize = false;
 	}
 
-	bool prevStringIter() {
+	bool PrevStringIter() {
 		list<string>::iterator _TIter = StringListIter;
 		_TIter--;
 		if (IsInitialize == true && StringList->begin() != _TIter) {
@@ -99,7 +99,7 @@ typedef struct CommandString {
 
 	bool NextStringIter() {
 		list<string>::iterator _TIter = StringListIter;
-		_TIter--;
+		_TIter++;
 		if (IsInitialize == true && StringList->end() != _TIter) {
 			//if (IsInitialize == true && UCIStringList->end() != UCIStringListIter) {
 			StringListIter++;
@@ -108,7 +108,7 @@ typedef struct CommandString {
 		return false;
 	}
 
-	bool prevCharArrayIter() {
+	bool PrevCharArrayIter() {
 		list<char *>::iterator _TIter = CharArrayListIter;
 		_TIter--;
 		if (IsInitialize == true && CharArrayList->begin() != _TIter) {

@@ -38,9 +38,9 @@ class Hand_recognition {
 private:
 	int img_width, img_height;
 
-	unsigned char B,G,R;
-	unsigned char Y,Cr,Cb;
-	unsigned char H,S,V;
+	unsigned char B, G, R;
+	unsigned char Y, Cr, Cb;
+	unsigned char H, S, V;
 
 	bool R1(int R, int G, int B);
 	bool R2(float Y, float Cr, float Cb);
@@ -50,8 +50,8 @@ private:
 	IplImage *prev_ground, *present_ground;			//차영상을 통해 차이를 구할 예정
 
 public:
-	Hand_recognition(void);
-	~Hand_recognition(void);
+	Hand_recognition();
+	~Hand_recognition();
 
 	//초기화
 	void Init(int width, int height);

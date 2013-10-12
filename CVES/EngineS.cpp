@@ -504,7 +504,7 @@ void EngineS::EngineS_Start() {
 }
 
 void ServerReceivedCallback(char *Buffer, SOCKET ClientSocket) {
-	// 내부 Protocol 송신(CVES -> CVEC).
+	// 내부 Protocol 송신(CVES -> CVEC, CVES -> Observer).
 	StringTokenizer *_StringTokenizer = new StringTokenizer();
 	InternalProtocolSeeker _InternalProtocolSeeker;
 
@@ -538,7 +538,6 @@ void ServerReceivedCallback(char *Buffer, SOCKET ClientSocket) {
 					_TVal->ClientName = "White";
 				}
 			}
-			
 			break;
 		case VALUE_STOP :
 			// Stop the Server Image Processing.
@@ -570,4 +569,7 @@ void ServerReceivedCallback(char *Buffer, SOCKET ClientSocket) {
 			G_EngineS->IsTictokEnable = false;
 			break;
 	}
+
+	delete _InternalProtocolCS;
+	delete _StringTokenizer;
 }

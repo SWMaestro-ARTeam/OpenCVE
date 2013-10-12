@@ -95,6 +95,7 @@ void Chess_recognition::drawLines(vector<pair<float, float>> lines, IplImage* im
 
 void Chess_recognition::drawPoint(IplImage *src, vector<Chess_point> point) {
 	char buf[32];
+
 	// display the points in an image 
 	for (register int i = 0; i < point.size(); i++) {
 		cvCircle(src, point.at(i).Cordinate, 5, cvScalar(0, 255), 2);
@@ -306,7 +307,9 @@ UINT WINAPI Chess_recognition::thread_hough(void *arg) {
 		double rho = 1.0; // distance resolution in pixel-related units
 		double theta = 1.0; // angle resolution measured in radians
 		int threshold = 20;
-		if(threshold == 0)	threshold = 1;
+
+		if (threshold == 0)
+			threshold = 1;
 
 		LineX = cvHoughLines2(iplEdgeX, storageX, CV_HOUGH_STANDARD, 1.0 * rho, CV_PI / 180 * theta, threshold, 0, 0);
 		LineY = cvHoughLines2(iplEdgeY, storageY, CV_HOUGH_STANDARD, 1.0 * rho, CV_PI / 180 * theta, threshold, 0, 0);
@@ -317,7 +320,8 @@ UINT WINAPI Chess_recognition::thread_hough(void *arg) {
 
 		Sleep(10);
 
-		if(p->thread_exit == true)	break;
+		if (p->thread_exit == true)
+			break;
 	}
 
 	cvReleaseMat(&DoGy);
@@ -340,13 +344,12 @@ UINT WINAPI Chess_recognition::thread_hough(void *arg) {
 
 UINT WINAPI Chess_recognition::thread_GH(void *arg) {
 	Chess_recognition* p = (Chess_recognition*)arg;
-
 	IplImage *gray = cvCreateImage(cvSize(p->_Width, p->_Height), IPL_DEPTH_8U, 1);
 
 	while (1) {
 		EnterCriticalSection(&(p->cs));
 		
-		if(p->img_process->nChannels != 1)
+		if (p->img_process->nChannels != 1)
 			cvConvert(p->img_process, gray);
 		else
 			cvCopy(p->img_process, gray);
@@ -359,7 +362,8 @@ UINT WINAPI Chess_recognition::thread_GH(void *arg) {
 
 		Sleep(10);
 
-		if (p->thread_exit == true)	break;
+		if (p->thread_exit == true)
+			break;
 	}
 
 	_endthread();
@@ -404,7 +408,6 @@ void Chess_recognition::Refine_CrossPoint(vector<Chess_point> *point){
 		}
 		else {
 			for (register int i = 0; i < 81; i++) {
-
 				point->at(i).Cordinate.x = cvRound((Refine_const * (float)prev_point.at(i).x) + ((1.0 - Refine_const) * (float)point->at(i).Cordinate.x));
 				point->at(i).Cordinate.y = cvRound((Refine_const * (float)prev_point.at(i).y) + ((1.0 - Refine_const) * (float)point->at(i).Cordinate.y));
 				//printf("after: %d %d\n", point->at(i).Cordinate.x, point->at(i).Cordinate.y);
@@ -450,7 +453,7 @@ void Chess_recognition::Chess_recognition_process(IplImage *src, vector<Chess_po
 		else
 			Linefindcount_x -= 5;
 	}
-	else if(in_line_point_y1.size() != 9 || in_line_point_y2.size() != 9) {
+	else if (in_line_point_y1.size() != 9 || in_line_point_y2.size() != 9) {
 		if (flag_y)
 			Linefindcount_y += 5;
 		else
@@ -637,7 +640,7 @@ void Chess_recognition::GetgraySidelinesPoint(IplImage *chess_image) {
 			}
 		}
 
-		if(line_count_x1 == line_count_x2 /*== line_count_x_mid*/ == 9)
+		if (line_count_x1 == line_count_x2 /*== line_count_x_mid*/ == 9)
 			break;
 	}
 
@@ -894,6 +897,7 @@ bool Chess_recognition::GetCrossPoint(MyLinePoint line1, MyLinePoint line2, MyPo
 
 		float x = ((a * x34) - (b * x12)) / c;
 		float y = ((a * y34) - (b * y12)) / c;
+
 		out->x = (int)x;
 		out->y = (int)y;
 
@@ -909,8 +913,8 @@ void Chess_recognition::GrayImageBinarization(IplImage *gray_image) {
 
 	bool flag = true;
 
-	for(register int i = 0; i < gray_image->width; i++) {
-		for(register int j = 0; j < gray_image->height; j++) {
+	for (register int i = 0; i < gray_image->width; i++) {
+		for (register int j = 0; j < gray_image->height; j++) {
 			temp[Getgrayscale(gray_image, i, j)]++;
 			if (Getgrayscale(gray_image, i, j) != 0)
 				flag = false;
@@ -947,7 +951,7 @@ void Chess_recognition::GrayImageBinarization(IplImage *gray_image) {
 		u1 = a1 / b1;
 		a2 = b2 = 0;
 
-		for(register int i = Told + 1; i < 256; i++) {
+		for (register int i = Told + 1; i < 256; i++) {
 			a2 += (i * temp[i]);
 			b2 += (temp[i]);
 		}
@@ -956,13 +960,13 @@ void Chess_recognition::GrayImageBinarization(IplImage *gray_image) {
 		if (b1 == 0) b1 = 1.f;
 		if (b2 == 0) b2 = 1.f;
 
-		T = (int)((u1 + u2) / 2);
+		T = (i                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               nt)((u1 + u2) / 2);
 	} while(T != Told);
 
 	uchar *data = (uchar *)gray_image->imageData;
 
-	for(register int i=0; i < gray_image->width; i++) {
-		for(register int j=0; j < gray_image->height; j++) {
+	for (register int i=0; i < gray_image->width; i++) {
+		for (register int j=0; j < gray_image->height; j++) {
 			int index = i + (j * gray_image->widthStep);
 
 			gray_image->imageData[index] = Getgrayscale(gray_image, i, j) > T ? 255 : 0;
@@ -989,7 +993,7 @@ void Chess_recognition::Chess_recog_wrapper(IplImage *src, vector<Chess_point> *
 		Refine_CrossPoint(point);
 		drawPoint(src, *point);
 	}
-	else if(MODE == 2) {
+	else if (MODE == 2) {
 		EnterCriticalSection(&vec_cs);
 		copy(CP.begin(), CP.end(), back_inserter(*point));
 		LeaveCriticalSection(&vec_cs);
