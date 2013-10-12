@@ -79,6 +79,9 @@ void EngineS::Initialize_ImageProcessing() {
 }
 
 void EngineS::Deinitialize_ImageProcessing(){
+	//이미지 처리를 보여주기 위한 모든 window 삭제
+	//연결된 Cam Disconnect
+	//연산에 사용된 모든 이미지 할당해제
 	cvDestroyAllWindows();
 
 	cvReleaseCapture(&Cam);
@@ -115,6 +118,7 @@ void EngineS::Go_ImageProcessing(){
 	char key_wait, buf[32];
 	static bool img_createCheck = false;
 
+	//Cam으로부터의 영상입력
 	img_Cam = cvQueryFrame(Cam);
 
 	switch (ImgProcess_Mode) {
@@ -232,70 +236,14 @@ void EngineS::Go_ImageProcessing(){
 					else if (InHand_Check == true) {
 						//이동 처리부
 
-						//다음턴 준비부 -> 조건을 추가로 줘서 예외를 막아야함
-						//if(Check_imgZero(img_Skin)) {								//전제 조건은 손이 빠질때는 중간에 멈추지 않음
-							printf("Hand escape!\n");
-							InHand_Check = false;
-							Sub_check = false;
-							BeforeHand_first = true;
+						printf("Hand escape!\n");
+						InHand_Check = false;
+						Sub_check = false;
+						BeforeHand_first = true;
 
-							//좌표 계산부
-
-							///////////////////////////////말 좌표 반환//////////////////////////////////////////////////////
-							//CvPoint Left, Right;
-							//CvRect temp;
-							//if (piece_idx.size() > 2) {							//노이즈가 잡혔을때 -> 크기 큰걸로 정렬
-							//	int first_idx, second_inx;
-							//	int MAX_SIZE;
-							//	for (register int j = 0; j < 2; j++) {
-							//		MAX_SIZE = -1;
-							//		for (register int k = 0; k < piece_idx.size(); k++){
-							//			temp = CBlob.m_recBlobs[piece_idx.at(k)];
-							//			if (MAX_SIZE < temp.height * temp.width){
-							//				MAX_SIZE = temp.height * temp.width;
-
-							//				if (j == 0)		first_idx = k;
-							//				else if (j == 1 && k != first_idx)		second_inx = k;
-							//			}
-							//		}
-							//	}
-
-							//	temp = CBlob.m_recBlobs[piece_idx.at(0)];
-							//	Left = Get_Chessidx(cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), cross_point);
-							//	cvCircle(img_Chess, cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), 3, cvScalar(0,0,255));
-							//	temp = CBlob.m_recBlobs[piece_idx.at(1)];
-							//	Right = Get_Chessidx(cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), cross_point);
-							//	cvCircle(img_Chess, cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), 3, cvScalar(0,0,255));
-							//	printf("(%d,%d), (%d,%d)\n",Left.x, Left.y, Right.x, Right.y);
-
-							//	CHESS_GAME.Chess_process(Left, Right);
-							//	CHESS_GAME.Show_chess_board();
-							//}
-							//else if(piece_idx.size() == 1) {
-							//	//겹쳐버렸을때
-							//	temp = CBlob.m_recBlobs[piece_idx.at(0)];
-							//	Left = Get_Chessidx(cvPoint(temp.x+temp.width/2, temp.y+temp.height/2+temp.height/3*2), cross_point);
-							//	cvCircle(img_Chess, cvPoint(temp.x+temp.width/2, temp.y+temp.height/2+temp.height/3*2), 3, cvScalar(0,0,255)); 
-							//	Right = Get_Chessidx(cvPoint(temp.x+temp.width/2, temp.y+temp.height/3), cross_point);
-							//	cvCircle(img_Chess, cvPoint(temp.x+temp.width/2, temp.y+temp.height/3), 3, cvScalar(0,0,255));
-							//	printf("(%d,%d), (%d,%d)\n",Left.x, Left.y, Right.x, Right.y);
-
-							//	CHESS_GAME.Chess_process(Left, Right);
-							//	CHESS_GAME.Show_chess_board();
-							//}
-							//else if(piece_idx.size() == 2) {						//딱 두개 추적
-							//	temp = CBlob.m_recBlobs[piece_idx.at(0)];
-							//	Left = Get_Chessidx(cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), cross_point);
-							//	cvCircle(img_Chess, cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), 3, cvScalar(0,0,255));
-							//	temp = CBlob.m_recBlobs[piece_idx.at(1)];
-							//	Right = Get_Chessidx(cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), cross_point);
-							//	cvCircle(img_Chess, cvPoint(temp.x+temp.width/2,temp.y+temp.height/3*2), 3, cvScalar(0,0,255));
-							//	printf("(%d,%d), (%d,%d)\n",Left.x, Left.y, Right.x, Right.y);
-
-							//	CHESS_GAME.Chess_process(Left, Right);
-							//	CHESS_GAME.Show_chess_board();
-							//}
-						//}
+						//좌표 반환 함수.
+						//CVES process가 죽었을 경우를 대비하여 현재 경로들을 txt파일로 저장 & voting을 통하여 현재 말의 이동경로를 확정.
+						//구현 예정.
 					}
 #ifdef DEBUG
 					cvShowImage("compose_diff", img_Chess);
@@ -304,13 +252,18 @@ void EngineS::Go_ImageProcessing(){
 				}
 			}
 			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//차영상에 이용하기 위한 2프레임 이전 영상의 저장
 			cvCopy(temp_prev, temp_prev2);
 			cvCopy(img_Chess, temp_prev);
 			cvResetImageROI(img_Cam);
 
 			if (cvWaitKey(10) == 27)
 				ImgProcess_Mode++;
+
+			//설정된 관심영역 Rect 그리기
 			cvDrawRect(img_Cam, cvPoint(ImgProcess_ROI.x, ImgProcess_ROI.y), cvPoint(ImgProcess_ROI.x + ImgProcess_ROI.width, ImgProcess_ROI.y + ImgProcess_ROI.height), cvScalar(255), 2);
+			
+			//초당 프레임수 계산
 			tick = GetTickCount() - tick;
 			sprintf(buf, "%.2f fps", 1000.f/ (float)tick);
 			cvPutText(img_Cam, buf, cvPoint(30, 30), &cvFont(1.0), cvScalar(0, 0, 255));
@@ -320,17 +273,20 @@ void EngineS::Go_ImageProcessing(){
 }
 
 void EngineS::MouseCallback_SetROI(int event, int x, int y, int flags, void *param) {
+	//mouse input을 사용하여 관심영역 설정
 	EngineS* p = (EngineS*)param;
 	static bool down_check = false;
 
 	if (p->ImgProcess_Mode == 0) {
 		switch (event) {
 			case CV_EVENT_LBUTTONDOWN:
+				//mouse left button down 사각형 코너점 저장
 				p->ImgProcess_ROI.x = x;
 				p->ImgProcess_ROI.y = y;
 				down_check = true;
 				break;
 			case CV_EVENT_LBUTTONUP:
+				//mouse left button up 마지막 마우스 이동 경로에 따른 관심영역 사각형 설정
 				if (abs(p->ImgProcess_ROI.height * p->ImgProcess_ROI.width) > 200) {
 					p->ImgProcess_Mode++;
 
@@ -347,6 +303,7 @@ void EngineS::MouseCallback_SetROI(int event, int x, int y, int flags, void *par
 				down_check = false;
 				break;
 			case CV_EVENT_MOUSEMOVE:
+				//mouse move 관심영역의 width & height 계산
 				if (down_check == true) {
 					p->ImgProcess_ROI.width = x - p->ImgProcess_ROI.x;
 					p->ImgProcess_ROI.height = y - p->ImgProcess_ROI.y;
@@ -357,14 +314,18 @@ void EngineS::MouseCallback_SetROI(int event, int x, int y, int flags, void *par
 }
 
 void EngineS::Inter_imageCraete(int roi_width, int roi_height){
+	//내부 연산에 사용되는 이미지 할당.
 	img_Skin = cvCreateImage(cvSize(roi_width, roi_height), IPL_DEPTH_8U, 1);
 	prev_img = cvCreateImage(cvSize(roi_width, roi_height), IPL_DEPTH_8U, 3);
 	img_sub = cvCreateImage(cvSize(roi_width, roi_height), IPL_DEPTH_8U, 1);
 }
 
 void EngineS::Sub_image(IplImage *src1, IplImage *src2, IplImage *dst) {
+	//src1, src2에 차영상 연산하여 dst의 저장
+	//dst zero이미지로 초기화
 	cvZero(dst);
 
+	//차영상 연산. 각 R,G,B값에 SUB_THRESHOLD를 적용하여 binary image 생성
 	for (register int i = 0; i < src1->width; i++) {
 		for (register int j = 0; j < src1->height; j++) {
 			unsigned char SUB_B = abs((unsigned char)src1->imageData[(i * 3) + (j * src1->widthStep)] - (unsigned char)src2->imageData[(i * 3) + (j * src2->widthStep)]);
@@ -377,14 +338,17 @@ void EngineS::Sub_image(IplImage *src1, IplImage *src2, IplImage *dst) {
 		}
 	}
 
+	//차영상 연산 결과에 median filter 적용 & 후추 소금 노이즈를 제거하기 위한 mopology 연산 적용
 	cvSmooth(dst, dst, CV_MEDIAN, 3, 3);
 	cvErode(dst, dst, 0, 2);
 	cvDilate(dst, dst, 0, 2);
 }
 
 void EngineS::Compose_diffImage(IplImage *rgb, IplImage *bin, CvScalar RGB) {
+	//rgb 이미지에 bin이미지를 덫씌움. 디버깅을 위한 함수
 	unsigned char bin_value;
 
+	//binary image에 255가 되는 값에 RGB 값으로 갱신
 	for (register int i = 0; i < rgb->width; i++)
 		for (register int j = 0; j < rgb->height; j++) {
 			bin_value = (unsigned char)bin->imageData[i + j * bin->widthStep];
@@ -398,19 +362,26 @@ void EngineS::Compose_diffImage(IplImage *rgb, IplImage *bin, CvScalar RGB) {
 }
 
 float EngineS::area_tri(CvPoint p, CvPoint q, CvPoint r) {
+	//2차원 좌표 p,q,r로 생성되는 삼각형의 넓이를 구함
 	return (float)abs(((p.x * q.y) + (q.x * r.y) + (r.x * p.y)) - ((p.y * q.x) + (q.y * r.x) + (r.y * p.x))) / 2.0;
 }
 
 bool EngineS::Check_InChessboard(IplImage *img, vector<Chess_point> point){
+	//Chess_point를 통하여 binary image의 픽셀이 chess board 내부에 존재하는지를 확인
 	CvPoint LH, LL, RH, RL;			//왼쪽 위, 왼쪽 아래, 오른쪽 위 오른쪽 아래
+
+	//tArea : chessboard 전체 넓이, 나머지 : 삼각형 넓이
 	float tArea, t1Area, t2Area, t3Area, t4Area;
 	
+	//chessboard의 코너점을 구함
 	LH = point.at(0).Cordinate;
 	RH = point.at(8).Cordinate;
 	LL = point.at(72).Cordinate;
 	RL = point.at(80).Cordinate;
+	//코너점을 이용하여 chessboard의 넓이 연산
 	tArea = area_tri(LH, LL, RH) + area_tri(RH, RL, LL);
 
+	//binary image에 존재하는 모든 픽셀을 대상으로 각 코너점과 이루는 삼각형의 넓이를 연산
 	for (register int i = 0; i < img->width; i++) {
 		for (register int j = 0; j < img->height; j++) {
 			UCHAR pixel_value = (UCHAR)img->imageData[i + j * img->widthStep];
@@ -423,16 +394,19 @@ bool EngineS::Check_InChessboard(IplImage *img, vector<Chess_point> point){
 
 				float totalArea = t1Area + t2Area + t3Area + t4Area;
 
+				//각 삼각형의 합이 chessboard의 넓이와 같다면 return true; => 픽셀이 chessboard 내부에 존재함
 				if (fabs(tArea - totalArea) < 2)
 					return true;
 			}
 		}
 	}
 
+	//binary image의 픽셀이 chessboard 내부에 존재하지 않음
 	return false;
 }
 
 bool EngineS::Check_imgZero(IplImage *img){
+	//binary image에 픽셀값이 모드 0인지를 확인
 	unsigned char pixel_value;
 
 	for (register int i = 0; i < img->width; i++)
@@ -447,6 +421,7 @@ bool EngineS::Check_imgZero(IplImage *img){
 }
 
 CvPoint EngineS::Get_Chessidx(CvPoint point, vector<Chess_point> cross_point){
+	//chessboard의 교점의 index를 부여.
 	for (register int i = 0; i < cross_point.size() - 10; i++) {
 		if (cross_point.at(i).Cordinate.x <= point.x && cross_point.at(i).Cordinate.y <= point.y) {
 			if (cross_point.at(i + 10).Cordinate.x > point.x && cross_point.at(i + 10).Cordinate.y > point.y)
