@@ -423,40 +423,61 @@ void Chess_recognition::Set_CalculationDomain(CvCapture *Cam, int *ROI_WIDTH, in
 
 void Chess_recognition::Chess_recognition_process(IplImage *src, vector<Chess_point> *point) {
 	
+	// 영상 이진화
 	GrayImageBinarization(src);
 
+	// 해당 영상에서의 좌표 x,y 와 grayscale을 추출하여 vector<MyGrayPoint> 형의 line에 저장
 	GetLinegrayScale(src, Linefindcount_x, Linefindcount_y);
+
+	// 체스판의 경계를 구하여 in_line_point 변수들에 저장
 	GetgraySidelinesPoint(src);
 
-	if (Linefindcount_x >= (src->width / 5) * 2 && (in_line_point_x1.size() != 9 || in_line_point_x2.size() != 9))
+	// 해당 라인에서 9곳의 체스판 경계를 찾지 못 하였으면
+	// 탐색라인을 이동시켜 적절한 탐색라인을 찾는다
+	// flag의 값에 따라 Linefindcount의 값을 변경한다
+	// true  : +
+	// false : -
+
+	// 만약 9곳의 경계를 모두 찾게 되면 해당 라인으로 고정시킨다
+
+	if (Linefindcount_x >= (src->width / 5) * 2)
 		flag_x = false;
 	
-	if (Linefindcount_y >= (src->height / 5) * 2 && (in_line_point_y1.size() != 9 || in_line_point_y2.size() != 9))
+	if (Linefindcount_y >= (src->height / 5) * 2)
 		flag_y = false;
 
-	if (Linefindcount_x <= 1 && (in_line_point_x1.size() != 9 || in_line_point_x2.size() != 9))
+	if (Linefindcount_x <= 1)
 		flag_x = true;
 	
-	if (Linefindcount_y <= 1 && (in_line_point_y1.size() != 9 || in_line_point_y2.size() != 9))
+	if (Linefindcount_y <= 1)
 		flag_y = true;
 
+	// 각 라인이 모든 체스판의 경계를 찾았다면 다음 과정으로 넘어가고
+	// 찾지 못하였으면 x축 또는 y축을 이동시켜 경계를 찾을 수 있는 라인을 찾는다
+
 	if (in_line_point_x1.size() == 9 && in_line_point_x2.size() ==  9 && in_line_point_y1.size() == 9 && in_line_point_y2.size() == 9) {
-		GetSquarePoint(src);
+		
+		// 각 찾은 경계점들의 수직이 되는 점 모두의 교차점을 찾는다
 		GetInCrossPoint(src, point);
+
+		// 체스판의 4개의 꼭지 점을 찾는다
+		GetSquarePoint(src);
 	}
 	else if (in_line_point_x1.size() != 9 || in_line_point_x2.size() != 9) {
-		if (flag_x)
+		if (flag_x && (in_line_point_x1.size() != 9 || in_line_point_x2.size() != 9))
 			Linefindcount_x += 5;
-		else
+		else if (!flag_x && (in_line_point_x1.size() != 9 || in_line_point_x2.size() != 9))
 			Linefindcount_x -= 5;
 	}
 	else if(in_line_point_y1.size() != 9 || in_line_point_y2.size() != 9) {
-		if (flag_y)
+		if (flag_y && (in_line_point_y1.size() != 9 || in_line_point_y2.size() != 9))
 			Linefindcount_y += 5;
-		else
+		else if (!flag_y && (in_line_point_y1.size() != 9 || in_line_point_y2.size() != 9))
 			Linefindcount_y -= 5;
 	}
 	
+	// 메모리 초기화
+
 	MemoryClear();
 }
 
@@ -466,313 +487,310 @@ void Chess_recognition::GetLinegrayScale(IplImage *gray_image, int linefindcount
 	int image_y = gray_image->height, image_x = gray_image->width;
 	int x1, x2, x_mid, y1, y2, y_mid;
 
+	// x축의 grayscale을 얻기위해 y축의 탐색위치를 결정
+
 	y1 = ((image_y / 5) * 2) - linefindcount_x;
 	y2 = ((image_y / 5) * 3) + linefindcount_x;
-	y_mid = (image_y / 5) * 2;
+	
+	// 처음 vector 배열에 중심이 되는 값을 넣어주고
+	// 그 이후에 짝수는 오른쪽, 홀수는 왼쪽의 수치를 넣어준다
 
 	line_x1.push_back(setMyGrayPoint(Getgrayscale(gray_image, image_x / 2, y1), image_x / 2, y1));
 	line_x2.push_back(setMyGrayPoint(Getgrayscale(gray_image, image_x / 2, y2), image_x / 2, y2));
-	line_x_mid.push_back(setMyGrayPoint(Getgrayscale(gray_image, image_x / 2, y_mid),image_x / 2, y_mid));
-
+	
 	for (register int x = 1; x <= image_x / 2; x++) {
 		line_x1.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) + x, y1), (image_x / 2) + x, y1));
 		line_x1.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) - x, y1), (image_x / 2) - x, y1));
 
 		line_x2.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) + x, y2) ,(image_x / 2) + x, y2));
 		line_x2.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) - x, y2) ,(image_x / 2) - x, y2));
-
-		line_x_mid.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) + x, y_mid), (image_x / 2) + x, y_mid));
-		line_x_mid.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) - x, y_mid), (image_x / 2) - x, y_mid));
 	}
+
+	// y축의 grayscale을 얻기위해 x축의 탐색위치를 결정
 
 	x1 = ((image_x / 5) * 2) - linefindcount_y;
 	x2 = ((image_x / 5) * 3) + linefindcount_y;
-	x_mid = (image_x / 5) * 2;
+	
+	// 처음 vector 배열에 중심이 되는 값을 넣어주고
+	// 그 이후에 짝수는 아래쪽, 홀수는 위쪽의 수치를 넣어준다
 
 	line_y1.push_back(setMyGrayPoint(Getgrayscale(gray_image, x1, image_y / 2), x1, image_y / 2));
 	line_y2.push_back(setMyGrayPoint(Getgrayscale(gray_image, x2, image_y / 2), x2, image_y / 2));
-	line_y_mid.push_back(setMyGrayPoint(Getgrayscale(gray_image, x_mid, image_y / 2), x_mid, image_y / 2));
-
+	
 	for (register int y = 1; y <= image_y / 2; y++) {
 		line_y1.push_back(setMyGrayPoint(Getgrayscale(gray_image, x1, (image_y / 2) + y), x1, (image_y / 2) + y));
 		line_y1.push_back(setMyGrayPoint(Getgrayscale(gray_image, x1, (image_y / 2) - y), x1, (image_y / 2) - y));
 
 		line_y2.push_back(setMyGrayPoint(Getgrayscale(gray_image, x2, (image_y / 2) + y), x2, (image_y / 2) + y));
 		line_y2.push_back(setMyGrayPoint(Getgrayscale(gray_image, x2, (image_y / 2) - y), x2, (image_y / 2) - y));
-
-		line_y_mid.push_back(setMyGrayPoint(Getgrayscale(gray_image, x_mid, (image_y / 2) + y), x_mid, (image_y / 2) + y));
-		line_y_mid.push_back(setMyGrayPoint(Getgrayscale(gray_image, x_mid, (image_y / 2) - y), x_mid, (image_y / 2) - y));
 	}
 }
 
 void Chess_recognition::GetgraySidelinesPoint(IplImage *chess_image) {
-	int line_count_x1, line_count_x2, line_count_x_mid, line_count_y1, line_count_y2, line_count_y_mid;
-	int jump_count_p1, jump_count_m1, jump_count_p2, jump_count_m2, jump_count_p3, jump_count_m3;
-	int jump_count_x = chess_image->width / 10;
-	int jump_count_y = chess_image->height / 10;
+	
+	// 각 grayscale이 저장되어 있는 vector 배열에서 해당 라인의 교차점을 구한다
 
-	line_count_x1 = line_count_x2 = line_count_x_mid = line_count_y1 = line_count_y2 = line_count_y_mid = 0;
-	jump_count_p1 = jump_count_p2 = jump_count_p3 = jump_count_m1 = jump_count_m2 = jump_count_m3 = 0;
+	GetgraySidelines(chess_image, &line_x1, &line_point_x1, &in_line_point_x1, true);
+	GetgraySidelines(chess_image, &line_x2, &line_point_x2, &in_line_point_x2, true);
+	GetgraySidelines(chess_image, &line_y1, &line_point_y1, &in_line_point_y1, false);
+	GetgraySidelines(chess_image, &line_y2, &line_point_y2, &in_line_point_y2, false);
 
-	line_point_x1.x1 = line_point_x1.x2 = line_point_x2.x1 = line_point_x2.x2 = line_point_x_mid.x1 = line_point_x_mid.x2 = chess_image->width / 2;
-	line_point_y1.y1 = line_point_y1.y2 = line_point_y2.y1 = line_point_y2.y2 = line_point_y_mid.y1 = line_point_y_mid.y1 = chess_image->height / 2;
-
-	bool change_flag_line_x1_t, change_flag_line_x1_t1, change_flag_line_x1_t2;
-
-	change_flag_line_x1_t1 = 127 > line_x1[0].grayscale ? true : false;
-	change_flag_line_x1_t2 = 127 > line_x1[1].grayscale ? true : false;
-
-	for (register int i = 0; i < line_x1.size() - 10; i++) {
-		if ((i % 2 == 1) && (jump_count_p1 > 0)) {
-			jump_count_p1--;
-		}
-		else if ((i % 2 == 0) && (jump_count_m1 > 0)) {
-			jump_count_m1--;
-		}
-		else {
-			bool change_flag_t;
-
-			change_flag_t = 127 > line_x1[i].grayscale ? true : false;
-
-			if (i % 2 == 0)
-				change_flag_line_x1_t = change_flag_line_x1_t1;
-			else
-				change_flag_line_x1_t = change_flag_line_x1_t2;
-
-			if (line_x1[i].grayscale != line_x1[i + 2].grayscale) {
-				int flag = true;
-
-				for (register int j = 1; j <= 3; j++) {
-					if (line_x1[i].grayscale == line_x1[i + (j * 2)].grayscale && change_flag_t == change_flag_line_x1_t) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag) {
-					if (line_count_x1 < 9){
-						if (line_point_x1.x1 > line_x1[i].x) {
-							line_point_x1.x1 = line_x1[i].x;
-							line_point_x1.y1 = line_x1[i].y;
-						}
-
-						if (line_point_x1.x2 < line_x1[i].x) {
-							line_point_x1.x2 = line_x1[i].x;
-							line_point_x1.y2 = line_x1[i].y;
-						}
-
-						in_line_point_x1.push_back(setMyPoint(line_x1[i].x, line_x1[i].y));
-
-						line_count_x1++;
-						//cvCircle(chess_image, cvPoint(line_x1[i].x, line_x1[i].y), 5, cvScalar(255,255,255));
-
-						if (i % 2 == 0)
-							change_flag_line_x1_t1 = !change_flag_t;
-						else
-							change_flag_line_x1_t2 = !change_flag_t;
-					}
-					if (i % 2 == 1)
-						jump_count_p1 = 30;
-					else
-						jump_count_m1 = 30;	
-				}
-			}
-		}
-
-		bool change_flag_line_x2_t, change_flag_line_x2_t1, change_flag_line_x2_t2;
-
-		change_flag_line_x2_t1 = 127 > line_x2[0].grayscale ? true : false;
-		change_flag_line_x2_t2 = 127 > line_x2[1].grayscale ? true : false;
-
-		if ((i % 2 == 1) && (jump_count_p2 > 0)) {
-			jump_count_p2--;
-		}
-		else if ((i%2 == 0) && (jump_count_m2 > 0)) {
-			jump_count_m2--;
-		}
-		else {
-			bool change_flag_t;
-			change_flag_t = 127 > line_x2[i].grayscale ? true : false;
-
-			if (i % 2 == 0)
-				change_flag_line_x2_t = change_flag_line_x2_t1;
-			else
-				change_flag_line_x2_t = change_flag_line_x2_t2;
-
-			if (line_x2[i].grayscale != line_x2[i + 2].grayscale) {
-				int flag = true;
-
-				for (register int j = 1; j <= 3; j++) {
-					if (line_x2[i].grayscale == line_x2[i + (j * 2)].grayscale && change_flag_t == change_flag_line_x2_t){
-						flag = false;
-						break;
-					}
-				}
-				if (flag) {
-					if (line_count_x2 < 9) {
-						if (line_point_x2.x1 > line_x2[i].x) {
-							line_point_x2.x1 = line_x2[i].x;
-							line_point_x2.y1 = line_x2[i].y;
-						}
-
-						if (line_point_x2.x2 < line_x2[i].x) {
-							line_point_x2.x2 = line_x2[i].x;
-							line_point_x2.y2 = line_x2[i].y;
-						}
-
-						in_line_point_x2.push_back(setMyPoint(line_x2[i].x, line_x2[i].y));
-
-						line_count_x2++;
-						//cvCircle(chess_image, cvPoint(line_x2[i].x, line_x2[i].y), 5, cvScalar(255, 255, 255));
-
-						if (i % 2 == 0)
-							change_flag_line_x2_t1 = !change_flag_t;
-						else
-							change_flag_line_x2_t2 = !change_flag_t;
-					}
-					if (i % 2 == 1)
-						jump_count_p2 = 30;
-					else
-						jump_count_m2 = 30;
-				}
-			}
-		}
-
-		if(line_count_x1 == line_count_x2 /*== line_count_x_mid*/ == 9)
-			break;
-	}
-
-	jump_count_p1 = jump_count_p2 = jump_count_p3 = jump_count_m1 = jump_count_m2 = jump_count_m3 = 0;
-
-	bool change_flag_line_y1_t, change_flag_line_y1_t1, change_flag_line_y1_t2;
-
-	change_flag_line_y1_t1 = 127 > line_y1[0].grayscale ? true : false;
-	change_flag_line_y1_t2 = 127 > line_y1[1].grayscale ? true : false;
-
-	for (register int i=0; i < line_y1.size() - 10; i++) {
-		if ((i % 2 == 1) && (jump_count_p1 > 0)) {
-			jump_count_p1--;
-		}
-		else if ((i % 2 == 0) && (jump_count_m1 > 0)) {
-			jump_count_m1--;
-		}
-		else {
-			bool change_flag_t;
-			change_flag_t = 127 > line_y1[i].grayscale ? true : false;
-
-			if (i % 2 == 0)
-				change_flag_line_y1_t = change_flag_line_y1_t1;
-			else
-				change_flag_line_y1_t = change_flag_line_y1_t2;
-
-			if (line_y1[i].grayscale != line_y1[i + 2].grayscale) {
-				int flag = true;
-
-				for (register int j = 1; j <= 3; j++) {
-					if (line_y1[i].grayscale == line_y1[i + (j * 2)].grayscale && change_flag_t == change_flag_line_y1_t) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag) {
-					if (line_count_y1 < 9) {
-						if (line_point_y1.y1 > line_y1[i].y) {
-							line_point_y1.x1 = line_y1[i].x;
-							line_point_y1.y1 = line_y1[i].y;
-						}
-
-						if (line_point_y1.y2 < line_y1[i].y) {
-							line_point_y1.x2 = line_y1[i].x;
-							line_point_y1.y2 = line_y1[i].y;
-						}
-
-						in_line_point_y1.push_back(setMyPoint(line_y1[i].x, line_y1[i].y));
-
-						line_count_y1++;
-						//cvCircle(chess_image, cvPoint(line_y1[i].x, line_y1[i].y), 5, cvScalar(255, 255, 255));
-
-						if (i % 2 == 0)
-							change_flag_line_y1_t1 = !change_flag_t;
-						else
-							change_flag_line_y1_t2 = !change_flag_t;
-					}
-					if (i % 2 == 1)
-						jump_count_p1 = 30;
-					else
-						jump_count_m1 = 30;
-				}
-			}
-		}
-
-		bool change_flag_line_y2_t, change_flag_line_y2_t1, change_flag_line_y2_t2;
-
-		change_flag_line_y2_t1 = 127 > line_y2[0].grayscale ? true : false;
-		change_flag_line_y2_t2 = 127 > line_y2[1].grayscale ? true : false;
-
-		if ((i % 2 == 1) && (jump_count_p2 > 0)) {
-			jump_count_p2--;
-		}
-		else if ((i % 2 == 0) && (jump_count_m2 > 0)) {
-			jump_count_m2--;
-		}
-		else {
-			bool change_flag_t;
-			change_flag_t = 127 > line_y2[i].grayscale ? true : false;
-
-			if (i % 2 == 0)
-				change_flag_line_y2_t = change_flag_line_y2_t1;
-			else
-				change_flag_line_y2_t = change_flag_line_y2_t2;
-
-			if (line_y2[i].grayscale != line_y2[i + 2].grayscale) {
-				int flag = true;
-
-				for (register int j = 1; j <= 3; j++) {
-					if (line_y2[i].grayscale == line_y2[i + (j * 2)].grayscale && change_flag_t == change_flag_line_y2_t) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag) {
-					if (line_count_y2 < 9) {
-						if (line_point_y2.y1 > line_y2[i].y) {
-							line_point_y2.x1 = line_y2[i].x;
-							line_point_y2.y1 = line_y2[i].y;
-						}
-
-						if (line_point_y2.y2 < line_y2[i].y) {
-							line_point_y2.x2 = line_y2[i].x;
-							line_point_y2.y2 = line_y2[i].y;
-						}
-
-						in_line_point_y2.push_back(setMyPoint(line_y2[i].x, line_y2[i].y));
-
-						line_count_y2++;
-						//cvCircle(chess_image, cvPoint(line_y2[i].x, line_y2[i].y), 5, cvScalar(255, 255, 255));
-
-						if (i % 2 == 0)
-							change_flag_line_y2_t1 = !change_flag_t;
-						else
-							change_flag_line_y2_t2 = !change_flag_t;
-					}
-
-					if (i % 2 == 1)
-						jump_count_p2 = 30;
-					else
-						jump_count_m2 = 30;
-				}
-			}
-		}
-
-		if (line_count_y1 == line_count_y2 /*== line_count_y_mid*/ == 9)
-			break;
-	}
+// 	for (register int i = 0; i < line_x1.size() - 10; i++) {
+// 		if ((i % 2 == 1) && (jump_count_p1 > 0)) {
+// 			jump_count_p1--;
+// 		}
+// 		else if ((i % 2 == 0) && (jump_count_m1 > 0)) {
+// 			jump_count_m1--;
+// 		}
+// 		else {
+// 			bool change_flag_t;
+// 
+// 			change_flag_t = 127 > line_x1[i].grayscale ? true : false;
+// 
+// 			if (i % 2 == 0)
+// 				change_flag_line_x1_t = change_flag_line_x1_t1;
+// 			else
+// 				change_flag_line_x1_t = change_flag_line_x1_t2;
+// 
+// 			if (line_x1[i].grayscale != line_x1[i + 2].grayscale) {
+// 				int flag = true;
+// 
+// 				for (register int j = 1; j <= 3; j++) {
+// 					if (line_x1[i].grayscale == line_x1[i + (j * 2)].grayscale && change_flag_t == change_flag_line_x1_t) {
+// 						flag = false;
+// 						break;
+// 					}
+// 				}
+// 				if (flag) {
+// 					if (line_count_x1 < 9){
+// 						if (line_point_x1.x1 > line_x1[i].x) {
+// 							line_point_x1.x1 = line_x1[i].x;
+// 							line_point_x1.y1 = line_x1[i].y;
+// 						}
+// 
+// 						if (line_point_x1.x2 < line_x1[i].x) {
+// 							line_point_x1.x2 = line_x1[i].x;
+// 							line_point_x1.y2 = line_x1[i].y;
+// 						}
+// 
+// 						in_line_point_x1.push_back(setMyPoint(line_x1[i].x, line_x1[i].y));
+// 
+// 						line_count_x1++;
+// 						//cvCircle(chess_image, cvPoint(line_x1[i].x, line_x1[i].y), 5, cvScalar(255,255,255));
+// 
+// 						if (i % 2 == 0)
+// 							change_flag_line_x1_t1 = !change_flag_t;
+// 						else
+// 							change_flag_line_x1_t2 = !change_flag_t;
+// 					}
+// 					if (i % 2 == 1)
+// 						jump_count_p1 = 30;
+// 					else
+// 						jump_count_m1 = 30;	
+// 				}
+// 			}
+// 		}
+// 
+// 		bool change_flag_line_x2_t, change_flag_line_x2_t1, change_flag_line_x2_t2;
+// 
+// 		change_flag_line_x2_t1 = 127 > line_x2[0].grayscale ? true : false;
+// 		change_flag_line_x2_t2 = 127 > line_x2[1].grayscale ? true : false;
+// 
+// 		if ((i % 2 == 1) && (jump_count_p2 > 0)) {
+// 			jump_count_p2--;
+// 		}
+// 		else if ((i%2 == 0) && (jump_count_m2 > 0)) {
+// 			jump_count_m2--;
+// 		}
+// 		else {
+// 			bool change_flag_t;
+// 			change_flag_t = 127 > line_x2[i].grayscale ? true : false;
+// 
+// 			if (i % 2 == 0)
+// 				change_flag_line_x2_t = change_flag_line_x2_t1;
+// 			else
+// 				change_flag_line_x2_t = change_flag_line_x2_t2;
+// 
+// 			if (line_x2[i].grayscale != line_x2[i + 2].grayscale) {
+// 				int flag = true;
+// 
+// 				for (register int j = 1; j <= 3; j++) {
+// 					if (line_x2[i].grayscale == line_x2[i + (j * 2)].grayscale && change_flag_t == change_flag_line_x2_t){
+// 						flag = false;
+// 						break;
+// 					}
+// 				}
+// 				if (flag) {
+// 					if (line_count_x2 < 9) {
+// 						if (line_point_x2.x1 > line_x2[i].x) {
+// 							line_point_x2.x1 = line_x2[i].x;
+// 							line_point_x2.y1 = line_x2[i].y;
+// 						}
+// 
+// 						if (line_point_x2.x2 < line_x2[i].x) {
+// 							line_point_x2.x2 = line_x2[i].x;
+// 							line_point_x2.y2 = line_x2[i].y;
+// 						}
+// 
+// 						in_line_point_x2.push_back(setMyPoint(line_x2[i].x, line_x2[i].y));
+// 
+// 						line_count_x2++;
+// 						//cvCircle(chess_image, cvPoint(line_x2[i].x, line_x2[i].y), 5, cvScalar(255, 255, 255));
+// 
+// 						if (i % 2 == 0)
+// 							change_flag_line_x2_t1 = !change_flag_t;
+// 						else
+// 							change_flag_line_x2_t2 = !change_flag_t;
+// 					}
+// 					if (i % 2 == 1)
+// 						jump_count_p2 = 30;
+// 					else
+// 						jump_count_m2 = 30;
+// 				}
+// 			}
+// 		}
+// 
+// 		if(line_count_x1 == line_count_x2 /*== line_count_x_mid*/ == 9)
+// 			break;
+// 	}
+// 
+// 	jump_count_p1 = jump_count_p2 = jump_count_p3 = jump_count_m1 = jump_count_m2 = jump_count_m3 = 0;
+// 
+// 	bool change_flag_line_y1_t, change_flag_line_y1_t1, change_flag_line_y1_t2;
+// 
+// 	change_flag_line_y1_t1 = 127 > line_y1[0].grayscale ? true : false;
+// 	change_flag_line_y1_t2 = 127 > line_y1[1].grayscale ? true : false;
+// 
+// 	for (register int i=0; i < line_y1.size() - 10; i++) {
+// 		if ((i % 2 == 1) && (jump_count_p1 > 0)) {
+// 			jump_count_p1--;
+// 		}
+// 		else if ((i % 2 == 0) && (jump_count_m1 > 0)) {
+// 			jump_count_m1--;
+// 		}
+// 		else {
+// 			bool change_flag_t;
+// 			change_flag_t = 127 > line_y1[i].grayscale ? true : false;
+// 
+// 			if (i % 2 == 0)
+// 				change_flag_line_y1_t = change_flag_line_y1_t1;
+// 			else
+// 				change_flag_line_y1_t = change_flag_line_y1_t2;
+// 
+// 			if (line_y1[i].grayscale != line_y1[i + 2].grayscale) {
+// 				int flag = true;
+// 
+// 				for (register int j = 1; j <= 3; j++) {
+// 					if (line_y1[i].grayscale == line_y1[i + (j * 2)].grayscale && change_flag_t == change_flag_line_y1_t) {
+// 						flag = false;
+// 						break;
+// 					}
+// 				}
+// 				if (flag) {
+// 					if (line_count_y1 < 9) {
+// 						if (line_point_y1.y1 > line_y1[i].y) {
+// 							line_point_y1.x1 = line_y1[i].x;
+// 							line_point_y1.y1 = line_y1[i].y;
+// 						}
+// 
+// 						if (line_point_y1.y2 < line_y1[i].y) {
+// 							line_point_y1.x2 = line_y1[i].x;
+// 							line_point_y1.y2 = line_y1[i].y;
+// 						}
+// 
+// 						in_line_point_y1.push_back(setMyPoint(line_y1[i].x, line_y1[i].y));
+// 
+// 						line_count_y1++;
+// 						//cvCircle(chess_image, cvPoint(line_y1[i].x, line_y1[i].y), 5, cvScalar(255, 255, 255));
+// 
+// 						if (i % 2 == 0)
+// 							change_flag_line_y1_t1 = !change_flag_t;
+// 						else
+// 							change_flag_line_y1_t2 = !change_flag_t;
+// 					}
+// 					if (i % 2 == 1)
+// 						jump_count_p1 = 30;
+// 					else
+// 						jump_count_m1 = 30;
+// 				}
+// 			}
+// 		}
+// 
+// 		bool change_flag_line_y2_t, change_flag_line_y2_t1, change_flag_line_y2_t2;
+// 
+// 		change_flag_line_y2_t1 = 127 > line_y2[0].grayscale ? true : false;
+// 		change_flag_line_y2_t2 = 127 > line_y2[1].grayscale ? true : false;
+// 
+// 		if ((i % 2 == 1) && (jump_count_p2 > 0)) {
+// 			jump_count_p2--;
+// 		}
+// 		else if ((i % 2 == 0) && (jump_count_m2 > 0)) {
+// 			jump_count_m2--;
+// 		}
+// 		else {
+// 			bool change_flag_t;
+// 			change_flag_t = 127 > line_y2[i].grayscale ? true : false;
+// 
+// 			if (i % 2 == 0)
+// 				change_flag_line_y2_t = change_flag_line_y2_t1;
+// 			else
+// 				change_flag_line_y2_t = change_flag_line_y2_t2;
+// 
+// 			if (line_y2[i].grayscale != line_y2[i + 2].grayscale) {
+// 				int flag = true;
+// 
+// 				for (register int j = 1; j <= 3; j++) {
+// 					if (line_y2[i].grayscale == line_y2[i + (j * 2)].grayscale && change_flag_t == change_flag_line_y2_t) {
+// 						flag = false;
+// 						break;
+// 					}
+// 				}
+// 				if (flag) {
+// 					if (line_count_y2 < 9) {
+// 						if (line_point_y2.y1 > line_y2[i].y) {
+// 							line_point_y2.x1 = line_y2[i].x;
+// 							line_point_y2.y1 = line_y2[i].y;
+// 						}
+// 
+// 						if (line_point_y2.y2 < line_y2[i].y) {
+// 							line_point_y2.x2 = line_y2[i].x;
+// 							line_point_y2.y2 = line_y2[i].y;
+// 						}
+// 
+// 						in_line_point_y2.push_back(setMyPoint(line_y2[i].x, line_y2[i].y));
+// 
+// 						line_count_y2++;
+// 						//cvCircle(chess_image, cvPoint(line_y2[i].x, line_y2[i].y), 5, cvScalar(255, 255, 255));
+// 
+// 						if (i % 2 == 0)
+// 							change_flag_line_y2_t1 = !change_flag_t;
+// 						else
+// 							change_flag_line_y2_t2 = !change_flag_t;
+// 					}
+// 
+// 					if (i % 2 == 1)
+// 						jump_count_p2 = 30;
+// 					else
+// 						jump_count_m2 = 30;
+// 				}
+// 			}
+// 		}
+// 
+// 		if (line_count_y1 == line_count_y2 /*== line_count_y_mid*/ == 9)
+// 			break;
+// 	}
 }
 
 void Chess_recognition::GetSquarePoint(IplImage *chess_image) {
+
+	// 모든 라인의 경계점이 있는 line_point 변수들에서 양 끝에있는 경계점을 뽑아낸다
+
 	SetMyLinePoint(line_point_x1.x1, line_point_x1.y1, line_point_x2.x1, line_point_x2.y1, &line_square_left);
 	SetMyLinePoint(line_point_y1.x1, line_point_y1.y1, line_point_y2.x1, line_point_y2.y1, &line_square_top);
 	SetMyLinePoint(line_point_x1.x2, line_point_x1.y2, line_point_x2.x2, line_point_x2.y2, &line_square_right);
 	SetMyLinePoint(line_point_y1.x2, line_point_y1.y2, line_point_y2.x2, line_point_y2.y2, &line_square_bottom);
+
+	// 체스판의 LeftTop, LeftBottom, RightTop, RightBottom 을 찾는다
 
 	MyPoint t_square_lt, t_square_lb, t_square_rt, t_square_rb;
 
@@ -796,6 +814,7 @@ void Chess_recognition::GetInCrossPoint(IplImage *chess_image, vector<Chess_poin
 	point->clear();
 
 	// in_line_point 오름차순 정렬
+
 	for (register int i = 0; i < in_line_point_x1.size(); i++) {
 		for (register int j = i + 1; j < in_line_point_x1.size(); j++) {
 			if (in_line_point_x1[i].x > in_line_point_x1[j].x) {
@@ -824,6 +843,10 @@ void Chess_recognition::GetInCrossPoint(IplImage *chess_image, vector<Chess_poin
 			}
 		}
 	}
+
+	// 찾은 모든 경계점들을 수직이 되는 라인의 경계점들과의 모든 교차점을 찾는다
+	// 9 * 9 = 81
+	// 그후 모든 교차점을 point 변수에 넣는다 
 
 	MyLinePoint t_in_line_point_x, t_in_line_point_y;
 	MyPoint t_in_point;
@@ -902,6 +925,9 @@ bool Chess_recognition::GetCrossPoint(MyLinePoint line1, MyLinePoint line2, MyPo
 }
 
 void Chess_recognition::GrayImageBinarization(IplImage *gray_image) {
+	
+	// 이미지의 grayscale을 저장할 변수
+	
 	float hist[256]={0,};
 	int temp[256];
 
@@ -909,9 +935,14 @@ void Chess_recognition::GrayImageBinarization(IplImage *gray_image) {
 
 	bool flag = true;
 
+	// 영상의 grayscale을 저장한다
+
 	for(register int i = 0; i < gray_image->width; i++) {
 		for(register int j = 0; j < gray_image->height; j++) {
 			temp[Getgrayscale(gray_image, i, j)]++;
+
+			// 맨처음 영상이 단일색으로 나올 경우가 있기 때문에 예외처리를 해준다
+
 			if (Getgrayscale(gray_image, i, j) != 0)
 				flag = false;
 		}
@@ -921,6 +952,8 @@ void Chess_recognition::GrayImageBinarization(IplImage *gray_image) {
 		return;
 
 	float area = (float)gray_image->width * gray_image->height;
+
+	// grayscale의 평균값
 
 	for (register int i = 1; i < 256; i++)
 		hist[i] = temp[i] / area;
@@ -965,11 +998,100 @@ void Chess_recognition::GrayImageBinarization(IplImage *gray_image) {
 		for(register int j=0; j < gray_image->height; j++) {
 			int index = i + (j * gray_image->widthStep);
 
+			// 해당 위치의 grayscale을 T값을 기준으로 이진화를 결정한다 
+
 			gray_image->imageData[index] = Getgrayscale(gray_image, i, j) > T ? 255 : 0;
 		}
 	}
 }
 
+void Chess_recognition::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool XYFlag){
+	
+	// 경계를 찾은 후 어느 정도의 경계에는 계산을 하지 않는다
+	
+	int line_count = 0, jump_count_p = 0, jump_count_m = 0;
+	if(XYFlag){
+		int jump_count_x = image->width / 10;
+		line_point->x1 = image->width / 2;
+	}
+	else{
+		int jump_count_y = image->height / 10;
+		line_point->y1 = image->height / 2;
+	}
+
+	// 교차되는 체스판의 경계를 검출 할 때 체스 말이 판과 대비가 될 경우
+	// 경계선으로 인식 되는 경우를 막는다
+
+	bool change_flag_line_t, change_flag_line_t1, change_flag_line_t2;
+
+	change_flag_line_t1 = 127 > line[0]->grayscale ? true : false;
+	change_flag_line_t2 = 127 > line[1]->grayscale ? true : false;
+
+	for (register int i = 0; i < line->size() - 10; i++) {
+		if ((i % 2 == 1) && (jump_count_p > 0)) {
+			jump_count_p--;
+		}
+		else if ((i % 2 == 0) && (jump_count_m > 0)) {
+			jump_count_m--;
+		}
+		else {
+			bool change_flag_t;
+
+			change_flag_t = 127 > line[i]->grayscale ? true : false;
+
+			if (i % 2 == 0)
+				change_flag_line_t = change_flag_line_t1;
+			else
+				change_flag_line_t = change_flag_line_t2;
+
+			// 해당 위치에서 그다음 픽셀이 대비가 된다면 경계선으로 인식
+
+			if (line[i]->grayscale != line[i + 2]->grayscale) {
+				int flag = true;
+
+				// 확실히 하기위해 최소 3픽셀 까지 대비가 되면 경계선으로 인식한다
+
+				for (register int j = 1; j <= 3; j++) {
+					if (line[i]->grayscale == line[i + (j * 2)]->grayscale && change_flag_t == change_flag_line_t) {
+						flag = false;
+						break;
+					}
+				}
+				if (flag) {
+					if (line_count < 9){
+						if (line_point->x1 > line[i]->x) {
+							line_point->x1 = line[i]->x;
+							line_point->y1 = line[i]->y;
+						}
+
+						if (line_point->x2 < line[i]->x) {
+							line_point->x2 = line[i]->x;
+							line_point->y2 = line[i]->y;
+						}
+
+						in_line_point->push_back(setMyPoint(line[i]->x, line[i]->y));
+
+						line_count++;
+
+						if (i % 2 == 0)
+							change_flag_line_t1 = !change_flag_t;
+						else
+							change_flag_line_t2 = !change_flag_t;
+					}
+					if (i % 2 == 1)
+						jump_count_p = 30;
+					else
+						jump_count_m = 30;	
+				}
+			}
+		}
+
+		// 경계선을 9개 다 찾으면 더 이상 찾을 필요가 없으므로 캔슬한다
+
+		if(line_count == 9)
+			break;
+	}
+}
 
 void Chess_recognition::MemoryClear() {
 	line_x1.clear(), line_x2.clear(), line_x_mid.clear(), line_y1.clear(), line_y2.clear(), line_y_mid.clear();

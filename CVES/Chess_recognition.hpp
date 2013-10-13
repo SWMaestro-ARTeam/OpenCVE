@@ -115,6 +115,8 @@ private:
 	void SetMyLinePoint(int x1, int y1, int x2, int y2, MyLinePoint *setLinePoint);
 	// 영상 이진화 함수
 	void GrayImageBinarization(IplImage *gray_image);
+	// 체스판 경계 탐색 함수
+	void GetgraySidelines(IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool XYFlag);
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 public:
