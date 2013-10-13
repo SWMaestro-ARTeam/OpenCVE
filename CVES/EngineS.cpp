@@ -487,8 +487,8 @@ void EngineS::EngineS_Start() {
 		// 전체적인 구문에 영향을 줄 수 있으므로 다른 구문을 강구해보는 것도 괜찮은 생각이다.
 		if (IsStarted != true) {
 			// Image 처리 중이었다면, 모든 처리를 중단하고 화면에 Stop을 넣고 중단시킨다.
-			cvPutText(img_Cam, "Stop", cvPoint(30, 30), &cvFont(1.0), cvScalar(0, 100, 100));
-			while (!IsStarted) ;
+			// cvPutText(img_Cam, "Stop", cvPoint(30, 30), &cvFont(1.0), cvScalar(0, 100, 100));
+			// while (!IsStarted) ;
 		}
 
 		// Chess Recognition 및 Hand Recognition을 처리하는 단계가 포함된 함수.
@@ -533,11 +533,13 @@ void ServerReceivedCallback(char *Buffer, SOCKET ClientSocket) {
 		case VALUE_IMFIRST :
 			// Server에 Socket 중, White에 Naming을 할 Socket이 필요.
 			// 어떤 Socket인지 검색하여 찾아 Naming 한다.
+			/*
 			for_IterToBegin(list, ClientsList, G_EngineS->Get_Telepathy_Server()->ClientList) {
 				if (_TVal->ClientSocket == ClientSocket) {
 					_TVal->ClientName = "White";
 				}
 			}
+			*/
 			break;
 		case VALUE_STOP :
 			// Stop the Server Image Processing.
