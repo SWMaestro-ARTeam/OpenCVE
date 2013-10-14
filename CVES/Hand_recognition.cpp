@@ -140,7 +140,7 @@ bool Hand_recognition::is_Hand(IplImage *src) {
 }
 
 void Hand_recognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
-	//손을 검출하기 위한 차영상 적용.
+	// 손을 검출하기 위한 차영상 적용.
 	//RGB image src를 입력받아 binary image dst를 반환.
 	static int frame_count = 0;
 

@@ -229,11 +229,26 @@ bool Telepathy::Server::ServerReceiving(SOCKET ClientSocket) {
 	if (_TReadBufferLength == -1) {
 		// ClientsList로 인하여 구현이 바뀜.
 		// User Spacific하게 바꿀 수 있음.
-		for_IterToBegin(list, ClientsList, ClientList) {
-			if (_TVal->ClientSocket == ClientSocket)
-				ClientList.remove(*_TVal);
+		
+		for_IterToEnd(list, ClientsList, ClientList) {
+			if (_TVal->ClientSocket == ClientSocket) {
+				// Iterator를 하나 더 만들어준다.
+				list<ClientsList>::iterator _TClientListIter = _TVal;
+				// Iterator가 위치를 잃어버려도 어차피 return하기 때문에 상관 없음.
+				// 다른 Iterator를 만들어 이것을 하나 증가시켜 현재 Iterator의 위치가 end인지 검사한다.
+				// 아니라면 삭제.
+				if ((++_TClientListIter) != ClientList.end())
+					_TVal = ClientList.erase(_TVal);
+				else {
+					// List에서 pop_back.
+					ClientList.pop_back();
+					// break를 넣어주지 않으면 죽어버린다.
+					break;
+				}
+			}
+			//ClientList.remove(*_TVal);
 		}
-			
+		
 		// 만약 Length가 없다면, 해당 Client Socket 연결 삭제.
 		// ConnectorsSocketList.remove(ClientSocket);
 		return false;
@@ -253,16 +268,33 @@ bool Telepathy::Server::SendDataToOne(char *Str, SOCKET ClientSocket) {
 	int _TSendStatus = 0;
 
 	// 지정된 Client에게 보냄.
-	for_IterToBegin(list, ClientsList, ClientList) {
+	// STL List의 특성상, remove할 때 문제가 있으며, erase를 할 때도 Iterator에서 다음을 인식 할 수 없는 것에 매우 주의 하였다.
+	// 그러므로 List의 끝에 있는 접속자를(begin에서 end로 iterator가 돌 경우) 삭제 할 때,
+	// Error가 날 수 있다는 것을 전제하여 다음과 같이 Code를 만들었다.
+	for_IterToEnd(list, ClientsList, ClientList) {
+		// 일단 보낼 쪽의 Socket을 검사한다.
 		if (_TVal->ClientSocket == ClientSocket) {
-			_TSendStatus = send(_TVal->ClientSocket, Str, strlen(Str)+1, 0);
+			_TSendStatus = send(_TVal->ClientSocket, Str, strlen(Str) + 1, 0);
 			if (_TSendStatus == -1) {
-				ClientList.remove(*_TVal);
+				// Iterator를 하나 더 만들어준다.
+				list<ClientsList>::iterator _TClientListIter = _TVal;
+				// Iterator가 위치를 잃어버려도 어차피 return하기 때문에 상관 없음.
+				// 다른 Iterator를 만들어 이것을 하나 증가시켜 현재 Iterator의 위치가 end인지 검사한다.
+				// 아니라면 삭제.
+				if ((++_TClientListIter) != ClientList.end())
+					_TVal = ClientList.erase(_TVal);
+				else {
+					// List에서 pop_back.
+					ClientList.pop_back();
+					// break를 넣어주지 않으면 죽어버린다.
+					break;
+				}
 				return false;
 			}
 			return true;
-		}	
+		}
 	}
+	
 	/*
 	for (_TLIt = ClientList.begin();
 		_TLIt != ClientList.end(); _TLIt++) {
@@ -281,6 +313,7 @@ bool Telepathy::Server::SendDataToOne(char *Str, SOCKET ClientSocket) {
 
 	return true;
 	*/
+	return true;
 }
 
 void Telepathy::Server::SendDataToAll(char *Str) {
@@ -290,10 +323,23 @@ void Telepathy::Server::SendDataToAll(char *Str) {
 	// 즉, 전부 다 성공한다는 보장이 없다.
 	int _TSendStatus = 0;
 
-	for_IterToBegin(list, ClientsList, ClientList) {
-		_TSendStatus = send(_TVal->ClientSocket, Str, strlen(Str)+1, 0);
-		if (_TSendStatus == -1)
-			ClientList.remove(*_TVal);
+	for_IterToEnd(list, ClientsList, ClientList) {
+		_TSendStatus = send(_TVal->ClientSocket, Str, strlen(Str) + 1, 0);
+		if (_TSendStatus == -1) {
+			// Iterator를 하나 더 만들어준다.
+			list<ClientsList>::iterator _TClientListIter = _TVal;
+			// Iterator가 위치를 잃어버려도 어차피 return하기 때문에 상관 없음.
+			// 다른 Iterator를 만들어 이것을 하나 증가시켜 현재 Iterator의 위치가 end인지 검사한다.
+			// 아니라면 삭제.
+			if ((++_TClientListIter) != ClientList.end())
+				_TVal = ClientList.erase(_TVal);
+			else {
+				// List에서 pop_back.
+				ClientList.pop_back();
+				// break를 넣어주지 않으면 죽어버린다.
+				break;
+			}
+		}
 	}
 }
 #pragma endregion Server Class
@@ -460,5 +506,4 @@ bool Telepathy::Client::SendData(char *Str) {
 
 	return true;
 }
-
 #pragma endregion Client Class
