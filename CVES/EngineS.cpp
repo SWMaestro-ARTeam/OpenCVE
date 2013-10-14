@@ -227,7 +227,7 @@ void EngineS::Go_ImageProcessing(){
 					CBlob.GetSideBlob(img_Skin, &piece_idx, other);
 					Compose_diffImage(img_Chess, img_Skin, cvScalar(100, 100, 255));
 					cvDilate(img_Skin, img_Skin, 0, 5);
-					cvShowImage("sibal skin!!", img_Skin);
+					cvShowImage("skin", img_Skin);
 					Find_Chess.drawPoint(img_Chess, cross_point);
 					if (Check_InChessboard(img_Skin, cross_point)) {
 						//img_Skin은 손 추정물체만 남긴 이미지
@@ -235,8 +235,6 @@ void EngineS::Go_ImageProcessing(){
 					}
 					else if (InHand_Check == true) {
 						//이동 처리부
-
-						printf("Hand escape!\n");
 						InHand_Check = false;
 						Sub_check = false;
 						BeforeHand_first = true;
@@ -545,4 +543,78 @@ void ServerReceivedCallback(char *Buffer, SOCKET ClientSocket) {
 			G_EngineS->IsTictokEnable = false;
 			break;
 	}
+}
+
+void EngineS::Calculate_Movement(IplImage *bin, vector<Chess_point> cross_point, CvPoint *out1, CvPoint *out2){
+	//차영상의 결과 이미지를 이용하여 체스보드의 score를 부여.
+	//score / 면적 을 이용하여 가장 많이 변한 두 좌표를 반환.
+	float score_box[8][8];							//면적비율 저장 배열
+	float chess_area[8][8];							//체스 영역 저장 배열
+	const float score_threshold = 0.5;	//면적 비율 threshold
+
+	//각 체스 영역 면적 계산부
+	for(int i = 0; i < 8; i++){
+		for(int j = 0; j < 8; j++){
+			CvPoint Head_point = cvPoint(i,j);
+			score_box[i][j] = 0;
+			chess_area[i][j] = area_tri(cvPoint(Head_point.x, Head_point.y), cvPoint(Head_point.x+1, Head_point.y), cvPoint(Head_point.x, Head_point.y+1))
+												+ area_tri(cvPoint(Head_point.x+1, Head_point.y), cvPoint(Head_point.x+1, Head_point.y+1), cvPoint(Head_point.x, Head_point.y+1));
+		}
+	}
+
+	//차영상 면적 계산부
+	for(int i = 0; i < bin->width; i++){
+		for(int j = 0; j < bin->height; j++){
+			unsigned char pixel_value = bin->imageData[i + (j * bin->widthStep)];
+
+			//어느 좌표에 위치하는지 확인
+			if(pixel_value != 0){
+				CvPoint chessbox_pos = Get_ChessboxPos(i,j, cross_point);
+				score_box[chessbox_pos.x][chessbox_pos.y]++;
+			}
+		}
+	}
+
+	//스코어를 면적으로 나눠줘서 비율을 구함
+	//가장 비율이 큰 두 좌표를 리턴.
+	float temp_max1, temp_max2;
+	CvPoint p_max1, p_max2;
+	temp_max1 = temp_max2 = -1.0;
+	p_max1 = p_max2 = cvPoint(-1,-1);
+	for(int i = 0 ; i < 8; i++){
+		for(int j = 0; j < 8; j++){
+			score_box[i][j] /= chess_area[i][j];
+
+			if(score_box[i][j] >= score_threshold){
+				if(temp_max1 <= score_box[i][j]){
+					temp_max2 = temp_max1;
+					p_max2 = p_max1;
+					temp_max1 = score_box[i][j];
+					p_max1 = cvPoint(i,j);
+				}else if(temp_max1 > score_box[i][j] && score_box[i][j] > temp_max2){
+					temp_max2 = score_box[i][j];
+					p_max2 = cvPoint(i,j);
+				}
+			}
+		}
+	}
+
+	*out1 = p_max1, *out2 = p_max2;
+}
+
+CvPoint EngineS::Get_ChessboxPos(int width, int height, vector<Chess_point> cross_point){
+	//width, height가 가리키는 픽셀이 어느 체스보드 인덱스를 가지는지를 계산하여 반환.
+	for(int i = 0; i < 8; i++){
+		for(int j = 0; j < 8; j++){
+			CvPoint top_left = cross_point.at((j * 9) + i).Cordinate;
+			CvPoint bot_right = cross_point.at((j * 9) + i + 9).Cordinate;
+
+			if(top_left.x >= width && top_left.y >= height)
+				if(bot_right.x < width && bot_right.y < height)
+					return cvPoint(i,j);
+		}
+	}
+
+	//error return;
+	return cvPoint(-1,-1);
 }

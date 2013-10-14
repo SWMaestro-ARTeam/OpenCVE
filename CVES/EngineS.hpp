@@ -102,6 +102,7 @@ private:
 	void Engine_DeInitializing();
 
 	void Get_History(); // 여태 이동한 경로 큐를 가져옴 -- 미구현
+	void Calculate_Movement(IplImage *bin, vector<Chess_point> cross_point, CvPoint *out1, CvPoint *out2);	//차영상의 결과로 나온 이진 이미지를 계산하여 체스말의 좌표이동을 반환
 	bool Check_Exit();
 
 	void Go_ImageProcessing(); // 매 루프에서 호출되는 image process 함수
@@ -118,6 +119,7 @@ private:
 	bool Check_imgZero(IplImage *img); // img가 픽셀값을 아무것도 가지지 않는지 체크
 	
 	CvPoint	Get_Chessidx(CvPoint point, vector<Chess_point> cross_point); // 말이 어느 체스판에 있는지를 체크
+	CvPoint Get_ChessboxPos(int width, int height, vector<Chess_point> cross_point);
 	
 public:
 	EngineS();
