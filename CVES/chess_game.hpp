@@ -29,6 +29,9 @@
 #include <stdio.h>
 #include <cv.h>
 
+#define CASTLING_MOVE				4
+#define ENPASSANT_MOVE			3
+
 class chess_game {
 	enum {
 		Ground, 

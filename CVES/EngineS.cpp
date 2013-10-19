@@ -120,6 +120,7 @@ void EngineS::Go_ImageProcessing(){
 
 	//Cam으로부터의 영상입력
 	img_Cam = cvQueryFrame(Cam);
+	cvFlip(img_Cam, img_Cam, FLIP_MODE);
 
 	switch (ImgProcess_Mode) {
 		case 0:	
