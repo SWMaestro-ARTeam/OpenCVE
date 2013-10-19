@@ -44,9 +44,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Common\ProcessConfirm.cpp">
-      <Filter>Common\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\Common\Telepathy.cpp">
       <Filter>Common\Source</Filter>
     </ClCompile>
@@ -83,15 +80,15 @@
     <ClCompile Include="..\Common\Time.cpp">
       <Filter>Common\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\Common\Process.cpp">
+      <Filter>Common\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\Common.hpp">
       <Filter>Common\Header</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\ExtendedBlackBox.hpp">
-      <Filter>Common\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\ProcessConfirm.hpp">
       <Filter>Common\Header</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Telepathy.hpp">
@@ -131,6 +128,9 @@
       <Filter>Common\Header</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Time.hpp">
+      <Filter>Common\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Process.hpp">
       <Filter>Common\Header</Filter>
     </ClInclude>
   </ItemGroup>

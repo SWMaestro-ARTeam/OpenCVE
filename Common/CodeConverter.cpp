@@ -25,7 +25,7 @@
 
 #include "CodeConverter.hpp"
 
-//  char -> wchar
+// char -> wchar
 wchar_t *CodeConverter::CharToWChar(const char *CharStr) {
 	ASSERT(CharStr);
 	wchar_t* _TWStr = NULL;

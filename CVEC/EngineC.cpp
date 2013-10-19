@@ -101,7 +101,7 @@ void EngineC::Deinitialize_TClient() {
 }
 
 void EngineC::Initialize_ProcessConfirm() {
-	_ProcessConfirm = new ProcessConfirm();
+	_ProcessConfirm = new Process();
 }
 
 void EngineC::Deinitialize_ProcessConfirm() {
@@ -524,13 +524,14 @@ void *
 		// 일단 될 때까지 무한 반복.
 		if (G_EngineC->Get_CVESProcessStatus() != true && G_EngineC->EngineEnable == true) {
 			// CVES 없어지고 다시 실행할 때까지 계속 돈다.
-			while (!G_EngineC->CheckingCVESProcess() & G_EngineC->EngineEnable == true) ;
+			while (!G_EngineC->CheckingCVESProcess() && G_EngineC->EngineEnable == true) ;
 			// Server와 통신해야 하는 긴급한 상황(죽은 경우기 때문에).
 			_Urgency = true;
 		}
+
 		if (G_EngineC->Get_TelepathyClient()->IsConnectedClient != true && G_EngineC->EngineEnable == true) {
 			// CVES에 접속할 때까지 계속 돈다.
-			while (!G_EngineC->Connect_Server() & G_EngineC->EngineEnable == true) ;
+			while (!G_EngineC->Connect_Server() && G_EngineC->EngineEnable == true) ;
 			//G_Parser->
 			if (_Urgency == true) {
 				// 긴급한 상황.
@@ -561,14 +562,34 @@ bool EngineC::CheckingCVESProcess() {
 	bool _IsAnotherCVECProcessActive = false;
 
 	// 1. CVES Process 확인. 
-	_IsCVESProcessActive = _ProcessConfirm->CheckProcess(SERVER_ENGINE_EXEC_FILENAME);
-	_IsAnotherCVECProcessActive = _ProcessConfirm->CheckProcess(CLIENT_ENGINE_EXEC_FILENAME);
+	_IsCVESProcessActive = _ProcessConfirm->CheckProcessExist(SERVER_ENGINE_EXEC_FILENAME);
+	_IsAnotherCVECProcessActive = _ProcessConfirm->CheckProcessExist(CLIENT_ENGINE_EXEC_FILENAME);
 
 	// 2. CVES Process가 없다면 Process 실행.
 	// 여기서 주의 할 점 정리.
 	// (1) 초반에 실행될 때는 CVES Process가 없고, 내가 Process를 가지고 있지 않을 때.
 	// (2) 내게 CVES Process가 없고, 다른 CVES Process가 떠 있을 때(다른 Client가 가지고 있을 때).
 	// (3) 내가 Process를 가지고 있어서 이미 실행 중일 때.
+
+	// 최종 정리.
+	// 1. 다른 CVEC, CVES Process가 없고, 내가 Process를 가지고 있지 않을 때(가장 먼저 실행된 Client) - 무조건 CVES 실행(곧, 해당 CVEC가 CVES를 갖는다).
+	// (CVES 없음, CVEC 없음 - 해당 Process에 CVES 실행권 모름)
+	// 2. 다른 CVEC, CVES Process가 있고, 내가 Process를 가지고 있지 않을 때(이미 다른 Client가 가지고 있을 때) - CVES 실행 없음.
+	// (CVES 있음, CVEC 있음 - 해당 Process에 CVES 실행권 없음)
+	// 3. 다른 CVEC, CVES Process가 있었으나, 본 CVEC가 가지고 있던 CVES Process가 종료 되었을 때 - 무조건 CVES 실행.
+	// (CVES 없음, CVEC 있음 - 해당 Process에 CVES 실행권 있음)
+	// 4. 다른 CVEC, CVES Process가 있었으나, 다른 CVEC가 가지고 있던 CVES Process가 종료 되었을 때 - CVES 실행 없음.
+	// (CVES 없음, CVEC 있음 - 해당 Process에 CVES 실행권 없음)
+
+	// 이외의 경우(절대 있을 수 없는 경우 포함).
+	// 1. CVEC Process가 전부 없고, 이미 CVES가 있는 경우 - CVES 종료 후 재실행(예외 상황으로, 이전 CVES만 종료 되지 않아 게임이 불가할 경우이다)
+	// 1의 경우 강제로 Process를 종료 시켜야 하는데, 2가지의 시나리오로 가능하다.
+	// (1) Process 접근 권한을 얻어 Process를 '강제' 종료한다.
+	// (2) 이미 열려 있는 CVES에 접속하여 'Kill'을 날린다.
+	// 2. CVES Process가 죽고, 이후에 파일이 갑자기 사라진 경우.
+	// 구제 불가. WTF!!
+
+
 
 	// 이건 내가 Process를 가지고 있다는 이야기 이므로..
 	if (_ProcessConfirm->IsProcessActive == true) {

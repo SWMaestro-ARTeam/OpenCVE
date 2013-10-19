@@ -41,7 +41,7 @@
 // Internal Protocol Seeker
 #include "InternalProtocolSeeker.hpp"
 // Process Confirm Module
-#include "ProcessConfirm.hpp"
+#include "Process.hpp"
 // File Utility
 #include "File.hpp"
 // UCI Command Seeker
@@ -60,7 +60,7 @@ private:
 
 	Option *_Option;
 	Telepathy::Client *_TelepathyClient;
-	ProcessConfirm *_ProcessConfirm;
+	Process *_ProcessConfirm;
 	UCICommandSeeker _UCICommandSeeker;
 	File _File;
 
