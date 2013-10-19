@@ -344,7 +344,7 @@ void EngineS::Sub_image(IplImage *src1, IplImage *src2, IplImage *dst) {
 			unsigned char SUB_a = abs((unsigned char)Lab_src1->imageData[(i * 3) + (j * Lab_src1->widthStep) + 1] - (unsigned char)Lab_src2->imageData[(i * 3) + (j * Lab_src2->widthStep) + 1]);
 			unsigned char SUB_b = abs((unsigned char)Lab_src1->imageData[(i * 3) + (j * Lab_src1->widthStep) + 2] - (unsigned char)Lab_src2->imageData[(i * 3) + (j * Lab_src2->widthStep) + 2]);
 
-			if ((SUB_L > SUB_THRESHOLD * 10) && (SUB_a > SUB_THRESHOLD || SUB_b > SUB_THRESHOLD)) {
+			if ((SUB_L > SUB_THRESHOLD) && (SUB_a > SUB_THRESHOLD || SUB_b > SUB_THRESHOLD)) {
 				dst->imageData[i + (j * dst->widthStep)] = (unsigned char)255;
 			}
 		}
