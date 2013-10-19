@@ -144,6 +144,10 @@ void Hand_recognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
 	//RGB image src를 입력받아 binary image dst를 반환.
 	static int frame_count = 0;
 
+	//Lab 색상계 실험
+	IplImage *Lab_src = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 3);
+	IplImage *Lab_prev = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 3);
+
 	//first가 true일 경우 이미지 초기화.
 	if (first) {
 		if (prev_ground != NULL){
@@ -156,7 +160,6 @@ void Hand_recognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
 	if (prev_ground == NULL) {
 		prev_ground = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 3);
 		present_ground = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 3);
-		/*cvCvtColor(src, prev_ground, CV_BGR2GRAY);*/
 		cvCopy(src, prev_ground);
 	}
 
@@ -164,7 +167,6 @@ void Hand_recognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
 
 	//프로그램의 성능을 위해 몇 프레임마다 차영상을 적용할 것인가를 if문을 통하여 조절할 수 있음.
 	if (frame_count == 1) {
-		//cvCvtColor(src, present_ground, CV_BGR2GRAY);
 		cvCopy(src, present_ground);
 
 		//image 내부의 모든 픽셀을 대상으로 rgb 차영상 적용.
@@ -179,10 +181,8 @@ void Hand_recognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
 				}
 			}
 		}
-		//cvCopy(present_ground, prev_ground);
 
 		//차영상 연산의 결과로 생성된 binary image에 필터 적용.
-		cvSmooth(dst, dst, CV_MEDIAN,3,3);
 		cvErode(dst, dst, 0, 2);
 		cvDilate(dst, dst, 0, 2);
 
@@ -190,6 +190,9 @@ void Hand_recognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
 	}
 
 	frame_count++;
+
+	cvReleaseImage(&Lab_prev);
+	cvReleaseImage(&Lab_src);
 }
 
 void Hand_recognition::Init_diff() {

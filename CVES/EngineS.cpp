@@ -88,6 +88,7 @@ void EngineS::Deinitialize_ImageProcessing(){
 
 	cvReleaseImage(&temp_prev);
 	cvReleaseImage(&temp_prev2);
+	cvReleaseImage(&pure_img);
 
 	cvReleaseImage(&img_Chess);
 	cvReleaseImage(&img_Skin);
@@ -139,6 +140,7 @@ void EngineS::Go_ImageProcessing(){
 				img_Chess = cvCreateImage(cvSize(ImgProcess_ROI.width, ImgProcess_ROI.height), IPL_DEPTH_8U, 3);
 				temp_prev = cvCreateImage(cvSize(ImgProcess_ROI.width, ImgProcess_ROI.height), IPL_DEPTH_8U, 3);
 				temp_prev2 = cvCreateImage(cvSize(ImgProcess_ROI.width, ImgProcess_ROI.height), IPL_DEPTH_8U, 3);
+				pure_img = cvCreateImage(cvSize(ImgProcess_ROI.width, ImgProcess_ROI.height), IPL_DEPTH_8U, 3);
 				other = cvCreateImage(cvSize(ImgProcess_ROI.width, ImgProcess_ROI.height), IPL_DEPTH_8U, 1);
 				img_createCheck = true;
 				Find_Chess.Initialize_ChessRecognition(ImgProcess_ROI.width, ImgProcess_ROI.height, RECOGNITION_MODE);
@@ -149,6 +151,7 @@ void EngineS::Go_ImageProcessing(){
 			}
 			cvSetImageROI(img_Cam, ImgProcess_ROI);
 			cvCopy(img_Cam, img_Chess);
+			cvCopy(img_Cam, pure_img);
 
 			//Chessboard recognition;
 			Find_Chess.Copy_Img(img_Chess);
@@ -171,6 +174,7 @@ void EngineS::Go_ImageProcessing(){
 
 			cvSetImageROI(img_Cam, ImgProcess_ROI);
 			cvCopy(img_Cam, img_Chess);
+			cvCopy(img_Cam, pure_img);
 
 			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			///////////////////////////////////////////////////////차영상 및 조건판정 부분///////////////////////////////////////////////
@@ -189,7 +193,7 @@ void EngineS::Go_ImageProcessing(){
 					if (BeforeHand_first)
 						BeforeHand_first = false;
 
-					cvDilate(img_Skin, img_Skin, 0, 10);
+					//cvDilate(img_Skin, img_Skin, 0, 10);
 #ifdef DEBUG
 					cvShowImage("img_Skin", img_Skin);
 #endif
@@ -201,21 +205,14 @@ void EngineS::Go_ImageProcessing(){
 #endif
 						Sub_check = true;
 					}
-					else {
-						//Find_Chess.Chess_recog_wrapper(img_Cam, &cross_point);
-					}
 				}
 				else {
 					//추후 해야할 작업 : 빠질때 어떻게 작업할 것인가
 					//손이 들어옴 판정 이후 작업
-					/*Find_Hand.Sub_prevFrame(img_Chess, img_sub);*/
 #ifdef DEBUG
 					cvShowImage("유레카1", img_Chess);
 #endif
 					Sub_image(prev_img, img_Chess, img_Skin);
-					/*cvErode(img_Skin, img_Skin, 0, 1);
-					cvDilate(img_Skin, img_Skin, 0, 2);
-					cvErode(img_Skin, img_Skin, 0, 1);*/
 					Compose_diffImage(img_Chess, img_Skin, cvScalar(0, 255, 255));
 
 					//BlobLabeling
@@ -226,9 +223,9 @@ void EngineS::Go_ImageProcessing(){
 					//손판정
 					CBlob.GetSideBlob(img_Skin, &piece_idx, other);
 					Compose_diffImage(img_Chess, img_Skin, cvScalar(100, 100, 255));
+					Find_Chess.drawPoint(img_Chess, cross_point);
 					cvDilate(img_Skin, img_Skin, 0, 5);
 					cvShowImage("skin", img_Skin);
-					Find_Chess.drawPoint(img_Chess, cross_point);
 					if (Check_InChessboard(img_Skin, cross_point)) {
 						//img_Skin은 손 추정물체만 남긴 이미지
 						InHand_Check = true;
@@ -236,17 +233,20 @@ void EngineS::Go_ImageProcessing(){
 					else if (InHand_Check == true) {
 
 						// 차영상의 결과에 체스말의 이동경로 추적
-						CvPoint out1, out2;
-						out1 = out2 = cvPoint(-1, -1);
-						Calculate_Movement(other, cross_point, &out1, &out2);
+						CvPoint out[4];
+						out[0] = out[1] = out[2] = out[3] = cvPoint(-1, -1);
+						Calculate_Movement(other, cross_point, &out[0], &out[1]);
 
 						// 결과가 
-						if(out1.x != -1 && out2.x != -1){
-							printf("(%d, %d) & (%d, %d)\n", out1.x, out1.y, out2.x, out2.y);
+						if(out[0].x != -1 && out[1].x != -1){
 							//이동 처리부
 							InHand_Check = false;
 							Sub_check = false;
 							BeforeHand_first = true;
+							
+							//chessgame 이동부
+							CHESS_GAME.Chess_process(out, 0);
+							CHESS_GAME.Show_chess_board();
 						}
 
 						//CVES process가 죽었을 경우를 대비하여 현재 경로들을 txt파일로 저장 & voting을 통하여 현재 말의 이동경로를 확정.
@@ -254,14 +254,13 @@ void EngineS::Go_ImageProcessing(){
 					}
 #ifdef DEBUG
 					cvShowImage("compose_diff", img_Chess);
-					cvShowImage("other", other);
 #endif
 				}
 			}
 			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			//차영상에 이용하기 위한 2프레임 이전 영상의 저장
 			cvCopy(temp_prev, temp_prev2);
-			cvCopy(img_Chess, temp_prev);
+			cvCopy(pure_img, temp_prev);
 			cvResetImageROI(img_Cam);
 
 			if (cvWaitKey(10) == 27)
@@ -332,23 +331,31 @@ void EngineS::Sub_image(IplImage *src1, IplImage *src2, IplImage *dst) {
 	//dst zero이미지로 초기화
 	cvZero(dst);
 
+	//그림자 보정을 위한 Lab 색상계 변환
+	IplImage *Lab_src1 = cvCreateImage(cvGetSize(src1), IPL_DEPTH_8U, 3);
+	IplImage *Lab_src2 = cvCreateImage(cvGetSize(src1), IPL_DEPTH_8U, 3);
+	cvCvtColor(src1, Lab_src1, CV_BGR2Lab);
+	cvCvtColor(src2, Lab_src2, CV_BGR2Lab);
+
 	//차영상 연산. 각 R,G,B값에 SUB_THRESHOLD를 적용하여 binary image 생성
 	for (register int i = 0; i < src1->width; i++) {
 		for (register int j = 0; j < src1->height; j++) {
-			unsigned char SUB_B = abs((unsigned char)src1->imageData[(i * 3) + (j * src1->widthStep)] - (unsigned char)src2->imageData[(i * 3) + (j * src2->widthStep)]);
-			unsigned char SUB_G = abs((unsigned char)src1->imageData[(i * 3) + (j * src1->widthStep) + 1] - (unsigned char)src2->imageData[(i * 3) + (j * src2->widthStep) + 1]);
-			unsigned char SUB_R = abs((unsigned char)src1->imageData[(i * 3) + (j * src1->widthStep) + 2] - (unsigned char)src2->imageData[(i * 3) + (j * src2->widthStep) + 2]);
+			unsigned char SUB_L = abs((unsigned char)Lab_src1->imageData[(i * 3) + (j * Lab_src1->widthStep)] - (unsigned char)Lab_src2->imageData[(i * 3) + (j * Lab_src2->widthStep)]);
+			unsigned char SUB_a = abs((unsigned char)Lab_src1->imageData[(i * 3) + (j * Lab_src1->widthStep) + 1] - (unsigned char)Lab_src2->imageData[(i * 3) + (j * Lab_src2->widthStep) + 1]);
+			unsigned char SUB_b = abs((unsigned char)Lab_src1->imageData[(i * 3) + (j * Lab_src1->widthStep) + 2] - (unsigned char)Lab_src2->imageData[(i * 3) + (j * Lab_src2->widthStep) + 2]);
 
-			if (SUB_B > SUB_THRESHOLD || SUB_G > SUB_THRESHOLD || SUB_R > SUB_THRESHOLD) {
+			if ((SUB_L > SUB_THRESHOLD * 10) && (SUB_a > SUB_THRESHOLD || SUB_b > SUB_THRESHOLD)) {
 				dst->imageData[i + (j * dst->widthStep)] = (unsigned char)255;
 			}
 		}
 	}
 
 	//차영상 연산 결과에 median filter 적용 & 후추 소금 노이즈를 제거하기 위한 mopology 연산 적용
-	cvSmooth(dst, dst, CV_MEDIAN, 3, 3);
 	cvErode(dst, dst, 0, 2);
 	cvDilate(dst, dst, 0, 2);
+
+	cvReleaseImage(&Lab_src1);
+	cvReleaseImage(&Lab_src2);
 }
 
 void EngineS::Compose_diffImage(IplImage *rgb, IplImage *bin, CvScalar RGB) {

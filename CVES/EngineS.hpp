@@ -88,6 +88,7 @@ private:
 	IplImage *temp_prev; // 임시 이전 영상 저장 이미지
 	IplImage *temp_prev2; // 임시 이전 영상 저장 이미지
 	IplImage *other; // 손을 제외한 나머지 이진 영상
+	IplImage *pure_img;	//원본 ROI 셋팅 영상을 저장하기 위한 이미지
 	CvRect ImgProcess_ROI; // 관심영역 크기
 
 	vector<Chess_point> cross_point;
