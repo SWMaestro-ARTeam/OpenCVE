@@ -23,16 +23,16 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#include "chess_game.hpp"
+#include "ChessGame.hpp"
 
-chess_game::chess_game() {
+ChessGame::ChessGame() {
 	turn = true;		// 백
 
-	for (int i=0; i<8; i++)
-		for (int j=0; j<8; j++)
+	for (int i = 0; i < 8; i++)
+		for (int j = 0; j < 8; j++)
 			board[i][j] = Ground;
 
-	for (int i=0; i<8; i++)
+	for (int i = 0; i < 8; i++)
 		board[1][i] = B_Pawn, board[6][i] = W_Pawn;
 
 	board[0][0] = board[0][7] = B_Rook;
@@ -47,10 +47,10 @@ chess_game::chess_game() {
 	board[7][4] = W_King;
 }
 
-chess_game::~chess_game() {
+ChessGame::~ChessGame() {
 }
 
-void chess_game::Chess_process(CvPoint input1, CvPoint input2) {
+void ChessGame::Chess_process(CvPoint input1, CvPoint input2) {
 	if (board[input1.x][input1.y] == 0 && board[input2.x][input2.y] != 0) {
 		board[input1.x][input1.y] = board[input2.x][input2.y];
 		board[input2.x][input2.y] = Ground;
@@ -89,9 +89,9 @@ void chess_game::Chess_process(CvPoint input1, CvPoint input2) {
 	}
 }
 
-void chess_game::Show_chess_board() {
-	for (int i=0; i<8; i++) {
-		for (int j=0; j<8; j++) {
+void ChessGame::Show_chess_board() {
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
 			printf("%3d", board[i][j]);
 		}
 		printf("\n");

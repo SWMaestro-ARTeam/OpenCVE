@@ -39,7 +39,8 @@ wchar_t *CodeConverter::CharToWChar(const char *CharStr) {
 		MultiByteToWideChar(CP_ACP, 0, CharStr, _TCharLength, _TWStr, _TWStrLength);
 	}
 
-	_TWStr[_TWStrLength] = 0;
+	if (_TWStr != NULL)
+		_TWStr[_TWStrLength] = 0;
 
 	return _TWStr;
 }
@@ -58,7 +59,8 @@ char *CodeConverter::WCharToChar(const wchar_t* WcharStr) {
 		WideCharToMultiByte(CP_ACP, 0, WcharStr, _TWStrLength, _TStr, _TCharLength, NULL, FALSE);
 	}
 
-	_TStr[_TCharLength] = 0;
+	if (_TStr != NULL)
+		_TStr[_TCharLength] = 0;
 
 	return _TStr;
 }

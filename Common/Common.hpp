@@ -43,4 +43,8 @@
 
 #define IP_ADDR_LOCAL "127.0.0.1"
 
+#define SERVER_VIEW_DEFAULT_WIDTH 640
+#define SERVER_VIEW_DEFAULT_HEIGHT 480
+#define RECOGNITION_MODE 2 // 1 : hough Line, 2 : 규홍 recognition
+
 #endif

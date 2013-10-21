@@ -23,12 +23,12 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#include "Hand_recognition.hpp"
+#include "HandRecognition.hpp"
 
-Hand_recognition::Hand_recognition() {
+HandRecognition::HandRecognition() {
 }
 
-Hand_recognition::~Hand_recognition() {
+HandRecognition::~HandRecognition() {
 	cvReleaseImage(&img_YCrCb);
 	cvReleaseImage(&img_HSV);
 
@@ -39,7 +39,7 @@ Hand_recognition::~Hand_recognition() {
 		cvReleaseImage(&present_ground);
 }
 
-void Hand_recognition::Init(int width, int height) {
+void HandRecognition::Init(int width, int height) {
 	img_width = width;
 	img_height = height;
 
@@ -50,13 +50,13 @@ void Hand_recognition::Init(int width, int height) {
 	present_ground = NULL;
 }
 
-bool Hand_recognition::R1(int R, int G, int B) {
+bool HandRecognition::R1(int R, int G, int B) {
 	bool e1 = (R > 95) && (G > 40) && (B > 20) && ((max(R, max(G, B)) - min(R, min(G , B))) > 15) && (abs(R - G) > 15) && (R > G) && (R > B);
 	bool e2 = (R > 220) && (G > 210) && (B > 170) && (abs(R - G) <= 15) && (R > B) && (G > B);
 	return (e1||e2);
 }
 
-bool Hand_recognition::R2(float Y, float Cr, float Cb) {
+bool HandRecognition::R2(float Y, float Cr, float Cb) {
 	bool e3 = Cr <= (1.5862 * Cb) + 20;
 	bool e4 = Cr >= (0.3448 * Cb) + 76.2069;
 	bool e5 = Cr >= (-4.5652 * Cb) + 234.5652;
@@ -65,11 +65,11 @@ bool Hand_recognition::R2(float Y, float Cr, float Cb) {
 	return e3 && e4 && e5 && e6 && e7;
 }
 
-bool Hand_recognition::R3(float H, float S, float V) {
+bool HandRecognition::R3(float H, float S, float V) {
 	return (H < 25) || (H > 230);
 }
 
-void Hand_recognition::Detect_Skin(IplImage *src, IplImage *dst) {
+void HandRecognition::Detect_Skin(IplImage *src, IplImage *dst) {
 	cvCvtColor(src, img_YCrCb, CV_BGR2YCrCb);
 	cvCvtColor(src, img_HSV, CV_BGR2HSV);
 
@@ -109,7 +109,7 @@ void Hand_recognition::Detect_Skin(IplImage *src, IplImage *dst) {
 	cvDilate(dst, dst, 0, MOP_NUM);
 }
 
-bool Hand_recognition::is_Hand(IplImage *src) {
+bool HandRecognition::is_Hand(IplImage *src) {
 	int count = 0;
 
 	for (register int i = 0; i < src->width; i++) {
@@ -125,7 +125,7 @@ bool Hand_recognition::is_Hand(IplImage *src) {
 	return false;
 }
 
-void Hand_recognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
+void HandRecognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
 	static int frame_count = 0;
 
 	if (first) {
@@ -171,7 +171,7 @@ void Hand_recognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
 	frame_count++;
 }
 
-void Hand_recognition::Init_diff() {
+void HandRecognition::Init_diff() {
 	cvReleaseImage(&prev_ground);
 	cvReleaseImage(&present_ground);
 }

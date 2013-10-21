@@ -51,6 +51,9 @@
 // using MFC.
 #define _AFXDLL
 // or no MFC.
+
+// Maximum Process Limit.
+#define PROCESS_MAX 32767
 #endif
 
 #endif

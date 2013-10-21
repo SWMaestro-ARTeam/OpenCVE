@@ -40,13 +40,13 @@
 #include "Time.hpp"
 
 // 손 인식
-#include "Hand_recognition.hpp"
+#include "HandRecognition.hpp"
 // Chess Board 인식
-#include "Chess_recognition.hpp"
+#include "ChessRecognition.hpp"
 // 레이블링
 #include "BlobLabeling.hpp"
 // Chess Game을 위한 좌표
-#include "chess_game.hpp"
+#include "ChessGame.hpp"
 
 #include <stdio.h>
 #include <cv.h>
@@ -60,16 +60,12 @@
 #endif
 #include <time.h>
 
-#define WIDTH 640
-#define HEIGHT 480
-#define RECOGNITION_MODE 2 // 1 : hough Line, 2 : 규홍 recognition
-
 class EngineS {
 private:
-	Hand_recognition Find_Hand;
-	Chess_recognition Find_Chess;
-	CBlobLabeling CBlob;
-	chess_game CHESS_GAME;
+	HandRecognition _HandRecognition;
+	ChessRecognition _ChessRecognition;
+	BlobLabeling _BlobLabeling;
+	ChessGame _ChessGame;
 
 	Telepathy::Server *_TelepathyServer;
 

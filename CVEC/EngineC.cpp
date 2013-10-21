@@ -34,7 +34,8 @@ EngineC *G_EngineC;
 EngineC::EngineC() {
 	//IsSocketInitialize = false;
 	//IsSocketConnented = false;
-	//IsGetCVESProcess = false;
+	IsGetCVESProcess = false;
+	IsNoCVESProcess = false;
 	EngineEnable = false;
 	EnginePause = false;
 	CVEC_CVESControlInitial = true;
@@ -45,7 +46,8 @@ EngineC::EngineC() {
 EngineC::~EngineC() {
 	//IsSocketInitialize = false;
 	//IsSocketConnented = false;
-	//IsGetCVESProcess = false;
+	IsGetCVESProcess = false;
+	IsNoCVESProcess = false;
 	EngineEnable = false;
 	EnginePause = false;
 	CVEC_CVESControlInitial = false;
@@ -168,11 +170,18 @@ void EngineC::Clear_Str() {
 bool EngineC::Connect_Server() {
 	bool _TIsConnected = false;
 	if (_TelepathyClient->IsInitializeClient == true) {
+		if (_TelepathyClient->IsConnectedClient == true)
+			return true;
 		// Server 연결 성공시에, ClientReceivedCallback을 묶어
 		// Receive 할 때 Server에서 전송된 내용을 받아야 한다.
-		_TelepathyClient->TClientReceivedCallback = ClientReceivedCallback;
+		if (_TelepathyClient->ClientConnect()) {
+			_TelepathyClient->TClientReceivedCallback = ClientReceivedCallback;
+			_TelepathyClient->ClientReceiveStart();
+			_TIsConnected = true;
+		}
+		/*_TelepathyClient->TClientReceivedCallback = ClientReceivedCallback;
 		_TelepathyClient->ClientReceiveStart();
-		_TIsConnected = true;
+		_TIsConnected = true;*/
 		//IsSocketConnented = true;
 	}
 	//return _TClient->ClientConnect();
@@ -513,8 +522,16 @@ void *
 	// 맨 처음에 해야 할 일.
 	// 1. Process Checking.
 	G_EngineC->CheckingCVESProcess();
+	/*
+	if (G_EngineC->IsNoCVESProcess)
+		return 0;
+		*/
+	// Process가 시작될 때까지 기다린다.
+	// 만약 G_EngineC->IsNoCVESProcess가 true면 0(이는, Server를 가지고 있지 않으므로 while을 실행하지 않는다는 이야기)
+	// 만약 G_EngineC->IsNoCVESProcess가 false면 G_EngineC->Get_CVESProcessStatus()를 검사.
+	while ((G_EngineC->IsNoCVESProcess) ? 0 : !G_EngineC->Get_CVESProcessStatus()) ;
 	// 2. Process Enable 뒤 Server 접속.
-
+	G_EngineC->Connect_Server();
 	// 3. Parser가 살아있을 때 까지 무조건 계속 while 돌며 Process가 살아있는지, 통신이 살아있는지 Check 함.
 	// 간혹 Loop에 걸렸을때 갑자기 종료가 될 수 있기 때문에, 항상 전제를 Engine이 Enable일 때만 돌게 끔 작업.
 	while (G_EngineC->EngineEnable) {
@@ -522,9 +539,16 @@ void *
 
 		// 만약 여기서 끊기면, 게임이 끊겼다고 생각하고 재실행 및 재접속 작업에 돌입한다.
 		// 일단 될 때까지 무한 반복.
-		if (G_EngineC->Get_CVESProcessStatus() != true && G_EngineC->EngineEnable == true) {
+		// Server를 가지고 있지 않아도 통신이 끊긴건 일단 비상상황이므로, 통신을 재개할 수단을 마련해야 한다.
+		if (((G_EngineC->IsNoCVESProcess) ?
+			1 : (G_EngineC->Get_CVESProcessStatus() != true))
+			&& G_EngineC->EngineEnable == true) {
 			// CVES 없어지고 다시 실행할 때까지 계속 돈다.
-			while (!G_EngineC->CheckingCVESProcess() && G_EngineC->EngineEnable == true) ;
+			// Server를 가지고 있지 않다면, 굳이 실행 할 필요가 없다.
+			while (((G_EngineC->IsNoCVESProcess) ? 0 : !G_EngineC->CheckingCVESProcess()) && G_EngineC->EngineEnable == true) ;
+			// Process가 시작될 때까지 기다린다.
+			// 역시 Server를 가지고 있지 않다면, 굳이 실행 할 필요가 없다.
+			while ((G_EngineC->IsNoCVESProcess) ? 0 : !G_EngineC->Get_CVESProcessStatus()) ;
 			// Server와 통신해야 하는 긴급한 상황(죽은 경우기 때문에).
 			_Urgency = true;
 		}
@@ -558,77 +582,144 @@ Telepathy::Client *EngineC::Get_TelepathyClient() {
 }
 
 bool EngineC::CheckingCVESProcess() {
-	bool _IsCVESProcessActive = false;
-	bool _IsAnotherCVECProcessActive = false;
+	/*
+		CheckingCVESProcess 주의 할 점 정리.
+		(1) 초반에 실행될 때는 CVES Process가 없고, 내가 Process를 가지고 있지 않을 때.
+		(2) 내게 CVES Process가 없고, 다른 CVES Process가 떠 있을 때(다른 Client가 가지고 있을 때).
+		(3) 내가 Process를 가지고 있어서 이미 실행 중일 때.
 
-	// 1. CVES Process 확인. 
-	_IsCVESProcessActive = _ProcessConfirm->CheckProcessExist(SERVER_ENGINE_EXEC_FILENAME);
-	_IsAnotherCVECProcessActive = _ProcessConfirm->CheckProcessExist(CLIENT_ENGINE_EXEC_FILENAME);
+		최종 정리.
+		1. 다른 CVEC, CVES Process가 없고, 내가 Process를 가지고 있지 않을 때(가장 먼저 실행된 Client) - 무조건 CVES 실행(곧, 해당 CVEC가 CVES를 갖는다).
+		(CVES 없음, CVEC 없음 - 해당 Process에 CVES 실행권 모름)
+		2. 다른 CVEC, CVES Process가 있고, 내가 Process를 가지고 있지 않을 때(이미 다른 Client가 가지고 있을 때) - CVES 실행 없음.
+		(CVES 있음, CVEC 있음 - 해당 Process에 CVES 실행권 없음)
+		3. 다른 CVEC, CVES Process가 있었으나, 본 CVEC가 가지고 있던 CVES Process가 종료 되었을 때 - 무조건 CVES 실행.
+		(CVES 없음, CVEC 있음 - 해당 Process에 CVES 실행권 있음)
+		4. 다른 CVEC, CVES Process가 있었으나, 다른 CVEC가 가지고 있던 CVES Process가 종료 되었을 때 - CVES 실행 없음.
+		(CVES 없음, CVEC 있음 - 해당 Process에 CVES 실행권 없음)
 
-	// 2. CVES Process가 없다면 Process 실행.
-	// 여기서 주의 할 점 정리.
-	// (1) 초반에 실행될 때는 CVES Process가 없고, 내가 Process를 가지고 있지 않을 때.
-	// (2) 내게 CVES Process가 없고, 다른 CVES Process가 떠 있을 때(다른 Client가 가지고 있을 때).
-	// (3) 내가 Process를 가지고 있어서 이미 실행 중일 때.
+		이외의 경우(절대 있을 수 없는 경우 포함).
+		1. CVEC Process가 전부 없고, 이미 CVES가 있는 경우 - CVES 종료 후 재실행(예외 상황으로, 이전 CVES만 종료 되지 않아 게임이 불가할 경우이다)
+		1의 경우 강제로 Process를 종료 시켜야 하는데, 2가지의 시나리오로 가능하다.
+		(1) Process 접근 권한을 얻어 Process를 '강제' 종료한다.
+		(2) 이미 열려 있는 CVES에 접속하여 'Kill'을 날린다.
+		2. CVES Process가 죽고, 이후에 파일이 갑자기 사라진 경우.
+		구제 불가. WTF!!
+	*/
 
-	// 최종 정리.
-	// 1. 다른 CVEC, CVES Process가 없고, 내가 Process를 가지고 있지 않을 때(가장 먼저 실행된 Client) - 무조건 CVES 실행(곧, 해당 CVEC가 CVES를 갖는다).
-	// (CVES 없음, CVEC 없음 - 해당 Process에 CVES 실행권 모름)
-	// 2. 다른 CVEC, CVES Process가 있고, 내가 Process를 가지고 있지 않을 때(이미 다른 Client가 가지고 있을 때) - CVES 실행 없음.
-	// (CVES 있음, CVEC 있음 - 해당 Process에 CVES 실행권 없음)
-	// 3. 다른 CVEC, CVES Process가 있었으나, 본 CVEC가 가지고 있던 CVES Process가 종료 되었을 때 - 무조건 CVES 실행.
-	// (CVES 없음, CVEC 있음 - 해당 Process에 CVES 실행권 있음)
-	// 4. 다른 CVEC, CVES Process가 있었으나, 다른 CVEC가 가지고 있던 CVES Process가 종료 되었을 때 - CVES 실행 없음.
-	// (CVES 없음, CVEC 있음 - 해당 Process에 CVES 실행권 없음)
-
-	// 이외의 경우(절대 있을 수 없는 경우 포함).
-	// 1. CVEC Process가 전부 없고, 이미 CVES가 있는 경우 - CVES 종료 후 재실행(예외 상황으로, 이전 CVES만 종료 되지 않아 게임이 불가할 경우이다)
-	// 1의 경우 강제로 Process를 종료 시켜야 하는데, 2가지의 시나리오로 가능하다.
-	// (1) Process 접근 권한을 얻어 Process를 '강제' 종료한다.
-	// (2) 이미 열려 있는 CVES에 접속하여 'Kill'을 날린다.
-	// 2. CVES Process가 죽고, 이후에 파일이 갑자기 사라진 경우.
-	// 구제 불가. WTF!!
-
-
-
-	// 이건 내가 Process를 가지고 있다는 이야기 이므로..
 	if (_ProcessConfirm->IsProcessActive == true) {
-	//if (IsGetCVESProcess == true) {
-		// 하지만 이미 있다면?
-		// 본 Process가 CVES Process를 가지고 있으므로, 무조건 Process를 실행.
-
-		// Check File Exists.
-		// 여기에 걸리는 경우는.. 아마 갑자기 파일이 삭제 되었을 때 정도.
-		if (!_File.CheckFileExist(SERVER_ENGINE_EXEC_FILENAME))
-			return false;
-
-		_ProcessConfirm->CreateProcessOnThread(SERVER_ENGINE_EXEC_FILENAME);
+		// 내가 Process를 가지고 있고, CVES Process가 살아 있다면?
+		// 이미 잘 실행되고 있으므로 true.
 		return true;
 	}
 	else {
-		// CVES가 없다면(Engine이 시작되고 초반)..
+		// 최종정리 1, 2, 3, 4의 경우 처리.
+		bool _IsCVESProcessActive = false;
+		bool _IsAnotherCVECProcessActive = false;
+		list<SProcessInformations> _TSProcessInformationsList;
+		// 자신의 PID를 구한다.
+		DWORD _TMyPID = GetCurrentProcessId();
+
+		/*
+			1. CVES Process 확인.
+			나와 다른 Process를 Check 한다.
+			왜냐하면 실행의 기준을 나누어야 한다.
+			여기서 받아야 하는 값은..
+			(1) 나 이외의 다른 Client(CVEC)의 존재 여부와 갯수(즉, 자기 자신 밖에 없는지 아닌지).
+			(2) Server(CVES)의 존재 여부.
+		*/
+		// 이젠 이름으로 체크 하지 않음.
+		//_IsCVESProcessActive = _ProcessConfirm->CheckProcessExistByFileName(SERVER_ENGINE_EXEC_FILENAME);
+		//_IsAnotherCVECProcessActive = _ProcessConfirm->CheckProcessExistByFileName(CLIENT_ENGINE_EXEC_FILENAME);
+		_TSProcessInformationsList = _ProcessConfirm->GetProcessInformations();
+
+		// CVEC 검사(나 이외의 다른 Process 검사).
+		for_IterToEnd(list, SProcessInformations, _TSProcessInformationsList) {
+			// Image Path 검사.
+			CodeConverter _TCodeConverter;
+			char *_TStr = _TCodeConverter.WCharToChar(_TVal->ImgPath);
+			char _TStrBuff[MAX_PATH];
+
+			// 들어오는 String이 Null인 경우는 다음으로 넘어간다.
+			if (_TStr == NULL)
+				continue;
+
+			memset(_TStrBuff, NULL, sizeof(_TStrBuff));
+			// 가장 마지막에 있는 '\' 뒤에는 반드시 파일이 있기 때문이다.
+			// 고로 맨 앞은 현재 파일의 Directory Path.
+			strcpy(_TStrBuff, strrchr(_TStr, '\\') + 1);
+			_TStrBuff[strlen(_TStrBuff)] = '\0';
+
+			// 이름은 같은데 다른 Client Process가 이미 존재하는 경우.
+			if (strcmp(_TStrBuff, CLIENT_ENGINE_EXEC_FILENAME) == 0 && _TVal->PID != _TMyPID)
+				_IsAnotherCVECProcessActive = true;
+
+			// Server Process가 존재하는 경우.
+			if (strcmp(_TStrBuff, SERVER_ENGINE_EXEC_FILENAME) == 0)
+				_IsCVESProcessActive = true;
+		}
+		
+		// 2. CVES Process가 없다면 Process 실행.
+		// 무조건 실행의 경우는 최종정리 1, 3의 경우이다.
 		if (_IsCVESProcessActive == false) {
-			/*
-			if (_BIsAnotherCVECProcessActive == false) {
-				// 어차피 In
-				CVEC_CVESControlInitial = false;
-			}
-			*/
 			// Check File Exists.
+			// 파일이 없으면 실행을 할 수 없기 때문에 처리.
+			// 이외의 경우 2번에도 적용 가능.
 			if (!_File.CheckFileExist(SERVER_ENGINE_EXEC_FILENAME))
 				return false;
 
-			// CVES Process를 이 Process가 갖는다.
-			//IsGetCVESProcess = true;
 			// CVES 실행.
-			_ProcessConfirm->CreateProcessOnThread(SERVER_ENGINE_EXEC_FILENAME);
+			if (_IsAnotherCVECProcessActive != true) {
+				// CVES Process를 이 Process가 갖는다.
+				IsGetCVESProcess = true;
+				_ProcessConfirm->CreateProcessOnThread(SERVER_ENGINE_EXEC_FILENAME);
+			}
+			else {
+				if (IsGetCVESProcess == true){
+					// 다른 Client가 있다고 해도, 내가 Server의 실행권한을 가지고 있다면 Server 실햄.
+					_ProcessConfirm->CreateProcessOnThread(SERVER_ENGINE_EXEC_FILENAME);
+				}
+			}
 			return true;
 		}
 		else {
-			// 이미 이 때는 다른 CVEC가 CVES Process를 가지고 있으므로, CVES를 실행 할 필요가 없다.
+			// 먼저 실행된 다른 Client(CVEC)가 있을 경우에는 해당 Client가 Server를 Watchdog 할 가능성이 높으므로,
+			// 혹은 이미 Server를 실행해서 가지고 있으므로 Server를 실행하지 않는다.
+			IsNoCVESProcess = true;
 		}
+		//// 이건 내가 Process를 가지고 있다는 이야기 이므로..
+		//if (_ProcessConfirm->IsProcessActive == true) {
+		////if (IsGetCVESProcess == true) {
+		//	// 하지만 이미 있다면?
+		//	// 본 Process가 CVES Process를 가지고 있으므로, 무조건 Process를 실행.
+
+		//	// Check File Exists.
+		//	// 여기에 걸리는 경우는.. 아마 갑자기 파일이 삭제 되었을 때 정도.
+		//	if (!_File.CheckFileExist(SERVER_ENGINE_EXEC_FILENAME))
+		//		return false;
+
+		//	_ProcessConfirm->CreateProcessOnThread(SERVER_ENGINE_EXEC_FILENAME);
+		//	return true;
+		//}
+		//else {
+		//	// CVES가 없다면(Engine이 시작되고 초반)..
+		//	if (_IsCVESProcessActive == false) {
+		//		// Check File Exists.
+		//		if (!_File.CheckFileExist(SERVER_ENGINE_EXEC_FILENAME))
+		//			return false;
+
+		//		// CVES Process를 이 Process가 갖는다.
+		//		IsGetCVESProcess = true;
+		//		// CVES 실행.
+		//		_ProcessConfirm->CreateProcessOnThread(SERVER_ENGINE_EXEC_FILENAME);
+		//		return true;
+		//	}
+		//	else {
+		//		// 이미 이 때는 다른 CVEC가 CVES Process를 가지고 있으므로, CVES를 실행 할 필요가 없다.
+		//	}
+		//}
+		return false;
 	}
-	return false;
 }
 
 void EngineC::EngineC_Start() {

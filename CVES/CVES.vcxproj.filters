@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="chess_game.cpp">
-      <Filter>ChessGame\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\Common\StringTokenizer.cpp">
       <Filter>Common\Source</Filter>
     </ClCompile>
@@ -11,12 +8,6 @@
       <Filter>Common\Source</Filter>
     </ClCompile>
     <ClCompile Include="BlobLabeling.cpp">
-      <Filter>Recognitions\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Chess_recognition.cpp">
-      <Filter>Recognitions\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Hand_recognition.cpp">
       <Filter>Recognitions\Source</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
@@ -31,11 +22,17 @@
     <ClCompile Include="..\Common\Time.cpp">
       <Filter>Common\Source</Filter>
     </ClCompile>
+    <ClCompile Include="ChessRecognition.cpp">
+      <Filter>Recognitions\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="HandRecognition.cpp">
+      <Filter>Recognitions\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="ChessGame.cpp">
+      <Filter>ChessGame\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="chess_game.hpp">
-      <Filter>ChessGame\Header</Filter>
-    </ClInclude>
     <ClInclude Include="..\Common\StringTokenizer.hpp">
       <Filter>Common\Header</Filter>
     </ClInclude>
@@ -49,12 +46,6 @@
       <Filter>Common\Header</Filter>
     </ClInclude>
     <ClInclude Include="BlobLabeling.hpp">
-      <Filter>Recognitions\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Chess_recognition.hpp">
-      <Filter>Recognitions\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Hand_recognition.hpp">
       <Filter>Recognitions\Header</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\ExtendedBlackBox.hpp">
@@ -71,6 +62,15 @@
     </ClInclude>
     <ClInclude Include="..\Common\Time.hpp">
       <Filter>Common\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="ChessRecognition.hpp">
+      <Filter>Recognitions\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="HandRecognition.hpp">
+      <Filter>Recognitions\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="ChessGame.hpp">
+      <Filter>ChessGame\Header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

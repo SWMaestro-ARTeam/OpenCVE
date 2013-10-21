@@ -23,8 +23,8 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _Hand_recognition_hpp_
-#define _Hand_recognition_hpp_
+#ifndef _HandRecognition_hpp_
+#define _HandRecognition_hpp_
 
 #include <iostream>
 #include <cv.h>
@@ -34,7 +34,7 @@
 #define T_SKIN_NUM 10
 #define SUB_THRESHOLD 10
 
-class Hand_recognition {
+class HandRecognition {
 private:
 	int img_width, img_height;
 
@@ -50,8 +50,8 @@ private:
 	IplImage *prev_ground, *present_ground;			//차영상을 통해 차이를 구할 예정
 
 public:
-	Hand_recognition();
-	~Hand_recognition();
+	HandRecognition();
+	~HandRecognition();
 
 	//초기화
 	void Init(int width, int height);

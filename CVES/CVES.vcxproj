@@ -91,10 +91,10 @@
     <ClInclude Include="..\Common\Telepathy.hpp" />
     <ClInclude Include="..\Common\Time.hpp" />
     <ClInclude Include="BlobLabeling.hpp" />
-    <ClInclude Include="chess_game.hpp" />
-    <ClInclude Include="Chess_recognition.hpp" />
+    <ClInclude Include="ChessGame.hpp" />
+    <ClInclude Include="ChessRecognition.hpp" />
     <ClInclude Include="EngineS.hpp" />
-    <ClInclude Include="Hand_recognition.hpp" />
+    <ClInclude Include="HandRecognition.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Common\InternalProtocolSeeker.cpp" />
@@ -102,10 +102,10 @@
     <ClCompile Include="..\Common\Telepathy.cpp" />
     <ClCompile Include="..\Common\Time.cpp" />
     <ClCompile Include="BlobLabeling.cpp" />
-    <ClCompile Include="chess_game.cpp" />
-    <ClCompile Include="Chess_recognition.cpp" />
+    <ClCompile Include="ChessGame.cpp" />
+    <ClCompile Include="ChessRecognition.cpp" />
     <ClCompile Include="EngineS.cpp" />
-    <ClCompile Include="Hand_recognition.cpp" />
+    <ClCompile Include="HandRecognition.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

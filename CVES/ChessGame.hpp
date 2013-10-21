@@ -23,13 +23,13 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _chess_game_hpp_
-#define _chess_game_hpp_
+#ifndef _ChessGame_hpp_
+#define _ChessGame_hpp_
 
 #include <stdio.h>
 #include <cv.h>
 
-class chess_game {
+class ChessGame {
 	enum {
 		Ground, 
 		W_King, W_Queen, W_Rook, W_Bishop, W_Knight, W_Pawn,
@@ -40,8 +40,8 @@ private:
 	bool turn;
 	CvPoint before, after;
 public:
-	chess_game();
-	~chess_game();
+	ChessGame();
+	~ChessGame();
 
 	void Chess_process(CvPoint input1, CvPoint input2);
 	void Show_chess_board();

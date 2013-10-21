@@ -34,7 +34,7 @@ typedef struct {
 	CvPoint ptReturnPoint;
 } Visited;
 
-class CBlobLabeling {
+class BlobLabeling {
 private:
 	// 레이블링(동작)
 	int Labeling(IplImage* image, int nThreshold);
@@ -57,8 +57,8 @@ private:
 	int roi_width, roi_height;
 
 public:
-	CBlobLabeling(void);
-	~CBlobLabeling(void);
+	BlobLabeling(void);
+	~BlobLabeling(void);
 
 	IplImage*	m_Image;				// 레이블링을 위한 이미지
 	int m_nThreshold;			// 레이블링 스레스홀드 값

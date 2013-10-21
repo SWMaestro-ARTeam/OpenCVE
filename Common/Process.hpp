@@ -34,6 +34,10 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <list>
+
+using namespace std;
+
 // Process Confirm용 Windows Library.
 #if WINDOWS_SYS
 #ifdef _AFXDLL
@@ -47,6 +51,10 @@
 #define STRSAFE_LIB
 #include <strsafe.h>
 
+#ifndef NTSTATUS
+#define LONG NTSTATUS
+#endif
+
 #pragma comment(lib, "strsafe.lib")
 #pragma comment(lib, "rpcrt4.lib")
 #pragma comment(lib, "psapi.lib")
@@ -59,36 +67,40 @@
 #endif
 
 #if WINDOWS_SYS
+typedef ULONG PPS_PostProcessInitRoutine;
 // using PEB Structure.
-typedef struct _PEB_LDRData {
+// Used in PEB struct
+typedef struct _SPEB_LDRData {
 	BYTE Reserved1[8];
 	PVOID Reserved2[3];
 	LIST_ENTRY InMemoryOrderModuleList;
 } SPEB_LDRData, *SPPEB_LDRData;
 
-typedef struct _RTLUserProcessParameters {
+// Used in PEB struct
+typedef struct _SRTLUserProcessParameters {
 	BYTE Reserved1[16];
 	PVOID Reserved2[10];
 	UNICODE_STRING ImagePathName;
 	UNICODE_STRING CommandLine;
 } SRTLUserProcessParameters, *SPRTLUserProcessParameters;
 
-typedef struct _PEB {
+// Used in PROCESS_BASIC_INFORMATION struct
+typedef struct _SPEB {
 	BYTE Reserved1[2];
 	BYTE BeingDebugged;
 	BYTE Reserved2[1];
 	PVOID Reserved3[2];
-	PPEB_LDR_DATA Ldr;
+	SPPEB_LDRData Ldr;
 	SPRTLUserProcessParameters ProcessParameters;
 	BYTE Reserved4[104];
 	PVOID Reserved5[52];
-	ULONG PostProcessInitRoutine;
+	PPS_PostProcessInitRoutine PostProcessInitRoutine;
 	BYTE Reserved6[128];
 	PVOID Reserved7[1];
 	ULONG SessionId;
 } SPEB, *SPPEB;
 
-typedef struct _ProcessBasicInformations {
+typedef struct _SProcessBasicInformations {
 	LONG ExitStatus;
 	SPPEB PebBaseAddress;
 	ULONG_PTR AffinityMask;
@@ -97,10 +109,10 @@ typedef struct _ProcessBasicInformations {
 	ULONG_PTR InheritedFromUniqueProcessId;
 } SProcessBasicInformations, *SPProcessBasicInformations;
 
-typedef struct _ProcessInformations {
+typedef struct _SProcessInformations {
 	DWORD	PID;
 	DWORD	ParentPID;
-	DWORD	dwessionID;
+	DWORD	SessionID;
 	DWORD	PEBBaseAddress;
 	DWORD	AffinityMask;
 	LONG	BasePriority;
@@ -109,6 +121,8 @@ typedef struct _ProcessInformations {
 	TCHAR	ImgPath[BUFFER_MAX_32767];
 	TCHAR	CmdLine[BUFFER_MAX_32767];
 } SProcessInformations;
+
+static SProcessInformations lpi[1024] = {0};
 #elif POSIX_SYS
 
 #endif
@@ -185,10 +199,11 @@ public:
 
 	bool CheckFileExist(char *ProcessName);
 
-	bool CheckProcessExist(char *ProcessName);
+	bool CheckProcessExistByFileName(char *ProcessName);
 	int CheckProcessExistByNumberOfExists(char *ProcessName);
 
-	void GetProcessInformations(char *ProcessName, DWORD PID);
+	list<SProcessInformations> GetProcessInformations();
+
 	void CreateProcessOnThread(char *ProcessName);
 };
 

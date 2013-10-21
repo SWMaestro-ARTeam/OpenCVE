@@ -23,20 +23,20 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#include "Chess_recognition.hpp"
+#include "ChessRecognition.hpp"
 
-Chess_recognition::Chess_recognition() {
+ChessRecognition::ChessRecognition() {
 }
 
 
-Chess_recognition::~Chess_recognition() {
+ChessRecognition::~ChessRecognition() {
 	CloseHandle(hThread);
 	DeleteCriticalSection(&cs);
 	DeleteCriticalSection(&vec_cs);
 	cvReleaseImage(&img_process);
 }
 
-void Chess_recognition::exit() {
+void ChessRecognition::exit() {
 	thread_exit = true;
 
 	CloseHandle(hThread);
@@ -45,7 +45,7 @@ void Chess_recognition::exit() {
 	cvReleaseImage(&img_process);
 }
 
-void Chess_recognition::Initialize_ChessRecognition(int width, int height, int mode) {
+void ChessRecognition::Initialize_ChessRecognition(int width, int height, int mode) {
 	static bool first_check = false;
 
 	thread_exit = false;
@@ -75,7 +75,7 @@ void Chess_recognition::Initialize_ChessRecognition(int width, int height, int m
 	_Width = width;	_Height = height;
 }
 
-void Chess_recognition::drawLines(vector<pair<float, float>> lines, IplImage* image) {
+void ChessRecognition::drawLines(vector<pair<float, float>> lines, IplImage* image) {
 	for (register int i = 0; i < MIN(lines.size(),100); i++) {
 		float rho = lines.at(i).first;
 		float theta = lines.at(i).second;
@@ -93,7 +93,7 @@ void Chess_recognition::drawLines(vector<pair<float, float>> lines, IplImage* im
 	}
 }
 
-void Chess_recognition::drawPoint(IplImage *src, vector<Chess_point> point) {
+void ChessRecognition::drawPoint(IplImage *src, vector<Chess_point> point) {
 	char buf[32];
 
 	// display the points in an image 
@@ -104,7 +104,7 @@ void Chess_recognition::drawPoint(IplImage *src, vector<Chess_point> point) {
 	}
 }
 
-void Chess_recognition::findIntersections(vector<pair<float, float>> linesX, vector<pair<float, float>> linesY, vector<Chess_point> *point) {
+void ChessRecognition::findIntersections(vector<pair<float, float>> linesX, vector<pair<float, float>> linesY, vector<Chess_point> *point) {
 	char buf[32];
 	Chess_point temp_cp;
 
@@ -135,7 +135,7 @@ void Chess_recognition::findIntersections(vector<pair<float, float>> linesX, vec
 	}
 }
 
-void Chess_recognition::Get_Line(vector<pair<float, float>> *linesX, vector<pair<float, float>> *linesY) {
+void ChessRecognition::Get_Line(vector<pair<float, float>> *linesX, vector<pair<float, float>> *linesY) {
 	linesX->clear();
 	linesY->clear();
 	EnterCriticalSection(&vec_cs);
@@ -148,7 +148,7 @@ void Chess_recognition::Get_Line(vector<pair<float, float>> *linesX, vector<pair
 }
 
 //이웃들의 값을 살펴보고 조건에 해당하지 않으면 지움
-void Chess_recognition::NMS2(IplImage* image, IplImage* image2, int kernel)	{
+void ChessRecognition::NMS2(IplImage* image, IplImage* image2, int kernel)	{
 	//조건은 이웃값보다 작음
 	float neighbor, neighbor2;
 	for (register int y = 0; y < image->height; y++)	{
@@ -192,7 +192,7 @@ void Chess_recognition::NMS2(IplImage* image, IplImage* image2, int kernel)	{
 	}
 }
 
-void Chess_recognition::cast_seq(CvSeq* linesX, CvSeq* linesY) {
+void ChessRecognition::cast_seq(CvSeq* linesX, CvSeq* linesY) {
 	vec_LineX.clear();
 	vec_LineY.clear();
 	for (register int i = 0; i < MIN(linesX->total, 100); i++)	{
@@ -216,7 +216,7 @@ bool sort_first(pair<float, float> a, pair<float, float> b) {
 	return a.first < b.first;										//각도로 정렬
 }
 
-void Chess_recognition::mergeLine(vector<std::pair<float, float>> *Lines) {
+void ChessRecognition::mergeLine(vector<std::pair<float, float>> *Lines) {
 	float SUB_UNDER = 0.0, SUB_MIN = 9999;
 	vector<std::pair<float, float>> temp;
 	pair<int, int> Min_pair;
@@ -255,8 +255,8 @@ void Chess_recognition::mergeLine(vector<std::pair<float, float>> *Lines) {
 	}
 }
 
-UINT WINAPI Chess_recognition::thread_hough(void *arg) {
-	Chess_recognition* p = (Chess_recognition*)arg;
+UINT WINAPI ChessRecognition::thread_hough(void *arg) {
+	ChessRecognition* p = (ChessRecognition*)arg;
 
 	CvSeq *LineX, *LineY;
 	double h[] = { -1, -7, -15, 0, 15, 7, 1 };
@@ -342,8 +342,8 @@ UINT WINAPI Chess_recognition::thread_hough(void *arg) {
 	return 0;
 }
 
-UINT WINAPI Chess_recognition::thread_GH(void *arg) {
-	Chess_recognition* p = (Chess_recognition*)arg;
+UINT WINAPI ChessRecognition::thread_GH(void *arg) {
+	ChessRecognition* p = (ChessRecognition*)arg;
 	IplImage *gray = cvCreateImage(cvSize(p->_Width, p->_Height), IPL_DEPTH_8U, 1);
 
 	while (1) {
@@ -373,7 +373,7 @@ UINT WINAPI Chess_recognition::thread_GH(void *arg) {
 	return 0;
 }
 
-void Chess_recognition::Copy_Img(IplImage *src){
+void ChessRecognition::Copy_Img(IplImage *src){
 	EnterCriticalSection(&cs);
 	if (src->nChannels == 1) {
 		cvCopy(src, img_process);
@@ -384,7 +384,7 @@ void Chess_recognition::Copy_Img(IplImage *src){
 	LeaveCriticalSection(&cs);
 }
 
-void Chess_recognition::Refine_CrossPoint(vector<Chess_point> *point){
+void ChessRecognition::Refine_CrossPoint(vector<Chess_point> *point){
 	static bool first_check = false;
 	static vector<CvPoint> prev_point;
 	const float Refine_const = 0.9;
@@ -419,12 +419,12 @@ void Chess_recognition::Refine_CrossPoint(vector<Chess_point> *point){
 	}
 }
 
-void Chess_recognition::Set_CalculationDomain(CvCapture *Cam, int *ROI_WIDTH, int *ROI_HEIGHT){
+void ChessRecognition::Set_CalculationDomain(CvCapture *Cam, int *ROI_WIDTH, int *ROI_HEIGHT){
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-void Chess_recognition::Chess_recognition_process(IplImage *src, vector<Chess_point> *point) {
+void ChessRecognition::Chess_recognition_process(IplImage *src, vector<Chess_point> *point) {
 	
 	GrayImageBinarization(src);
 
@@ -463,7 +463,7 @@ void Chess_recognition::Chess_recognition_process(IplImage *src, vector<Chess_po
 	MemoryClear();
 }
 
-void Chess_recognition::GetLinegrayScale(IplImage *gray_image, int linefindcount_x, int linefindcount_y) {
+void ChessRecognition::GetLinegrayScale(IplImage *gray_image, int linefindcount_x, int linefindcount_y) {
 	// 중간 부터 검사
 
 	int image_y = gray_image->height, image_x = gray_image->width;
@@ -508,7 +508,7 @@ void Chess_recognition::GetLinegrayScale(IplImage *gray_image, int linefindcount
 	}
 }
 
-void Chess_recognition::GetgraySidelinesPoint(IplImage *chess_image) {
+void ChessRecognition::GetgraySidelinesPoint(IplImage *chess_image) {
 	int line_count_x1, line_count_x2, line_count_x_mid, line_count_y1, line_count_y2, line_count_y_mid;
 	int jump_count_p1, jump_count_m1, jump_count_p2, jump_count_m2, jump_count_p3, jump_count_m3;
 	int jump_count_x = chess_image->width / 10;
@@ -771,7 +771,7 @@ void Chess_recognition::GetgraySidelinesPoint(IplImage *chess_image) {
 	}
 }
 
-void Chess_recognition::GetSquarePoint(IplImage *chess_image) {
+void ChessRecognition::GetSquarePoint(IplImage *chess_image) {
 	SetMyLinePoint(line_point_x1.x1, line_point_x1.y1, line_point_x2.x1, line_point_x2.y1, &line_square_left);
 	SetMyLinePoint(line_point_y1.x1, line_point_y1.y1, line_point_y2.x1, line_point_y2.y1, &line_square_top);
 	SetMyLinePoint(line_point_x1.x2, line_point_x1.y2, line_point_x2.x2, line_point_x2.y2, &line_square_right);
@@ -795,7 +795,7 @@ void Chess_recognition::GetSquarePoint(IplImage *chess_image) {
 		printf("Get Cross Point error!\n");
 }
 
-void Chess_recognition::GetInCrossPoint(IplImage *chess_image, vector<Chess_point> *point) {
+void ChessRecognition::GetInCrossPoint(IplImage *chess_image, vector<Chess_point> *point) {
 	point->clear();
 
 	// in_line_point 오름차순 정렬
@@ -846,21 +846,21 @@ void Chess_recognition::GetInCrossPoint(IplImage *chess_image, vector<Chess_poin
 	}
 }
 
-void Chess_recognition::SetMyLinePoint(int x1, int y1, int x2, int y2, MyLinePoint *setLinePoint){
+void ChessRecognition::SetMyLinePoint(int x1, int y1, int x2, int y2, MyLinePoint *setLinePoint){
 	setLinePoint->x1 = x1;
 	setLinePoint->x2 = x2;
 	setLinePoint->y1 = y1;
 	setLinePoint->y2 = y2;
 }
 
-int Chess_recognition::Getgrayscale(IplImage *gray_image, int x, int y){
+int ChessRecognition::Getgrayscale(IplImage *gray_image, int x, int y){
 	int index = x + y*gray_image->widthStep ;
 	unsigned char value = gray_image->imageData[index];
 
 	return (int)value;
 }
 
-Chess_recognition::MyGrayPoint Chess_recognition::setMyGrayPoint(int grayscale, int x, int y){
+ChessRecognition::MyGrayPoint ChessRecognition::setMyGrayPoint(int grayscale, int x, int y){
 	MyGrayPoint t_graypoint;
 
 	t_graypoint.grayscale = grayscale;
@@ -870,7 +870,7 @@ Chess_recognition::MyGrayPoint Chess_recognition::setMyGrayPoint(int grayscale, 
 	return t_graypoint;
 }
 
-Chess_recognition::MyPoint Chess_recognition::setMyPoint(int x, int y) {
+ChessRecognition::MyPoint ChessRecognition::setMyPoint(int x, int y) {
 	MyPoint t_point;
 	t_point.x = x;
 	t_point.y = y;
@@ -878,7 +878,7 @@ Chess_recognition::MyPoint Chess_recognition::setMyPoint(int x, int y) {
 	return t_point;
 }
 
-bool Chess_recognition::GetCrossPoint(MyLinePoint line1, MyLinePoint line2, MyPoint *out) {
+bool ChessRecognition::GetCrossPoint(MyLinePoint line1, MyLinePoint line2, MyPoint *out) {
 	float x12 = line1.x1 - line1.x2;
 	float x34 = line2.x1 - line2.x2;
 	float y12 = line1.y1 - line1.y2;
@@ -905,7 +905,7 @@ bool Chess_recognition::GetCrossPoint(MyLinePoint line1, MyLinePoint line2, MyPo
 	}
 }
 
-void Chess_recognition::GrayImageBinarization(IplImage *gray_image) {
+void ChessRecognition::GrayImageBinarization(IplImage *gray_image) {
 	float hist[256]={0,};
 	int temp[256];
 
@@ -975,13 +975,13 @@ void Chess_recognition::GrayImageBinarization(IplImage *gray_image) {
 }
 
 
-void Chess_recognition::MemoryClear() {
+void ChessRecognition::MemoryClear() {
 	line_x1.clear(), line_x2.clear(), line_x_mid.clear(), line_y1.clear(), line_y2.clear(), line_y_mid.clear();
 
 	in_line_point_x1.clear(), in_line_point_x2.clear(), in_line_point_y1.clear(), in_line_point_y2.clear();
 }
 
-void Chess_recognition::Chess_recog_wrapper(IplImage *src, vector<Chess_point> *point) {
+void ChessRecognition::Chess_recog_wrapper(IplImage *src, vector<Chess_point> *point) {
 	vector<std::pair<float, float>> CH_LineX, CH_LineY;
 	point->clear();
 

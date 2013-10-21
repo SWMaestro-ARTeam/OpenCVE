@@ -74,7 +74,6 @@ char *File::GetCurrentFullPath() {
 #else
 	return (char *)_TStr;
 #endif
-
 }
 
 // 현재 실행되는 자신의 Process 이름을 얻어온다.

@@ -23,8 +23,8 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _Chess_recognition_hpp_
-#define _Chess_recognition_hpp_
+#ifndef _ChessRecognition_hpp_
+#define _ChessRecognition_hpp_
 
 #include <cv.h>
 #include <highgui.h>
@@ -41,7 +41,7 @@ typedef struct {
 	CvPoint index; // 좌표 인덱스
 } Chess_point;
 
-class Chess_recognition {
+class ChessRecognition {
 private:
 	int _Width, _Height;
 	int MODE;
@@ -118,8 +118,8 @@ private:
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 public:
-	Chess_recognition();
-	~Chess_recognition();
+	ChessRecognition();
+	~ChessRecognition();
 
 	//초기화
 	void Initialize_ChessRecognition(int width, int height, int mode);

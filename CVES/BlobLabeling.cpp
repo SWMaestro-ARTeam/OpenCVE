@@ -29,14 +29,14 @@
 #define _DEF_MAX_BLOBS 10000
 #define _DEF_MAX_LABEL 100
 
-CBlobLabeling::CBlobLabeling(void) {
+BlobLabeling::BlobLabeling(void) {
 	m_nThreshold = 0;
 	m_nBlobs = _DEF_MAX_BLOBS;
 	m_Image	= NULL;
 	m_recBlobs = NULL;
 }
 
-CBlobLabeling::~CBlobLabeling(void) {
+BlobLabeling::~BlobLabeling(void) {
 	if (m_Image != NULL)
 		cvReleaseImage(&m_Image);
 
@@ -46,7 +46,7 @@ CBlobLabeling::~CBlobLabeling(void) {
 	}
 }
 
-void CBlobLabeling::SetParam(IplImage* image, int nThreshold) {
+void BlobLabeling::SetParam(IplImage* image, int nThreshold) {
 	if (m_recBlobs != NULL) {
 		delete m_recBlobs;
 
@@ -62,11 +62,11 @@ void CBlobLabeling::SetParam(IplImage* image, int nThreshold) {
 	m_nThreshold = nThreshold;
 }
 
-void CBlobLabeling::DoLabeling() {
+void BlobLabeling::DoLabeling() {
 	m_nBlobs = Labeling(m_Image, m_nThreshold);
 }
 
-int CBlobLabeling::Labeling(IplImage* image, int nThreshold) {
+int BlobLabeling::Labeling(IplImage* image, int nThreshold) {
 	roi_width = image->width;
 	roi_height = image->height;
 
@@ -110,7 +110,7 @@ int CBlobLabeling::Labeling(IplImage* image, int nThreshold) {
 }
 
 // m_vPoint 초기화 함수
-void CBlobLabeling::InitvPoint(int nWidth, int nHeight) {
+void BlobLabeling::InitvPoint(int nWidth, int nHeight) {
 	m_vPoint = new Visited[nWidth * nHeight];
 
 	for(int nY = 0; nY < nHeight; nY++) {
@@ -122,13 +122,13 @@ void CBlobLabeling::InitvPoint(int nWidth, int nHeight) {
 	}
 }
 
-void CBlobLabeling::DeletevPoint() {
+void BlobLabeling::DeletevPoint() {
 	delete m_vPoint;
 }
 
 // Size가 nWidth이고 nHeight인 DataBuf에서 
 // nThreshold보다 작은 영역을 제외한 나머지를 blob으로 획득
-int CBlobLabeling::_Labeling(unsigned char *DataBuf, int nWidth, int nHeight, int nThreshold) {
+int BlobLabeling::_Labeling(unsigned char *DataBuf, int nWidth, int nHeight, int nThreshold) {
 	int Index = 0, num = 0;
 	//int nX, nY, k, l;
 	int StartX , StartY, EndX , EndY;
@@ -166,7 +166,7 @@ int CBlobLabeling::_Labeling(unsigned char *DataBuf, int nWidth, int nHeight, in
 }
 
 // Blob labeling해서 얻어진 결과의 rec을 얻어냄 
-void CBlobLabeling::DetectLabelingRegion(int nLabelNumber, unsigned char *DataBuf, int nWidth, int nHeight) {
+void BlobLabeling::DetectLabelingRegion(int nLabelNumber, unsigned char *DataBuf, int nWidth, int nHeight) {
 	//int nX, nY;
 	int nLabelIndex;
 
@@ -211,7 +211,7 @@ void CBlobLabeling::DetectLabelingRegion(int nLabelNumber, unsigned char *DataBu
 
 // Blob Labeling을 실제 행하는 function
 // 2000년 정보처리학회에 실린 논문 참조
-int CBlobLabeling::__NRFIndNeighbor(unsigned char *DataBuf, int nWidth, int nHeight, int nPosX, int nPosY, int *StartX, int *StartY, int *EndX, int *EndY) {
+int BlobLabeling::__NRFIndNeighbor(unsigned char *DataBuf, int nWidth, int nHeight, int nPosX, int nPosY, int *StartX, int *StartY, int *EndX, int *EndY) {
 	CvPoint CurrentPoint;
 	
 	CurrentPoint.x = nPosX;
@@ -308,7 +308,7 @@ int CBlobLabeling::__NRFIndNeighbor(unsigned char *DataBuf, int nWidth, int nHei
 }
 
 // 영역중 실제 blob의 칼라를 가진 영역의 크기를 획득
-int CBlobLabeling::__Area(unsigned char *DataBuf, int StartX, int StartY, int EndX, int EndY, int nWidth, int nLevel) {
+int BlobLabeling::__Area(unsigned char *DataBuf, int StartX, int StartY, int EndX, int EndY, int nWidth, int nLevel) {
 	int nArea = 0;
 
 	for (register int nY = StartY; nY < EndY; nY++)
@@ -322,7 +322,7 @@ int CBlobLabeling::__Area(unsigned char *DataBuf, int StartX, int StartY, int En
 }
 
 
-void CBlobLabeling::DrawLabel(IplImage *img, CvScalar RGB) {
+void BlobLabeling::DrawLabel(IplImage *img, CvScalar RGB) {
 	//printf("n_blobs : %d\n", m_nBlobs);
 	for (register int i = 0; i < m_nBlobs; i++) {
 		//cvDrawCircle(img, cvPoint(m_recBlobs[i].x, m_recBlobs[i].y), 10, RGB);
@@ -331,7 +331,7 @@ void CBlobLabeling::DrawLabel(IplImage *img, CvScalar RGB) {
 	}
 }
 
-void CBlobLabeling::GetSideBlob(IplImage *img, std::vector<int> *piece_idx, IplImage *other) {
+void BlobLabeling::GetSideBlob(IplImage *img, std::vector<int> *piece_idx, IplImage *other) {
 	int index = 0;
 
 	piece_idx->clear();

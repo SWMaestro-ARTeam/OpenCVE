@@ -113,7 +113,8 @@ public:
 	//bool IsCVESProcessAlive;
 	//bool IsSocketInitialize;
 	//bool IsSocketConnented;
-	//bool IsGetCVESProcess;
+	bool IsGetCVESProcess;
+	bool IsNoCVESProcess;
 	//bool isServerOrClient;
 	bool EngineEnable;
 	bool EnginePause;

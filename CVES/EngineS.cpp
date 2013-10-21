@@ -32,6 +32,12 @@ EngineS::EngineS() {
 	IsStarted = false;
 	IsTictokEnable = false;
 	G_EngineS = this;
+	temp_prev = NULL;
+	temp_prev2 = NULL;
+	img_Chess = NULL;
+	img_Skin = NULL;
+	prev_img = NULL;
+	img_sub = NULL;
 }
 
 EngineS::~EngineS() {
@@ -60,8 +66,8 @@ void EngineS::Initialize_ImageProcessing() {
 	// Engine의 Cam을 가져온다. 그것도 0번째.
 	Cam = cvCaptureFromCAM(0);
 	if (Cam != NULL) {
-		cvSetCaptureProperty(Cam, CV_CAP_PROP_FRAME_WIDTH, WIDTH);
-		cvSetCaptureProperty(Cam, CV_CAP_PROP_FRAME_HEIGHT, HEIGHT);
+		cvSetCaptureProperty(Cam, CV_CAP_PROP_FRAME_WIDTH, SERVER_VIEW_DEFAULT_WIDTH);
+		cvSetCaptureProperty(Cam, CV_CAP_PROP_FRAME_HEIGHT, SERVER_VIEW_DEFAULT_HEIGHT);
 	}
 
 	//모드 초기화
@@ -83,13 +89,21 @@ void EngineS::Deinitialize_ImageProcessing(){
 
 	cvReleaseCapture(&Cam);
 
-	cvReleaseImage(&temp_prev);
-	cvReleaseImage(&temp_prev2);
+	/*
+	if (temp_prev->imageData != NULL)
+		cvReleaseImage(&temp_prev);
+	if (temp_prev2->imageData != NULL)
+		cvReleaseImage(&temp_prev2);
 
-	cvReleaseImage(&img_Chess);
-	cvReleaseImage(&img_Skin);
-	cvReleaseImage(&prev_img);
-	cvReleaseImage(&img_sub);
+	if (img_Chess->imageData != NULL)
+		cvReleaseImage(&img_Chess);
+	if (img_Skin->imageData != NULL)
+		cvReleaseImage(&img_Skin);
+	if (prev_img->imageData != NULL)
+		cvReleaseImage(&prev_img);
+	if (img_sub->imageData != NULL)
+		cvReleaseImage(&img_sub);
+	*/
 }
 
 void EngineS::Engine_Initializing() {
@@ -136,8 +150,8 @@ void EngineS::Go_ImageProcessing(){
 				temp_prev2 = cvCreateImage(cvSize(ImgProcess_ROI.width, ImgProcess_ROI.height), IPL_DEPTH_8U, 3);
 				other = cvCreateImage(cvSize(ImgProcess_ROI.width, ImgProcess_ROI.height), IPL_DEPTH_8U, 1);
 				img_createCheck = true;
-				Find_Chess.Initialize_ChessRecognition(ImgProcess_ROI.width, ImgProcess_ROI.height, RECOGNITION_MODE);
-				Find_Hand.Init(ImgProcess_ROI.width, ImgProcess_ROI.height);
+				_ChessRecognition.Initialize_ChessRecognition(ImgProcess_ROI.width, ImgProcess_ROI.height, RECOGNITION_MODE);
+				_HandRecognition.Init(ImgProcess_ROI.width, ImgProcess_ROI.height);
 
 				//연산에 필요한 이미지 할당
 				Inter_imageCraete(ImgProcess_ROI.width, ImgProcess_ROI.height);
@@ -146,8 +160,8 @@ void EngineS::Go_ImageProcessing(){
 			cvCopy(img_Cam, img_Chess);
 
 			//Chessboard recognition;
-			Find_Chess.Copy_Img(img_Chess);
-			Find_Chess.Chess_recog_wrapper(img_Cam, &cross_point);
+			_ChessRecognition.Copy_Img(img_Chess);
+			_ChessRecognition.Chess_recog_wrapper(img_Cam, &cross_point);
 			cvResetImageROI(img_Cam);
 
 			key_wait = cvWaitKey(10);
@@ -176,11 +190,11 @@ void EngineS::Go_ImageProcessing(){
 			else if (cross_point.size() == 81) {
 				if (Sub_check == false) {
 					//Chessboard recognition;
-					Find_Chess.Copy_Img(img_Chess);
-					Find_Chess.Chess_recog_wrapper(img_Cam, &cross_point);
+					_ChessRecognition.Copy_Img(img_Chess);
+					_ChessRecognition.Chess_recog_wrapper(img_Cam, &cross_point);
 
 					//손이 들어오기 직전 영상을 촬영
-					Find_Hand.Sub_prevFrame(img_Chess, img_Skin, BeforeHand_first);					//실시간 차영상->턴별 차영상
+					_HandRecognition.Sub_prevFrame(img_Chess, img_Skin, BeforeHand_first);					//실시간 차영상->턴별 차영상
 					if (BeforeHand_first)
 						BeforeHand_first = false;
 
@@ -215,16 +229,16 @@ void EngineS::Go_ImageProcessing(){
 					Compose_diffImage(img_Chess, img_Skin, cvScalar(0, 255, 255));
 
 					//BlobLabeling
-					CBlob.SetParam(img_Skin, 1);
-					CBlob.DoLabeling();
-					CBlob.DrawLabel(img_Chess, cvScalar(255,0,255));
+					_BlobLabeling.SetParam(img_Skin, 1);
+					_BlobLabeling.DoLabeling();
+					_BlobLabeling.DrawLabel(img_Chess, cvScalar(255,0,255));
 
 					//손판정
-					CBlob.GetSideBlob(img_Skin, &piece_idx, other);
+					_BlobLabeling.GetSideBlob(img_Skin, &piece_idx, other);
 					Compose_diffImage(img_Chess, img_Skin, cvScalar(100, 100, 255));
 					cvDilate(img_Skin, img_Skin, 0, 5);
 					cvShowImage("sibal skin!!", img_Skin);
-					Find_Chess.drawPoint(img_Chess, cross_point);
+					_ChessRecognition.drawPoint(img_Chess, cross_point);
 					if (Check_InChessboard(img_Skin, cross_point)) {
 						//img_Skin은 손 추정물체만 남긴 이미지
 						InHand_Check = true;

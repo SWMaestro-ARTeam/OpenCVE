@@ -97,13 +97,6 @@ bool Telepathy::Server::ServerInitialize() {
 	if (WSAStartup(0x101, &_WSAData) != 0)
 		return false;
 
-	// Socket Create.
-	_ServerSocket = socket(AF_INET, SOCK_STREAM, 0);
-
-	// Socket이 잘못 되었다면..
-	if (_ServerSocket = INVALID_SOCKET)
-		return false;
-
 	// using IPv4
 	_ServerAddress.sin_family = AF_INET;
 	// 32bit IPv4 address
@@ -111,6 +104,13 @@ bool Telepathy::Server::ServerInitialize() {
 	//_M_ServerAddress.sin_addr.s_addr = inet_addr(IP_ADDR_LOCAL);
 	// port 사용
 	_ServerAddress.sin_port = htons((u_short)CVE_PORT);
+
+	// Socket Create.
+	_ServerSocket = socket(AF_INET, SOCK_STREAM, 0);
+
+	// Socket이 잘못 되었다면..
+	if (_ServerSocket == INVALID_SOCKET)
+		return false;
 
 	// socket bind.
 	if (bind(_ServerSocket, (sockaddr *)&_ServerAddress, sizeof(_ServerAddress)) != 0) {
@@ -442,7 +442,7 @@ void Telepathy::Client::ClientReceiveStart() {
 		// User space thread.
 		pthread_attr_setscope(&_TThreadAttr, PTHREAD_SCOPE_SYSTEM);
 		// Create thread.
-		pthread_create(&_TThread, NULL, Server_ReceivingThread, (void *)_ClientSocket);
+		pthread_create(&_TThread, NULL, Client_ReceivingThread, (void *)_ClientSocket);
 #endif
 	}
 }
