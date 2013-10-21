@@ -39,12 +39,12 @@ HandRecognition::~HandRecognition() {
 		cvReleaseImage(&present_ground);
 }
 
-<<<<<<< HEAD:CVES/HandRecognition.cpp
+//<<<<<<< HEAD:CVES/HandRecognition.cpp
+//void HandRecognition::Init(int width, int height) {
+//=======
 void HandRecognition::Init(int width, int height) {
-=======
-void Hand_recognition::Init(int width, int height) {
 	//관심영역의 size를 구함.
->>>>>>> CVES_HandRecognition:CVES/Hand_recognition.cpp
+//>>>>>>> CVES_HandRecognition:CVES/Hand_recognition.cpp
 	img_width = width;
 	img_height = height;
 
@@ -57,23 +57,23 @@ void Hand_recognition::Init(int width, int height) {
 	present_ground = NULL;
 }
 
-<<<<<<< HEAD:CVES/HandRecognition.cpp
+//<<<<<<< HEAD:CVES/HandRecognition.cpp
+//bool HandRecognition::R1(int R, int G, int B) {
+//=======
 bool HandRecognition::R1(int R, int G, int B) {
-=======
-bool Hand_recognition::R1(int R, int G, int B) {
 	//RGB image의 각 픽셀값을 입력받아서 skin의 범위 해당하는지 return
->>>>>>> CVES_HandRecognition:CVES/Hand_recognition.cpp
+//>>>>>>> CVES_HandRecognition:CVES/Hand_recognition.cpp
 	bool e1 = (R > 95) && (G > 40) && (B > 20) && ((max(R, max(G, B)) - min(R, min(G , B))) > 15) && (abs(R - G) > 15) && (R > G) && (R > B);
 	bool e2 = (R > 220) && (G > 210) && (B > 170) && (abs(R - G) <= 15) && (R > B) && (G > B);
 	return (e1||e2);
 }
 
-<<<<<<< HEAD:CVES/HandRecognition.cpp
+//<<<<<<< HEAD:CVES/HandRecognition.cpp
+//bool HandRecognition::R2(float Y, float Cr, float Cb) {
+//=======
 bool HandRecognition::R2(float Y, float Cr, float Cb) {
-=======
-bool Hand_recognition::R2(float Y, float Cr, float Cb) {
 	//Y, Cr, Cb image를 통하여 skin 영역의 색상을 구분.
->>>>>>> CVES_HandRecognition:CVES/Hand_recognition.cpp
+//>>>>>>> CVES_HandRecognition:CVES/Hand_recognition.cpp
 	bool e3 = Cr <= (1.5862 * Cb) + 20;
 	bool e4 = Cr >= (0.3448 * Cb) + 76.2069;
 	bool e5 = Cr >= (-4.5652 * Cb) + 234.5652;
@@ -82,23 +82,23 @@ bool Hand_recognition::R2(float Y, float Cr, float Cb) {
 	return e3 && e4 && e5 && e6 && e7;
 }
 
-<<<<<<< HEAD:CVES/HandRecognition.cpp
+//<<<<<<< HEAD:CVES/HandRecognition.cpp
+//bool HandRecognition::R3(float H, float S, float V) {
+//	return (H < 25) || (H > 230);
+//}
+//
+//void HandRecognition::Detect_Skin(IplImage *src, IplImage *dst) {
+//=======
 bool HandRecognition::R3(float H, float S, float V) {
-	return (H < 25) || (H > 230);
-}
-
-void HandRecognition::Detect_Skin(IplImage *src, IplImage *dst) {
-=======
-bool Hand_recognition::R3(float H, float S, float V) {
 	//HSV image의 H를 통하여 SKin color 범주에 있는지 확인.
 	return (H < 25) || (H > 230);
 }
 
-void Hand_recognition::Detect_Skin(IplImage *src, IplImage *dst) {
+void HandRecognition::Detect_Skin(IplImage *src, IplImage *dst) {
 	//skin color detection을 진행.
 	//RGB-H-CbCr Skin Colour Model for Human Face Detection 논문 참조.
 	//http://pesona.mmu.edu.my/~johnsee/research/papers/files/rgbhcbcr_m2usic06.pdf 
->>>>>>> CVES_HandRecognition:CVES/Hand_recognition.cpp
+//>>>>>>> CVES_HandRecognition:CVES/Hand_recognition.cpp
 	cvCvtColor(src, img_YCrCb, CV_BGR2YCrCb);
 	cvCvtColor(src, img_HSV, CV_BGR2HSV);
 
@@ -142,12 +142,12 @@ void Hand_recognition::Detect_Skin(IplImage *src, IplImage *dst) {
 	cvDilate(dst, dst, 0, MOP_NUM);
 }
 
-<<<<<<< HEAD:CVES/HandRecognition.cpp
+//<<<<<<< HEAD:CVES/HandRecognition.cpp
+//bool HandRecognition::is_Hand(IplImage *src) {
+//=======
 bool HandRecognition::is_Hand(IplImage *src) {
-=======
-bool Hand_recognition::is_Hand(IplImage *src) {
 	//binary image를 이용하여 피부색 영역 픽셀이 일정 갯수 이상이면 손이라고 판정.
->>>>>>> CVES_HandRecognition:CVES/Hand_recognition.cpp
+//>>>>>>> CVES_HandRecognition:CVES/Hand_recognition.cpp
 	int count = 0;
 
 	for (register int i = 0; i < src->width; i++) {
@@ -163,13 +163,13 @@ bool Hand_recognition::is_Hand(IplImage *src) {
 	return false;
 }
 
-<<<<<<< HEAD:CVES/HandRecognition.cpp
+//<<<<<<< HEAD:CVES/HandRecognition.cpp
+//void HandRecognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
+//=======
 void HandRecognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
-=======
-void Hand_recognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
 	// 손을 검출하기 위한 차영상 적용.
 	//RGB image src를 입력받아 binary image dst를 반환.
->>>>>>> CVES_HandRecognition:CVES/Hand_recognition.cpp
+//>>>>>>> CVES_HandRecognition:CVES/Hand_recognition.cpp
 	static int frame_count = 0;
 
 	//Lab 색상계 실험
@@ -210,11 +210,11 @@ void Hand_recognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
 			}
 		}
 
-<<<<<<< HEAD:CVES/HandRecognition.cpp
-		cvSmooth(dst, dst, CV_MEDIAN, 3, 3);
-=======
+//<<<<<<< HEAD:CVES/HandRecognition.cpp
+//		cvSmooth(dst, dst, CV_MEDIAN, 3, 3);
+//=======
 		//차영상 연산의 결과로 생성된 binary image에 필터 적용.
->>>>>>> CVES_HandRecognition:CVES/Hand_recognition.cpp
+//>>>>>>> CVES_HandRecognition:CVES/Hand_recognition.cpp
 		cvErode(dst, dst, 0, 2);
 		cvDilate(dst, dst, 0, 2);
 
@@ -227,12 +227,12 @@ void Hand_recognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
 	cvReleaseImage(&Lab_src);
 }
 
-<<<<<<< HEAD:CVES/HandRecognition.cpp
+//<<<<<<< HEAD:CVES/HandRecognition.cpp
+//void HandRecognition::Init_diff() {
+//=======
 void HandRecognition::Init_diff() {
-=======
-void Hand_recognition::Init_diff() {
 	//내부 차영상 연산에 사용되는 이미지 할당 해제.
->>>>>>> CVES_HandRecognition:CVES/Hand_recognition.cpp
+//>>>>>>> CVES_HandRecognition:CVES/Hand_recognition.cpp
 	cvReleaseImage(&prev_ground);
 	cvReleaseImage(&present_ground);
 }

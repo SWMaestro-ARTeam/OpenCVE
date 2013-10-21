@@ -45,12 +45,12 @@ void ChessRecognition::exit() {
 	cvReleaseImage(&img_process);
 }
 
-<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
 void ChessRecognition::Initialize_ChessRecognition(int width, int height, int mode) {
-=======
-void Chess_recognition::Initialize_ChessRecognition(int width, int height, int mode) {
+//=======
+//void Chess_recognition::Initialize_ChessRecognition(int width, int height, int mode) {
 	//관심영역의 width와 height를 입력받고, ChessRecogniton mode를 설정함. 현재 모드 1,2 제공
->>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 	static bool first_check = false;
 
 	thread_exit = false;
@@ -84,12 +84,12 @@ void Chess_recognition::Initialize_ChessRecognition(int width, int height, int m
 	_Width = width;	_Height = height;
 }
 
-<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
 void ChessRecognition::drawLines(vector<pair<float, float>> lines, IplImage* image) {
-=======
-void Chess_recognition::drawLines(vector<pair<float, float>> lines, IplImage* image) {
+//=======
+//void Chess_recognition::drawLines(vector<pair<float, float>> lines, IplImage* image) {
 	//line fitting을 이용한 chessboard recognition의 경우 image에 라인을 그려줌
->>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 	for (register int i = 0; i < MIN(lines.size(),100); i++) {
 		//호도법에 의해 표현된 line이므로
 		//각 끝점으로 변환
@@ -109,12 +109,12 @@ void Chess_recognition::drawLines(vector<pair<float, float>> lines, IplImage* im
 	}
 }
 
-<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
 void ChessRecognition::drawPoint(IplImage *src, vector<Chess_point> point) {
-=======
-void Chess_recognition::drawPoint(IplImage *src, vector<Chess_point> point) {
+//=======
+//void Chess_recognition::drawPoint(IplImage *src, vector<Chess_point> point) {
 	//src image에 chessboard의 교점과 각 교점의 index를 표기
->>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 	char buf[32];
 
 	// display the points in an image 
@@ -125,12 +125,12 @@ void Chess_recognition::drawPoint(IplImage *src, vector<Chess_point> point) {
 	}
 }
 
-<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
 void ChessRecognition::findIntersections(vector<pair<float, float>> linesX, vector<pair<float, float>> linesY, vector<Chess_point> *point) {
-=======
-void Chess_recognition::findIntersections(vector<pair<float, float>> linesX, vector<pair<float, float>> linesY, vector<Chess_point> *point) {
+//=======
+//void Chess_recognition::findIntersections(vector<pair<float, float>> linesX, vector<pair<float, float>> linesY, vector<Chess_point> *point) {
 	//line fitting을 이용한 chessboard recognition의 경우 각 라인의 교점을 연산.
->>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 	char buf[32];
 	Chess_point temp_cp;
 
@@ -162,12 +162,12 @@ void Chess_recognition::findIntersections(vector<pair<float, float>> linesX, vec
 	}
 }
 
-<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
 void ChessRecognition::Get_Line(vector<pair<float, float>> *linesX, vector<pair<float, float>> *linesY) {
-=======
-void Chess_recognition::Get_Line(vector<pair<float, float>> *linesX, vector<pair<float, float>> *linesY) {
+//=======
+//void Chess_recognition::Get_Line(vector<pair<float, float>> *linesX, vector<pair<float, float>> *linesY) {
 	//line fitting을 이용한 chessboard recognition의 경우 thread를 통하여 연산해낸 결과를 lineX와 LineY에 return;
->>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 	linesX->clear();
 	linesY->clear();
 
@@ -227,12 +227,12 @@ void ChessRecognition::NMS2(IplImage* image, IplImage* image2, int kernel)	{
 	}
 }
 
-<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
 void ChessRecognition::cast_seq(CvSeq* linesX, CvSeq* linesY) {
-=======
-void Chess_recognition::cast_seq(CvSeq* linesX, CvSeq* linesY) {
+//=======
+//void Chess_recognition::cast_seq(CvSeq* linesX, CvSeq* linesY) {
 	//CvSeq 객체를 rho, theta로 이루이전 직선으로 변환 후, stl vector에 저장
->>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 	vec_LineX.clear();
 	vec_LineY.clear();
 
@@ -260,12 +260,12 @@ bool sort_first(pair<float, float> a, pair<float, float> b) {
 	return a.first < b.first;										//각도로 정렬
 }
 
-<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
 void ChessRecognition::mergeLine(vector<std::pair<float, float>> *Lines) {
-=======
-void Chess_recognition::mergeLine(vector<std::pair<float, float>> *Lines) {
+//=======
+//void Chess_recognition::mergeLine(vector<std::pair<float, float>> *Lines) {
 	//Threshold를 기준으로 유사한 라인을 병합함.
->>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 	float SUB_UNDER = 0.0, SUB_MIN = 9999;
 	vector<std::pair<float, float>> temp;
 	pair<int, int> Min_pair;
@@ -307,15 +307,15 @@ void Chess_recognition::mergeLine(vector<std::pair<float, float>> *Lines) {
 	}
 }
 
-<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
 UINT WINAPI ChessRecognition::thread_hough(void *arg) {
 	ChessRecognition* p = (ChessRecognition*)arg;
-=======
-UINT WINAPI Chess_recognition::thread_hough(void *arg) {
+//=======
+//UINT WINAPI Chess_recognition::thread_hough(void *arg) {
 	//실제로 뒤에서 동작하는 windows용 thread함수.
 	//함수 인자로 클래스를 받아옴.
-	Chess_recognition* p = (Chess_recognition*)arg;
->>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
+//	Chess_recognition* p = (Chess_recognition*)arg;
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 
 	CvSeq *LineX, *LineY;
 	double h[] = { -1, -7, -15, 0, 15, 7, 1 };
@@ -409,27 +409,27 @@ UINT WINAPI Chess_recognition::thread_hough(void *arg) {
 	return 0;
 }
 
-<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
 UINT WINAPI ChessRecognition::thread_GH(void *arg) {
 	ChessRecognition* p = (ChessRecognition*)arg;
-=======
-UINT WINAPI Chess_recognition::thread_GH(void *arg) {
+//=======
+//UINT WINAPI Chess_recognition::thread_GH(void *arg) {
 	//mode 2를 통하여 chessboard recognition을 수행하기 위한 thread 함수.
-	Chess_recognition* p = (Chess_recognition*)arg;
-
->>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
+//	Chess_recognition* p = (Chess_recognition*)arg;
+//
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 	IplImage *gray = cvCreateImage(cvSize(p->_Width, p->_Height), IPL_DEPTH_8U, 1);
 
 	while (1) {
 		//연산에 필요한 이미지를 main으로부터 복사해옴.
 		EnterCriticalSection(&(p->cs));
-<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
 		
 		if (p->img_process->nChannels != 1)
-=======
-
-		if(p->img_process->nChannels != 1)
->>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
+//=======
+//
+//		if(p->img_process->nChannels != 1)
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 			cvConvert(p->img_process, gray);
 		else
 			cvCopy(p->img_process, gray);
@@ -455,13 +455,13 @@ UINT WINAPI Chess_recognition::thread_GH(void *arg) {
 	return 0;
 }
 
-<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
 void ChessRecognition::Copy_Img(IplImage *src){
-=======
-void Chess_recognition::Copy_Img(IplImage *src){
+//=======
+//void Chess_recognition::Copy_Img(IplImage *src){
 	//main의 cam으로부터 받아온 이미지를 thread의 연산에 사용하기 위해서 복사해오는 함수.
 	//연산에 사용되는 이미지는 Grayscale이기 때문에 색상 변환 연산 진행.
->>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 	EnterCriticalSection(&cs);
 	if (src->nChannels == 1) {
 		cvCopy(src, img_process);
@@ -472,14 +472,14 @@ void Chess_recognition::Copy_Img(IplImage *src){
 	LeaveCriticalSection(&cs);
 }
 
-<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
 void ChessRecognition::Refine_CrossPoint(vector<Chess_point> *point){
-=======
-void Chess_recognition::Refine_CrossPoint(vector<Chess_point> *point){
+//=======
+//void Chess_recognition::Refine_CrossPoint(vector<Chess_point> *point){
 	//chessboard recognition을 통하여 생성한 교점의 좌표를 보정하는 함수.
 	//(alpha * 이전 좌표) - ((1 - alpha) * 현재 좌표)
 	//0 <= alpha <= 1.0
->>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 	static bool first_check = false;
 	static vector<CvPoint> prev_point;
 	const float Refine_const = 0.9;				//alpha값.
@@ -507,11 +507,11 @@ void Chess_recognition::Refine_CrossPoint(vector<Chess_point> *point){
 		//cross point가 81개라면 이전좌표를 통한 보정 연산 진행.
 		else {
 			for (register int i = 0; i < 81; i++) {
-<<<<<<< HEAD:CVES/ChessRecognition.cpp
-=======
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//=======
 				//(alpha * 이전 좌표) - ((1 - alpha) * 현재 좌표)
 				//0 <= alpha <= 1.0
->>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 				point->at(i).Cordinate.x = cvRound((Refine_const * (float)prev_point.at(i).x) + ((1.0 - Refine_const) * (float)point->at(i).Cordinate.x));
 				point->at(i).Cordinate.y = cvRound((Refine_const * (float)prev_point.at(i).y) + ((1.0 - Refine_const) * (float)point->at(i).Cordinate.y));
 
@@ -526,14 +526,14 @@ void ChessRecognition::Set_CalculationDomain(CvCapture *Cam, int *ROI_WIDTH, int
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
 void ChessRecognition::Chess_recognition_process(IplImage *src, vector<Chess_point> *point) {
 	
-=======
-void Chess_recognition::Chess_recognition_process(IplImage *src, vector<Chess_point> *point) {
+//=======
+//void Chess_recognition::Chess_recognition_process(IplImage *src, vector<Chess_point> *point) {
 
 	// 영상 이진화
->>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 	GrayImageBinarization(src);
 
 	while(1){
@@ -606,13 +606,13 @@ void Chess_recognition::Chess_recognition_process(IplImage *src, vector<Chess_po
 		else if (!flag_x2 && (in_line_point_x2.size() != 9))
 			Linefindcount_x2 -= 3;
 	}
-<<<<<<< HEAD:CVES/ChessRecognition.cpp
-	else if (in_line_point_y1.size() != 9 || in_line_point_y2.size() != 9) {
-		if (flag_y)
-			Linefindcount_y += 5;
-		else
-			Linefindcount_y -= 5;
-=======
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//	else if (in_line_point_y1.size() != 9 || in_line_point_y2.size() != 9) {
+//		if (flag_y)
+//			Linefindcount_y += 5;
+//		else
+//			Linefindcount_y -= 5;
+//=======
 	else if(in_line_point_y1.size() != 9 || in_line_point_y2.size() != 9) {
 		if (flag_y1 && (in_line_point_y1.size() != 9))
 			Linefindcount_y1 += 3;
@@ -622,7 +622,7 @@ void Chess_recognition::Chess_recognition_process(IplImage *src, vector<Chess_po
 			Linefindcount_y2 += 3;
 		else if (!flag_y2 && (in_line_point_y2.size() != 9))
 			Linefindcount_y2 -= 3;
->>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 	}
 
 	// 메모리 초기화
@@ -630,11 +630,12 @@ void Chess_recognition::Chess_recognition_process(IplImage *src, vector<Chess_po
 	MemoryClear();
 }
 
-<<<<<<< HEAD:CVES/ChessRecognition.cpp
-void ChessRecognition::GetLinegrayScale(IplImage *gray_image, int linefindcount_x, int linefindcount_y) {
-=======
-void Chess_recognition::GetLinegrayScale(IplImage *gray_image, int linefindcount_x1, int linefindcount_y1, int linefindcount_x2, int linefindcount_y2) {
->>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//void ChessRecognition::GetLinegrayScale(IplImage *gray_image, int linefindcount_x, int linefindcount_y) {
+//=======
+//void Chess_recognition::GetLinegrayScale(IplImage *gray_image, int linefindcount_x1, int linefindcount_y1, int linefindcount_x2, int linefindcount_y2) {
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
+void ChessRecognition::GetLinegrayScale(IplImage *gray_image, int linefindcount_x1, int linefindcount_y1, int linefindcount_x2, int linefindcount_y2) {
 	// 중간 부터 검사
 
 	int image_y = gray_image->height, image_x = gray_image->width;
@@ -679,23 +680,24 @@ void Chess_recognition::GetLinegrayScale(IplImage *gray_image, int linefindcount
 	}
 }
 
-<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//void ChessRecognition::GetgraySidelinesPoint(IplImage *chess_image) {
+//	int line_count_x1, line_count_x2, line_count_x_mid, line_count_y1, line_count_y2, line_count_y_mid;
+//	int jump_count_p1, jump_count_m1, jump_count_p2, jump_count_m2, jump_count_p3, jump_count_m3;
+//	int jump_count_x = chess_image->width / 10;
+//	int jump_count_y = chess_image->height / 10;
+//
+//	line_count_x1 = line_count_x2 = line_count_x_mid = line_count_y1 = line_count_y2 = line_count_y_mid = 0;
+//	jump_count_p1 = jump_count_p2 = jump_count_p3 = jump_count_m1 = jump_count_m2 = jump_count_m3 = 0;
+//
+//	line_point_x1.x1 = line_point_x1.x2 = line_point_x2.x1 = line_point_x2.x2 = line_point_x_mid.x1 = line_point_x_mid.x2 = chess_image->width / 2;
+//	line_point_y1.y1 = line_point_y1.y2 = line_point_y2.y1 = line_point_y2.y2 = line_point_y_mid.y1 = line_point_y_mid.y1 = chess_image->height / 2;
+//
+//	bool change_flag_line_x1_t, change_flag_line_x1_t1, change_flag_line_x1_t2;
+//=======
+//void Chess_recognition::GetgraySidelinesPoint(IplImage *chess_image) {
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 void ChessRecognition::GetgraySidelinesPoint(IplImage *chess_image) {
-	int line_count_x1, line_count_x2, line_count_x_mid, line_count_y1, line_count_y2, line_count_y_mid;
-	int jump_count_p1, jump_count_m1, jump_count_p2, jump_count_m2, jump_count_p3, jump_count_m3;
-	int jump_count_x = chess_image->width / 10;
-	int jump_count_y = chess_image->height / 10;
-
-	line_count_x1 = line_count_x2 = line_count_x_mid = line_count_y1 = line_count_y2 = line_count_y_mid = 0;
-	jump_count_p1 = jump_count_p2 = jump_count_p3 = jump_count_m1 = jump_count_m2 = jump_count_m3 = 0;
-
-	line_point_x1.x1 = line_point_x1.x2 = line_point_x2.x1 = line_point_x2.x2 = line_point_x_mid.x1 = line_point_x_mid.x2 = chess_image->width / 2;
-	line_point_y1.y1 = line_point_y1.y2 = line_point_y2.y1 = line_point_y2.y2 = line_point_y_mid.y1 = line_point_y_mid.y1 = chess_image->height / 2;
-
-	bool change_flag_line_x1_t, change_flag_line_x1_t1, change_flag_line_x1_t2;
-=======
-void Chess_recognition::GetgraySidelinesPoint(IplImage *chess_image) {
->>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 
 	// 각 grayscale이 저장되어 있는 vector 배열에서 해당 라인의 교차점을 구한다
 
@@ -704,250 +706,251 @@ void Chess_recognition::GetgraySidelinesPoint(IplImage *chess_image) {
 	GetgraySidelines(chess_image, &line_y1, &line_point_y1, &in_line_point_y1, false);
 	GetgraySidelines(chess_image, &line_y2, &line_point_y2, &in_line_point_y2, false);
 
-<<<<<<< HEAD:CVES/ChessRecognition.cpp
-			if (i % 2 == 0)
-				change_flag_line_x1_t = change_flag_line_x1_t1;
-			else
-				change_flag_line_x1_t = change_flag_line_x1_t2;
-
-			if (line_x1[i].grayscale != line_x1[i + 2].grayscale) {
-				int flag = true;
-
-				for (register int j = 1; j <= 3; j++) {
-					if (line_x1[i].grayscale == line_x1[i + (j * 2)].grayscale && change_flag_t == change_flag_line_x1_t) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag) {
-					if (line_count_x1 < 9){
-						if (line_point_x1.x1 > line_x1[i].x) {
-							line_point_x1.x1 = line_x1[i].x;
-							line_point_x1.y1 = line_x1[i].y;
-						}
-
-						if (line_point_x1.x2 < line_x1[i].x) {
-							line_point_x1.x2 = line_x1[i].x;
-							line_point_x1.y2 = line_x1[i].y;
-						}
-
-						in_line_point_x1.push_back(setMyPoint(line_x1[i].x, line_x1[i].y));
-
-						line_count_x1++;
-						//cvCircle(chess_image, cvPoint(line_x1[i].x, line_x1[i].y), 5, cvScalar(255,255,255));
-
-						if (i % 2 == 0)
-							change_flag_line_x1_t1 = !change_flag_t;
-						else
-							change_flag_line_x1_t2 = !change_flag_t;
-					}
-					if (i % 2 == 1)
-						jump_count_p1 = 30;
-					else
-						jump_count_m1 = 30;	
-				}
-			}
-		}
-
-		bool change_flag_line_x2_t, change_flag_line_x2_t1, change_flag_line_x2_t2;
-
-		change_flag_line_x2_t1 = 127 > line_x2[0].grayscale ? true : false;
-		change_flag_line_x2_t2 = 127 > line_x2[1].grayscale ? true : false;
-
-		if ((i % 2 == 1) && (jump_count_p2 > 0)) {
-			jump_count_p2--;
-		}
-		else if ((i%2 == 0) && (jump_count_m2 > 0)) {
-			jump_count_m2--;
-		}
-		else {
-			bool change_flag_t;
-			change_flag_t = 127 > line_x2[i].grayscale ? true : false;
-
-			if (i % 2 == 0)
-				change_flag_line_x2_t = change_flag_line_x2_t1;
-			else
-				change_flag_line_x2_t = change_flag_line_x2_t2;
-
-			if (line_x2[i].grayscale != line_x2[i + 2].grayscale) {
-				int flag = true;
-
-				for (register int j = 1; j <= 3; j++) {
-					if (line_x2[i].grayscale == line_x2[i + (j * 2)].grayscale && change_flag_t == change_flag_line_x2_t){
-						flag = false;
-						break;
-					}
-				}
-				if (flag) {
-					if (line_count_x2 < 9) {
-						if (line_point_x2.x1 > line_x2[i].x) {
-							line_point_x2.x1 = line_x2[i].x;
-							line_point_x2.y1 = line_x2[i].y;
-						}
-
-						if (line_point_x2.x2 < line_x2[i].x) {
-							line_point_x2.x2 = line_x2[i].x;
-							line_point_x2.y2 = line_x2[i].y;
-						}
-
-						in_line_point_x2.push_back(setMyPoint(line_x2[i].x, line_x2[i].y));
-
-						line_count_x2++;
-						//cvCircle(chess_image, cvPoint(line_x2[i].x, line_x2[i].y), 5, cvScalar(255, 255, 255));
-
-						if (i % 2 == 0)
-							change_flag_line_x2_t1 = !change_flag_t;
-						else
-							change_flag_line_x2_t2 = !change_flag_t;
-					}
-					if (i % 2 == 1)
-						jump_count_p2 = 30;
-					else
-						jump_count_m2 = 30;
-				}
-			}
-		}
-
-		if (line_count_x1 == line_count_x2 /*== line_count_x_mid*/ == 9)
-			break;
-	}
-
-	jump_count_p1 = jump_count_p2 = jump_count_p3 = jump_count_m1 = jump_count_m2 = jump_count_m3 = 0;
-
-	bool change_flag_line_y1_t, change_flag_line_y1_t1, change_flag_line_y1_t2;
-
-	change_flag_line_y1_t1 = 127 > line_y1[0].grayscale ? true : false;
-	change_flag_line_y1_t2 = 127 > line_y1[1].grayscale ? true : false;
-
-	for (register int i=0; i < line_y1.size() - 10; i++) {
-		if ((i % 2 == 1) && (jump_count_p1 > 0)) {
-			jump_count_p1--;
-		}
-		else if ((i % 2 == 0) && (jump_count_m1 > 0)) {
-			jump_count_m1--;
-		}
-		else {
-			bool change_flag_t;
-			change_flag_t = 127 > line_y1[i].grayscale ? true : false;
-
-			if (i % 2 == 0)
-				change_flag_line_y1_t = change_flag_line_y1_t1;
-			else
-				change_flag_line_y1_t = change_flag_line_y1_t2;
-
-			if (line_y1[i].grayscale != line_y1[i + 2].grayscale) {
-				int flag = true;
-
-				for (register int j = 1; j <= 3; j++) {
-					if (line_y1[i].grayscale == line_y1[i + (j * 2)].grayscale && change_flag_t == change_flag_line_y1_t) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag) {
-					if (line_count_y1 < 9) {
-						if (line_point_y1.y1 > line_y1[i].y) {
-							line_point_y1.x1 = line_y1[i].x;
-							line_point_y1.y1 = line_y1[i].y;
-						}
-
-						if (line_point_y1.y2 < line_y1[i].y) {
-							line_point_y1.x2 = line_y1[i].x;
-							line_point_y1.y2 = line_y1[i].y;
-						}
-
-						in_line_point_y1.push_back(setMyPoint(line_y1[i].x, line_y1[i].y));
-
-						line_count_y1++;
-						//cvCircle(chess_image, cvPoint(line_y1[i].x, line_y1[i].y), 5, cvScalar(255, 255, 255));
-
-						if (i % 2 == 0)
-							change_flag_line_y1_t1 = !change_flag_t;
-						else
-							change_flag_line_y1_t2 = !change_flag_t;
-					}
-					if (i % 2 == 1)
-						jump_count_p1 = 30;
-					else
-						jump_count_m1 = 30;
-				}
-			}
-		}
-
-		bool change_flag_line_y2_t, change_flag_line_y2_t1, change_flag_line_y2_t2;
-
-		change_flag_line_y2_t1 = 127 > line_y2[0].grayscale ? true : false;
-		change_flag_line_y2_t2 = 127 > line_y2[1].grayscale ? true : false;
-
-		if ((i % 2 == 1) && (jump_count_p2 > 0)) {
-			jump_count_p2--;
-		}
-		else if ((i % 2 == 0) && (jump_count_m2 > 0)) {
-			jump_count_m2--;
-		}
-		else {
-			bool change_flag_t;
-			change_flag_t = 127 > line_y2[i].grayscale ? true : false;
-
-			if (i % 2 == 0)
-				change_flag_line_y2_t = change_flag_line_y2_t1;
-			else
-				change_flag_line_y2_t = change_flag_line_y2_t2;
-
-			if (line_y2[i].grayscale != line_y2[i + 2].grayscale) {
-				int flag = true;
-
-				for (register int j = 1; j <= 3; j++) {
-					if (line_y2[i].grayscale == line_y2[i + (j * 2)].grayscale && change_flag_t == change_flag_line_y2_t) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag) {
-					if (line_count_y2 < 9) {
-						if (line_point_y2.y1 > line_y2[i].y) {
-							line_point_y2.x1 = line_y2[i].x;
-							line_point_y2.y1 = line_y2[i].y;
-						}
-
-						if (line_point_y2.y2 < line_y2[i].y) {
-							line_point_y2.x2 = line_y2[i].x;
-							line_point_y2.y2 = line_y2[i].y;
-						}
-
-						in_line_point_y2.push_back(setMyPoint(line_y2[i].x, line_y2[i].y));
-
-						line_count_y2++;
-						//cvCircle(chess_image, cvPoint(line_y2[i].x, line_y2[i].y), 5, cvScalar(255, 255, 255));
-
-						if (i % 2 == 0)
-							change_flag_line_y2_t1 = !change_flag_t;
-						else
-							change_flag_line_y2_t2 = !change_flag_t;
-					}
-
-					if (i % 2 == 1)
-						jump_count_p2 = 30;
-					else
-						jump_count_m2 = 30;
-				}
-			}
-		}
-
-		if (line_count_y1 == line_count_y2 /*== line_count_y_mid*/ == 9)
-			break;
-	}
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//			if (i % 2 == 0)
+//				change_flag_line_x1_t = change_flag_line_x1_t1;
+//			else
+//				change_flag_line_x1_t = change_flag_line_x1_t2;
+//
+//			if (line_x1[i].grayscale != line_x1[i + 2].grayscale) {
+//				int flag = true;
+//
+//				for (register int j = 1; j <= 3; j++) {
+//					if (line_x1[i].grayscale == line_x1[i + (j * 2)].grayscale && change_flag_t == change_flag_line_x1_t) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag) {
+//					if (line_count_x1 < 9){
+//						if (line_point_x1.x1 > line_x1[i].x) {
+//							line_point_x1.x1 = line_x1[i].x;
+//							line_point_x1.y1 = line_x1[i].y;
+//						}
+//
+//						if (line_point_x1.x2 < line_x1[i].x) {
+//							line_point_x1.x2 = line_x1[i].x;
+//							line_point_x1.y2 = line_x1[i].y;
+//						}
+//
+//						in_line_point_x1.push_back(setMyPoint(line_x1[i].x, line_x1[i].y));
+//
+//						line_count_x1++;
+//						//cvCircle(chess_image, cvPoint(line_x1[i].x, line_x1[i].y), 5, cvScalar(255,255,255));
+//
+//						if (i % 2 == 0)
+//							change_flag_line_x1_t1 = !change_flag_t;
+//						else
+//							change_flag_line_x1_t2 = !change_flag_t;
+//					}
+//					if (i % 2 == 1)
+//						jump_count_p1 = 30;
+//					else
+//						jump_count_m1 = 30;	
+//				}
+//			}
+//		}
+//
+//		bool change_flag_line_x2_t, change_flag_line_x2_t1, change_flag_line_x2_t2;
+//
+//		change_flag_line_x2_t1 = 127 > line_x2[0].grayscale ? true : false;
+//		change_flag_line_x2_t2 = 127 > line_x2[1].grayscale ? true : false;
+//
+//		if ((i % 2 == 1) && (jump_count_p2 > 0)) {
+//			jump_count_p2--;
+//		}
+//		else if ((i%2 == 0) && (jump_count_m2 > 0)) {
+//			jump_count_m2--;
+//		}
+//		else {
+//			bool change_flag_t;
+//			change_flag_t = 127 > line_x2[i].grayscale ? true : false;
+//
+//			if (i % 2 == 0)
+//				change_flag_line_x2_t = change_flag_line_x2_t1;
+//			else
+//				change_flag_line_x2_t = change_flag_line_x2_t2;
+//
+//			if (line_x2[i].grayscale != line_x2[i + 2].grayscale) {
+//				int flag = true;
+//
+//				for (register int j = 1; j <= 3; j++) {
+//					if (line_x2[i].grayscale == line_x2[i + (j * 2)].grayscale && change_flag_t == change_flag_line_x2_t){
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag) {
+//					if (line_count_x2 < 9) {
+//						if (line_point_x2.x1 > line_x2[i].x) {
+//							line_point_x2.x1 = line_x2[i].x;
+//							line_point_x2.y1 = line_x2[i].y;
+//						}
+//
+//						if (line_point_x2.x2 < line_x2[i].x) {
+//							line_point_x2.x2 = line_x2[i].x;
+//							line_point_x2.y2 = line_x2[i].y;
+//						}
+//
+//						in_line_point_x2.push_back(setMyPoint(line_x2[i].x, line_x2[i].y));
+//
+//						line_count_x2++;
+//						//cvCircle(chess_image, cvPoint(line_x2[i].x, line_x2[i].y), 5, cvScalar(255, 255, 255));
+//
+//						if (i % 2 == 0)
+//							change_flag_line_x2_t1 = !change_flag_t;
+//						else
+//							change_flag_line_x2_t2 = !change_flag_t;
+//					}
+//					if (i % 2 == 1)
+//						jump_count_p2 = 30;
+//					else
+//						jump_count_m2 = 30;
+//				}
+//			}
+//		}
+//
+//		if (line_count_x1 == line_count_x2 /*== line_count_x_mid*/ == 9)
+//			break;
+//	}
+//
+//	jump_count_p1 = jump_count_p2 = jump_count_p3 = jump_count_m1 = jump_count_m2 = jump_count_m3 = 0;
+//
+//	bool change_flag_line_y1_t, change_flag_line_y1_t1, change_flag_line_y1_t2;
+//
+//	change_flag_line_y1_t1 = 127 > line_y1[0].grayscale ? true : false;
+//	change_flag_line_y1_t2 = 127 > line_y1[1].grayscale ? true : false;
+//
+//	for (register int i=0; i < line_y1.size() - 10; i++) {
+//		if ((i % 2 == 1) && (jump_count_p1 > 0)) {
+//			jump_count_p1--;
+//		}
+//		else if ((i % 2 == 0) && (jump_count_m1 > 0)) {
+//			jump_count_m1--;
+//		}
+//		else {
+//			bool change_flag_t;
+//			change_flag_t = 127 > line_y1[i].grayscale ? true : false;
+//
+//			if (i % 2 == 0)
+//				change_flag_line_y1_t = change_flag_line_y1_t1;
+//			else
+//				change_flag_line_y1_t = change_flag_line_y1_t2;
+//
+//			if (line_y1[i].grayscale != line_y1[i + 2].grayscale) {
+//				int flag = true;
+//
+//				for (register int j = 1; j <= 3; j++) {
+//					if (line_y1[i].grayscale == line_y1[i + (j * 2)].grayscale && change_flag_t == change_flag_line_y1_t) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag) {
+//					if (line_count_y1 < 9) {
+//						if (line_point_y1.y1 > line_y1[i].y) {
+//							line_point_y1.x1 = line_y1[i].x;
+//							line_point_y1.y1 = line_y1[i].y;
+//						}
+//
+//						if (line_point_y1.y2 < line_y1[i].y) {
+//							line_point_y1.x2 = line_y1[i].x;
+//							line_point_y1.y2 = line_y1[i].y;
+//						}
+//
+//						in_line_point_y1.push_back(setMyPoint(line_y1[i].x, line_y1[i].y));
+//
+//						line_count_y1++;
+//						//cvCircle(chess_image, cvPoint(line_y1[i].x, line_y1[i].y), 5, cvScalar(255, 255, 255));
+//
+//						if (i % 2 == 0)
+//							change_flag_line_y1_t1 = !change_flag_t;
+//						else
+//							change_flag_line_y1_t2 = !change_flag_t;
+//					}
+//					if (i % 2 == 1)
+//						jump_count_p1 = 30;
+//					else
+//						jump_count_m1 = 30;
+//				}
+//			}
+//		}
+//
+//		bool change_flag_line_y2_t, change_flag_line_y2_t1, change_flag_line_y2_t2;
+//
+//		change_flag_line_y2_t1 = 127 > line_y2[0].grayscale ? true : false;
+//		change_flag_line_y2_t2 = 127 > line_y2[1].grayscale ? true : false;
+//
+//		if ((i % 2 == 1) && (jump_count_p2 > 0)) {
+//			jump_count_p2--;
+//		}
+//		else if ((i % 2 == 0) && (jump_count_m2 > 0)) {
+//			jump_count_m2--;
+//		}
+//		else {
+//			bool change_flag_t;
+//			change_flag_t = 127 > line_y2[i].grayscale ? true : false;
+//
+//			if (i % 2 == 0)
+//				change_flag_line_y2_t = change_flag_line_y2_t1;
+//			else
+//				change_flag_line_y2_t = change_flag_line_y2_t2;
+//
+//			if (line_y2[i].grayscale != line_y2[i + 2].grayscale) {
+//				int flag = true;
+//
+//				for (register int j = 1; j <= 3; j++) {
+//					if (line_y2[i].grayscale == line_y2[i + (j * 2)].grayscale && change_flag_t == change_flag_line_y2_t) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag) {
+//					if (line_count_y2 < 9) {
+//						if (line_point_y2.y1 > line_y2[i].y) {
+//							line_point_y2.x1 = line_y2[i].x;
+//							line_point_y2.y1 = line_y2[i].y;
+//						}
+//
+//						if (line_point_y2.y2 < line_y2[i].y) {
+//							line_point_y2.x2 = line_y2[i].x;
+//							line_point_y2.y2 = line_y2[i].y;
+//						}
+//
+//						in_line_point_y2.push_back(setMyPoint(line_y2[i].x, line_y2[i].y));
+//
+//						line_count_y2++;
+//						//cvCircle(chess_image, cvPoint(line_y2[i].x, line_y2[i].y), 5, cvScalar(255, 255, 255));
+//
+//						if (i % 2 == 0)
+//							change_flag_line_y2_t1 = !change_flag_t;
+//						else
+//							change_flag_line_y2_t2 = !change_flag_t;
+//					}
+//
+//					if (i % 2 == 1)
+//						jump_count_p2 = 30;
+//					else
+//						jump_count_m2 = 30;
+//				}
+//			}
+//		}
+//
+//		if (line_count_y1 == line_count_y2 /*== line_count_y_mid*/ == 9)
+//			break;
+//	}
+//}
+//
+//void ChessRecognition::GetSquarePoint(IplImage *chess_image) {
+//=======
 }
 
+//void Chess_recognition::GetSquarePoint(IplImage *chess_image) {
 void ChessRecognition::GetSquarePoint(IplImage *chess_image) {
-=======
-}
-
-void Chess_recognition::GetSquarePoint(IplImage *chess_image) {
 
 	// 모든 라인의 경계점이 있는 line_point 변수들에서 양 끝에있는 경계점을 뽑아낸다
 
->>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 	SetMyLinePoint(line_point_x1.x1, line_point_x1.y1, line_point_x2.x1, line_point_x2.y1, &line_square_left);
 	SetMyLinePoint(line_point_y1.x1, line_point_y1.y1, line_point_y2.x1, line_point_y2.y1, &line_square_top);
 	SetMyLinePoint(line_point_x1.x2, line_point_x1.y2, line_point_x2.x2, line_point_x2.y2, &line_square_right);
@@ -1092,14 +1095,14 @@ bool ChessRecognition::GetCrossPoint(MyLinePoint line1, MyLinePoint line2, MyPoi
 	}
 }
 
-<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
 void ChessRecognition::GrayImageBinarization(IplImage *gray_image) {
-=======
-void Chess_recognition::GrayImageBinarization(IplImage *gray_image) {
+//=======
+//void Chess_recognition::GrayImageBinarization(IplImage *gray_image) {
 
 	// 이미지의 grayscale을 저장할 변수
 
->>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 	float hist[256]={0,};
 	int temp[256];
 
@@ -1107,15 +1110,15 @@ void Chess_recognition::GrayImageBinarization(IplImage *gray_image) {
 
 	bool flag = true;
 
-<<<<<<< HEAD:CVES/ChessRecognition.cpp
-	for (register int i = 0; i < gray_image->width; i++) {
-		for (register int j = 0; j < gray_image->height; j++) {
-=======
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//	for (register int i = 0; i < gray_image->width; i++) {
+//		for (register int j = 0; j < gray_image->height; j++) {
+//=======
 	// 영상의 grayscale을 저장한다
 
 	for(register int i = 0; i < gray_image->width; i++) {
 		for(register int j = 0; j < gray_image->height; j++) {
->>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 			temp[Getgrayscale(gray_image, i, j)]++;
 
 			// 맨처음 영상이 단일색으로 나올 경우가 있기 때문에 예외처리를 해준다
@@ -1169,15 +1172,15 @@ void Chess_recognition::GrayImageBinarization(IplImage *gray_image) {
 		T = (int)((u1 + u2) / 2);
 	} while(T != Told);
 
-<<<<<<< HEAD:CVES/ChessRecognition.cpp
-	uchar *data = (uchar *)gray_image->imageData;
-
-	for (register int i=0; i < gray_image->width; i++) {
-		for (register int j=0; j < gray_image->height; j++) {
-=======
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//	uchar *data = (uchar *)gray_image->imageData;
+//
+//	for (register int i=0; i < gray_image->width; i++) {
+//		for (register int j=0; j < gray_image->height; j++) {
+//=======
 	for(register int i=0; i < gray_image->width; i++) {
 		for(register int j=0; j < gray_image->height; j++) {
->>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 			int index = i + (j * gray_image->widthStep);
 
 			// 해당 위치의 grayscale을 T값을 기준으로 이진화를 결정한다 
@@ -1187,7 +1190,8 @@ void Chess_recognition::GrayImageBinarization(IplImage *gray_image) {
 	}
 }
 
-void Chess_recognition::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool XYFlag){
+//void Chess_recognition::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool XYFlag){
+void ChessRecognition::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool XYFlag){
 
 	// 경계를 찾은 후 어느 정도의 경계에는 계산을 하지 않는다
 
@@ -1356,16 +1360,18 @@ void ChessRecognition::MemoryClear() {
 	in_line_point_x1.clear(), in_line_point_x2.clear(), in_line_point_y1.clear(), in_line_point_y2.clear();
 }
 
-<<<<<<< HEAD:CVES/ChessRecognition.cpp
-void ChessRecognition::Chess_recog_wrapper(IplImage *src, vector<Chess_point> *point) {
-=======
-void Chess_recognition::MyMalloc(double **t, int ti, int tj){
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//void ChessRecognition::Chess_recog_wrapper(IplImage *src, vector<Chess_point> *point) {
+//=======
+//void Chess_recognition::MyMalloc(double **t, int ti, int tj){
+void ChessRecognition::MyMalloc(double **t, int ti, int tj){
 	t = new double*[ti];
 	for(int i=0;i<ti;i++)
 		t[i] = new double[tj];
 }
 
-void Chess_recognition::HarrisCorner(IplImage *image){
+//void Chess_recognition::HarrisCorner(IplImage *image){
+void ChessRecognition::HarrisCorner(IplImage *image){
 	
 	double **dx2, **dy2, **dxy, **gdx2, **gdy2, **gdxy, **crf;
 	double tx, ty;
@@ -1444,10 +1450,11 @@ void Chess_recognition::HarrisCorner(IplImage *image){
 	}
 }
 
-void Chess_recognition::Chess_recog_wrapper(IplImage *src, vector<Chess_point> *point) {
+//void Chess_recognition::Chess_recog_wrapper(IplImage *src, vector<Chess_point> *point) {
+void ChessRecognition::Chess_recog_wrapper(IplImage *src, vector<Chess_point> *point) {
 	//init함수를 통하여 설정한 mode에 맞추어 chessboard recognition & 좌표 보정 & src에 좌표 그리기 진행.
 	//src : 좌표를 그릴 이미지, point : 연산을 통하여 cross point를 저장할 vector
->>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 	vector<std::pair<float, float>> CH_LineX, CH_LineY;
 	point->clear();
 
@@ -1469,7 +1476,8 @@ void Chess_recognition::Chess_recog_wrapper(IplImage *src, vector<Chess_point> *
 	}
 }
 
-void Chess_recognition::GetgraySidelines2(IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool XYFlag){
+//void Chess_recognition::GetgraySidelines2(IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool XYFlag){
+void ChessRecognition::GetgraySidelines2(IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool XYFlag){
 
 	// 경계를 찾은 후 어느 정도의 경계에는 계산을 하지 않는다
 

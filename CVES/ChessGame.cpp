@@ -32,21 +32,21 @@ ChessGame::ChessGame() {
 		for (int j = 0; j < 8; j++)
 			board[i][j] = Ground;
 
-<<<<<<< HEAD:CVES/ChessGame.cpp
-	for (int i = 0; i < 8; i++)
-		board[1][i] = B_Pawn, board[6][i] = W_Pawn;
-
-	board[0][0] = board[0][7] = B_Rook;
-	board[7][0] = board[7][7] = W_Rook;
-	board[0][1] = board[0][6] = B_Knight;
-	board[7][1] = board[7][6] = W_Knight;
-	board[0][2] = board[0][5] = B_Bishop;
-	board[7][2] = board[7][5] = W_Bishop;
-	board[0][3] = B_Queen;
-	board[7][3] = W_Queen;
-	board[0][4] = B_King;
-	board[7][4] = W_King;
-=======
+//<<<<<<< HEAD:CVES/ChessGame.cpp
+//	for (int i = 0; i < 8; i++)
+//		board[1][i] = B_Pawn, board[6][i] = W_Pawn;
+//
+//	board[0][0] = board[0][7] = B_Rook;
+//	board[7][0] = board[7][7] = W_Rook;
+//	board[0][1] = board[0][6] = B_Knight;
+//	board[7][1] = board[7][6] = W_Knight;
+//	board[0][2] = board[0][5] = B_Bishop;
+//	board[7][2] = board[7][5] = W_Bishop;
+//	board[0][3] = B_Queen;
+//	board[7][3] = W_Queen;
+//	board[0][4] = B_King;
+//	board[7][4] = W_King;
+//=======
 	for (int i=0; i<8; i++)
 		board[i][6] = B_Pawn, board[i][1] = W_Pawn;
 
@@ -60,39 +60,39 @@ ChessGame::ChessGame() {
 	board[3][0] = W_Queen;
 	board[4][7] = B_King;
 	board[4][0] = W_King;
->>>>>>> CVES_HandRecognition:CVES/chess_game.cpp
+//>>>>>>> CVES_HandRecognition:CVES/chess_game.cpp
 }
 
 ChessGame::~ChessGame() {
 }
 
-<<<<<<< HEAD:CVES/ChessGame.cpp
-void ChessGame::Chess_process(CvPoint input1, CvPoint input2) {
-	if (board[input1.x][input1.y] == 0 && board[input2.x][input2.y] != 0) {
-		board[input1.x][input1.y] = board[input2.x][input2.y];
-		board[input2.x][input2.y] = Ground;
-		if (turn) turn = false;
-		else turn = true;
-	}
-	else if (board[input2.x][input2.y] == 0 && board[input1.x][input1.y] != 0) {
-		board[input2.x][input2.y] = board[input1.x][input1.y];
-		board[input1.x][input1.y] = Ground;
-		if (turn) turn = false;
-		else turn = true;
-	}
-	else {
-		if (turn) {
-			if (board[input1.x][input1.y] >= W_King && board[input1.x][input1.y] <= W_Pawn) {
-				board[input2.x][input2.y] = board[input1.x][input1.y];
-				board[input1.x][input1.y] = 0;
-			}
-			else {
-				board[input1.x][input1.y] = board[input2.x][input2.y];
-				board[input2.x][input2.y] = 0;
-			}
-			turn = false;
-=======
-void chess_game::Chess_process(CvPoint input1[], int MOVE_MODE) {
+//<<<<<<< HEAD:CVES/ChessGame.cpp
+//void ChessGame::Chess_process(CvPoint input1, CvPoint input2) {
+//	if (board[input1.x][input1.y] == 0 && board[input2.x][input2.y] != 0) {
+//		board[input1.x][input1.y] = board[input2.x][input2.y];
+//		board[input2.x][input2.y] = Ground;
+//		if (turn) turn = false;
+//		else turn = true;
+//	}
+//	else if (board[input2.x][input2.y] == 0 && board[input1.x][input1.y] != 0) {
+//		board[input2.x][input2.y] = board[input1.x][input1.y];
+//		board[input1.x][input1.y] = Ground;
+//		if (turn) turn = false;
+//		else turn = true;
+//	}
+//	else {
+//		if (turn) {
+//			if (board[input1.x][input1.y] >= W_King && board[input1.x][input1.y] <= W_Pawn) {
+//				board[input2.x][input2.y] = board[input1.x][input1.y];
+//				board[input1.x][input1.y] = 0;
+//			}
+//			else {
+//				board[input1.x][input1.y] = board[input2.x][input2.y];
+//				board[input2.x][input2.y] = 0;
+//			}
+//			turn = false;
+//=======
+void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 	CvPoint temp_move[4];
 
 	switch (MOVE_MODE)
@@ -125,7 +125,7 @@ void chess_game::Chess_process(CvPoint input1[], int MOVE_MODE) {
 			
 		}else if(turn == false){
 
->>>>>>> CVES_HandRecognition:CVES/chess_game.cpp
+//>>>>>>> CVES_HandRecognition:CVES/chess_game.cpp
 		}
 
 		break;

@@ -29,16 +29,16 @@
 #include <stdio.h>
 #include <cv.h>
 
-<<<<<<< HEAD:CVES/ChessGame.hpp
+//<<<<<<< HEAD:CVES/ChessGame.hpp
 class ChessGame {
-=======
+//=======
 #define CASTLING_MOVE				4
 #define ENPASSANT_MOVE			3
 
 #define SWAP(x,y) { int t; t = x; x = y; y = t;}
 
-class chess_game {
->>>>>>> CVES_HandRecognition:CVES/chess_game.hpp
+//class chess_game {
+//>>>>>>> CVES_HandRecognition:CVES/chess_game.hpp
 	enum {
 		Ground, 
 		W_King, W_Queen, W_Rook, W_Bishop, W_Knight, W_Pawn,

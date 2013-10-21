@@ -92,7 +92,7 @@ void EngineS::Deinitialize_ImageProcessing(){
 
 	cvReleaseCapture(&Cam);
 
-<<<<<<< HEAD
+//<<<<<<< HEAD
 	/*
 	if (temp_prev->imageData != NULL)
 		cvReleaseImage(&temp_prev);
@@ -108,16 +108,16 @@ void EngineS::Deinitialize_ImageProcessing(){
 	if (img_sub->imageData != NULL)
 		cvReleaseImage(&img_sub);
 	*/
-=======
-	cvReleaseImage(&temp_prev);
-	cvReleaseImage(&temp_prev2);
-	cvReleaseImage(&pure_img);
-
-	cvReleaseImage(&img_Chess);
-	cvReleaseImage(&img_Skin);
-	cvReleaseImage(&prev_img);
-	cvReleaseImage(&img_sub);
->>>>>>> CVES_HandRecognition
+//=======
+//	cvReleaseImage(&temp_prev);
+//	cvReleaseImage(&temp_prev2);
+//	cvReleaseImage(&pure_img);
+//
+//	cvReleaseImage(&img_Chess);
+//	cvReleaseImage(&img_Skin);
+//	cvReleaseImage(&prev_img);
+//	cvReleaseImage(&img_sub);
+//>>>>>>> CVES_HandRecognition
 }
 
 void EngineS::Engine_Initializing() {
@@ -247,15 +247,16 @@ void EngineS::Go_ImageProcessing(){
 					//손판정
 					_BlobLabeling.GetSideBlob(img_Skin, &piece_idx, other);
 					Compose_diffImage(img_Chess, img_Skin, cvScalar(100, 100, 255));
-<<<<<<< HEAD
-					cvDilate(img_Skin, img_Skin, 0, 5);
-					cvShowImage("sibal skin!!", img_Skin);
+//<<<<<<< HEAD
+//					cvDilate(img_Skin, img_Skin, 0, 5);
+//					cvShowImage("sibal skin!!", img_Skin);
+//					_ChessRecognition.drawPoint(img_Chess, cross_point);
+//=======
+					//Find_Chess.drawPoint(img_Chess, cross_point);
 					_ChessRecognition.drawPoint(img_Chess, cross_point);
-=======
-					Find_Chess.drawPoint(img_Chess, cross_point);
 					cvDilate(img_Skin, img_Skin, 0, 5);
 					cvShowImage("skin", img_Skin);
->>>>>>> CVES_HandRecognition
+//>>>>>>> CVES_HandRecognition
 					if (Check_InChessboard(img_Skin, cross_point)) {
 						//img_Skin은 손 추정물체만 남긴 이미지
 						InHand_Check = true;
@@ -275,8 +276,10 @@ void EngineS::Go_ImageProcessing(){
 							BeforeHand_first = true;
 							
 							//chessgame 이동부
-							CHESS_GAME.Chess_process(out, 0);
-							CHESS_GAME.Show_chess_board();
+							_ChessGame.Chess_process(out, 0);
+							_ChessGame.Show_chess_board();
+							//CHESS_GAME.Chess_process(out, 0);
+							//CHESS_GAME.Show_chess_board();
 						}
 
 						//CVES process가 죽었을 경우를 대비하여 현재 경로들을 txt파일로 저장 & voting을 통하여 현재 말의 이동경로를 확정.
@@ -506,13 +509,13 @@ void EngineS::EngineS_Start() {
 		// 전체적인 구문에 영향을 줄 수 있으므로 다른 구문을 강구해보는 것도 괜찮은 생각이다.
 		if (IsStarted != true) {
 			// Image 처리 중이었다면, 모든 처리를 중단하고 화면에 Stop을 넣고 중단시킨다.
-<<<<<<< HEAD
-			// cvPutText(img_Cam, "Stop", cvPoint(30, 30), &cvFont(1.0), cvScalar(0, 100, 100));
-			// while (!IsStarted) ;
-=======
-			//cvPutText(img_Cam, "Stop", cvPoint(30, 30), &cvFont(1.0), cvScalar(0, 100, 100));
-			//while (!IsStarted) ;
->>>>>>> CVES_HandRecognition
+//<<<<<<< HEAD
+//			// cvPutText(img_Cam, "Stop", cvPoint(30, 30), &cvFont(1.0), cvScalar(0, 100, 100));
+//			// while (!IsStarted) ;
+//=======
+//			//cvPutText(img_Cam, "Stop", cvPoint(30, 30), &cvFont(1.0), cvScalar(0, 100, 100));
+//			//while (!IsStarted) ;
+//>>>>>>> CVES_HandRecognition
 		}
 
 		// Chess Recognition 및 Hand Recognition을 처리하는 단계가 포함된 함수.
@@ -595,11 +598,11 @@ void ServerReceivedCallback(char *Buffer, SOCKET ClientSocket) {
 			G_EngineS->IsTictokEnable = false;
 			break;
 	}
-<<<<<<< HEAD
+//<<<<<<< HEAD
 
 	delete _InternalProtocolCS;
 	delete _StringTokenizer;
-=======
+//=======
 }
 
 void EngineS::Calculate_Movement(IplImage *bin, vector<Chess_point> cross_point, CvPoint *out1, CvPoint *out2){
@@ -678,5 +681,5 @@ CvPoint EngineS::Get_ChessboxPos(int width, int height, vector<Chess_point> cros
 
 	//error return;
 	return cvPoint(-1,-1);
->>>>>>> CVES_HandRecognition
+//>>>>>>> CVES_HandRecognition
 }

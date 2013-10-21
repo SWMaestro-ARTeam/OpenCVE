@@ -46,5 +46,6 @@
 #define SERVER_VIEW_DEFAULT_WIDTH 640
 #define SERVER_VIEW_DEFAULT_HEIGHT 480
 #define RECOGNITION_MODE 2 // 1 : hough Line, 2 : 규홍 recognition
+#define FLIP_MODE -1
 
 #endif

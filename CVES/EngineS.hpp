@@ -60,14 +60,14 @@
 #endif
 #include <time.h>
 
-<<<<<<< HEAD
-=======
-#define WIDTH 640
-#define HEIGHT 480
-#define RECOGNITION_MODE 2 // 1 : hough Line, 2 : 규홍 recognition
-#define FLIP_MODE -1
-
->>>>>>> CVES_HandRecognition
+//<<<<<<< HEAD
+//=======
+//#define WIDTH 640
+//#define HEIGHT 480
+//#define RECOGNITION_MODE 2 // 1 : hough Line, 2 : 규홍 recognition
+//#define FLIP_MODE -1
+//
+//>>>>>>> CVES_HandRecognition
 class EngineS {
 private:
 	HandRecognition _HandRecognition;
