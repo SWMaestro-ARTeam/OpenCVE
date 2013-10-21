@@ -32,7 +32,7 @@
 
 #define MOP_NUM 2
 #define T_SKIN_NUM 10
-#define SUB_THRESHOLD 10
+#define SUB_THRESHOLD 3
 
 class HandRecognition {
 private:
