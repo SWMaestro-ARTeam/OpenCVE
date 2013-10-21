@@ -34,6 +34,8 @@
 
 #define H_THREAD 12
 
+#define MAX_CORNER 5000
+
 using namespace std;
 
 typedef struct{
@@ -82,14 +84,15 @@ private:
 	typedef struct {
 		MyPoint LeftTop, LeftBottom, RightTop, RightBottom;
 	} MySquarePoint;
-	
+
+
 	int line_avg_x1, line_avg_x2, line_avg_y1, line_avg_y2;
 	
 	// 모든 체스판 라인이 검출되기 위한 위치는 찾는데 사용되는 변수
-	int Linefindcount_x, Linefindcount_y;
+	int Linefindcount_x1, Linefindcount_y1, Linefindcount_x2, Linefindcount_y2;
 
 	// Linefindcount 함수들의 증감을 결정하는 변수
-	bool flag_x, flag_y;
+	bool flag_x1, flag_y1, flag_x2, flag_y2;
 	
 	vector<MyPoint> in_line_point_x1, in_line_point_x2, in_line_point_y1, in_line_point_y2;
 	vector<MyGrayPoint> line_x1, line_x2, line_x_mid, line_y1, line_y2, line_y_mid;
@@ -100,7 +103,7 @@ private:
 	MySquarePoint main_square;
 
 	// 영상에서 해당 부분의 grayscale 추출
-	void GetLinegrayScale(IplImage *gray_image, int linefindcount_x, int linefindcount_y);
+	void GetLinegrayScale(IplImage *gray_image, int linefindcount_x1, int linefindcount_y1, int linefindcount_x2, int linefindcount_y2);
 	// 체스판에서 각 체스판의 경계를 추출
 	void GetgraySidelinesPoint(IplImage *chess_image);
 	// 양 끝의 점을 이용해 사각형을 구함
@@ -115,6 +118,13 @@ private:
 	void SetMyLinePoint(int x1, int y1, int x2, int y2, MyLinePoint *setLinePoint);
 	// 영상 이진화 함수
 	void GrayImageBinarization(IplImage *gray_image);
+	// 체스판 경계 탐색 함수
+	void GetgraySidelines(IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool XYFlag);
+	void GetgraySidelines2(IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool XYFlag);
+	// 헤리스 코너 알고리즘
+	void HarrisCorner(IplImage *image);
+	// 동적 할당함수
+	void MyMalloc(double **t,int ti,int tj);
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 public:
