@@ -28,24 +28,42 @@
 
 #include "SystemDependency.hpp"
 
+// File 처리를 위한 값.
 #if WINDOWS_SYS
 #define SERVER_ENGINE_EXEC_FILENAME "CVES.exe"
 #define CLIENT_ENGINE_EXEC_FILENAME "CVEC.exe"
+#define EXEC_FILENAME "CVE.exe"
 #elif POSIX_SYS
 #define SERVER_ENGINE_EXEC_FILENAME "CVES"
 #define CLIENT_ENGINE_EXEC_FILENAME "CVEC"
+#define EXEC_FILENAME "CVE"
 #endif
 
 #define ENGINE_EXEC_VER "0.1.0"
 
-#define CVE_PORT 8084//10080
+// 통신을 위한 값
+#define CVE_PORT 10080
 #define LISTEN_QUEUE 10
-
 #define IP_ADDR_LOCAL "127.0.0.1"
 
+// 영상을 위한 값
 #define SERVER_VIEW_DEFAULT_WIDTH 640
 #define SERVER_VIEW_DEFAULT_HEIGHT 480
-#define RECOGNITION_MODE 2 // 1 : hough Line, 2 : 규홍 recognition
 #define FLIP_MODE -1
+
+// Algorithm 값.
+#define RECOGNITION_MODE 2 // 1 : hough Line, 2 : 규홍 recognition
+
+#define MAX_CORNER 5000
+
+#define MOP_NUM 2
+#define T_SKIN_NUM 10
+#define SUB_THRESHOLD 3
+
+#define _DEF_MAX_BLOBS 10000
+#define _DEF_MAX_LABEL 100
+
+// Thread를 위한 값
+#define H_THREAD 12
 
 #endif

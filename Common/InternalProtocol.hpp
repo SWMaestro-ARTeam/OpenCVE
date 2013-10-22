@@ -26,53 +26,53 @@
 #define _InternalProtocol_hpp_
 
 // CVEC -> CVES
-#define STR_SREVERKILL "ServerKill"
-#define STR_SERVERISALIVE "ServerIsAlive"
-#define STR_IMFIRST "ImFirst"
-#define STR_STOP "Stop"
-#define STR_START "Start"
-#define STR_ISRESTOREPOSSIBLE "IsRestorePossible"
+#define STR_I_SERVERKILL "ServerKill"
+#define STR_I_SERVERISALIVE "ServerIsAlive"
+#define STR_I_IMFIRST "ImFirst"
+#define STR_I_STOP "Stop"
+#define STR_I_START "Start"
+#define STR_I_ISRESTOREPOSSIBLE "IsRestorePossible"
 
 // CVES -> CVEC
-#define STR_ALIVE "Alive"
-#define STR_BUSY "Busy"
-#define STR_MOVE "Move"
-#define STR_RESTOREOK "RestoreOK"
-#define STR_RESTORENOT "RestoreNOT"
+#define STR_I_ALIVE "Alive"
+#define STR_I_BUSY "Busy"
+#define STR_I_MOVE "Move"
+#define STR_I_RESTOREOK "RestoreOK"
+#define STR_I_RESTORENOT "RestoreNOT"
 
 // CVES -> Observer
-#define STR_STATUSNOW "StatusNow"
-#define STR_TICTOKON "TicTokOn"
-#define STR_TICTOKOFF "TicTokOff"
+#define STR_I_STATUSNOW "StatusNow"
+#define STR_I_TICTOKON "TicTokOn"
+#define STR_I_TICTOKOFF "TicTokOff"
 
 // Observer -> CVES
-#define STR_TICTOK "TicTok"
-#define STR_TICTOKISON "TicTokisOn"
-#define STR_TICTOKISOFF "TicTokisOff"
+#define STR_I_TICTOK "TicTok"
+#define STR_I_TICTOKISON "TicTokisOn"
+#define STR_I_TICTOKISOFF "TicTokisOff"
 
 // CVEC -> CVES
-#define VALUE_SERVERKILL 1
-#define VALUE_SERVERISALIVE 2
-#define VALUE_IMFIRST 3
-#define VALUE_STOP 4
-#define VALUE_START 5
-#define VALUE_ISRESTOREPOSSIBLE 6
+#define VALUE_I_SERVERKILL 1
+#define VALUE_I_SERVERISALIVE 2
+#define VALUE_I_IMFIRST 3
+#define VALUE_I_STOP 4
+#define VALUE_I_START 5
+#define VALUE_I_ISRESTOREPOSSIBLE 6
 
 // CVES -> CVEC
-#define VALUE_ALIVE 7
-#define VALUE_BUSY 8
-#define VALUE_MOVE 9
-#define VALUE_RESTOREOK 10
-#define VALUE_RESTORENOT 11
+#define VALUE_I_ALIVE 7
+#define VALUE_I_BUSY 8
+#define VALUE_I_MOVE 9
+#define VALUE_I_RESTOREOK 10
+#define VALUE_I_RESTORENOT 11
 
 // CVES -> Observer
-#define VALUE_STATUSNOW 12
-#define VALUE_TICTOKON 13
-#define VALUE_TICTOKOFF 14
+#define VALUE_I_STATUSNOW 12
+#define VALUE_I_TICTOKON 13
+#define VALUE_I_TICTOKOFF 14
 
 // Observer -> CVES
-#define VALUE_TICTOK 15
-#define VALUE_TICTOKISON 16
-#define VALUE_TICTOKISOFF 17
+#define VALUE_I_TICTOK 15
+#define VALUE_I_TICTOKISON 16
+#define VALUE_I_TICTOKISOFF 17
 
 #endif

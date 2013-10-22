@@ -29,31 +29,27 @@
 #include <stdio.h>
 #include <cv.h>
 
-//<<<<<<< HEAD:CVES/ChessGame.hpp
-class ChessGame {
-//=======
 #define CASTLING_MOVE				4
 #define ENPASSANT_MOVE			3
 
-#define SWAP(x,y) { int t; t = x; x = y; y = t;}
+#define SWAP(x, y) { int t; t = x; x = y; y = t; }
 
-//class chess_game {
-//>>>>>>> CVES_HandRecognition:CVES/chess_game.hpp
+class ChessGame {
 	enum {
 		Ground, 
 		W_King, W_Queen, W_Rook, W_Bishop, W_Knight, W_Pawn,
 		B_King, B_Queen, B_Rook, B_Bishop, B_Knight, B_Pawn,
 	};
 private:
-	int board[8][8];
-	bool turn;
-	CvPoint before, after;
+	int _Board[8][8];
+	bool _Turn;
+	CvPoint _Before, _After;
 public:
 	ChessGame();
 	~ChessGame();
 
-	//chess board의 말 움직임 진행 함수.
-	//MOVE_MODE : CASTLING_MOVE - 캐슬링 detect, ENPASSANT_MOVE - 앙파상 detect, other - 두가지 말의 이동만을 체크함
+	// chess board의 말 움직임 진행 함수.
+	// MOVE_MODE : CASTLING_MOVE - 캐슬링 detect, ENPASSANT_MOVE - 앙파상 detect, other - 두 가지 말의 이동만을 체크함.
 	void Chess_process(CvPoint input1[], int MOVE_MODE);
 	void Show_chess_board();
 };

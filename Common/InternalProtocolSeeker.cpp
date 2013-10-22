@@ -29,59 +29,59 @@ int InternalProtocolSeeker::InternalProtocolString_Seeker(const char *Str) {
 	int _SeekedNumber = 0;
 
 	STRING_SWITCH_BEGIN(string((char *)Str)) {
-		CASE(STR_SREVERKILL)
-			_SeekedNumber = VALUE_SERVERKILL;
+		CASE(STR_I_SERVERKILL)
+			_SeekedNumber = VALUE_I_SERVERKILL;
 			break;
-		CASE(STR_SERVERISALIVE)
-			_SeekedNumber = VALUE_SERVERISALIVE;
+		CASE(STR_I_SERVERISALIVE)
+			_SeekedNumber = VALUE_I_SERVERISALIVE;
 			break;
-		CASE(STR_IMFIRST)
-			_SeekedNumber = VALUE_IMFIRST;
+		CASE(STR_I_IMFIRST)
+			_SeekedNumber = VALUE_I_IMFIRST;
 			break;
-		CASE(STR_STOP)
-			_SeekedNumber = VALUE_STOP;
+		CASE(STR_I_STOP)
+			_SeekedNumber = VALUE_I_STOP;
 			break;
-		CASE(STR_START)
-			_SeekedNumber = VALUE_START;
+		CASE(STR_I_START)
+			_SeekedNumber = VALUE_I_START;
 			break;
-		CASE(STR_ISRESTOREPOSSIBLE)
-			_SeekedNumber = VALUE_ISRESTOREPOSSIBLE;
+		CASE(STR_I_ISRESTOREPOSSIBLE)
+			_SeekedNumber = VALUE_I_ISRESTOREPOSSIBLE;
 			break;
 
-		CASE(STR_ALIVE)
-			_SeekedNumber = VALUE_ALIVE;
+		CASE(STR_I_ALIVE)
+			_SeekedNumber = VALUE_I_ALIVE;
 		break;
-		CASE(STR_BUSY)
-			_SeekedNumber = VALUE_BUSY;
+		CASE(STR_I_BUSY)
+			_SeekedNumber = VALUE_I_BUSY;
 		break;
-		CASE(STR_MOVE)
-			_SeekedNumber = VALUE_MOVE;
+		CASE(STR_I_MOVE)
+			_SeekedNumber = VALUE_I_MOVE;
 		break;
-		CASE(STR_RESTOREOK)
-			_SeekedNumber = VALUE_RESTOREOK;
+		CASE(STR_I_RESTOREOK)
+			_SeekedNumber = VALUE_I_RESTOREOK;
 		break;
-		CASE(STR_RESTORENOT)
-			_SeekedNumber = VALUE_RESTORENOT;
+		CASE(STR_I_RESTORENOT)
+			_SeekedNumber = VALUE_I_RESTORENOT;
 		break;
 
-		CASE(STR_STATUSNOW)
-			_SeekedNumber = VALUE_STATUSNOW;
+		CASE(STR_I_STATUSNOW)
+			_SeekedNumber = VALUE_I_STATUSNOW;
 		break;
-		CASE(STR_TICTOKON)
-			_SeekedNumber = VALUE_TICTOKON;
+		CASE(STR_I_TICTOKON)
+			_SeekedNumber = VALUE_I_TICTOKON;
 		break;
-		CASE(STR_TICTOKOFF)
-			_SeekedNumber = VALUE_TICTOKOFF;
+		CASE(STR_I_TICTOKOFF)
+			_SeekedNumber = VALUE_I_TICTOKOFF;
 
 		break;
-		CASE(STR_TICTOK)
-			_SeekedNumber = VALUE_TICTOK;
+		CASE(STR_I_TICTOK)
+			_SeekedNumber = VALUE_I_TICTOK;
 		break;
-		CASE(STR_TICTOKISON)
-			_SeekedNumber = VALUE_TICTOKISON;
+		CASE(STR_I_TICTOKISON)
+			_SeekedNumber = VALUE_I_TICTOKISON;
 		break;
-		CASE(STR_TICTOKISOFF)
-			_SeekedNumber = VALUE_TICTOKISOFF;
+		CASE(STR_I_TICTOKISOFF)
+			_SeekedNumber = VALUE_I_TICTOKISOFF;
 		break;
 		
 		// Here is No Command string.

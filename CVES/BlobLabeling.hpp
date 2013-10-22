@@ -26,10 +26,12 @@
 #ifndef _BlobLabeling_hpp_
 #define _BlobLabeling_hpp_
 
+#include "Common.hpp"
+
 #include <cv.h>
 #include <highgui.h>
 
-typedef struct {
+typedef struct _Visited {
 	bool	bVisitedFlag;
 	CvPoint ptReturnPoint;
 } Visited;
@@ -37,7 +39,7 @@ typedef struct {
 class BlobLabeling {
 private:
 	// 레이블링(동작)
-	int Labeling(IplImage* image, int nThreshold);
+	int Labeling(IplImage *image, int nThreshold);
 
 	// 포인트 초기화
 	void InitvPoint(int nWidth, int nHeight);
@@ -50,29 +52,29 @@ private:
 	int _Labeling(unsigned char *DataBuf, int nWidth, int nHeight, int nThreshold);
 
 	// _Labling 내부 사용 함수
-	int __NRFIndNeighbor(unsigned char *DataBuf, int nWidth, int nHeight, int nPosX, int nPosY, int *StartX, int *StartY, int *EndX, int *EndY );
+	int __NRFIndNeighbor(unsigned char *DataBuf, int nWidth, int nHeight, int nPosX, int nPosY, int *StartX, int *StartY, int *EndX, int *EndY);
 	int __Area(unsigned char *DataBuf, int StartX, int StartY, int EndX, int EndY, int nWidth, int nLevel);
 
 	//image 관심영역에 대한 사이즈
 	int roi_width, roi_height;
 
 public:
-	BlobLabeling(void);
-	~BlobLabeling(void);
+	BlobLabeling();
+	~BlobLabeling();
 
-	IplImage*	m_Image;				// 레이블링을 위한 이미지
-	int m_nThreshold;			// 레이블링 스레스홀드 값
-	Visited* m_vPoint;				// 레이블링시 방문정보
-	int m_nBlobs;				// 레이블의 갯수
-	CvRect* m_recBlobs;				// 각 레이블 정보
+	IplImage*	m_Image; // 레이블링을 위한 이미지
+	int m_nThreshold; // 레이블링 스레스홀드 값
+	Visited* m_vPoint; // 레이블링시 방문정보
+	int m_nBlobs; // 레이블의 갯수
+	CvRect* m_recBlobs; // 각 레이블 정보
 
 	// 레이블링 이미지 선택
-	void SetParam(IplImage* image, int nThreshold);
+	void SetParam(IplImage *image, int nThreshold);
 	// 레이블링(실행)
 	void DoLabeling();
 	// 레이블 그리기
 	void DrawLabel(IplImage *img, CvScalar RGB);
-	//벽에 붙은 이미지 외에 other에 저장
+	// 벽에 붙은 이미지 외에 other에 저장
 	void GetSideBlob(IplImage *img, std::vector<int> *piece_idx, IplImage *other);
 };
 #endif

@@ -27,7 +27,7 @@
 
 #pragma region Server Class
 // Telepathy Server Class Area.
-Telepathy::Server *TServer;
+Telepathy::Server *G_TelepathyServer;
 
 // constructor
 Telepathy::Server::Server() {
@@ -58,7 +58,7 @@ void *
 #endif
 	Param) {
 	while (1) 
-		TServer->ServerListentoClient();
+		G_TelepathyServer->ServerListentoClient();
 
 	return 0;
 }
@@ -80,7 +80,7 @@ void *
 
 	while (1) {
 		// 현재 Thread는 계속 받는다.
-		if (TServer->ServerReceiving(_CTlientSocket) == false)
+		if (G_TelepathyServer->ServerReceiving(_CTlientSocket) == false)
 			break;
 	}
 
@@ -125,7 +125,7 @@ bool Telepathy::Server::ServerInitialize() {
 	}
 
 	// 외부 Receive 함수용.
-	TServer = this;
+	G_TelepathyServer = this;
 	IsInitializeServer = true;
 
 	return true;
@@ -346,7 +346,7 @@ void Telepathy::Server::SendDataToAll(char *Str) {
 
 #pragma region Client Class
 // Telepathy Client Class Area.
-Telepathy::Client *TClient;
+Telepathy::Client *G_TelepathyClient;
 
 // constructor
 Telepathy::Client::Client(){
@@ -378,7 +378,7 @@ void *
 #endif
 	Param) {
 	while (1) {
-		if (TClient->ClientReceiving() == false)
+		if (G_TelepathyClient->ClientReceiving() == false)
 			break;
 	}
 
@@ -451,6 +451,7 @@ void Telepathy::Client::ClientClose() {
 	if (_ClientSocket != NULL) {
 		closesocket(_ClientSocket);
 	}
+	G_TelepathyClient = NULL;
 	IsConnectedClient = false;
 }
 
@@ -480,13 +481,13 @@ bool Telepathy::Client::ClientReceiving() {
 }
 
 bool Telepathy::Client::ClientConnect() {
-	if (connect(_ClientSocket, (sockaddr *)&_ClientAddress, sizeof(_ClientAddress))){
+	if (connect(_ClientSocket, (sockaddr *)&_ClientAddress, sizeof(_ClientAddress))) {
 		ClientClose();
 		return false;
 	}
 
 	// 외부 Receive 함수용.
-	TClient = this;
+	G_TelepathyClient = this;
 	IsConnectedClient = true;
 
 	return true;

@@ -32,7 +32,7 @@
 using namespace std;
 #pragma region struct_CommandString
 // Define UCICommandString
-typedef struct CommandString {
+typedef struct _CommandString {
 	// lists
 	list<string> *StringList;
 	list<char *> *CharArrayList;
@@ -45,18 +45,18 @@ typedef struct CommandString {
 	int EndPoint;
 	//int SeekPoint;
 
-	CommandString() {
+	_CommandString() {
 		StringList = new list<string>();
 		CharArrayList = new list<char *>();
 		EndPoint = 0;
 	}
 
-	CommandString(list<string> *_UCIStringList) {
+	_CommandString(list<string> *_UCIStringList) {
 		if (IsInitialize == true) Release();
 		UCIStringInitialize(_UCIStringList);
 	}
 
-	CommandString(list<char *> *_UCICharArrayList) {
+	_CommandString(list<char *> *_UCICharArrayList) {
 		if (IsInitialize == true) Release();
 		UCICharArrayInitialize(_UCICharArrayList);
 	}
@@ -129,7 +129,7 @@ typedef struct CommandString {
 		}
 		return false;
 	}
-} CS;
+} CommandString;
 #pragma endregion struct_CommandString
 
 #endif

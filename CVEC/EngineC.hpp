@@ -90,13 +90,13 @@ private:
 	void Command_UCI();
 	void Command_Debug();
 	void Command_Isready();
-	void Command_Setoption(CS *_UCICS); //
+	void Command_Setoption(CommandString *_UCICS); //
 	//void Command_Setoption(); //
 	void Command_Ucinewgame();
 	void Command_Register();
-	void Command_Position(CS *_UCICS); //
+	void Command_Position(CommandString *_UCICS); //
 	//void Command_Position(); //
-	void Command_Go(CS *_UCICS); //
+	void Command_Go(CommandString *_UCICS); //
 	//void Command_Go(); //
 	void Command_Stop();
 	void Command_Ponderhit();

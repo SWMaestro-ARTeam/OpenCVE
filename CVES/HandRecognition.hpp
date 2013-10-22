@@ -26,13 +26,16 @@
 #ifndef _HandRecognition_hpp_
 #define _HandRecognition_hpp_
 
-#include <iostream>
-#include <cv.h>
-#include <Windows.h>
+#include "Common.hpp"
 
-#define MOP_NUM 2
-#define T_SKIN_NUM 10
-#define SUB_THRESHOLD 3
+#if WINDOWS_SYS
+#include <Windows.h>
+#elif POSIX_SYS
+#endif
+
+#include <iostream>
+
+#include <cv.h>
 
 class HandRecognition {
 private:
@@ -46,8 +49,8 @@ private:
 	bool R2(float Y, float Cr, float Cb);
 	bool R3(float H, float S, float V);
 
-	IplImage *img_YCrCb, *img_HSV;				//YCrCb, HSV 색상계
-	IplImage *prev_ground, *present_ground;			//차영상을 통해 차이를 구할 예정
+	IplImage *img_YCrCb, *img_HSV; //YCrCb, HSV 색상계
+	IplImage *prev_ground, *present_ground; //차영상을 통해 차이를 구할 예정
 
 public:
 	HandRecognition();

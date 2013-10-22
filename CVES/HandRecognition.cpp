@@ -39,12 +39,8 @@ HandRecognition::~HandRecognition() {
 		cvReleaseImage(&present_ground);
 }
 
-//<<<<<<< HEAD:CVES/HandRecognition.cpp
-//void HandRecognition::Init(int width, int height) {
-//=======
 void HandRecognition::Init(int width, int height) {
-	//관심영역의 size를 구함.
-//>>>>>>> CVES_HandRecognition:CVES/Hand_recognition.cpp
+	// 관심영역의 size를 구함.
 	img_width = width;
 	img_height = height;
 
@@ -57,23 +53,15 @@ void HandRecognition::Init(int width, int height) {
 	present_ground = NULL;
 }
 
-//<<<<<<< HEAD:CVES/HandRecognition.cpp
-//bool HandRecognition::R1(int R, int G, int B) {
-//=======
 bool HandRecognition::R1(int R, int G, int B) {
 	//RGB image의 각 픽셀값을 입력받아서 skin의 범위 해당하는지 return
-//>>>>>>> CVES_HandRecognition:CVES/Hand_recognition.cpp
 	bool e1 = (R > 95) && (G > 40) && (B > 20) && ((max(R, max(G, B)) - min(R, min(G , B))) > 15) && (abs(R - G) > 15) && (R > G) && (R > B);
 	bool e2 = (R > 220) && (G > 210) && (B > 170) && (abs(R - G) <= 15) && (R > B) && (G > B);
 	return (e1||e2);
 }
 
-//<<<<<<< HEAD:CVES/HandRecognition.cpp
-//bool HandRecognition::R2(float Y, float Cr, float Cb) {
-//=======
 bool HandRecognition::R2(float Y, float Cr, float Cb) {
 	//Y, Cr, Cb image를 통하여 skin 영역의 색상을 구분.
-//>>>>>>> CVES_HandRecognition:CVES/Hand_recognition.cpp
 	bool e3 = Cr <= (1.5862 * Cb) + 20;
 	bool e4 = Cr >= (0.3448 * Cb) + 76.2069;
 	bool e5 = Cr >= (-4.5652 * Cb) + 234.5652;
@@ -82,13 +70,7 @@ bool HandRecognition::R2(float Y, float Cr, float Cb) {
 	return e3 && e4 && e5 && e6 && e7;
 }
 
-//<<<<<<< HEAD:CVES/HandRecognition.cpp
-//bool HandRecognition::R3(float H, float S, float V) {
-//	return (H < 25) || (H > 230);
-//}
-//
-//void HandRecognition::Detect_Skin(IplImage *src, IplImage *dst) {
-//=======
+
 bool HandRecognition::R3(float H, float S, float V) {
 	//HSV image의 H를 통하여 SKin color 범주에 있는지 확인.
 	return (H < 25) || (H > 230);
@@ -98,7 +80,6 @@ void HandRecognition::Detect_Skin(IplImage *src, IplImage *dst) {
 	//skin color detection을 진행.
 	//RGB-H-CbCr Skin Colour Model for Human Face Detection 논문 참조.
 	//http://pesona.mmu.edu.my/~johnsee/research/papers/files/rgbhcbcr_m2usic06.pdf 
-//>>>>>>> CVES_HandRecognition:CVES/Hand_recognition.cpp
 	cvCvtColor(src, img_YCrCb, CV_BGR2YCrCb);
 	cvCvtColor(src, img_HSV, CV_BGR2HSV);
 
@@ -106,7 +87,7 @@ void HandRecognition::Detect_Skin(IplImage *src, IplImage *dst) {
 
 	for (register int i = 0; i < dst->height; i++) {
 		for (register int j = 0; j < dst->width; j++) {
-			//RGB 색상계를 이용하여 skin이 아닌 픽셀들을 걸러냄.
+			// RGB 색상계를 이용하여 skin이 아닌 픽셀들을 걸러냄.
 			B = (unsigned char)src->imageData[(j * 3) + (i * src->widthStep)];
 			G = (unsigned char)src->imageData[(j * 3) + (i * src->widthStep) + 1];
 			R = (unsigned char)src->imageData[(j * 3) + (i * src->widthStep) + 2];
@@ -114,7 +95,7 @@ void HandRecognition::Detect_Skin(IplImage *src, IplImage *dst) {
 			bool a = R1(R, G, B);
 
 			if (a) {
-				//HSV 색상계에 H를 이용하여 피부 영역 검출
+				// HSV 색상계에 H를 이용하여 피부 영역 검출
 				H = (unsigned char)img_HSV->imageData[(j * 3) + (i * img_HSV->widthStep)];
 				S = (unsigned char)img_HSV->imageData[(j * 3) + (i * img_HSV->widthStep) + 1];
 				V = (unsigned char)img_HSV->imageData[(j * 3) + (i * img_HSV->widthStep) + 2];
@@ -122,7 +103,7 @@ void HandRecognition::Detect_Skin(IplImage *src, IplImage *dst) {
 				bool c = R3(H, S, V);
 
 				if (c) {
-					//YCbCr 색상계를 사용하여 최종 피부색 판정.
+					// YCbCr 색상계를 사용하여 최종 피부색 판정.
 					Y = (unsigned char)img_YCrCb->imageData[(j * 3) + (i * img_YCrCb->widthStep)];
 					Cr = (unsigned char)img_YCrCb->imageData[(j * 3) + (i * img_YCrCb->widthStep) + 1];
 					Cb = (unsigned char)img_YCrCb->imageData[(j * 3) + (i * img_YCrCb->widthStep) + 2];
@@ -142,12 +123,8 @@ void HandRecognition::Detect_Skin(IplImage *src, IplImage *dst) {
 	cvDilate(dst, dst, 0, MOP_NUM);
 }
 
-//<<<<<<< HEAD:CVES/HandRecognition.cpp
-//bool HandRecognition::is_Hand(IplImage *src) {
-//=======
 bool HandRecognition::is_Hand(IplImage *src) {
-	//binary image를 이용하여 피부색 영역 픽셀이 일정 갯수 이상이면 손이라고 판정.
-//>>>>>>> CVES_HandRecognition:CVES/Hand_recognition.cpp
+	// binary image를 이용하여 피부색 영역 픽셀이 일정 갯수 이상이면 손이라고 판정.
 	int count = 0;
 
 	for (register int i = 0; i < src->width; i++) {
@@ -163,20 +140,16 @@ bool HandRecognition::is_Hand(IplImage *src) {
 	return false;
 }
 
-//<<<<<<< HEAD:CVES/HandRecognition.cpp
-//void HandRecognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
-//=======
 void HandRecognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
 	// 손을 검출하기 위한 차영상 적용.
-	//RGB image src를 입력받아 binary image dst를 반환.
-//>>>>>>> CVES_HandRecognition:CVES/Hand_recognition.cpp
+	// RGB image src를 입력받아 binary image dst를 반환.
 	static int frame_count = 0;
 
-	//Lab 색상계 실험
+	// Lab 색상계 실험
 	IplImage *Lab_src = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 3);
 	IplImage *Lab_prev = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 3);
 
-	//first가 true일 경우 이미지 초기화.
+	// first가 true일 경우 이미지 초기화.
 	if (first) {
 		if (prev_ground != NULL) {
 			cvReleaseImage(&prev_ground);
@@ -193,7 +166,7 @@ void HandRecognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
 
 	cvZero(dst);
 
-	//프로그램의 성능을 위해 몇 프레임마다 차영상을 적용할 것인가를 if문을 통하여 조절할 수 있음.
+	// 프로그램의 성능을 위해 몇 프레임마다 차영상을 적용할 것인가를 if문을 통하여 조절할 수 있음.
 	if (frame_count == 1) {
 		cvCopy(src, present_ground);
 
@@ -213,7 +186,7 @@ void HandRecognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
 //<<<<<<< HEAD:CVES/HandRecognition.cpp
 //		cvSmooth(dst, dst, CV_MEDIAN, 3, 3);
 //=======
-		//차영상 연산의 결과로 생성된 binary image에 필터 적용.
+		// 차영상 연산의 결과로 생성된 binary image에 필터 적용.
 //>>>>>>> CVES_HandRecognition:CVES/Hand_recognition.cpp
 		cvErode(dst, dst, 0, 2);
 		cvDilate(dst, dst, 0, 2);
@@ -227,12 +200,8 @@ void HandRecognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
 	cvReleaseImage(&Lab_src);
 }
 
-//<<<<<<< HEAD:CVES/HandRecognition.cpp
-//void HandRecognition::Init_diff() {
-//=======
 void HandRecognition::Init_diff() {
-	//내부 차영상 연산에 사용되는 이미지 할당 해제.
-//>>>>>>> CVES_HandRecognition:CVES/Hand_recognition.cpp
+	// 내부 차영상 연산에 사용되는 이미지 할당 해제.
 	cvReleaseImage(&prev_ground);
 	cvReleaseImage(&present_ground);
 }

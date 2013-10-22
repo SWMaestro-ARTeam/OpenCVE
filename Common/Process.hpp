@@ -122,7 +122,7 @@ typedef struct _SProcessInformations {
 	TCHAR	CmdLine[BUFFER_MAX_32767];
 } SProcessInformations;
 
-static SProcessInformations lpi[1024] = {0};
+static SProcessInformations __SProcessInformation[1024] = {0};
 #elif POSIX_SYS
 
 #endif
@@ -157,6 +157,7 @@ public:
 class POSIXProcess {
 private:
 public:
+	bool GetProcessInformations();
 };
 #endif
 

@@ -25,6 +25,7 @@
 
 #include "Process.hpp"
 
+#if WINDOWS_SYS
 #pragma region Windows Process Module
 HMODULE WindowsProcess::NtDLLOpen() {
 	HMODULE _TNtDll = LoadLibrary(_T("ntdll.dll"));
@@ -148,7 +149,7 @@ bool WindowsProcess::GetProcessInformations(const DWORD PID, SProcessInformation
 	if(_TStatus >= 0)
 	{
 		// Basic Info
-		//        spi.dwPID			 = (DWORD)pbi->UniqueProcessId;
+		// spi.dwPID			 = (DWORD)pbi->UniqueProcessId;
 		_TSPI.ParentPID		 = (DWORD)_TPBI->InheritedFromUniqueProcessId;
 		_TSPI.BasePriority	 = (LONG)_TPBI->BasePriority;
 		_TSPI.ExitStatus	 = (NTSTATUS)_TPBI->ExitStatus;
@@ -299,9 +300,16 @@ gnpiFreeMemFailed:
 		return _TReturnStatus;
 }
 #pragma endregion Windows Process Module
+#elif POSIX_SYS
+#pragma region POSIX Process Module
+bool POSIXProcess::GetProcessInformations() {
+
+}
+#pragma endregion POSIX Process Module
+#endif
 
 #pragma region Process Module
-Process *PC;
+Process *G_Process;
 
 Process::Process() {
 #if WINDOWS_SYS
@@ -313,7 +321,7 @@ Process::Process() {
 	//_PE32 = {0};
 #elif POSIX_SYS
 #endif
-	PC = this;
+	G_Process = this;
 }
 
 Process::~Process() {
@@ -326,7 +334,7 @@ Process::~Process() {
 	//_PE32 = {0};
 #elif POSIX_SYS
 #endif
-	PC = NULL;
+	G_Process = NULL;
 }
 
 bool Process::FindProcess(
@@ -342,7 +350,7 @@ bool Process::FindProcess(
 
 		_TModuleSnap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, PID);
 
-		if (_TModuleSnap == (HANDLE)-1)
+		if (_TModuleSnap == (HANDLE) - 1)
 			return false;
 
 		_TME32.dwSize = sizeof(MODULEENTRY32);
@@ -415,37 +423,41 @@ int Process::CheckProcessExistByNumberOfExists(char *ProcessName) {
 	return _TProcessNumber;
 }
 
-list<SProcessInformations> Process::GetProcessInformations() {
-	WindowsProcess _TWindowsProcess;
+list<
+#if WINDOWS_SYS
+	SProcessInformations
+#elif POSIX_SYS
+#endif
+> Process::GetProcessInformations() {
+#if WINDOWS_SYS
+	WindowsProcess 
+#elif POSIX_SYS
+	POSIXProcess
+#endif
+		_TProcess;
 	list<SProcessInformations> _TSProcessInformationsList;
 	DWORD _TPIDs[PROCESS_MAX] = {0};
-	
 	DWORD _TArraySize = PROCESS_MAX * sizeof(DWORD);
 	DWORD _TSizeNeeded = 0;
 	DWORD _TPIDCount = 0;
 
-	if (!_TWindowsProcess.CheckAbleProcessAccess(SE_DEBUG_NAME)) ;
+	if (!_TProcess.CheckAbleProcessAccess(SE_DEBUG_NAME)) ;
 
 	if (EnumProcesses((DWORD *)&_TPIDs, _TArraySize, &_TSizeNeeded)) {
-		HMODULE _TNtDll = _TWindowsProcess.NtDLLOpen();
+		HMODULE _TNtDll = _TProcess.NtDLLOpen();
 		if (_TNtDll) {
 			_TPIDCount = _TSizeNeeded / sizeof(DWORD);
 			for (DWORD _ProcessCount = 0;
 				_ProcessCount < PROCESS_MAX && _ProcessCount < _TPIDCount; _ProcessCount++) {
-				//SProcessInformations _TSProcessInformations;
-				//_TWindowsProcess.GetProcessInformations(_TPIDs[_ProcessCount], &_TSProcessInformations);
-				//_TSProcessInformationsList.push_back(_TSProcessInformations);
-				_TWindowsProcess.GetProcessInformations(_TPIDs[_ProcessCount], &lpi[_ProcessCount]);
-				_TSProcessInformationsList.push_back(lpi[_ProcessCount]);
+				_TProcess.GetProcessInformations(_TPIDs[_ProcessCount], &__SProcessInformation[_ProcessCount]);
+				_TSProcessInformationsList.push_back(__SProcessInformation[_ProcessCount]);
 			}
-			_TWindowsProcess.NtDLLRelease(_TNtDll);
+			_TProcess.NtDLLRelease(_TNtDll);
 		}
 	}
 
 	return _TSProcessInformationsList;
 }
-
-
 
 #pragma region Exec Process thread
 // Exec Process thread
@@ -500,11 +512,11 @@ void *
 
 #endif
 			) {
-				PC->IsProcessActive = false;
+				G_Process->IsProcessActive = false;
 				return 0;
 		}
 		// Proess Active.
-		PC->IsProcessActive = true;
+		G_Process->IsProcessActive = true;
 
 		// Wait until child process exits.
 		// 무한정 기다리다가 프로세스가 죽으면 이 이후로 통과할 것이다.
@@ -524,17 +536,15 @@ void *
 #endif
 		//}
 		// Process가 종료 되어 Handle이 없어졌다면, 최종적으로 Thread가 끝난다.
-		PC->IsProcessActive = false;
+		G_Process->IsProcessActive = false;
 		return 0;
 }
 #pragma endregion Exec Process thread
 
 void Process::CreateProcessOnThread(char *ProcessName) {
-	//UINT _TThreadValue;
 #if WINDOWS_SYS
 #ifdef _AFXDLL
 	DWORD _TThreadID = 0;
-	//AfxBeginThread(ExecProcessLoopThread, (char *)ProcessName);
 	CreateThread(NULL, 0, ExecProcessLoopThread, (LPVOID)ProcessName, 0, &_TThreadID);
 #endif
 #elif POSIX_SYS

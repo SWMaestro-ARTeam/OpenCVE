@@ -35,7 +35,6 @@ StringTokenizer::~StringTokenizer() {
 
 // 초기에 초기화 할 것에 대한 모든 것을 담는다.
 void StringTokenizer::StringTokenizerInitialize() {
-	//_Token = new list<string>();
 	TokenClear();
 	_StringList = new list<string>();
 
@@ -43,7 +42,6 @@ void StringTokenizer::StringTokenizerInitialize() {
 
 // 마지막에 없에야 할 모든것을 담는다.
 void StringTokenizer::StringTokenizerDeinitialize() {
-	//delete _Token;
 	delete _StringList;
 }
 
@@ -71,8 +69,6 @@ void StringTokenizer::SetInputString(string Str) {
 void StringTokenizer::SetSingleToken(const char *SingleToken) {
 	string _TempTokenString(SingleToken);
 	_Token = _TempTokenString;
-
-	//_Token->push_back(_TempTokenString);
 }
 
 // Implement me.
