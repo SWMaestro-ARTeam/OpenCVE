@@ -98,7 +98,6 @@ private:
 	vector<MyGrayPoint> line_x1, line_x2, line_x_mid, line_y1, line_y2, line_y_mid;
 	
 	MyLinePoint line_point_x1, line_point_x2, line_point_x_mid, line_point_y1, line_point_y2, line_point_y_mid;
-	MyLinePoint line_square_left, line_square_top, line_square_right, line_square_bottom;
 
 	MySquarePoint main_square;
 
@@ -106,8 +105,6 @@ private:
 	void GetLinegrayScale(IplImage *gray_image, int linefindcount_x1, int linefindcount_y1, int linefindcount_x2, int linefindcount_y2);
 	// 체스판에서 각 체스판의 경계를 추출
 	void GetgraySidelinesPoint(IplImage *chess_image);
-	// 양 끝의 점을 이용해 사각형을 구함
-	void GetSquarePoint(IplImage *chess_image);
 	// 추출된 모든 수직이 되는 모든 선들의 교차점을 구함
 	void GetInCrossPoint(IplImage *chess_image, vector<Chess_point> *point);
 	// 해당 위치의 grayscale을 반환
@@ -120,11 +117,6 @@ private:
 	void GrayImageBinarization(IplImage *gray_image);
 	// 체스판 경계 탐색 함수
 	void GetgraySidelines(IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool XYFlag);
-	void GetgraySidelines2(IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool XYFlag);
-	// 헤리스 코너 알고리즘
-	void HarrisCorner(IplImage *image);
-	// 동적 할당함수
-	void MyMalloc(double **t,int ti,int tj);
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 public:
