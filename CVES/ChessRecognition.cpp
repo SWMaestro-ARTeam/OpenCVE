@@ -592,6 +592,9 @@ void ChessRecognition::Chess_recognition_process(IplImage *src, vector<Chess_poi
 
 		// 각 찾은 경계점들의 수직이 되는 점 모두의 교차점을 찾는다
 		GetInCrossPoint(src, point);
+
+		// 체스판의 4개의 꼭지 점을 찾는다
+		//GetSquarePoint(src);
 	}
 	else if (in_line_point_x1.size() != 9 || in_line_point_x2.size() != 9) {
 		if (flag_x1 && (in_line_point_x1.size() != 9))
@@ -603,6 +606,13 @@ void ChessRecognition::Chess_recognition_process(IplImage *src, vector<Chess_poi
 		else if (!flag_x2 && (in_line_point_x2.size() != 9))
 			Linefindcount_x2 -= 3;
 	}
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//	else if (in_line_point_y1.size() != 9 || in_line_point_y2.size() != 9) {
+//		if (flag_y)
+//			Linefindcount_y += 5;
+//		else
+//			Linefindcount_y -= 5;
+//=======
 	else if(in_line_point_y1.size() != 9 || in_line_point_y2.size() != 9) {
 		if (flag_y1 && (in_line_point_y1.size() != 9))
 			Linefindcount_y1 += 3;
@@ -612,6 +622,7 @@ void ChessRecognition::Chess_recognition_process(IplImage *src, vector<Chess_poi
 			Linefindcount_y2 += 3;
 		else if (!flag_y2 && (in_line_point_y2.size() != 9))
 			Linefindcount_y2 -= 3;
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 	}
 
 	// 메모리 초기화
@@ -619,7 +630,11 @@ void ChessRecognition::Chess_recognition_process(IplImage *src, vector<Chess_poi
 	MemoryClear();
 }
 
-
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//void ChessRecognition::GetLinegrayScale(IplImage *gray_image, int linefindcount_x, int linefindcount_y) {
+//=======
+//void Chess_recognition::GetLinegrayScale(IplImage *gray_image, int linefindcount_x1, int linefindcount_y1, int linefindcount_x2, int linefindcount_y2) {
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 void ChessRecognition::GetLinegrayScale(IplImage *gray_image, int linefindcount_x1, int linefindcount_y1, int linefindcount_x2, int linefindcount_y2) {
 	// 중간 부터 검사
 
@@ -665,6 +680,23 @@ void ChessRecognition::GetLinegrayScale(IplImage *gray_image, int linefindcount_
 	}
 }
 
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//void ChessRecognition::GetgraySidelinesPoint(IplImage *chess_image) {
+//	int line_count_x1, line_count_x2, line_count_x_mid, line_count_y1, line_count_y2, line_count_y_mid;
+//	int jump_count_p1, jump_count_m1, jump_count_p2, jump_count_m2, jump_count_p3, jump_count_m3;
+//	int jump_count_x = chess_image->width / 10;
+//	int jump_count_y = chess_image->height / 10;
+//
+//	line_count_x1 = line_count_x2 = line_count_x_mid = line_count_y1 = line_count_y2 = line_count_y_mid = 0;
+//	jump_count_p1 = jump_count_p2 = jump_count_p3 = jump_count_m1 = jump_count_m2 = jump_count_m3 = 0;
+//
+//	line_point_x1.x1 = line_point_x1.x2 = line_point_x2.x1 = line_point_x2.x2 = line_point_x_mid.x1 = line_point_x_mid.x2 = chess_image->width / 2;
+//	line_point_y1.y1 = line_point_y1.y2 = line_point_y2.y1 = line_point_y2.y2 = line_point_y_mid.y1 = line_point_y_mid.y1 = chess_image->height / 2;
+//
+//	bool change_flag_line_x1_t, change_flag_line_x1_t1, change_flag_line_x1_t2;
+//=======
+//void Chess_recognition::GetgraySidelinesPoint(IplImage *chess_image) {
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 void ChessRecognition::GetgraySidelinesPoint(IplImage *chess_image) {
 
 	// 각 grayscale이 저장되어 있는 vector 배열에서 해당 라인의 교차점을 구한다
@@ -673,6 +705,278 @@ void ChessRecognition::GetgraySidelinesPoint(IplImage *chess_image) {
 	GetgraySidelines(chess_image, &line_x2, &line_point_x2, &in_line_point_x2, true);
 	GetgraySidelines(chess_image, &line_y1, &line_point_y1, &in_line_point_y1, false);
 	GetgraySidelines(chess_image, &line_y2, &line_point_y2, &in_line_point_y2, false);
+
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//			if (i % 2 == 0)
+//				change_flag_line_x1_t = change_flag_line_x1_t1;
+//			else
+//				change_flag_line_x1_t = change_flag_line_x1_t2;
+//
+//			if (line_x1[i].grayscale != line_x1[i + 2].grayscale) {
+//				int flag = true;
+//
+//				for (register int j = 1; j <= 3; j++) {
+//					if (line_x1[i].grayscale == line_x1[i + (j * 2)].grayscale && change_flag_t == change_flag_line_x1_t) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag) {
+//					if (line_count_x1 < 9){
+//						if (line_point_x1.x1 > line_x1[i].x) {
+//							line_point_x1.x1 = line_x1[i].x;
+//							line_point_x1.y1 = line_x1[i].y;
+//						}
+//
+//						if (line_point_x1.x2 < line_x1[i].x) {
+//							line_point_x1.x2 = line_x1[i].x;
+//							line_point_x1.y2 = line_x1[i].y;
+//						}
+//
+//						in_line_point_x1.push_back(setMyPoint(line_x1[i].x, line_x1[i].y));
+//
+//						line_count_x1++;
+//						//cvCircle(chess_image, cvPoint(line_x1[i].x, line_x1[i].y), 5, cvScalar(255,255,255));
+//
+//						if (i % 2 == 0)
+//							change_flag_line_x1_t1 = !change_flag_t;
+//						else
+//							change_flag_line_x1_t2 = !change_flag_t;
+//					}
+//					if (i % 2 == 1)
+//						jump_count_p1 = 30;
+//					else
+//						jump_count_m1 = 30;	
+//				}
+//			}
+//		}
+//
+//		bool change_flag_line_x2_t, change_flag_line_x2_t1, change_flag_line_x2_t2;
+//
+//		change_flag_line_x2_t1 = 127 > line_x2[0].grayscale ? true : false;
+//		change_flag_line_x2_t2 = 127 > line_x2[1].grayscale ? true : false;
+//
+//		if ((i % 2 == 1) && (jump_count_p2 > 0)) {
+//			jump_count_p2--;
+//		}
+//		else if ((i%2 == 0) && (jump_count_m2 > 0)) {
+//			jump_count_m2--;
+//		}
+//		else {
+//			bool change_flag_t;
+//			change_flag_t = 127 > line_x2[i].grayscale ? true : false;
+//
+//			if (i % 2 == 0)
+//				change_flag_line_x2_t = change_flag_line_x2_t1;
+//			else
+//				change_flag_line_x2_t = change_flag_line_x2_t2;
+//
+//			if (line_x2[i].grayscale != line_x2[i + 2].grayscale) {
+//				int flag = true;
+//
+//				for (register int j = 1; j <= 3; j++) {
+//					if (line_x2[i].grayscale == line_x2[i + (j * 2)].grayscale && change_flag_t == change_flag_line_x2_t){
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag) {
+//					if (line_count_x2 < 9) {
+//						if (line_point_x2.x1 > line_x2[i].x) {
+//							line_point_x2.x1 = line_x2[i].x;
+//							line_point_x2.y1 = line_x2[i].y;
+//						}
+//
+//						if (line_point_x2.x2 < line_x2[i].x) {
+//							line_point_x2.x2 = line_x2[i].x;
+//							line_point_x2.y2 = line_x2[i].y;
+//						}
+//
+//						in_line_point_x2.push_back(setMyPoint(line_x2[i].x, line_x2[i].y));
+//
+//						line_count_x2++;
+//						//cvCircle(chess_image, cvPoint(line_x2[i].x, line_x2[i].y), 5, cvScalar(255, 255, 255));
+//
+//						if (i % 2 == 0)
+//							change_flag_line_x2_t1 = !change_flag_t;
+//						else
+//							change_flag_line_x2_t2 = !change_flag_t;
+//					}
+//					if (i % 2 == 1)
+//						jump_count_p2 = 30;
+//					else
+//						jump_count_m2 = 30;
+//				}
+//			}
+//		}
+//
+//		if (line_count_x1 == line_count_x2 /*== line_count_x_mid*/ == 9)
+//			break;
+//	}
+//
+//	jump_count_p1 = jump_count_p2 = jump_count_p3 = jump_count_m1 = jump_count_m2 = jump_count_m3 = 0;
+//
+//	bool change_flag_line_y1_t, change_flag_line_y1_t1, change_flag_line_y1_t2;
+//
+//	change_flag_line_y1_t1 = 127 > line_y1[0].grayscale ? true : false;
+//	change_flag_line_y1_t2 = 127 > line_y1[1].grayscale ? true : false;
+//
+//	for (register int i=0; i < line_y1.size() - 10; i++) {
+//		if ((i % 2 == 1) && (jump_count_p1 > 0)) {
+//			jump_count_p1--;
+//		}
+//		else if ((i % 2 == 0) && (jump_count_m1 > 0)) {
+//			jump_count_m1--;
+//		}
+//		else {
+//			bool change_flag_t;
+//			change_flag_t = 127 > line_y1[i].grayscale ? true : false;
+//
+//			if (i % 2 == 0)
+//				change_flag_line_y1_t = change_flag_line_y1_t1;
+//			else
+//				change_flag_line_y1_t = change_flag_line_y1_t2;
+//
+//			if (line_y1[i].grayscale != line_y1[i + 2].grayscale) {
+//				int flag = true;
+//
+//				for (register int j = 1; j <= 3; j++) {
+//					if (line_y1[i].grayscale == line_y1[i + (j * 2)].grayscale && change_flag_t == change_flag_line_y1_t) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag) {
+//					if (line_count_y1 < 9) {
+//						if (line_point_y1.y1 > line_y1[i].y) {
+//							line_point_y1.x1 = line_y1[i].x;
+//							line_point_y1.y1 = line_y1[i].y;
+//						}
+//
+//						if (line_point_y1.y2 < line_y1[i].y) {
+//							line_point_y1.x2 = line_y1[i].x;
+//							line_point_y1.y2 = line_y1[i].y;
+//						}
+//
+//						in_line_point_y1.push_back(setMyPoint(line_y1[i].x, line_y1[i].y));
+//
+//						line_count_y1++;
+//						//cvCircle(chess_image, cvPoint(line_y1[i].x, line_y1[i].y), 5, cvScalar(255, 255, 255));
+//
+//						if (i % 2 == 0)
+//							change_flag_line_y1_t1 = !change_flag_t;
+//						else
+//							change_flag_line_y1_t2 = !change_flag_t;
+//					}
+//					if (i % 2 == 1)
+//						jump_count_p1 = 30;
+//					else
+//						jump_count_m1 = 30;
+//				}
+//			}
+//		}
+//
+//		bool change_flag_line_y2_t, change_flag_line_y2_t1, change_flag_line_y2_t2;
+//
+//		change_flag_line_y2_t1 = 127 > line_y2[0].grayscale ? true : false;
+//		change_flag_line_y2_t2 = 127 > line_y2[1].grayscale ? true : false;
+//
+//		if ((i % 2 == 1) && (jump_count_p2 > 0)) {
+//			jump_count_p2--;
+//		}
+//		else if ((i % 2 == 0) && (jump_count_m2 > 0)) {
+//			jump_count_m2--;
+//		}
+//		else {
+//			bool change_flag_t;
+//			change_flag_t = 127 > line_y2[i].grayscale ? true : false;
+//
+//			if (i % 2 == 0)
+//				change_flag_line_y2_t = change_flag_line_y2_t1;
+//			else
+//				change_flag_line_y2_t = change_flag_line_y2_t2;
+//
+//			if (line_y2[i].grayscale != line_y2[i + 2].grayscale) {
+//				int flag = true;
+//
+//				for (register int j = 1; j <= 3; j++) {
+//					if (line_y2[i].grayscale == line_y2[i + (j * 2)].grayscale && change_flag_t == change_flag_line_y2_t) {
+//						flag = false;
+//						break;
+//					}
+//				}
+//				if (flag) {
+//					if (line_count_y2 < 9) {
+//						if (line_point_y2.y1 > line_y2[i].y) {
+//							line_point_y2.x1 = line_y2[i].x;
+//							line_point_y2.y1 = line_y2[i].y;
+//						}
+//
+//						if (line_point_y2.y2 < line_y2[i].y) {
+//							line_point_y2.x2 = line_y2[i].x;
+//							line_point_y2.y2 = line_y2[i].y;
+//						}
+//
+//						in_line_point_y2.push_back(setMyPoint(line_y2[i].x, line_y2[i].y));
+//
+//						line_count_y2++;
+//						//cvCircle(chess_image, cvPoint(line_y2[i].x, line_y2[i].y), 5, cvScalar(255, 255, 255));
+//
+//						if (i % 2 == 0)
+//							change_flag_line_y2_t1 = !change_flag_t;
+//						else
+//							change_flag_line_y2_t2 = !change_flag_t;
+//					}
+//
+//					if (i % 2 == 1)
+//						jump_count_p2 = 30;
+//					else
+//						jump_count_m2 = 30;
+//				}
+//			}
+//		}
+//
+//		if (line_count_y1 == line_count_y2 /*== line_count_y_mid*/ == 9)
+//			break;
+//	}
+//}
+//
+//void ChessRecognition::GetSquarePoint(IplImage *chess_image) {
+//=======
+}
+
+//void Chess_recognition::GetSquarePoint(IplImage *chess_image) {
+void ChessRecognition::GetSquarePoint(IplImage *chess_image) {
+
+	// 모든 라인의 경계점이 있는 line_point 변수들에서 양 끝에있는 경계점을 뽑아낸다
+
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
+	SetMyLinePoint(line_point_x1.x1, line_point_x1.y1, line_point_x2.x1, line_point_x2.y1, &line_square_left);
+	SetMyLinePoint(line_point_y1.x1, line_point_y1.y1, line_point_y2.x1, line_point_y2.y1, &line_square_top);
+	SetMyLinePoint(line_point_x1.x2, line_point_x1.y2, line_point_x2.x2, line_point_x2.y2, &line_square_right);
+	SetMyLinePoint(line_point_y1.x2, line_point_y1.y2, line_point_y2.x2, line_point_y2.y2, &line_square_bottom);
+
+	// 체스판의 LeftTop, LeftBottom, RightTop, RightBottom 을 찾는다
+	// GetCrossPoint 함수를 통해서 가장 왼쪽과 위의 선분의 교차점을 찾는다
+
+	MyPoint t_square_lt, t_square_lb, t_square_rt, t_square_rb;
+
+	// GetCrossPoint는 교차첨 여부에 따라 T/F를 반환하기 때문에 보다 정확한 검사를 위해 if문을 써준다
+
+	if (GetCrossPoint(line_square_left, line_square_top, &t_square_lt) && GetCrossPoint(line_square_left, line_square_bottom, &t_square_lb)
+		&& GetCrossPoint(line_square_right, line_square_top, &t_square_rt) && GetCrossPoint(line_square_right, line_square_bottom, &t_square_rb)){
+			main_square.LeftTop = t_square_lt;
+			main_square.LeftBottom = t_square_lb;
+			main_square.RightTop = t_square_rt;
+			main_square.RightBottom = t_square_rb;
+
+			cvCircle(chess_image, cvPoint(main_square.LeftTop.x, main_square.LeftTop.y), 5, cvScalar(0, 0, 0));
+			cvCircle(chess_image, cvPoint(main_square.LeftBottom.x, main_square.LeftBottom.y), 5, cvScalar(0, 0, 0));
+			cvCircle(chess_image, cvPoint(main_square.RightTop.x, main_square.RightTop.y), 5, cvScalar(0, 0, 0));
+			cvCircle(chess_image, cvPoint(main_square.RightBottom.x, main_square.RightBottom.y), 5, cvScalar(0, 0, 0));
+	}
+	else
+		printf("Get Cross Point error!\n");
 }
 
 void ChessRecognition::GetInCrossPoint(IplImage *chess_image, vector<Chess_point> *point) {
@@ -681,34 +985,34 @@ void ChessRecognition::GetInCrossPoint(IplImage *chess_image, vector<Chess_point
 	// in_line_point 오름차순 정렬
 	// 찾은 경계점들을 x또는 y를 중심으로 재정렬한다
 
-	for (register int i = 0; i < in_line_point_x1.size(); i++) {
-		for (register int j = i + 1; j < in_line_point_x1.size(); j++) {
-			if (in_line_point_x1[i].x > in_line_point_x1[j].x) {
-				MyPoint t_point = in_line_point_x1[i];
-
-				in_line_point_x1[i] = in_line_point_x1[j];
-				in_line_point_x1[j] = t_point;
-			}
-			if (in_line_point_x2[i].x > in_line_point_x2[j].x) {
-				MyPoint t_point = in_line_point_x2[i];
-
-				in_line_point_x2[i] = in_line_point_x2[j];
-				in_line_point_x2[j] = t_point;
-			}
-			if (in_line_point_y1[i].y > in_line_point_y1[j].y) {
-				MyPoint t_point = in_line_point_y1[i];
-
-				in_line_point_y1[i] = in_line_point_y1[j];
-				in_line_point_y1[j] = t_point;
-			}
-			if (in_line_point_y2[i].y > in_line_point_y2[j].y) {
-				MyPoint t_point = in_line_point_y2[i];
-
-				in_line_point_y2[i] = in_line_point_y2[j];
-				in_line_point_y2[j] = t_point;
-			}
-		}
-	}
+// 	for (register int i = 0; i < in_line_point_x1.size(); i++) {
+// 		for (register int j = i + 1; j < in_line_point_x1.size(); j++) {
+// 			if (in_line_point_x1[i].x > in_line_point_x1[j].x) {
+// 				MyPoint t_point = in_line_point_x1[i];
+// 
+// 				in_line_point_x1[i] = in_line_point_x1[j];
+// 				in_line_point_x1[j] = t_point;
+// 			}
+// 			if (in_line_point_x2[i].x > in_line_point_x2[j].x) {
+// 				MyPoint t_point = in_line_point_x2[i];
+// 
+// 				in_line_point_x2[i] = in_line_point_x2[j];
+// 				in_line_point_x2[j] = t_point;
+// 			}
+// 			if (in_line_point_y1[i].y > in_line_point_y1[j].y) {
+// 				MyPoint t_point = in_line_point_y1[i];
+// 
+// 				in_line_point_y1[i] = in_line_point_y1[j];
+// 				in_line_point_y1[j] = t_point;
+// 			}
+// 			if (in_line_point_y2[i].y > in_line_point_y2[j].y) {
+// 				MyPoint t_point = in_line_point_y2[i];
+// 
+// 				in_line_point_y2[i] = in_line_point_y2[j];
+// 				in_line_point_y2[j] = t_point;
+// 			}
+// 		}
+// 	}
 
 	// 찾은 모든 경계점들을 수직이 되는 라인의 경계점들과의 모든 교차점을 찾는다
 	// 9 * 9 = 81
@@ -791,10 +1095,14 @@ bool ChessRecognition::GetCrossPoint(MyLinePoint line1, MyLinePoint line2, MyPoi
 	}
 }
 
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
 void ChessRecognition::GrayImageBinarization(IplImage *gray_image) {
+//=======
+//void Chess_recognition::GrayImageBinarization(IplImage *gray_image) {
 
 	// 이미지의 grayscale을 저장할 변수
 
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 	float hist[256]={0,};
 	int temp[256];
 
@@ -802,10 +1110,15 @@ void ChessRecognition::GrayImageBinarization(IplImage *gray_image) {
 
 	bool flag = true;
 
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//	for (register int i = 0; i < gray_image->width; i++) {
+//		for (register int j = 0; j < gray_image->height; j++) {
+//=======
 	// 영상의 grayscale을 저장한다
 
 	for(register int i = 0; i < gray_image->width; i++) {
 		for(register int j = 0; j < gray_image->height; j++) {
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 			temp[Getgrayscale(gray_image, i, j)]++;
 
 			// 맨처음 영상이 단일색으로 나올 경우가 있기 때문에 예외처리를 해준다
@@ -859,8 +1172,15 @@ void ChessRecognition::GrayImageBinarization(IplImage *gray_image) {
 		T = (int)((u1 + u2) / 2);
 	} while(T != Told);
 
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//	uchar *data = (uchar *)gray_image->imageData;
+//
+//	for (register int i=0; i < gray_image->width; i++) {
+//		for (register int j=0; j < gray_image->height; j++) {
+//=======
 	for(register int i=0; i < gray_image->width; i++) {
 		for(register int j=0; j < gray_image->height; j++) {
+//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
 			int index = i + (j * gray_image->widthStep);
 
 			// 해당 위치의 grayscale을 T값을 기준으로 이진화를 결정한다 
@@ -870,6 +1190,7 @@ void ChessRecognition::GrayImageBinarization(IplImage *gray_image) {
 	}
 }
 
+//void Chess_recognition::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool XYFlag){
 void ChessRecognition::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool XYFlag){
 
 	// 경계를 찾은 후 어느 정도의 경계에는 계산을 하지 않는다
@@ -897,8 +1218,8 @@ void ChessRecognition::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *li
 	_TT[0].grayscale;
 	_TT[1].grayscale;
 
-	change_flag_line_t1 = 255 >= _TT[0].grayscale ? true : false;
-	change_flag_line_t2 = 255 >= _TT[1].grayscale ? true : false;
+	change_flag_line_t1 = 127 > _TT[0].grayscale ? true : false;
+	change_flag_line_t2 = 127 > _TT[1].grayscale ? true : false;
 
 	for (register int i = 2; i < line->size() - 10; i++) {
 		if ((i % 2 == 1) && (jump_count_p > 0)) {
@@ -910,7 +1231,7 @@ void ChessRecognition::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *li
 		else {
 			bool change_flag_t;
 
-			change_flag_t = 255 >= _TT[i].grayscale ? true : false;
+			change_flag_t = 255 > _TT[i].grayscale ? true : false;
 
 			if (i % 2 == 0)
 				change_flag_line_t = change_flag_line_t1;
@@ -944,7 +1265,7 @@ void ChessRecognition::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *li
 					if(i + (j * 2) > _TT.size())
 						continue;
 
-					if (_TT[i].grayscale == _TT[i + (j * 2)].grayscale && change_flag_t == change_flag_line_t) {
+					if (_TT[i].grayscale == _TT[i + (j * 2)].grayscale && change_flag_t == change_flag_line_t && _TT[i].grayscale == _TT[i - 2].grayscale) {
 						flag = false;
 						break;
 					}
@@ -983,6 +1304,51 @@ void ChessRecognition::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *li
 		// 경계선을 9개 다 찾으면 더 이상 찾을 필요가 없으므로 캔슬한다
 
 		if(line_count == 9){
+
+			// 오름차순 정렬
+
+			vector<MyPoint> _TTT = *((vector<MyPoint> *)in_line_point);
+			vector<MyGrayPoint> T_line;
+			MyLinePoint T_line_point = *line_point;
+			vector<MyPoint> T_in_line_point = *in_line_point;
+
+			if(XYFlag){
+				for (register int i = 0; i < in_line_point->size(); i++) {
+					for (register int j = i + 1; j < in_line_point->size(); j++) {
+						if (_TTT[i].x > _TTT[j].x) {
+							MyPoint t_point = _TTT[i];
+							_TTT[i] = _TTT[j];
+							_TTT[j] = t_point;
+						}
+					}
+				}
+
+// 				for(int i=1;i<_TTT[_TTT.size()-1].x;i++)
+// 					T_line.push_back(setMyGrayPoint(Getgrayscale(image, i, _TTT[_TTT.size()-1].y), i, _TTT[_TTT.size()-1].y));
+// 
+// 				GetgraySidelines(image, &T_line, &T_line_point, &T_in_line_point, true);
+			}
+			else{
+				for (register int i = 0; i < in_line_point->size(); i++) {
+					for (register int j = i + 1; j < in_line_point->size(); j++) {
+						if (_TTT[i].y > _TTT[j].y) {
+							MyPoint t_point = _TTT[i];
+							_TTT[i] = _TTT[j];
+							_TTT[j] = t_point;
+						}
+					}
+				}
+
+// 				for(int i=1;i<_TTT[_TTT.size()-1].x;i++)
+// 					T_line.push_back(setMyGrayPoint(Getgrayscale(image, _TTT[_TTT.size()-1].x, i), _TTT[_TTT.size()-1].x, i));
+// 
+// 				GetgraySidelines(image, &T_line, &T_line_point, &T_in_line_point, false);
+			}
+
+//			in_line_point = &T_in_line_point;
+
+			in_line_point = &_TTT;
+
 			break;
 		}
 	}
@@ -992,6 +1358,96 @@ void ChessRecognition::MemoryClear() {
 	line_x1.clear(), line_x2.clear(), line_x_mid.clear(), line_y1.clear(), line_y2.clear(), line_y_mid.clear();
 
 	in_line_point_x1.clear(), in_line_point_x2.clear(), in_line_point_y1.clear(), in_line_point_y2.clear();
+}
+
+//<<<<<<< HEAD:CVES/ChessRecognition.cpp
+//void ChessRecognition::Chess_recog_wrapper(IplImage *src, vector<Chess_point> *point) {
+//=======
+//void Chess_recognition::MyMalloc(double **t, int ti, int tj){
+void ChessRecognition::MyMalloc(double **t, int ti, int tj){
+	t = new double*[ti];
+	for(int i=0;i<ti;i++)
+		t[i] = new double[tj];
+}
+
+//void Chess_recognition::HarrisCorner(IplImage *image){
+void ChessRecognition::HarrisCorner(IplImage *image){
+	
+	double **dx2, **dy2, **dxy, **gdx2, **gdy2, **gdxy, **crf;
+	double tx, ty;
+	int th = 2000;
+
+	// 영상의 크기가 다르므로 동적할당을 해준다
+
+	MyMalloc(dx2, image->height, image->width);
+	MyMalloc(dy2, image->height, image->width);
+	MyMalloc(dxy, image->height, image->width);
+	MyMalloc(gdx2, image->height, image->width);
+	MyMalloc(gdy2, image->height, image->width);
+	MyMalloc(gdxy, image->height, image->width);
+	MyMalloc(crf, image->height, image->width);
+
+	for(int i=1;i<=image->height-1;i++){
+		for(int j=1;i<=image->width-1;j++){
+			tx = (image->imageData[(i-1)*image->width+j+1] + image->imageData[i*image->width+j+1] + image->imageData[(i+1)*image->width+j+1] 
+				- image->imageData[(i-1)*image->width+j-1] - image->imageData[i*image->width+j-1] - image->imageData[(i+1)*image->width+j-1]) / 6.0;
+
+			ty = (image->imageData[(i+1)*image->width+j-1] + image->imageData[(i+1)*image->width+j] + image->imageData[(i+1)*image->width+j+1] 
+				- image->imageData[(i-1)*image->width+j-1] - image->imageData[(i-1)*image->width+j] - image->imageData[(i-1)*image->width+j+1]) / 6.0;
+
+			dx2[i][j] = tx * tx;				// I^2(x)
+			dy2[i][j] = ty * ty;				// I^2(y)
+			dxy[i][j] = tx * ty;                // I(x)I(y)
+
+		}
+	}
+
+	double g[5][5] = { {1,4,6,4,1}, {4,16,24,16,4}, {6,24,36,24,6}, {4,16,24,16,4}, {1,4,6,4,1}};
+
+	for(int y=0;y<5;y++){
+		for(int x=0;x<5;x++){
+			g[y][x] /= 256.;
+		}
+	}
+
+	double tx2, ty2, txy;
+
+	for(int i=2;i<image->height-2;i++){
+		for(int j=2;j<image->width-2;j++){
+			tx2 = ty2 = txy = 0;
+
+			for(int y=0;y<5;y++){
+				for(int x=0;x<5;x++){
+					tx2 += (dx2[i+y-2][j+x-2] * g[y][x]);
+					ty2 += (dy2[i+y-2][j+x-2] * g[y][x]);
+					txy += (dxy[i+y-2][j+x-2] * g[y][x]);
+				}
+			}
+
+			gdx2[i][j] = tx2;
+			gdy2[i][j] = ty2;
+			gdxy[i][j] = txy;
+		}
+	}
+
+	// 코너 응답 함수를 계산하여 2차원 포인터 변수 crf[i][j]에 함수 값 저장
+
+	double k = 0.04;
+	for(int i=2;i<image->height-2;i++){
+		for(int j=2;j<image->width-2;j++){
+			crf[i][j] = (gdx2[i][j]*gdy2[i][j] - gdxy[i][j]*gdxy[i][j]) - k*(gdx2[i][j]+gdy2[i][j])*(gdx2[i][j]+gdy2[i][j]);
+		}
+	}
+
+	for(int i=2;i<image->height-2;i++){
+		for(int j=2;j<image->width-2;j++){
+			if(crf[i][j] > th){
+				if(crf[i][j]>crf[i-1][j-1] && crf[i][j]>crf[i-1][j] && crf[i][j]>crf[j-1][i+1] && crf[i][j]>crf[i][j-1] && crf[i][j]>crf[i+1][j-1] && crf[i][j]>crf[i+1][j] && crf[i+1][j+1]){
+					cvCircle(image, cvPoint(i, j), 2, CV_RGB(255,0,0),2);
+				}
+			}
+		}
+	}
 }
 
 //void Chess_recognition::Chess_recog_wrapper(IplImage *src, vector<Chess_point> *point) {
@@ -1017,5 +1473,102 @@ void ChessRecognition::Chess_recog_wrapper(IplImage *src, vector<Chess_point> *p
 		//Chess_recognition_process(point);
 		Refine_CrossPoint(point);
 		drawPoint(src, *point);
+	}
+}
+
+//void Chess_recognition::GetgraySidelines2(IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool XYFlag){
+void ChessRecognition::GetgraySidelines2(IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool XYFlag){
+
+	// 경계를 찾은 후 어느 정도의 경계에는 계산을 하지 않는다
+
+	in_line_point->clear();
+
+	int line_count = 0, jump_count_p = 0, jump_count_m = 0, jump_count = 0 ;
+
+	if(XYFlag){
+		jump_count = image->width / 12;
+		line_point->x1 = image->width / 2;
+	}
+	else{
+		jump_count = image->height / 12;
+		line_point->y1 = image->height / 2;
+	}
+
+	// 교차되는 체스판의 경계를 검출 할 때 체스 말이 판과 대비가 될 경우
+	// 경계선으로 인식 되는 경우를 막는다
+
+	bool change_flag_line_t, change_flag_line_t1, change_flag_line_t2;
+
+	// line vector함수 차수 변환
+
+	vector<MyGrayPoint> _TT = *((vector<MyGrayPoint> *)line);
+
+	_TT[0].grayscale;
+	_TT[1].grayscale;
+
+	change_flag_line_t1 = 127 > _TT[0].grayscale ? true : false;
+	change_flag_line_t2 = 127 > _TT[1].grayscale ? true : false;
+
+	for (register int i = 0; i < line->size() - 10; i++) {
+		if ((i % 2 == 1) && (jump_count_p > 0)) {
+			jump_count_p--;
+		}
+		else if ((i % 2 == 0) && (jump_count_m > 0)) {
+			jump_count_m--;
+		}
+		else {
+			bool change_flag_t;
+
+			change_flag_t = 255 > _TT[i].grayscale ? true : false;
+
+			if (i % 2 == 0)
+				change_flag_line_t = change_flag_line_t1;
+			else
+				change_flag_line_t = change_flag_line_t2;
+
+			if (_TT[i].grayscale != _TT[i + 1].grayscale) {
+				int flag = true;
+
+				// 확실히 하기위해 최소 3픽셀 까지 대비가 되면 경계선으로  인식한다
+
+				for (register int j = 1; j <= 3; j++) {
+					if(i + j > _TT.size())
+						continue;
+
+					if (_TT[i].grayscale == _TT[i + j].grayscale && change_flag_t == change_flag_line_t) {
+						flag = false;
+						break;
+					}
+				}
+				if (flag) {
+					if (line_count < 9){
+						if (line_point->x1 > _TT[i].x) {
+							line_point->x1 = _TT[i].x;
+							line_point->y1 = _TT[i].y;
+						}
+
+						if (line_point->x2 < _TT[i].x) {
+							line_point->x2 = _TT[i].x;
+							line_point->y2 = _TT[i].y;
+						}
+
+						in_line_point->push_back(setMyPoint(_TT[i].x, _TT[i].y));
+
+						line_count++;
+
+						if (i % 2 == 0)
+							change_flag_line_t1 = !change_flag_t;
+						else
+							change_flag_line_t2 = !change_flag_t;
+					}
+					if (i % 2 == 1)
+						jump_count_p = jump_count;
+					else
+						jump_count_m = jump_count;	
+				}
+			}
+		}
+		if(line_count == 9)
+			break;
 	}
 }
