@@ -51,6 +51,7 @@
 #include <stdio.h>
 #include <cv.h>
 #include <highgui.h>
+#include <time.h>
 
 #if WINDOWS_SYS
 // It's for windows dependent Functions.
@@ -85,6 +86,7 @@ private:
 	IplImage *_OtherBinaryImage; // 손을 제외한 나머지 이진 영상.
 	IplImage *_PureImage;	//원본 ROI 셋팅 영상을 저장하기 위한 이미지.
 	CvRect _ROIRect; // 관심영역 크기.
+	CvScalar _RGB; // 관심영역을 그릴 RGB color 저장변수
 
 	vector<ChessPoint> _CrossPoint;
 	vector<int> _PieceIndex;
@@ -117,18 +119,20 @@ private:
 	void Sub_image(IplImage *src1, IplImage *src2, IplImage *dst);
 	// 차영상 결과 이미지에 RGB 색 씌우기.
 	void Compose_diffImage(IplImage *rgb, IplImage *bin, CvScalar RGB);
-	
+	// p,q,r로 이루어진 삼각형의 넓이 return
 	float area_tri(CvPoint p, CvPoint q, CvPoint r);
+	//입력 영상으로 내부 모드에 따라 이미지 연산. (case문 대체)
+	void imgproc_mode();
 
 	// binary image가 체스보드 안에 픽셀을 가지는지 검사.
 	bool Check_InChessboard(IplImage *img, vector<ChessPoint> point);
 	// img가 픽셀값을 아무것도 가지지 않는지 체크.
 	bool Check_imgZero(IplImage *img);
-	
+
 	// 말이 어느 체스판에 있는지를 체크.
 	CvPoint	Get_Chessidx(CvPoint point, vector<ChessPoint> cross_point);
 	CvPoint Get_ChessboxPos(int width, int height, vector<ChessPoint> cross_point);
-	
+
 public:
 	EngineS();
 	~EngineS();

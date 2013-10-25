@@ -25,6 +25,9 @@
 
 #include "HandRecognition.hpp"
 
+#define max(a,b)    (((a) > (b)) ? (a) : (b))
+#define min(a,b)    (((a) < (b)) ? (a) : (b))
+
 HandRecognition::HandRecognition() {
 }
 
@@ -183,11 +186,6 @@ void HandRecognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
 			}
 		}
 
-//<<<<<<< HEAD:CVES/HandRecognition.cpp
-//		cvSmooth(dst, dst, CV_MEDIAN, 3, 3);
-//=======
-		// 차영상 연산의 결과로 생성된 binary image에 필터 적용.
-//>>>>>>> CVES_HandRecognition:CVES/Hand_recognition.cpp
 		cvErode(dst, dst, 0, 2);
 		cvDilate(dst, dst, 0, 2);
 

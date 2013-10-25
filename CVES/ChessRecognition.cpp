@@ -482,22 +482,11 @@ void ChessRecognition::Chess_recognition_process(IplImage *src, vector<ChessPoin
 	// 영상 이진화
 	GrayImageBinarization(src);
 
-	while (1) {
-		cvShowImage("ImageBin", src);
-		if (cvWaitKey(33))
-			break;
-	}
 	// 해당 영상에서의 좌표 x, y 와 grayscale을 추출하여 vector<MyGrayPoint> 형의 line에 저장.
 	GetLinegrayScale(src, Linefindcount_x1, Linefindcount_y1, Linefindcount_x2, Linefindcount_y2);
 
 	// 체스판의 경계를 구하여 in_line_point 변수들에 저장.
 	GetgraySidelinesPoint(src);
-
-	while (1) {
-		cvShowImage("findCrossPoint", src);
-		if (cvWaitKey(33))
-			break;
-	}
 
 	// 해당 라인에서 9곳의 체스판 경계를 찾지 못 하였으면
 	// 탐색라인을 이동시켜 적절한 탐색라인을 찾는다
