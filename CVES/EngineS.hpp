@@ -110,6 +110,8 @@ private:
 
 	// 매 루프에서 호출되는 image process 함수.
 	void Go_ImageProcessing();
+	// chess UI 만들기
+	void DrawWindowS(IplImage *src, float fps, CvScalar RGB);
 
 	static void MouseCallback_SetROI(int event, int x, int y, int flags, void *param);
 

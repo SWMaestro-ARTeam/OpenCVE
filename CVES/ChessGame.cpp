@@ -66,32 +66,7 @@ ChessGame::ChessGame() {
 ChessGame::~ChessGame() {
 }
 
-//<<<<<<< HEAD:CVES/ChessGame.cpp
-//void ChessGame::Chess_process(CvPoint input1, CvPoint input2) {
-//	if (board[input1.x][input1.y] == 0 && board[input2.x][input2.y] != 0) {
-//		board[input1.x][input1.y] = board[input2.x][input2.y];
-//		board[input2.x][input2.y] = Ground;
-//		if (turn) turn = false;
-//		else turn = true;
-//	}
-//	else if (board[input2.x][input2.y] == 0 && board[input1.x][input1.y] != 0) {
-//		board[input2.x][input2.y] = board[input1.x][input1.y];
-//		board[input1.x][input1.y] = Ground;
-//		if (turn) turn = false;
-//		else turn = true;
-//	}
-//	else {
-//		if (turn) {
-//			if (board[input1.x][input1.y] >= W_King && board[input1.x][input1.y] <= W_Pawn) {
-//				board[input2.x][input2.y] = board[input1.x][input1.y];
-//				board[input1.x][input1.y] = 0;
-//			}
-//			else {
-//				board[input1.x][input1.y] = board[input2.x][input2.y];
-//				board[input2.x][input2.y] = 0;
-//			}
-//			turn = false;
-//=======
+
 void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 	CvPoint _TMove[4];
 
