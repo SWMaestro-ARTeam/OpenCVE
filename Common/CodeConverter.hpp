@@ -38,7 +38,7 @@
 #endif
 #include <cstdio>
 
-#define ASSERT(x)
+//#define ASSERT(x)
 
 class CodeConverter {
 private:

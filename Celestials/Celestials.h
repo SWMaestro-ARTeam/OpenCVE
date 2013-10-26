@@ -2,7 +2,7 @@
 //	The OpenCVE Project.
 //
 //	The MIT License (MIT)
-//	Copyright © 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
+//	Copyright ⓒ 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
 //	{invi.dh.kim, munsp9103, aiaipming} at gmail.com
 //
 //	Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -23,44 +23,30 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#include "CodeConverter.hpp"
+#ifndef CELESTIALS_H
+#define CELESTIALS_H
 
-// char -> wchar
-wchar_t *CodeConverter::CharToWChar(const char *CharStr) {
-	//ASSERT(CharStr);
-	wchar_t* _TWStr = NULL;
-	int _TWStrLength, _TCharLength;
+#include "EngineS.hpp"
+#include "EngineC.hpp"
 
-	_TCharLength = strlen(CharStr);
-	_TWStrLength = MultiByteToWideChar(CP_ACP, 0, CharStr, _TCharLength, NULL, 0);
+#include <QMainWindow>
 
-	if(_TWStrLength > 0) {
-		_TWStr = (wchar_t*)malloc(sizeof(wchar_t) * (_TWStrLength+1));
-		MultiByteToWideChar(CP_ACP, 0, CharStr, _TCharLength, _TWStr, _TWStrLength);
-	}
-
-	if (_TWStr != NULL)
-		_TWStr[_TWStrLength] = 0;
-
-	return _TWStr;
+namespace Ui {
+	class Celestials;
 }
 
-// wchar -> char
-char *CodeConverter::WCharToChar(const wchar_t* WcharStr) {
-	//ASSERT(WcharStr);
-	char* _TStr = NULL;
-	int _TWStrLength, _TCharLength;
+class Celestials : public QMainWindow
+{
+	Q_OBJECT
 
-	_TWStrLength = wcslen(WcharStr);
-	_TCharLength = WideCharToMultiByte(CP_ACP, 0, WcharStr, _TWStrLength, NULL, 0, NULL, FALSE);
+private:
+	Ui::Celestials *ui;
 
-	if(_TCharLength > 0) {
-		_TStr = (char*)malloc(sizeof(char) * (_TCharLength+1));
-		WideCharToMultiByte(CP_ACP, 0, WcharStr, _TWStrLength, _TStr, _TCharLength, NULL, FALSE);
-	}
+public:
+	explicit Celestials(QWidget *parent = 0);
+	~Celestials();
 
-	if (_TStr != NULL)
-		_TStr[_TCharLength] = 0;
+	EngineS *_EngineS;
+};
 
-	return _TStr;
-}
+#endif // CELESTIALS_H

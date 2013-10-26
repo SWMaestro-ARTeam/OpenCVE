@@ -27,7 +27,7 @@
 #define _ChessGame_hpp_
 
 #include <stdio.h>
-#include <cv.h>
+#include <opencv/cv.h>
 
 #define CASTLING_MOVE				4
 #define ENPASSANT_MOVE			3

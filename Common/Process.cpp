@@ -205,7 +205,7 @@ bool WindowsProcess::GetProcessInformations(const DWORD PID, SProcessInformation
 									_TBufferSize = _TPEB_UPP.CommandLine.Length;
 
 								// Copy CommandLine to our structure variable
-#if defined(UNICODE) || (_UNICODE)
+#if defined(UNICODE) || defined(_UNICODE)
 								// Since core NT functions operate in Unicode
 								// there is no conversion if application is
 								// compiled for Unicode
@@ -251,7 +251,7 @@ bool WindowsProcess::GetProcessInformations(const DWORD PID, SProcessInformation
 									_TBufferSize = _TPEB_UPP.ImagePathName.Length;
 
 								// Copy ImagePath to our structure
-#if defined(UNICODE) || (_UNICODE)
+#if defined(UNICODE) || defined(_UNICODE)
 								StringCbCopyN(_TSPI.ImgPath, sizeof(_TSPI.ImgPath),
 									_TBuffer, _TBufferSize);
 #else

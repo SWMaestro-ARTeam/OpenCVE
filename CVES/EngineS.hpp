@@ -49,8 +49,9 @@
 #include "ChessGame.hpp"
 
 #include <stdio.h>
-#include <cv.h>
-#include <highgui.h>
+
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
 
 #if WINDOWS_SYS
 // It's for windows dependent Functions.

@@ -36,8 +36,8 @@
 
 #endif
 
-#include <cv.h>
-#include <highgui.h>
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
 
 using namespace std;
 
