@@ -48,18 +48,13 @@
 // Chess Game을 위한 좌표
 #include "ChessGame.hpp"
 
-#include "GlobalVariables.hpp"
+//#include "GlobalVariables.hpp"
 
 #include <stdio.h>
-<<<<<<< HEAD
 
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
-=======
-#include <cv.h>
-#include <highgui.h>
 #include <time.h>
->>>>>>> CVES_HandRecognition
 
 #if WINDOWS_SYS
 // It's for windows dependent Functions.

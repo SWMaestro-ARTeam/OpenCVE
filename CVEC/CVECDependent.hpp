@@ -23,40 +23,42 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ChessGame_hpp_
-#define _ChessGame_hpp_
+#ifndef _CVECDependent_hpp_
+#define _CVECDependent_hpp_
 
-#include <stdio.h>
+typedef struct _EngineOptions {
+	const char *_VariableName;
+	// Is it Option Viewing?
+	bool _OptionEnable;
+	const char *_InitializeValue;
+	// It's variables for Windows(Winboard)/Linux(xboard)
+	const char *_ControlerType;
+	const char *_VariableOptionString;
+	const char *_CurrentVariable;
 
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
+	_EngineOptions() {
+		EOInitialize();
+	}
 
-#define CASTLING_MOVE 4
-#define ENPASSANT_MOVE 3
+	_EngineOptions(const char *_VariableName_, bool _OptionEnable_,
+		const char *_InitializeValue_, const char *_ControlerType_,
+		const char *_VariableOptionString_, const char *_ExtraVariable_) {
+			EOInitialize();
+			_VariableName = _VariableName_;
+			_OptionEnable = _OptionEnable_;
+			_InitializeValue = _InitializeValue_;
+			_ControlerType = _ControlerType_;
+			_VariableOptionString = _VariableOptionString_;
+			_CurrentVariable = _ExtraVariable_;
+	}
 
-#define SWAP(x, y) { int t; t = x; x = y; y = t; }
+	void EOInitialize() {
+		_VariableName = new char[BUFFER_MAX_1024];
+		_OptionEnable = false;
+		_InitializeValue = new char[BUFFER_MAX_1024];
+		_ControlerType = new char[BUFFER_MAX_1024];
+		_CurrentVariable = new char[BUFFER_MAX_1024];
+	}
+} EngineOptions;
 
-class ChessGame {
-	enum {
-		Ground, 
-		W_King, W_Queen, W_Rook, W_Bishop, W_Knight, W_Pawn,
-		B_King, B_Queen, B_Rook, B_Bishop, B_Knight, B_Pawn,
-	};
-private:
-	int _Board[8][8];
-	bool _Turn;
-	CvPoint _Before, _After;
-	
-	IplImage *chessboard_img;
-	IplImage *chess_piece;
-public:
-	ChessGame();
-	~ChessGame();
-
-	// chess board의 말 움직임 진행 함수.
-	// MOVE_MODE : CASTLING_MOVE - 캐슬링 detect, ENPASSANT_MOVE - 앙파상 detect, other - 두 가지 말의 이동만을 체크함.
-	void Chess_process(CvPoint input1[], int MOVE_MODE);
-	void Show_chess_board();
-	void Show_chessImage();
-};
 #endif

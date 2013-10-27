@@ -28,7 +28,6 @@
 
 #include <list>
 #include <string>
-#include <cv.h>
 
 using namespace std;
 #pragma region struct_CommandString
@@ -132,8 +131,4 @@ typedef struct _CommandString {
 	}
 } CommandString;
 #pragma endregion struct_CommandString
-typedef struct {
-	CvPoint Cordinate; // 좌표 위치
-	CvPoint index; // 좌표 인덱스
-} Chess_point;
 #endif

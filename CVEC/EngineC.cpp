@@ -205,10 +205,10 @@ void EngineC::Command_UCI() {
 	SendToGUI("id author {Doohoon Kim, Sungpil Moon, Kyuhong Choi} in ARTeam of SW Maestro 4th");
 
 	// Print Options.
-	list<EO> _TEngineOption = _Option->GetEngineValues();
+	list<EngineOptions> _TEngineOption = _Option->GetEngineValues();
 	
 	// Test "for_TypeToEnd", not Standard.
-	for_IterToEnd(list, EO, _TEngineOption) {
+	for_IterToEnd(list, EngineOptions, _TEngineOption) {
 		if (_TVal->_OptionEnable == true) {
 			if (_TVal->_VariableOptionString != NULL && _TVal->_VariableOptionString != '\0')
 				SendToGUI("option name %s type %s default %s %s",

@@ -28,11 +28,11 @@
 ChessGame::ChessGame() {
 	_Turn = true; // 백
 
-	for (int i = 0; i < 8; i++)
-		for (int j = 0; j < 8; j++)
+	for (register int i = 0; i < 8; i++)
+		for (register int j = 0; j < 8; j++)
 			_Board[i][j] = Ground;
 
-	for (int i = 0; i < 8; i++)
+	for (register int i = 0; i < 8; i++)
 		_Board[i][6] = B_Pawn, _Board[i][1] = W_Pawn;
 
 	_Board[0][0] = _Board[7][0] = W_Rook;
@@ -59,12 +59,12 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 
 	switch (MOVE_MODE) {
 		case CASTLING_MOVE:					// 캐슬링
-			for (int i = 0; i < 4; i++)
+			for (register int i = 0; i < 4; i++)
 				_TMove[i] = input1[i];
 
 			break;
 		case ENPASSANT_MOVE:				// 앙파상
-			for (int i = 0; i < 3; i++)
+			for (register int i = 0; i < 3; i++)
 				_TMove[i] = input1[i];
 
 			int *_TValue[3];
@@ -73,7 +73,7 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 			_TValue[2] = &_Board[_TMove[2].y][_TMove[2].x];
 
 			int *white, *zero_pic, *black;
-			for (int i = 0; i < 3; i++){
+			for (register int i = 0; i < 3; i++){
 				if (*_TValue[i] == 0)
 					zero_pic = _TValue[0];
 				else if (*_TValue[i] == W_Pawn)
@@ -93,7 +93,7 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 			break;
 		default :
 			// 기본 무브
-			for (int i = 0; i < 2; i++)
+			for (register int i = 0; i < 2; i++)
 				_TMove[i] = input1[i];
 
 			int _TValue1, _TValue2;
@@ -132,8 +132,8 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 }
 
 void ChessGame::Show_chess_board() {
-	for (int i = 0; i < 8; i++) {
-		for (int j = 0; j < 8; j++) {
+	for (register int i = 0; i < 8; i++) {
+		for (register int j = 0; j < 8; j++) {
 			printf("%3d", _Board[i][j]);
 		}
 		printf("\n");
@@ -143,9 +143,9 @@ void ChessGame::Show_chess_board() {
 
 void ChessGame::Show_chessImage(){
 	char temp_buf[32];
-	for (int i = 0; i < 8; i++) {
-		for (int j = 0; j < 8; j++) {
-			if(_Board[i][j] != 0){
+	for (register int i = 0; i < 8; i++) {
+		for (register int j = 0; j < 8; j++) {
+			if (_Board[i][j] != 0) {
 				sprintf(temp_buf, "%d.png", _Board[i][j]);
 				chess_piece = cvLoadImage(temp_buf, CV_LOAD_IMAGE_UNCHANGED);
 

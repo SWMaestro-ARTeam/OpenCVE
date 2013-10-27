@@ -8,13 +8,13 @@
       <Filter>Common\Source</Filter>
     </ClCompile>
     <ClCompile Include="BlobLabeling.cpp">
-      <Filter>Recognitions\Source</Filter>
+      <Filter>CVES_System\Recognitions\Source</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>Main\Source</Filter>
+      <Filter>CVES_System\Main\Source</Filter>
     </ClCompile>
     <ClCompile Include="EngineS.cpp">
-      <Filter>EngineS\Source</Filter>
+      <Filter>CVES_System\EngineS\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\InternalProtocolSeeker.cpp">
       <Filter>Common\Source</Filter>
@@ -23,15 +23,17 @@
       <Filter>Common\Source</Filter>
     </ClCompile>
     <ClCompile Include="ChessRecognition.cpp">
-      <Filter>Recognitions\Source</Filter>
+      <Filter>CVES_System\Recognitions\Source</Filter>
     </ClCompile>
     <ClCompile Include="HandRecognition.cpp">
-      <Filter>Recognitions\Source</Filter>
+      <Filter>CVES_System\Recognitions\Source</Filter>
     </ClCompile>
     <ClCompile Include="ChessGame.cpp">
-      <Filter>ChessGame\Source</Filter>
+      <Filter>CVES_System\ChessGame\Source</Filter>
     </ClCompile>
-    <ClCompile Include="Chess_recognition_GH.cpp" />
+    <ClCompile Include="ChessLineSearchAlg.cpp">
+      <Filter>CVES_System\Algorithm\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\StringTokenizer.hpp">
@@ -47,13 +49,13 @@
       <Filter>Common\Header</Filter>
     </ClInclude>
     <ClInclude Include="BlobLabeling.hpp">
-      <Filter>Recognitions\Header</Filter>
+      <Filter>CVES_System\Recognitions\Header</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\ExtendedBlackBox.hpp">
       <Filter>Common\Header</Filter>
     </ClInclude>
     <ClInclude Include="EngineS.hpp">
-      <Filter>EngineS\Header</Filter>
+      <Filter>CVES_System\EngineS\Header</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\InternalProtocolSeeker.hpp">
       <Filter>Common\Header</Filter>
@@ -65,17 +67,22 @@
       <Filter>Common\Header</Filter>
     </ClInclude>
     <ClInclude Include="ChessRecognition.hpp">
-      <Filter>Recognitions\Header</Filter>
+      <Filter>CVES_System\Recognitions\Header</Filter>
     </ClInclude>
     <ClInclude Include="HandRecognition.hpp">
-      <Filter>Recognitions\Header</Filter>
+      <Filter>CVES_System\Recognitions\Header</Filter>
     </ClInclude>
     <ClInclude Include="ChessGame.hpp">
-      <Filter>ChessGame\Header</Filter>
+      <Filter>CVES_System\ChessGame\Header</Filter>
     </ClInclude>
-    <ClInclude Include="Chess_recognition_GH.h" />
     <ClInclude Include="..\Common\GlobalVariables.hpp">
       <Filter>Common\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="ChessLineSearchAlg.hpp">
+      <Filter>CVES_System\Algorithm\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="CVESDependent.hpp">
+      <Filter>CVES_System\CVES_Dependent</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -88,38 +95,53 @@
     <Filter Include="Common\Header">
       <UniqueIdentifier>{b36b6c18-1d77-4be5-ac0d-9b49ce17950b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ChessGame">
+    <Filter Include="CVES_System">
+      <UniqueIdentifier>{2b3bb4ae-6487-4ccd-9dc7-9e3a10995d36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVES_System\Algorithm">
+      <UniqueIdentifier>{63b086a0-3e7c-467e-90f8-a88cfddd4444}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVES_System\Algorithm\Header">
+      <UniqueIdentifier>{f3aca67e-864f-4b4b-8b49-bea8cbf8b1fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVES_System\Algorithm\Source">
+      <UniqueIdentifier>{8b751af5-1b5b-464d-8709-9906b2565828}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVES_System\ChessGame">
       <UniqueIdentifier>{ed6c186a-4d6a-4617-8f8d-3b09d2c8a53c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ChessGame\Header">
+    <Filter Include="CVES_System\ChessGame\Header">
       <UniqueIdentifier>{2f6e38ec-d676-491e-befe-0088140bbe1a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ChessGame\Source">
+    <Filter Include="CVES_System\ChessGame\Source">
       <UniqueIdentifier>{caa25ecb-36f9-48ca-977b-26c5b964fbca}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Recognitions">
-      <UniqueIdentifier>{14c84c1e-ea68-4841-857d-3f7ce942d514}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Recognitions\Header">
-      <UniqueIdentifier>{b41915f8-a684-41a0-a28f-d9f3328123a1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Recognitions\Source">
-      <UniqueIdentifier>{1883e58b-dd5f-4e1c-9a08-e2c8c96482d1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Main">
+    <Filter Include="CVES_System\Main">
       <UniqueIdentifier>{a1405153-60c9-4510-8e19-960ec282c4c8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Main\Source">
+    <Filter Include="CVES_System\Main\Source">
       <UniqueIdentifier>{02632896-ce6a-43cd-9c1d-2f904d8e107e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="EngineS">
+    <Filter Include="CVES_System\EngineS">
       <UniqueIdentifier>{0d4d3e39-4e41-43f1-9afd-41abcd5c8774}</UniqueIdentifier>
     </Filter>
-    <Filter Include="EngineS\Header">
+    <Filter Include="CVES_System\EngineS\Header">
       <UniqueIdentifier>{6332a42e-ee45-4263-a264-daea5e781f8e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="EngineS\Source">
+    <Filter Include="CVES_System\EngineS\Source">
       <UniqueIdentifier>{2a8a55aa-a8a1-4b34-8760-c08e1957a6e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVES_System\Recognitions">
+      <UniqueIdentifier>{14c84c1e-ea68-4841-857d-3f7ce942d514}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVES_System\Recognitions\Header">
+      <UniqueIdentifier>{b41915f8-a684-41a0-a28f-d9f3328123a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVES_System\Recognitions\Source">
+      <UniqueIdentifier>{1883e58b-dd5f-4e1c-9a08-e2c8c96482d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVES_System\CVES_Dependent">
+      <UniqueIdentifier>{abe32c43-e8f4-4c40-a354-320552978553}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

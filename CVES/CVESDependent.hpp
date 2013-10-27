@@ -23,40 +23,15 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ChessGame_hpp_
-#define _ChessGame_hpp_
-
-#include <stdio.h>
+#ifndef _CVESDependent_hpp_
+#define _CVESDependent_hpp_
 
 #include <opencv/cv.h>
-#include <opencv/highgui.h>
 
-#define CASTLING_MOVE 4
-#define ENPASSANT_MOVE 3
-
-#define SWAP(x, y) { int t; t = x; x = y; y = t; }
-
-class ChessGame {
-	enum {
-		Ground, 
-		W_King, W_Queen, W_Rook, W_Bishop, W_Knight, W_Pawn,
-		B_King, B_Queen, B_Rook, B_Bishop, B_Knight, B_Pawn,
-	};
-private:
-	int _Board[8][8];
-	bool _Turn;
-	CvPoint _Before, _After;
-	
-	IplImage *chessboard_img;
-	IplImage *chess_piece;
-public:
-	ChessGame();
-	~ChessGame();
-
-	// chess board의 말 움직임 진행 함수.
-	// MOVE_MODE : CASTLING_MOVE - 캐슬링 detect, ENPASSANT_MOVE - 앙파상 detect, other - 두 가지 말의 이동만을 체크함.
-	void Chess_process(CvPoint input1[], int MOVE_MODE);
-	void Show_chess_board();
-	void Show_chessImage();
-};
+#pragma region struct_ChessPoint
+typedef struct _ChessPoint {
+	CvPoint Cordinate; // 좌표 위치
+	CvPoint index; // 좌표 인덱스
+} ChessPoint;
+#pragma endregion struct_ChessPoint
 #endif

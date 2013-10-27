@@ -1,29 +1,49 @@
-#include "Chess_recognition_GH.h"
+ï»¿//////////////////////////////////////////////////////////////////////////////////////////////
+//	The OpenCVE Project.
+//
+//	The MIT License (MIT)
+//	Copyright Â© 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
+//	{invi.dh.kim, munsp9103, aiaipming} at gmail.com
+//
+//	Permission is hereby granted, free of charge, to any person obtaining a copy of
+//	this software and associated documentation files (the â€œSoftwareâ€), to deal
+//	in the Software without restriction, including without limitation the rights to
+//	use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+//	the Software, and to permit persons to whom the Software is furnished to do so,
+//	subject to the following conditions:
+//
+//	The above copyright notice and this permission notice shall be included in all
+//	copies or substantial portions of the Software.
+//
+//	THE SOFTWARE IS PROVIDED â€œAS ISâ€, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+//	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+//	PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+//	LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+//	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+//	OR OTHER DEALINGS IN THE SOFTWARE.
+//////////////////////////////////////////////////////////////////////////////////////////////
 
+#include "ChessLineSearchAlg.hpp"
 
-Chess_recognition_GH::Chess_recognition_GH(){
+ChessLineSearchAlg::ChessLineSearchAlg() {
 	Linefindcount_x1 = 0, Linefindcount_y1 = 0, Linefindcount_x2 = 0, Linefindcount_y2 = 0;
 }
 
-
-Chess_recognition_GH::~Chess_recognition_GH(){
+ChessLineSearchAlg::~ChessLineSearchAlg() {
 }
 
-//<<<<<<< HEAD:CVES/ChessRecognition.cpp
-
-void Chess_recognition_GH::GetLinegrayScale(IplImage *gray_image, int linefindcount_x1, int linefindcount_y1, int linefindcount_x2, int linefindcount_y2) {
-	// Áß°£ ºÎÅÍ °Ë»ç
-
+void ChessLineSearchAlg::GetLinegrayScale(IplImage *gray_image, int linefindcount_x1, int linefindcount_y1, int linefindcount_x2, int linefindcount_y2) {
+	// ì¤‘ê°„ ë¶€í„° ê²€ì‚¬.
 	int image_y = gray_image->height, image_x = gray_image->width;
 	int x1, x2, y1, y2;
 
-	// xÃàÀÇ grayscaleÀ» ¾ò±âÀ§ÇØ yÃàÀÇ Å½»öÀ§Ä¡¸¦ °áÁ¤
+	// xì¶•ì˜ grayscaleì„ ì–»ê¸° ìœ„í•´ yì¶•ì˜ íƒìƒ‰ ìœ„ì¹˜ë¥¼ ê²°ì •.
 
 	y1 = ((image_y / 7) * 3) - linefindcount_x1;
 	y2 = ((image_y / 7) * 4) + linefindcount_x2;
 
-	// Ã³À½ vector ¹è¿­¿¡ Áß½ÉÀÌ µÇ´Â °ªÀ» ³Ö¾îÁÖ°í
-	// ±× ÀÌÈÄ¿¡ Â¦¼ö´Â ¿À¸¥ÂÊ, È¦¼ö´Â ¿ŞÂÊÀÇ ¼öÄ¡¸¦ ³Ö¾îÁØ´Ù
+	// ì²˜ìŒ vector ë°°ì—´ì— ì¤‘ì‹¬ì´ ë˜ëŠ” ê°’ì„ ë„£ì–´ì£¼ê³ ,
+	// ê·¸ ì´í›„ì— ì§ìˆ˜ëŠ” ì˜¤ë¥¸ìª½, í™€ìˆ˜ëŠ” ì™¼ìª½ì˜ ìˆ˜ì¹˜ë¥¼ ë„£ì–´ì¤€ë‹¤.
 
 	line_x1.push_back(setMyGrayPoint(Getgrayscale(gray_image, image_x / 2, y1), image_x / 2, y1));
 	line_x2.push_back(setMyGrayPoint(Getgrayscale(gray_image, image_x / 2, y2), image_x / 2, y2));
@@ -36,14 +56,12 @@ void Chess_recognition_GH::GetLinegrayScale(IplImage *gray_image, int linefindco
 		line_x2.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) - x, y2) ,(image_x / 2) - x, y2));
 	}
 
-	// yÃàÀÇ grayscaleÀ» ¾ò±âÀ§ÇØ xÃàÀÇ Å½»öÀ§Ä¡¸¦ °áÁ¤
-
+	// yì¶•ì˜ grayscaleì„ ì–»ê¸°ìœ„í•´ xì¶•ì˜ íƒìƒ‰ìœ„ì¹˜ë¥¼ ê²°ì •.
 	x1 = ((image_x / 5) * 2) - linefindcount_y1;
 	x2 = ((image_x / 5) * 3) + linefindcount_y2;
 
-	// Ã³À½ vector ¹è¿­¿¡ Áß½ÉÀÌ µÇ´Â °ªÀ» ³Ö¾îÁÖ°í
-	// ±× ÀÌÈÄ¿¡ Â¦¼ö´Â ¾Æ·¡ÂÊ, È¦¼ö´Â À§ÂÊÀÇ ¼öÄ¡¸¦ ³Ö¾îÁØ´Ù
-
+	// ì²˜ìŒ vector ë°°ì—´ì— ì¤‘ì‹¬ì´ ë˜ëŠ” ê°’ì„ ë„£ì–´ì£¼ê³ , 
+	// ê·¸ ì´í›„ì— ì§ìˆ˜ëŠ” ì•„ë˜ìª½, í™€ìˆ˜ëŠ” ìœ„ìª½ì˜ ìˆ˜ì¹˜ë¥¼ ë„£ì–´ì¤€ë‹¤.
 	line_y1.push_back(setMyGrayPoint(Getgrayscale(gray_image, x1, image_y / 2), x1, image_y / 2));
 	line_y2.push_back(setMyGrayPoint(Getgrayscale(gray_image, x2, image_y / 2), x2, image_y / 2));
 
@@ -56,22 +74,19 @@ void Chess_recognition_GH::GetLinegrayScale(IplImage *gray_image, int linefindco
 	}
 }
 
-void Chess_recognition_GH::GetgraySidelinesPoint(IplImage *chess_image) {
-
-	// °¢ grayscaleÀÌ ÀúÀåµÇ¾î ÀÖ´Â vector ¹è¿­¿¡¼­ ÇØ´ç ¶óÀÎÀÇ ±³Â÷Á¡À» ±¸ÇÑ´Ù
-
+void ChessLineSearchAlg::GetgraySidelinesPoint(IplImage *chess_image) {
+	// ê° grayscaleì´ ì €ì¥ë˜ì–´ ìˆëŠ” vector ë°°ì—´ì—ì„œ í•´ë‹¹ ë¼ì¸ì˜ êµì°¨ì ì„ êµ¬í•œë‹¤.
 	GetgraySidelines(chess_image, &line_x1, &line_point_x1, &in_line_point_x1, true);
 	GetgraySidelines(chess_image, &line_x2, &line_point_x2, &in_line_point_x2, true);
 	GetgraySidelines(chess_image, &line_y1, &line_point_y1, &in_line_point_y1, false);
 	GetgraySidelines(chess_image, &line_y2, &line_point_y2, &in_line_point_y2, false);
 }
 
-void Chess_recognition_GH::GetInCrossPoint(IplImage *chess_image, vector<Chess_point> *point) {
+void ChessLineSearchAlg::GetInCrossPoint(IplImage *chess_image, vector<ChessPoint> *point) {
 	point->clear();
 
-	// in_line_point ¿À¸§Â÷¼ø Á¤·Ä
-	// Ã£Àº °æ°èÁ¡µéÀ» x¶Ç´Â y¸¦ Áß½ÉÀ¸·Î ÀçÁ¤·ÄÇÑ´Ù
-
+	// in_line_point ì˜¤ë¦„ì°¨ìˆœ ì •ë ¬.
+	// ì°¾ì€ ê²½ê³„ì ë“¤ì„ xë˜ëŠ” yë¥¼ ì¤‘ì‹¬ìœ¼ë¡œ ì¬ì •ë ¬í•œë‹¤.
 	for (register int i = 0; i < in_line_point_x1.size(); i++) {
 		for (register int j = i + 1; j < in_line_point_x1.size(); j++) {
 			if (in_line_point_x1[i].x > in_line_point_x1[j].x) {
@@ -101,10 +116,9 @@ void Chess_recognition_GH::GetInCrossPoint(IplImage *chess_image, vector<Chess_p
 		}
 	}
 
-	// Ã£Àº ¸ğµç °æ°èÁ¡µéÀ» ¼öÁ÷ÀÌ µÇ´Â ¶óÀÎÀÇ °æ°èÁ¡µé°úÀÇ ¸ğµç ±³Â÷Á¡À» Ã£´Â´Ù
+	// ì°¾ì€ ëª¨ë“  ê²½ê³„ì ë“¤ì„ ìˆ˜ì§ì´ ë˜ëŠ” ë¼ì¸ì˜ ê²½ê³„ì ë“¤ê³¼ì˜ ëª¨ë“  êµì°¨ì ì„ ì°¾ëŠ”ë‹¤.
 	// 9 * 9 = 81
-	// ±×ÈÄ ¸ğµç ±³Â÷Á¡À» point º¯¼ö¿¡ ³Ö´Â´Ù 
-
+	// ê·¸í›„ ëª¨ë“  êµì°¨ì ì„ point ë³€ìˆ˜ì— ë„£ëŠ”ë‹¤.
 	MyLinePoint t_in_line_point_x, t_in_line_point_y;
 	MyPoint t_in_point;
 
@@ -115,7 +129,7 @@ void Chess_recognition_GH::GetInCrossPoint(IplImage *chess_image, vector<Chess_p
 
 			GetCrossPoint(t_in_line_point_x, t_in_line_point_y, &t_in_point);
 
-			Chess_point temp;
+			ChessPoint temp;
 			temp.Cordinate = cvPoint(t_in_point.x, t_in_point.y);
 			temp.index = cvPoint(i, j);
 			point->push_back(temp);
@@ -123,21 +137,21 @@ void Chess_recognition_GH::GetInCrossPoint(IplImage *chess_image, vector<Chess_p
 	}
 }
 
-void Chess_recognition_GH::SetMyLinePoint(int x1, int y1, int x2, int y2, MyLinePoint *setLinePoint){
+void ChessLineSearchAlg::SetMyLinePoint(int x1, int y1, int x2, int y2, MyLinePoint *setLinePoint) {
 	setLinePoint->x1 = x1;
 	setLinePoint->x2 = x2;
 	setLinePoint->y1 = y1;
 	setLinePoint->y2 = y2;
 }
 
-int Chess_recognition_GH::Getgrayscale(IplImage *gray_image, int x, int y){
+int ChessLineSearchAlg::Getgrayscale(IplImage *gray_image, int x, int y) {
 	int index = x + y*gray_image->widthStep ;
 	unsigned char value = gray_image->imageData[index];
 
 	return (int)value;
 }
 
-Chess_recognition_GH::MyGrayPoint Chess_recognition_GH::setMyGrayPoint(int grayscale, int x, int y){
+ChessLineSearchAlg::MyGrayPoint ChessLineSearchAlg::setMyGrayPoint(int grayscale, int x, int y) {
 	MyGrayPoint t_graypoint;
 
 	t_graypoint.grayscale = grayscale;
@@ -147,7 +161,7 @@ Chess_recognition_GH::MyGrayPoint Chess_recognition_GH::setMyGrayPoint(int grays
 	return t_graypoint;
 }
 
-Chess_recognition_GH::MyPoint Chess_recognition_GH::setMyPoint(int x, int y) {
+ChessLineSearchAlg::MyPoint ChessLineSearchAlg::setMyPoint(int x, int y) {
 	MyPoint t_point;
 	t_point.x = x;
 	t_point.y = y;
@@ -155,7 +169,7 @@ Chess_recognition_GH::MyPoint Chess_recognition_GH::setMyPoint(int x, int y) {
 	return t_point;
 }
 
-bool Chess_recognition_GH::GetCrossPoint(MyLinePoint line1, MyLinePoint line2, MyPoint *out) {
+bool ChessLineSearchAlg::GetCrossPoint(MyLinePoint line1, MyLinePoint line2, MyPoint *out) {
 	float x12 = line1.x1 - line1.x2;
 	float x34 = line2.x1 - line2.x2;
 	float y12 = line1.y1 - line1.y2;
@@ -182,10 +196,8 @@ bool Chess_recognition_GH::GetCrossPoint(MyLinePoint line1, MyLinePoint line2, M
 	}
 }
 
-void Chess_recognition_GH::GrayImageBinarization(IplImage *gray_image) {
-
-	// ÀÌ¹ÌÁöÀÇ grayscaleÀ» ÀúÀåÇÒ º¯¼ö
-
+void ChessLineSearchAlg::GrayImageBinarization(IplImage *gray_image) {
+	// ì´ë¯¸ì§€ì˜ grayscaleì„ ì €ì¥í•  ë³€ìˆ˜.
 	float hist[256]={0,};
 	int temp[256];
 
@@ -193,14 +205,12 @@ void Chess_recognition_GH::GrayImageBinarization(IplImage *gray_image) {
 
 	bool flag = true;
 
-	// ¿µ»óÀÇ grayscaleÀ» ÀúÀåÇÑ´Ù
-
-	for(register int i = 0; i < gray_image->width; i++) {
-		for(register int j = 0; j < gray_image->height; j++) {
+	// ì˜ìƒì˜ grayscaleì„ ì €ì¥í•œë‹¤.
+	for (register int i = 0; i < gray_image->width; i++) {
+		for (register int j = 0; j < gray_image->height; j++) {
 			temp[Getgrayscale(gray_image, i, j)]++;
 
-			// ¸ÇÃ³À½ ¿µ»óÀÌ ´ÜÀÏ»öÀ¸·Î ³ª¿Ã °æ¿ì°¡ ÀÖ±â ¶§¹®¿¡ ¿¹¿ÜÃ³¸®¸¦ ÇØÁØ´Ù
-
+			// ë§¨ ì²˜ìŒ ì˜ìƒì´ ë‹¨ì¼ìƒ‰ìœ¼ë¡œ ë‚˜ì˜¬ ê²½ìš°ê°€ ìˆê¸° ë•Œë¬¸ì— ì˜ˆì™¸ ì²˜ë¦¬ë¥¼ í•´ì¤€ë‹¤.
 			if (Getgrayscale(gray_image, i, j) != 0)
 				flag = false;
 		}
@@ -211,15 +221,14 @@ void Chess_recognition_GH::GrayImageBinarization(IplImage *gray_image) {
 
 	float area = (float)gray_image->width * gray_image->height;
 
-	// grayscaleÀÇ Æò±Õ°ª
-
+	// grayscaleì˜ í‰ê· ê°’.
 	for (register int i = 1; i < 256; i++)
 		hist[i] = temp[i] / area;
 
 	int T, Told;
 
 	float sum = 0.f;
-	for (register int i=1; i < 256; i++)
+	for (register int i = 1; i < 256; i++)
 		sum += (i * hist[i]);
 
 	T = (int)sum;
@@ -250,39 +259,34 @@ void Chess_recognition_GH::GrayImageBinarization(IplImage *gray_image) {
 		T = (int)((u1 + u2) / 2);
 	} while(T != Told);
 
-	for(register int i=0; i < gray_image->width; i++) {
-		for(register int j=0; j < gray_image->height; j++) {
+	for (register int i = 0; i < gray_image->width; i++) {
+		for (register int j = 0; j < gray_image->height; j++) {
 			int index = i + (j * gray_image->widthStep);
 
-			// ÇØ´ç À§Ä¡ÀÇ grayscaleÀ» T°ªÀ» ±âÁØÀ¸·Î ÀÌÁøÈ­¸¦ °áÁ¤ÇÑ´Ù 
-
+			// í•´ë‹¹ ìœ„ì¹˜ì˜ grayscaleì„ Tê°’ì„ ê¸°ì¤€ìœ¼ë¡œ ì´ì§„í™”ë¥¼ ê²°ì •í•œë‹¤ 
 			gray_image->imageData[index] = Getgrayscale(gray_image, i, j) > T ? 255 : 0;
 		}
 	}
 }
 
-void Chess_recognition_GH::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool XYFlag){
-
-	// °æ°è¸¦ Ã£Àº ÈÄ ¾î´À Á¤µµÀÇ °æ°è¿¡´Â °è»êÀ» ÇÏÁö ¾Ê´Â´Ù
-
+void ChessLineSearchAlg::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool XYFlag) {
+	// ê²½ê³„ë¥¼ ì°¾ì€ í›„ ì–´ëŠ ì •ë„ì˜ ê²½ê³„ì—ëŠ” ê³„ì‚°ì„ í•˜ì§€ ì•ŠëŠ”ë‹¤.
 	int line_count = 0, jump_count_p = 0, jump_count_m = 0, jump_count = 0 ;
 
-	if(XYFlag){
+	if (XYFlag) {
 		jump_count = image->width / 12;
 		line_point->x1 = image->width / 2;
 	}
-	else{
+	else {
 		jump_count = image->height / 12;
 		line_point->y1 = image->height / 2;
 	}
 
-	// ±³Â÷µÇ´Â Ã¼½ºÆÇÀÇ °æ°è¸¦ °ËÃâ ÇÒ ¶§ Ã¼½º ¸»ÀÌ ÆÇ°ú ´ëºñ°¡ µÉ °æ¿ì
-	// °æ°è¼±À¸·Î ÀÎ½Ä µÇ´Â °æ¿ì¸¦ ¸·´Â´Ù
-
+	// êµì°¨ë˜ëŠ” ì²´ìŠ¤íŒì˜ ê²½ê³„ë¥¼ ê²€ì¶œ í•  ë•Œ ì²´ìŠ¤ ë§ì´ íŒê³¼ ëŒ€ë¹„ê°€ ë  ê²½ìš°,
+	// ê²½ê³„ì„ ìœ¼ë¡œ ì¸ì‹ ë˜ëŠ” ê²½ìš°ë¥¼ ë§‰ëŠ”ë‹¤.
 	bool change_flag_line_t, change_flag_line_t1, change_flag_line_t2;
 
-	// line vectorÇÔ¼ö Â÷¼ö º¯È¯
-
+	// line vectorí•¨ìˆ˜ ì°¨ìˆ˜ ë³€í™˜
 	vector<MyGrayPoint> _TT = *((vector<MyGrayPoint> *)line);
 
 	_TT[0].grayscale;
@@ -311,26 +315,23 @@ void Chess_recognition_GH::GetgraySidelines(IplImage *image, vector<MyGrayPoint>
 			if (_TT[i].grayscale != _TT[i + 2].grayscale) {
 				int flag = true;
 
-				// ÇØ´ç À§Ä¡¿¡¼­ ±×´ÙÀ½ ÇÈ¼¿ÀÌ ´ëºñ°¡ µÈ´Ù¸é °æ°è¼±À¸·Î ÀÎ½Ä
-
-				// ÀÌ ºÎºĞ¿¡¼­ ´ë°¢¼± ¹æÇâÀ» Ã³¸®ÇØ ÁØ´Ù XYFlag°¡ ture ¸é xÃà, falseÀÌ¸é yÃà
-				// ÇØ´ç ¹æÇâÀ¸·Î »¸¾îÀÖ´Â µÎ ´ë°¢¼± ¹æÇâÀÇ »öÀ» ºñ±³ÇÏ¿© Â÷ÀÌ°¡³ª¸é °æ°è¼±À¸·Î ÀÎ½ÄÇÑ´Ù
-
-				if(XYFlag){
-					if(i%2==1 && (Getgrayscale(image, _TT[i].x+2, _TT[i].y-2) != Getgrayscale(image, _TT[i].x+2, _TT[i].y+2)))
+				// í•´ë‹¹ ìœ„ì¹˜ì—ì„œ ê·¸ë‹¤ìŒ í”½ì…€ì´ ëŒ€ë¹„ê°€ ëœë‹¤ë©´ ê²½ê³„ì„ ìœ¼ë¡œ ì¸ì‹.
+				// ì´ ë¶€ë¶„ì—ì„œ ëŒ€ê°ì„  ë°©í–¥ì„ ì²˜ë¦¬í•´ ì¤€ë‹¤ XYFlagê°€ ture ë©´ xì¶•, falseì´ë©´ yì¶•.
+				// í•´ë‹¹ ë°©í–¥ìœ¼ë¡œ ë»—ì–´ìˆëŠ” ë‘ ëŒ€ê°ì„  ë°©í–¥ì˜ ìƒ‰ì„ ë¹„êµí•˜ì—¬ ì°¨ì´ê°€ë‚˜ë©´ ê²½ê³„ì„ ìœ¼ë¡œ ì¸ì‹í•œë‹¤.
+				if (XYFlag) {
+					if (i % 2 == 1 && (Getgrayscale(image, _TT[i].x + 2, _TT[i].y - 2) != Getgrayscale(image, _TT[i].x + 2, _TT[i].y + 2)))
 						return;
-					else if(i%2==0 && (Getgrayscale(image, _TT[i].x-2, _TT[i].y-2) != Getgrayscale(image, _TT[i].x-2, _TT[i].y+2)))
+					else if (i % 2 == 0 && (Getgrayscale(image, _TT[i].x - 2, _TT[i].y - 2) != Getgrayscale(image, _TT[i].x - 2, _TT[i].y + 2)))
 						return;
 				}
-				else{
-					if(i%2==1 && (Getgrayscale(image, _TT[i].x+2, _TT[i].y+2) != Getgrayscale(image, _TT[i].x-2, _TT[i].y+2))) 
+				else {
+					if (i % 2 == 1 && (Getgrayscale(image, _TT[i].x + 2, _TT[i].y + 2) != Getgrayscale(image, _TT[i].x - 2, _TT[i].y + 2))) 
 						return;
-					else if(i%2==0 && (Getgrayscale(image, _TT[i].x-2, _TT[i].y-2) != Getgrayscale(image, _TT[i].x+2, _TT[i].y-2)))
+					else if (i % 2 == 0 && (Getgrayscale(image, _TT[i].x - 2, _TT[i].y - 2) != Getgrayscale(image, _TT[i].x + 2, _TT[i].y - 2)))
 						return;
 				}
 
-				// È®½ÇÈ÷ ÇÏ±âÀ§ÇØ ÃÖ¼Ò 3ÇÈ¼¿ ±îÁö ´ëºñ°¡ µÇ¸é °æ°è¼±À¸·Î  ÀÎ½ÄÇÑ´Ù
-
+				// í™•ì‹¤íˆ í•˜ê¸°ìœ„í•´ ìµœì†Œ 3í”½ì…€ ê¹Œì§€ ëŒ€ë¹„ê°€ ë˜ë©´ ê²½ê³„ì„ ìœ¼ë¡œ ì¸ì‹í•œë‹¤.
 				for (register int j = 1; j <= 3; j++) {
 					if(i + (j * 2) > _TT.size())
 						continue;
@@ -371,15 +372,14 @@ void Chess_recognition_GH::GetgraySidelines(IplImage *image, vector<MyGrayPoint>
 			}
 		}
 
-		// °æ°è¼±À» 9°³ ´Ù Ã£À¸¸é ´õ ÀÌ»ó Ã£À» ÇÊ¿ä°¡ ¾øÀ¸¹Ç·Î Äµ½½ÇÑ´Ù
-
-		if(line_count == 9){
+		// ê²½ê³„ì„ ì„ 9ê°œ ë‹¤ ì°¾ìœ¼ë©´ ë” ì´ìƒ ì°¾ì„ í•„ìš”ê°€ ì—†ìœ¼ë¯€ë¡œ ìº”ìŠ¬í•œë‹¤.
+		if (line_count == 9){
 			break;
 		}
 	}
 }
 
-void Chess_recognition_GH::MemoryClear() {
+void ChessLineSearchAlg::MemoryClear() {
 	line_x1.clear(), line_x2.clear(), line_x_mid.clear(), line_y1.clear(), line_y2.clear(), line_y_mid.clear();
 
 	in_line_point_x1.clear(), in_line_point_x2.clear(), in_line_point_y1.clear(), in_line_point_y2.clear();

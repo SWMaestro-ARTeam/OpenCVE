@@ -35,7 +35,7 @@
 
 // If defined Debug mode by compiler
 #if defined(_DEBUG)
-#define DEBUG_MODE
+//#define DEBUG_MODE
 #endif
 
 #define BUFFER_MAX_16 16

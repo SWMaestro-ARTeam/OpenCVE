@@ -14,33 +14,39 @@
     <Filter Include="Common\Source">
       <UniqueIdentifier>{a534ef49-d4d2-4d2e-9d90-a9d1ea03b167}</UniqueIdentifier>
     </Filter>
-    <Filter Include="UCI">
-      <UniqueIdentifier>{50f65e19-5914-48a3-8f2e-450d383b5b79}</UniqueIdentifier>
+    <Filter Include="CVEC_System">
+      <UniqueIdentifier>{89d4a727-2a9d-420b-90ec-3d07ba030c3d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="UCI\Header">
-      <UniqueIdentifier>{b3fce9e0-cd7d-45f2-bf48-d8de573cf72c}</UniqueIdentifier>
+    <Filter Include="CVEC_System\EngineC">
+      <UniqueIdentifier>{5b0c08e7-50c9-4bbf-b3ac-fcd66f30fd83}</UniqueIdentifier>
     </Filter>
-    <Filter Include="UCI\Source">
-      <UniqueIdentifier>{d52ebf7f-570a-4d7c-8035-f5858f0b33f0}</UniqueIdentifier>
+    <Filter Include="CVEC_System\EngineC\Header">
+      <UniqueIdentifier>{cb4c2da5-1ac7-4e14-9f8b-ecb1b455567c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Main">
+    <Filter Include="CVEC_System\EngineC\Source">
+      <UniqueIdentifier>{e2e13681-1a99-4bc7-bbc1-38acb2a0b3eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVEC_System\Main">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Main\Header">
+    <Filter Include="CVEC_System\Main\Header">
       <UniqueIdentifier>{368a755a-3b51-413a-86e8-e274f98e379e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Main\Source">
+    <Filter Include="CVEC_System\Main\Source">
       <UniqueIdentifier>{7e7bee56-f737-4098-953d-4d80a500ab14}</UniqueIdentifier>
     </Filter>
-    <Filter Include="EngineC">
-      <UniqueIdentifier>{5b0c08e7-50c9-4bbf-b3ac-fcd66f30fd83}</UniqueIdentifier>
+    <Filter Include="CVEC_System\UCI">
+      <UniqueIdentifier>{50f65e19-5914-48a3-8f2e-450d383b5b79}</UniqueIdentifier>
     </Filter>
-    <Filter Include="EngineC\Header">
-      <UniqueIdentifier>{cb4c2da5-1ac7-4e14-9f8b-ecb1b455567c}</UniqueIdentifier>
+    <Filter Include="CVEC_System\UCI\Header">
+      <UniqueIdentifier>{b3fce9e0-cd7d-45f2-bf48-d8de573cf72c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="EngineC\Source">
-      <UniqueIdentifier>{e2e13681-1a99-4bc7-bbc1-38acb2a0b3eb}</UniqueIdentifier>
+    <Filter Include="CVEC_System\UCI\Source">
+      <UniqueIdentifier>{d52ebf7f-570a-4d7c-8035-f5858f0b33f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVEC_System\CVEC_Dependent">
+      <UniqueIdentifier>{0817e1ce-d5d7-4157-9b81-9e1835ff6448}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -48,19 +54,19 @@
       <Filter>Common\Source</Filter>
     </ClCompile>
     <ClCompile Include="UCICommandSesker.cpp">
-      <Filter>UCI\Source</Filter>
+      <Filter>CVEC_System\UCI\Source</Filter>
     </ClCompile>
     <ClCompile Include="UCICommandSeeker.hpp">
-      <Filter>UCI\Header</Filter>
+      <Filter>CVEC_System\UCI\Header</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>Main\Source</Filter>
+      <Filter>CVEC_System\Main\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\StringTokenizer.cpp">
       <Filter>Common\Source</Filter>
     </ClCompile>
     <ClCompile Include="Option.cpp">
-      <Filter>EngineC\Source</Filter>
+      <Filter>CVEC_System\EngineC\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\InternalProtocolSeeker.cpp">
       <Filter>Common\Source</Filter>
@@ -72,7 +78,7 @@
       <Filter>Common\Source</Filter>
     </ClCompile>
     <ClCompile Include="EngineC.cpp">
-      <Filter>EngineC\Source</Filter>
+      <Filter>CVEC_System\EngineC\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\Debug.cpp">
       <Filter>Common\Source</Filter>
@@ -95,13 +101,13 @@
       <Filter>Common\Header</Filter>
     </ClInclude>
     <ClInclude Include="UCICommand.hpp">
-      <Filter>UCI\Header</Filter>
+      <Filter>CVEC_System\UCI\Header</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\StringTokenizer.hpp">
       <Filter>Common\Header</Filter>
     </ClInclude>
     <ClInclude Include="Option.hpp">
-      <Filter>EngineC\Header</Filter>
+      <Filter>CVEC_System\EngineC\Header</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\GlobalVariables.hpp">
       <Filter>Common\Header</Filter>
@@ -122,7 +128,7 @@
       <Filter>Common\Header</Filter>
     </ClInclude>
     <ClInclude Include="EngineC.hpp">
-      <Filter>EngineC\Header</Filter>
+      <Filter>CVEC_System\EngineC\Header</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Debug.hpp">
       <Filter>Common\Header</Filter>
@@ -132,6 +138,9 @@
     </ClInclude>
     <ClInclude Include="..\Common\Process.hpp">
       <Filter>Common\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="CVECDependent.hpp">
+      <Filter>CVEC_System\CVEC_Dependent</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
