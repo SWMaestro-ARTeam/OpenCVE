@@ -889,9 +889,9 @@ void ChessRecognition::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *li
 							change_flag_line_t2 = !change_flag_t;
 					}
 					if (i % 2 == 1)
-						jump_count_p = jump_count;
+						jump_count_p = 10;
 					else
-						jump_count_m = jump_count;	
+						jump_count_m = 10;	
 				}
 			}
 		}

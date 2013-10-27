@@ -187,7 +187,7 @@ void HandRecognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
 		}
 
 		cvErode(dst, dst, 0, 2);
-		cvDilate(dst, dst, 0, 2);
+		cvDilate(dst, dst, 0, 8);
 
 		frame_count = 0;
 	}

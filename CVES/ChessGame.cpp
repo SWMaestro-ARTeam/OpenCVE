@@ -32,21 +32,6 @@ ChessGame::ChessGame() {
 		for (int j = 0; j < 8; j++)
 			_Board[i][j] = Ground;
 
-//<<<<<<< HEAD:CVES/ChessGame.cpp
-//	for (int i = 0; i < 8; i++)
-//		board[1][i] = B_Pawn, board[6][i] = W_Pawn;
-//
-//	board[0][0] = board[0][7] = B_Rook;
-//	board[7][0] = board[7][7] = W_Rook;
-//	board[0][1] = board[0][6] = B_Knight;
-//	board[7][1] = board[7][6] = W_Knight;
-//	board[0][2] = board[0][5] = B_Bishop;
-//	board[7][2] = board[7][5] = W_Bishop;
-//	board[0][3] = B_Queen;
-//	board[7][3] = W_Queen;
-//	board[0][4] = B_King;
-//	board[7][4] = W_King;
-//=======
 	for (int i = 0; i < 8; i++)
 		_Board[i][6] = B_Pawn, _Board[i][1] = W_Pawn;
 
@@ -60,10 +45,12 @@ ChessGame::ChessGame() {
 	_Board[3][0] = W_Queen;
 	_Board[4][7] = B_King;
 	_Board[4][0] = W_King;
-//>>>>>>> CVES_HandRecognition:CVES/chess_game.cpp
+
+	chessboard_img = cvLoadImage("./Chess_DebugUI/Chessboard.jpg");
 }
 
 ChessGame::~ChessGame() {
+	cvReleaseImage(&chessboard_img);
 }
 
 
@@ -152,4 +139,24 @@ void ChessGame::Show_chess_board() {
 		printf("\n");
 	}
 	printf("\n");
+}
+
+void ChessGame::Show_chessImage(){
+	char temp_buf[32];
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
+			if(_Board[i][j] != 0){
+				sprintf(temp_buf, "%d.png", _Board[i][j]);
+				chess_piece = cvLoadImage(temp_buf, CV_LOAD_IMAGE_UNCHANGED);
+
+				cvSetImageROI(chessboard_img, cvRect(i*64, i*64, 64, 64));
+				cvCopy(chess_piece, chessboard_img);
+				cvResetImageROI(chessboard_img);
+
+				cvReleaseImage(&chess_piece);
+			}
+		}
+	}
+
+	cvShowImage("ChessGame", chessboard_img);
 }

@@ -482,11 +482,11 @@ void EngineS::Calculate_Movement(IplImage *bin, vector<ChessPoint> cross_point, 
 					temp_max2 = temp_max1;
 					p_max2 = p_max1;
 					temp_max1 = score_box[i][j];
-					p_max1 = cvPoint(j, i);
+					p_max1 = cvPoint(i, j);
 				}
 				else if (temp_max1 > score_box[i][j] && score_box[i][j] > temp_max2) {
 					temp_max2 = score_box[i][j];
-					p_max2 = cvPoint(j, i);
+					p_max2 = cvPoint(i, j);
 				}
 			}
 		}
@@ -552,7 +552,7 @@ void EngineS::imgproc_mode(){
 
 		//관심영역 크기 고정
 		_ROIRect = cvRect(120,40, 400, 400);
-	}else if(_ImageProcessMode == 1){
+	}else if(_ImageProcessMode == 1 /*&& IsStarted == true*/){
 		// 관심영역 재설정 선택 OR 체스보드 인식 확인부
 		int _TTick = GetTickCount();
 
@@ -573,7 +573,7 @@ void EngineS::imgproc_mode(){
 		cvCopy(_CamOriginalImage, _ImageChess);
 		cvCopy(_CamOriginalImage, _PureImage);
 		
-		//Chessboard recognition;
+		//Chessboard recognition
 		_ChessRecognition.Copy_Img(_ImageChess);
 		_ChessRecognition.Chess_recog_wrapper(_CamOriginalImage, &_CrossPoint);
 		cvResetImageROI(_CamOriginalImage);
@@ -593,7 +593,7 @@ void EngineS::imgproc_mode(){
 		
 		DrawWindowS(_CamOriginalImage, _fps, _RGB);
 		cvShowImage("CVES", _CamOriginalImage);
-	}else if(_ImageProcessMode == 2){
+	}else if(_ImageProcessMode == 2 /*&& IsStarted == true*/){
 		//실제 이미지 처리 실행부
 		int _TTick = GetTickCount();
 
@@ -668,6 +668,7 @@ void EngineS::imgproc_mode(){
 						_BeforeHandFirst = true;
 
 						//chessgame 이동부
+						printf("(%d, %d) & (%d, %d)\n", out[0].x, out[0].y, out[1].x, out[1].y);
 						_ChessGame.Chess_process(out, 0);
 #ifdef DEBUG_MODE
 						_ChessGame.Show_chess_board();
@@ -689,12 +690,14 @@ void EngineS::imgproc_mode(){
 		cvResetImageROI(_CamOriginalImage);
 
 		// 설정된 관심영역 Rect 그리기
-		cvDrawRect(_CamOriginalImage, cvPoint(_ROIRect.x, _ROIRect.y), cvPoint(_ROIRect.x + _ROIRect.width, _ROIRect.y + _ROIRect.height), _RGB, 2);
+		//cvDrawRect(_CamOriginalImage, cvPoint(_ROIRect.x, _ROIRect.y), cvPoint(_ROIRect.x + _ROIRect.width, _ROIRect.y + _ROIRect.height), _RGB, 2);
 
 		// 초당 프레임수 계산
 		_TTick = GetTickCount() - _TTick;
-		sprintf(_TBuffer, "%.2f fps", 1000.f/ (float)_TTick);
-		cvPutText(_CamOriginalImage, _TBuffer, cvPoint(30, 30), &cvFont(1.0), cvScalar(0, 0, 255));
+		float _fps = 1000.f/ (float)_TTick;
+
+		DrawWindowS(_CamOriginalImage, _fps, _RGB);
+
 		cvShowImage("CVES", _CamOriginalImage);
 	}
 
