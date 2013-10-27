@@ -64,10 +64,17 @@ void EngineS::Deinitialize_TServer() {
 void EngineS::Initialize_ImageProcessing() {
 	//Cam init
 	// Engine의 Cam을 가져온다. 그것도 0번째.
+<<<<<<< HEAD
 	_Cam = cvCaptureFromCAM(0);
 	if (_Cam != NULL) {
 		cvSetCaptureProperty(_Cam, CV_CAP_PROP_FRAME_WIDTH, SERVER_VIEW_DEFAULT_WIDTH);
 		cvSetCaptureProperty(_Cam, CV_CAP_PROP_FRAME_HEIGHT, SERVER_VIEW_DEFAULT_HEIGHT);
+=======
+	Cam = cvCaptureFromCAM(1);
+	if (Cam != NULL) {
+		cvSetCaptureProperty(Cam, CV_CAP_PROP_FRAME_WIDTH, SERVER_VIEW_DEFAULT_WIDTH);
+		cvSetCaptureProperty(Cam, CV_CAP_PROP_FRAME_HEIGHT, SERVER_VIEW_DEFAULT_HEIGHT);
+>>>>>>> CVES_ChessRecognition_Extended
 	}
 
 	//모드 초기화

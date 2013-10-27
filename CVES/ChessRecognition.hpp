@@ -34,18 +34,28 @@
 #include <thread>
 #elif POSIX_SYS
 
+<<<<<<< HEAD
 #endif
+=======
+#include "Chess_recognition_GH.h"
+#include "GlobalVariables.hpp"
+
+#define H_THREAD 12
+>>>>>>> CVES_ChessRecognition_Extended
 
 #include <cv.h>
 #include <highgui.h>
 
 using namespace std;
 
+<<<<<<< HEAD
 typedef struct _ChessPoint{
 	CvPoint Cordinate; // 좌표 위치
 	CvPoint index; // 좌표 인덱스
 } ChessPoint;
 
+=======
+>>>>>>> CVES_ChessRecognition_Extended
 class ChessRecognition {
 private:
 	int _Width, _Height;
@@ -67,6 +77,7 @@ private:
 	CRITICAL_SECTION cs, vec_cs; //thread 동기화를 위한 cs
 	bool thread_exit;
 
+<<<<<<< HEAD
 	//////////////////////////////////////////////////////////////////////////////규홍규홍////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// 점의 위치를 저장하기 위한 구조체
 	typedef struct _MyPoint {
@@ -123,6 +134,9 @@ private:
 	void GetgraySidelines(IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool XYFlag);
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+=======
+	Chess_recognition_GH *gh;
+>>>>>>> CVES_ChessRecognition_Extended
 public:
 	ChessRecognition();
 	~ChessRecognition();
@@ -130,10 +144,17 @@ public:
 	//초기화
 	void Initialize_ChessRecognition(int width, int height, int mode);
 	//라인 그리기
+<<<<<<< HEAD
 	void drawLines(vector<pair<float, float>> lines, IplImage* image);
 	void drawPoint(IplImage *src, vector<ChessPoint> point);
 	//교차점 구하기
 	void findIntersections(vector<pair<float, float>> linesX, vector<pair<float, float>> linesY, vector<ChessPoint> *point);
+=======
+	void drawLines ( vector<pair<float, float>> lines, IplImage* image);
+	void drawPoint ( IplImage *src, vector<Chess_point> point);
+	//교차점 구하기
+	void findIntersections ( vector<pair<float, float>> linesX, vector<pair<float, float>> linesY, vector<Chess_point> *point );
+>>>>>>> CVES_ChessRecognition_Extended
 	//라인 return
 	void Get_Line(vector<pair<float, float>> *linesX, vector<pair<float, float>> *linesY);
 	//처리용 이미지 복사
@@ -145,8 +166,10 @@ public:
 	//자원반환
 	void exit();
 
-	//////////////////////////////////////////////////////////////////////////////규홍규홍////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//wrapper method
+	void Chess_recog_wrapper(IplImage *src, vector<Chess_point> *point);
 
+<<<<<<< HEAD
 	void Chess_recognition_process(IplImage *src, vector<ChessPoint> *point);
 	void MemoryClear();
 
@@ -157,5 +180,9 @@ public:
 
 	//wrapper method
 	void Chess_recog_wrapper(IplImage *src, vector<ChessPoint> *point);
+=======
+	void Chess_recognition_process(IplImage *src, vector<Chess_point> *point);
+
+>>>>>>> CVES_ChessRecognition_Extended
 };
 #endif

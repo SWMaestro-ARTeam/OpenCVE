@@ -48,6 +48,8 @@
 // Chess Game을 위한 좌표
 #include "ChessGame.hpp"
 
+#include "GlobalVariables.hpp"
+
 #include <stdio.h>
 #include <cv.h>
 #include <highgui.h>

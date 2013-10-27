@@ -85,6 +85,7 @@
   <ItemGroup>
     <ClInclude Include="..\Common\Common.hpp" />
     <ClInclude Include="..\Common\ExtendedBlackBox.hpp" />
+    <ClInclude Include="..\Common\GlobalVariables.hpp" />
     <ClInclude Include="..\Common\InternalProtocol.hpp" />
     <ClInclude Include="..\Common\InternalProtocolSeeker.hpp" />
     <ClInclude Include="..\Common\StringTokenizer.hpp" />
@@ -94,6 +95,7 @@
     <ClInclude Include="BlobLabeling.hpp" />
     <ClInclude Include="ChessGame.hpp" />
     <ClInclude Include="ChessRecognition.hpp" />
+    <ClInclude Include="Chess_recognition_GH.h" />
     <ClInclude Include="EngineS.hpp" />
     <ClInclude Include="HandRecognition.hpp" />
   </ItemGroup>
@@ -105,6 +107,7 @@
     <ClCompile Include="BlobLabeling.cpp" />
     <ClCompile Include="ChessGame.cpp" />
     <ClCompile Include="ChessRecognition.cpp" />
+    <ClCompile Include="Chess_recognition_GH.cpp" />
     <ClCompile Include="EngineS.cpp" />
     <ClCompile Include="HandRecognition.cpp" />
     <ClCompile Include="main.cpp" />
