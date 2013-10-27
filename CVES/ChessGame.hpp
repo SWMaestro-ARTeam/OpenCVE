@@ -27,7 +27,12 @@
 #define _ChessGame_hpp_
 
 #include <stdio.h>
+<<<<<<< HEAD
 #include <opencv/cv.h>
+=======
+#include <cv.h>
+#include <highgui.h>
+>>>>>>> CVES_HandRecognition
 
 #define CASTLING_MOVE				4
 #define ENPASSANT_MOVE			3
@@ -44,6 +49,9 @@ private:
 	int _Board[8][8];
 	bool _Turn;
 	CvPoint _Before, _After;
+	
+	IplImage *chessboard_img;
+	IplImage *chess_piece;
 public:
 	ChessGame();
 	~ChessGame();
@@ -52,5 +60,6 @@ public:
 	// MOVE_MODE : CASTLING_MOVE - 캐슬링 detect, ENPASSANT_MOVE - 앙파상 detect, other - 두 가지 말의 이동만을 체크함.
 	void Chess_process(CvPoint input1[], int MOVE_MODE);
 	void Show_chess_board();
+	void Show_chessImage();
 };
 #endif

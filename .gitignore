@@ -2,10 +2,16 @@ CVEC/Debug/
 CVEC/Release/
 CVES/Debug/
 CVES/Release/
+<<<<<<< HEAD
 CVEO/Debug/
 CVEO/Release/
 Celestials/Debug/
 Celestials/Release/
+=======
+CVES/Chess_DebugUI/
+CVES_Gui/
+CVES_Gui/CVES_Gui/
+>>>>>>> CVES_HandRecognition
 Debug/
 Release/
 *.opensdf
