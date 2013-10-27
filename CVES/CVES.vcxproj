@@ -85,6 +85,7 @@
   <ItemGroup>
     <ClInclude Include="..\Common\Common.hpp" />
     <ClInclude Include="..\Common\ExtendedBlackBox.hpp" />
+    <ClInclude Include="..\Common\GlobalVariables.hpp" />
     <ClInclude Include="..\Common\InternalProtocol.hpp" />
     <ClInclude Include="..\Common\InternalProtocolSeeker.hpp" />
     <ClInclude Include="..\Common\StringTokenizer.hpp" />

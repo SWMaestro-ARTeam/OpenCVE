@@ -1,11 +1,12 @@
 #include <cv.h>
 #include <highgui.h>
+#include "GlobalVariables.hpp"
 
 using namespace std;
 
 class Chess_recognition_GH
 {
-	private:
+	public:
 	//////////////////////////////////////////////////////////////////////////////규홍규홍////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// 점의 위치를 저장하기 위한 구조체
 	typedef struct {
@@ -26,9 +27,6 @@ class Chess_recognition_GH
 	typedef struct {
 		MyPoint LeftTop, LeftBottom, RightTop, RightBottom;
 	} MySquarePoint;
-
-
-	int line_avg_x1, line_avg_x2, line_avg_y1, line_avg_y2;
 
 	// 모든 체스판 라인이 검출되기 위한 위치는 찾는데 사용되는 변수
 	int Linefindcount_x1, Linefindcount_y1, Linefindcount_x2, Linefindcount_y2;
@@ -64,13 +62,8 @@ class Chess_recognition_GH
 
 	MyGrayPoint setMyGrayPoint(int grayscale, int x, int y);
 	MyPoint setMyPoint(int x, int y);
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-public:
+	
 	Chess_recognition_GH(void);
 	~Chess_recognition_GH(void);
-
-	void Chess_recognition_process(IplImage *src, vector<Chess_point> *point);
-
 };
 

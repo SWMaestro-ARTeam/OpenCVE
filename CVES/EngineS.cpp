@@ -64,7 +64,7 @@ void EngineS::Deinitialize_TServer() {
 void EngineS::Initialize_ImageProcessing() {
 	//Cam init
 	// Engine의 Cam을 가져온다. 그것도 0번째.
-	Cam = cvCaptureFromCAM(0);
+	Cam = cvCaptureFromCAM(1);
 	if (Cam != NULL) {
 		cvSetCaptureProperty(Cam, CV_CAP_PROP_FRAME_WIDTH, SERVER_VIEW_DEFAULT_WIDTH);
 		cvSetCaptureProperty(Cam, CV_CAP_PROP_FRAME_HEIGHT, SERVER_VIEW_DEFAULT_HEIGHT);

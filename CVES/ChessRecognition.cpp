@@ -26,6 +26,7 @@
 #include "ChessRecognition.hpp"
 
 ChessRecognition::ChessRecognition() {
+	gh = new Chess_recognition_GH();
 }
 
 
@@ -414,6 +415,7 @@ UINT WINAPI ChessRecognition::thread_hough(void *arg) {
 //<<<<<<< HEAD:CVES/ChessRecognition.cpp
 UINT WINAPI ChessRecognition::thread_GH(void *arg) {
 	ChessRecognition* p = (ChessRecognition*)arg;
+	Chess_recognition_GH *gh = new Chess_recognition_GH();
 //=======
 //UINT WINAPI Chess_recognition::thread_GH(void *arg) {
 	//mode 2를 통하여 chessboard recognition을 수행하기 위한 thread 함수.
@@ -550,4 +552,96 @@ void ChessRecognition::Chess_recog_wrapper(IplImage *src, vector<Chess_point> *p
 		Refine_CrossPoint(point);
 		drawPoint(src, *point);
 	}
+}
+
+void ChessRecognition::Chess_recognition_process(IplImage *src, vector<Chess_point> *point) {
+
+	//=======
+	//void Chess_recognition::Chess_recognition_process(IplImage *src, vector<Chess_point> *point) {
+
+	// 영상 이진화
+	//>>>>>>> CVES_HandRecognition:CVES/Chess_recognition.cpp
+	gh->GrayImageBinarization(src);
+
+	while(1){
+		cvShowImage("ImageBin",src);
+		if(cvWaitKey(33))
+			break;
+	}
+	// 해당 영상에서의 좌표 x,y 와 grayscale을 추출하여 vector<MyGrayPoint> 형의 line에 저장
+	gh->GetLinegrayScale(src, gh->Linefindcount_x1, gh->Linefindcount_y1, gh->Linefindcount_x2, gh->Linefindcount_y2);
+
+	// 체스판의 경계를 구하여 in_line_point 변수들에 저장
+	gh->GetgraySidelinesPoint(src);
+
+	while(1){
+		cvShowImage("findCrossPoint",src);
+		if(cvWaitKey(33))
+			break;
+	}
+
+	// 해당 라인에서 9곳의 체스판 경계를 찾지 못 하였으면
+	// 탐색라인을 이동시켜 적절한 탐색라인을 찾는다
+	// flag의 값에 따라 Linefindcount의 값을 변경한다
+	// true  : +
+	// false : -
+
+	// 만약 9곳의 경계를 모두 찾게 되면 해당 라인으로 고정시킨다
+
+	if (gh->Linefindcount_x1 >= (src->width / 5) * 2 - 10)
+		gh->flag_x1 = false;
+
+	if (gh->Linefindcount_y1 >= (src->height / 5) * 2 - 10)
+		gh->flag_y1 = false;
+
+	if (gh->Linefindcount_x2 >= (src->width / 5) * 2 - 10)
+		gh->flag_x2 = false;
+
+	if (gh->Linefindcount_y2 >= (src->height / 5) * 2 - 10)
+		gh->flag_y2 = false;
+
+	if (gh->Linefindcount_x1 <= 1)
+		gh->flag_x1 = true;
+
+	if (gh->Linefindcount_y1 <= 1)
+		gh->flag_y1 = true;	
+
+	if (gh->Linefindcount_x2 <= 1)
+		gh->flag_x2 = true;
+
+	if (gh->Linefindcount_y2 <= 1)
+		gh->flag_y2 = true;
+
+	// 각 라인이 모든 체스판의 경계를 찾았다면 다음 과정으로 넘어가고
+	// 찾지 못하였으면 x축 또는 y축을 이동시켜 경계를 찾을 수 있는 라인을 찾는다
+
+	if (gh->in_line_point_x1.size() == 9 && gh->in_line_point_x2.size() ==  9 && gh->in_line_point_y1.size() == 9 && gh->in_line_point_y2.size() == 9) {
+
+		// 각 찾은 경계점들의 수직이 되는 점 모두의 교차점을 찾는다
+		gh->GetInCrossPoint(src, point);
+	}
+	else if (gh->in_line_point_x1.size() != 9 || gh->in_line_point_x2.size() != 9) {
+		if (gh->flag_x1 && (gh->in_line_point_x1.size() != 9))
+			gh->Linefindcount_x1 += 3;
+		else if (!gh->flag_x1 && (gh->in_line_point_x1.size() != 9))
+			gh->Linefindcount_x1 -= 3;
+		if (gh->flag_x2 && (gh->in_line_point_x2.size() != 9))
+			gh->Linefindcount_x2 += 3;
+		else if (!gh->flag_x2 && (gh->in_line_point_x2.size() != 9))
+			gh->Linefindcount_x2 -= 3;
+	}
+	else if(gh->in_line_point_y1.size() != 9 || gh->in_line_point_y2.size() != 9) {
+		if (gh->flag_y1 && (gh->in_line_point_y1.size() != 9))
+			gh->Linefindcount_y1 += 3;
+		else if (!gh->flag_y1 && (gh->in_line_point_y1.size() != 9))
+			gh->Linefindcount_y1 -= 3;
+		if (gh->flag_y2 && (gh->in_line_point_y2.size() != 9))
+			gh->Linefindcount_y2 += 3;
+		else if (!gh->flag_y2 && (gh->in_line_point_y2.size() != 9))
+			gh->Linefindcount_y2 -= 3;
+	}
+
+	// 메모리 초기화
+
+	gh->MemoryClear();
 }

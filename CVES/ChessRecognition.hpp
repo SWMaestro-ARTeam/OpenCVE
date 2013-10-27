@@ -32,16 +32,14 @@
 #include <process.h>
 #include <thread>
 
+#include "Chess_recognition_GH.h"
+#include "GlobalVariables.hpp"
+
 #define H_THREAD 12
 
 #define MAX_CORNER 5000
 
 using namespace std;
-
-typedef struct {
-	CvPoint Cordinate; // 좌표 위치
-	CvPoint index; // 좌표 인덱스
-} Chess_point;
 
 class ChessRecognition {
 private:
@@ -64,11 +62,33 @@ private:
 	CRITICAL_SECTION cs, vec_cs; //thread 동기화를 위한 cs
 	bool thread_exit;
 
+	Chess_recognition_GH *gh;
 public:
 	ChessRecognition();
 	~ChessRecognition();
 
+	//초기화
+	void Initialize_ChessRecognition(int width, int height, int mode);
+	//라인 그리기
+	void drawLines ( vector<pair<float, float>> lines, IplImage* image);
+	void drawPoint ( IplImage *src, vector<Chess_point> point);
+	//교차점 구하기
+	void findIntersections ( vector<pair<float, float>> linesX, vector<pair<float, float>> linesY, vector<Chess_point> *point );
+	//라인 return
+	void Get_Line(vector<pair<float, float>> *linesX, vector<pair<float, float>> *linesY);
+	//처리용 이미지 복사
+	void Copy_Img(IplImage *src);
+	//교차점 보정함수
+	void Refine_CrossPoint(vector<Chess_point> *point);
+	//관심영역 설정
+	void Set_CalculationDomain(CvCapture *Cam, int *ROI_WIDTH, int *ROI_HEIGHT);
+	//자원반환
+	void exit();
+
 	//wrapper method
 	void Chess_recog_wrapper(IplImage *src, vector<Chess_point> *point);
+
+	void Chess_recognition_process(IplImage *src, vector<Chess_point> *point);
+
 };
 #endif
