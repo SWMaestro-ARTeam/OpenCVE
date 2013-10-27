@@ -44,8 +44,8 @@ void HandRecognition::Init(int width, int height) {
 	img_width = width;
 	img_height = height;
 
-	//skin detection에 사용되는 내부 연산 이미지.
-	//skin color를 통한 detecion에 문제가 있어 현재 사용하지 않고 있음.
+	// skin detection에 사용되는 내부 연산 이미지.
+	// skin color를 통한 detecion에 문제가 있어 현재 사용하지 않고 있음.
 	img_YCrCb = cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 3);
 	img_HSV = cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 3);
 
@@ -54,14 +54,14 @@ void HandRecognition::Init(int width, int height) {
 }
 
 bool HandRecognition::R1(int R, int G, int B) {
-	//RGB image의 각 픽셀값을 입력받아서 skin의 범위 해당하는지 return
+	// RGB image의 각 픽셀값을 입력받아서 skin의 범위 해당하는지 return
 	bool e1 = (R > 95) && (G > 40) && (B > 20) && ((max(R, max(G, B)) - min(R, min(G , B))) > 15) && (abs(R - G) > 15) && (R > G) && (R > B);
 	bool e2 = (R > 220) && (G > 210) && (B > 170) && (abs(R - G) <= 15) && (R > B) && (G > B);
 	return (e1||e2);
 }
 
 bool HandRecognition::R2(float Y, float Cr, float Cb) {
-	//Y, Cr, Cb image를 통하여 skin 영역의 색상을 구분.
+	// Y, Cr, Cb image를 통하여 skin 영역의 색상을 구분.
 	bool e3 = Cr <= (1.5862 * Cb) + 20;
 	bool e4 = Cr >= (0.3448 * Cb) + 76.2069;
 	bool e5 = Cr >= (-4.5652 * Cb) + 234.5652;
@@ -72,14 +72,14 @@ bool HandRecognition::R2(float Y, float Cr, float Cb) {
 
 
 bool HandRecognition::R3(float H, float S, float V) {
-	//HSV image의 H를 통하여 SKin color 범주에 있는지 확인.
+	// HSV image의 H를 통하여 SKin color 범주에 있는지 확인.
 	return (H < 25) || (H > 230);
 }
 
 void HandRecognition::Detect_Skin(IplImage *src, IplImage *dst) {
-	//skin color detection을 진행.
-	//RGB-H-CbCr Skin Colour Model for Human Face Detection 논문 참조.
-	//http://pesona.mmu.edu.my/~johnsee/research/papers/files/rgbhcbcr_m2usic06.pdf 
+	// skin color detection을 진행.
+	// RGB-H-CbCr Skin Colour Model for Human Face Detection 논문 참조.
+	// http://pesona.mmu.edu.my/~johnsee/research/papers/files/rgbhcbcr_m2usic06.pdf 
 	cvCvtColor(src, img_YCrCb, CV_BGR2YCrCb);
 	cvCvtColor(src, img_HSV, CV_BGR2HSV);
 
@@ -118,7 +118,7 @@ void HandRecognition::Detect_Skin(IplImage *src, IplImage *dst) {
 		}
 	}
 
-	//noise에 의한 영향을 줄이기 위해 모폴로지 연산 적용.
+	// noise에 의한 영향을 줄이기 위해 모폴로지 연산 적용.
 	cvErode(dst, dst, 0, MOP_NUM);
 	cvDilate(dst, dst, 0, MOP_NUM);
 }
@@ -157,7 +157,7 @@ void HandRecognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
 		}
 	}
 
-	//이전 프레임의 이미지가 존재하지 않을때, 이전 이미지에 현재 입력받은 이미지를 입력.
+	// 이전 프레임의 이미지가 존재하지 않을때, 이전 이미지에 현재 입력받은 이미지를 입력.
 	if (prev_ground == NULL) {
 		prev_ground = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 3);
 		present_ground = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 3);
@@ -170,7 +170,7 @@ void HandRecognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
 	if (frame_count == 1) {
 		cvCopy(src, present_ground);
 
-		//image 내부의 모든 픽셀을 대상으로 rgb 차영상 적용.
+		// image 내부의 모든 픽셀을 대상으로 rgb 차영상 적용.
 		for (int i = 0; i < src->width; i++) {
 			for (int j = 0; j < src->height; j++) {
 				unsigned char SUB_B = abs((unsigned char)src->imageData[(i * 3) + (j * src->widthStep)] - (unsigned char)prev_ground->imageData[(i * 3) + (j * prev_ground->widthStep)]);
