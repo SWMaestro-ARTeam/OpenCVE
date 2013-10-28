@@ -27,12 +27,12 @@
 #define _ChessGame_hpp_
 
 #include <stdio.h>
+#include <cv.h>
+#include <highgui.h>
 
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
-
-#define CASTLING_MOVE 4
-#define ENPASSANT_MOVE 3
+#define CASTLING_MOVE				4
+#define ENPASSANT_MOVE			3
+#define DEBUGUI_PATH "./Chess_DebugUI/"
 
 #define SWAP(x, y) { int t; t = x; x = y; y = t; }
 

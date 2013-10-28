@@ -134,7 +134,7 @@ void EngineS::Go_ImageProcessing(){
 
 	// Cam으로부터의 영상입력.
 	_CamOriginalImage = cvQueryFrame(_Cam);
-	//cvFlip(_CamOriginalImage, _CamOriginalImage, FLIP_MODE);
+	cvFlip(_CamOriginalImage, _CamOriginalImage, FLIP_MODE);
 
 	//모드에 따른 이미지 프로세스 수행
 	imgproc_mode();
@@ -219,7 +219,7 @@ void EngineS::Sub_image(IplImage *src1, IplImage *src2, IplImage *dst) {
 
 	// 차영상 연산 결과에 median filter 적용 & 후추 소금 노이즈를 제거하기 위한 mopology 연산 적용.
 	cvErode(dst, dst, 0, 2);
-	cvDilate(dst, dst, 0, 2);
+	cvDilate(dst, dst, 0, 8);
 
 	cvReleaseImage(&Lab_src1);
 	cvReleaseImage(&Lab_src2);
@@ -669,8 +669,9 @@ void EngineS::imgproc_mode(){
 						_BeforeHandFirst = true;
 
 						// chessgame 이동부.
-						printf("(%d, %d) & (%d, %d)\n", out[0].x, out[0].y, out[1].x, out[1].y);
+						//printf("(%d, %d) & (%d, %d)\n", out[0].x, out[0].y, out[1].x, out[1].y);
 						_ChessGame.Chess_process(out, 0);
+						_ChessGame.Show_chessImage();
 #ifdef DEBUG_MODE
 						_ChessGame.Show_chess_board();
 #endif

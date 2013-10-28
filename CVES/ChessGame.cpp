@@ -28,11 +28,11 @@
 ChessGame::ChessGame() {
 	_Turn = true; // 백
 
-	for (register int i = 0; i < 8; i++)
-		for (register int j = 0; j < 8; j++)
+	for (int i = 0; i < 8; i++)
+		for (int j = 0; j < 8; j++)
 			_Board[i][j] = Ground;
 
-	for (register int i = 0; i < 8; i++)
+	for (int i = 0; i < 8; i++)
 		_Board[i][6] = B_Pawn, _Board[i][1] = W_Pawn;
 
 	_Board[0][0] = _Board[7][0] = W_Rook;
@@ -46,7 +46,7 @@ ChessGame::ChessGame() {
 	_Board[4][7] = B_King;
 	_Board[4][0] = W_King;
 
-	chessboard_img = cvLoadImage("./Chess_DebugUI/Chessboard.jpg");
+	chessboard_img = cvLoadImage("./Chess_DebugUI/Chessboard.png", CV_LOAD_IMAGE_UNCHANGED);
 }
 
 ChessGame::~ChessGame() {
@@ -59,12 +59,12 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 
 	switch (MOVE_MODE) {
 		case CASTLING_MOVE:					// 캐슬링
-			for (register int i = 0; i < 4; i++)
+			for (int i = 0; i < 4; i++)
 				_TMove[i] = input1[i];
 
 			break;
 		case ENPASSANT_MOVE:				// 앙파상
-			for (register int i = 0; i < 3; i++)
+			for (int i = 0; i < 3; i++)
 				_TMove[i] = input1[i];
 
 			int *_TValue[3];
@@ -73,7 +73,7 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 			_TValue[2] = &_Board[_TMove[2].y][_TMove[2].x];
 
 			int *white, *zero_pic, *black;
-			for (register int i = 0; i < 3; i++){
+			for (int i = 0; i < 3; i++){
 				if (*_TValue[i] == 0)
 					zero_pic = _TValue[0];
 				else if (*_TValue[i] == W_Pawn)
@@ -93,7 +93,7 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 			break;
 		default :
 			// 기본 무브
-			for (register int i = 0; i < 2; i++)
+			for (int i = 0; i < 2; i++)
 				_TMove[i] = input1[i];
 
 			int _TValue1, _TValue2;
@@ -132,8 +132,8 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 }
 
 void ChessGame::Show_chess_board() {
-	for (register int i = 0; i < 8; i++) {
-		for (register int j = 0; j < 8; j++) {
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
 			printf("%3d", _Board[i][j]);
 		}
 		printf("\n");
@@ -143,20 +143,40 @@ void ChessGame::Show_chess_board() {
 
 void ChessGame::Show_chessImage(){
 	char temp_buf[32];
-	for (register int i = 0; i < 8; i++) {
-		for (register int j = 0; j < 8; j++) {
-			if (_Board[i][j] != 0) {
-				sprintf(temp_buf, "%d.png", _Board[i][j]);
+	IplImage *tempgame_board;
+	tempgame_board = cvCloneImage(chessboard_img);
+
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
+			if(_Board[i][j] != 0){
+				sprintf(temp_buf, "./Chess_DebugUI/%d.png", _Board[i][j]);
 				chess_piece = cvLoadImage(temp_buf, CV_LOAD_IMAGE_UNCHANGED);
 
-				cvSetImageROI(chessboard_img, cvRect(i*64, i*64, 64, 64));
-				cvCopy(chess_piece, chessboard_img);
-				cvResetImageROI(chessboard_img);
+				//cvSetImageROI(chessboard_img, cvRect(j*64, i*64, 64, 64));
+				// 알파값 추가 처리.
+				for(int k = 0; k < chess_piece->width; k++){
+					for(int l = 0; l < chess_piece->height; l++){
+						unsigned char B = (unsigned char)chess_piece->imageData[(k*4) + (l*chess_piece->widthStep) + 0];
+						unsigned char G = (unsigned char)chess_piece->imageData[(k*4) + (l*chess_piece->widthStep) + 1];
+						unsigned char R = (unsigned char)chess_piece->imageData[(k*4) + (l*chess_piece->widthStep) + 2];
+						unsigned char A = (unsigned char)chess_piece->imageData[(k*4) + (l*chess_piece->widthStep) + 3];
+
+						// 아이콘이 불투명한 영역만 붙여 넣기.
+						if(A > 100){
+							tempgame_board->imageData[(j*64+k)*4 + (i*64+l)*tempgame_board->widthStep + 0] = B;
+							tempgame_board->imageData[(j*64+k)*4 + (i*64+l)*tempgame_board->widthStep + 1] = G;
+							tempgame_board->imageData[(j*64+k)*4 + (i*64+l)*tempgame_board->widthStep + 2] = R;
+						}
+					}
+				}
+
+				//cvResetImageROI(chessboard_img);
 
 				cvReleaseImage(&chess_piece);
 			}
 		}
 	}
 
-	cvShowImage("ChessGame", chessboard_img);
+	cvShowImage("ChessGame", tempgame_board);
+	cvReleaseImage(&tempgame_board);
 }
