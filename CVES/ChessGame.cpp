@@ -56,6 +56,7 @@ ChessGame::~ChessGame() {
 
 void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 	CvPoint _TMove[4];
+	move_format temp_move;
 
 	switch (MOVE_MODE) {
 		case CASTLING_MOVE:					// 캐슬링
@@ -82,12 +83,11 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 					black = _TValue[i];
 			}
 
-			if (_Turn == true) {
+			if (_Turn == WHITE_TURN) {
 			
 			}
-			else if (_Turn == false) {
+			else if (_Turn == BLACK_TURN) {
 
-	//>>>>>>> CVES_HandRecognition:CVES/chess_game.cpp
 			}
 
 			break;
@@ -101,30 +101,40 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 			_TValue2 = _Board[_TMove[1].y][_TMove[1].x];
 
 			// 체스 무브 진행
-			if (_Turn == true){
+			if (_Turn == WHITE_TURN){
 				// 백색 차례일때
+				temp_move.turn_flag = WHITE_TURN;
 
 				if (1 <= _TValue1 && _TValue1 <= 6){
 					_Board[_TMove[1].y][_TMove[1].x] = 0;
 					SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
+					MakeUCI(_TMove[0], _TMove[1], &temp_move);
 				}
 				else if (1 <= _TValue2 && _TValue2 <= 6){
 					_Board[_TMove[0].y][_TMove[0].x] = 0;
 					SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
+					MakeUCI(_TMove[1], _TMove[0], &temp_move);
 				}
 			}
-			else if (_Turn == false) {
+			else if (_Turn == BLACK_TURN) {
 				//검은색 차례일때
+				temp_move.turn_flag = BLACK_TURN;
 
 				if (7 <= _TValue1 && _TValue1 <= 12) {
 					_Board[_TMove[1].y][_TMove[1].x] = 0;
 					SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
+					MakeUCI(_TMove[0], _TMove[1], &temp_move);
 				}
 				else if (7 <= _TValue2 && _TValue2 <= 12) {
 					_Board[_TMove[0].y][_TMove[0].x] = 0;
 					SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
+					MakeUCI(_TMove[1], _TMove[0], &temp_move);
 				}
 			}
+
+			//queue에 넣음
+			_chess_movement.push(temp_move);
+
 			break;
 	}
 
@@ -179,4 +189,48 @@ void ChessGame::Show_chessImage(){
 
 	cvShowImage("ChessGame", tempgame_board);
 	cvReleaseImage(&tempgame_board);
+}
+
+void ChessGame::MakeUCI(CvPoint before, CvPoint after, move_format *dst){
+	char buf[6];
+
+	sprintf(buf, "%c%d%c%d", char_mapping(before.y), before.x+1, char_mapping(after.y), after.x+1);
+	buf[5] = '\0';
+
+	strcpy(dst->movement, buf);
+}
+
+void ChessGame::Get_RecentMove(char *str){
+	move_format temp_move;
+	char buf[6];
+
+	//dequeue
+	temp_move = _chess_movement.front();
+	_chess_movement.pop();
+
+	strcpy(buf, temp_move.movement);
+	strcpy(str, buf);
+}
+
+char ChessGame::char_mapping(int position){
+	switch(position){
+	case 0:
+		return 'a';
+	case 1:
+		return 'b';
+	case 2:
+		return 'c';
+	case 3:
+		return 'd';
+	case 4:
+		return 'e';
+	case 5:
+		return 'f';
+	case 6:
+		return 'g';
+	case 7:
+		return 'h';
+	default:		//error
+		break;
+	}
 }
