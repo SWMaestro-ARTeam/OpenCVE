@@ -27,11 +27,44 @@
 #define _CVESDependent_hpp_
 
 #include <opencv/cv.h>
+#include <opencv/highgui.h>
 
+#define _V_MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define _V_MIN(a, b) (((a) < (b)) ? (a) : (b))
+#define _V_SWAP(x, y) { int t; t = x; x = y; y = t; }
+
+// using EngineS, ChessLineSearchAlg, ChessRecognition.
 #pragma region struct_ChessPoint
 typedef struct _ChessPoint {
-	CvPoint Cordinate; // 좌표 위치
-	CvPoint index; // 좌표 인덱스
+	CvPoint Cordinate; // 좌표 위치.
+	CvPoint index; // 좌표 인덱스.
 } ChessPoint;
 #pragma endregion struct_ChessPoint
+
+// using BlobLabeling.
+typedef struct _Visited {
+	bool	bVisitedFlag;
+	CvPoint ptReturnPoint;
+} Visited;
+
+// using ChessLineSearchAlg.
+// 점의 위치를 저장하기 위한 구조체.
+typedef struct _MyPoint {
+	int x, y;
+} MyPoint;
+
+// 라인의 양끝 점을 저장하기 위한 구조체.
+typedef struct _MyLinePoint {
+	int x1, y1, x2, y2;
+} MyLinePoint;
+
+// 해당 위치와 함께 grayscale 의 값을 저장하기 위한 구조체.
+typedef struct _MyGrayPoint {
+	int grayscale, x, y;
+} MyGrayPoint;
+
+// 사각형의 네 꼭지점을 저장하기 위한 구조체.
+typedef struct _MySquarePoint {
+	MyPoint LeftTop, LeftBottom, RightTop, RightBottom;
+} MySquarePoint;
 #endif

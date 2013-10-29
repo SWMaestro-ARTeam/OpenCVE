@@ -58,12 +58,13 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 	CvPoint _TMove[4];
 
 	switch (MOVE_MODE) {
-		case CASTLING_MOVE:					// 캐슬링
+		case CASTLING_MOVE:
+			// 캐슬링.
 			for (register int i = 0; i < 4; i++)
 				_TMove[i] = input1[i];
-
 			break;
-		case ENPASSANT_MOVE:				// 앙파상
+		case ENPASSANT_MOVE:
+			// 앙파상.
 			for (register int i = 0; i < 3; i++)
 				_TMove[i] = input1[i];
 
@@ -73,7 +74,8 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 			_TValue[2] = &_Board[_TMove[2].y][_TMove[2].x];
 
 			int *white, *zero_pic, *black;
-			for (register int i = 0; i < 3; i++){
+
+			for (register int i = 0; i < 3; i++) {
 				if (*_TValue[i] == 0)
 					zero_pic = _TValue[0];
 				else if (*_TValue[i] == W_Pawn)
@@ -87,9 +89,7 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 			}
 			else if (_Turn == false) {
 
-	//>>>>>>> CVES_HandRecognition:CVES/chess_game.cpp
 			}
-
 			break;
 		default :
 			// 기본 무브
@@ -100,29 +100,28 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 			_TValue1 = _Board[_TMove[0].y][_TMove[0].x];
 			_TValue2 = _Board[_TMove[1].y][_TMove[1].x];
 
-			// 체스 무브 진행
+			// 체스 무브 진행.
 			if (_Turn == true){
-				// 백색 차례일때
+				// 백색 차례일 때.
 
 				if (1 <= _TValue1 && _TValue1 <= 6){
 					_Board[_TMove[1].y][_TMove[1].x] = 0;
-					SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
+					_V_SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
 				}
 				else if (1 <= _TValue2 && _TValue2 <= 6){
 					_Board[_TMove[0].y][_TMove[0].x] = 0;
-					SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
+					_V_SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
 				}
 			}
 			else if (_Turn == false) {
-				//검은색 차례일때
-
+				//검은색 차례일 때.
 				if (7 <= _TValue1 && _TValue1 <= 12) {
 					_Board[_TMove[1].y][_TMove[1].x] = 0;
-					SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
+					_V_SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
 				}
 				else if (7 <= _TValue2 && _TValue2 <= 12) {
 					_Board[_TMove[0].y][_TMove[0].x] = 0;
-					SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
+					_V_SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
 				}
 			}
 			break;
@@ -141,7 +140,7 @@ void ChessGame::Show_chess_board() {
 	printf("\n");
 }
 
-void ChessGame::Show_chessImage(){
+void ChessGame::Show_chessImage() {
 	char temp_buf[32];
 	for (register int i = 0; i < 8; i++) {
 		for (register int j = 0; j < 8; j++) {

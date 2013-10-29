@@ -28,13 +28,7 @@
 
 #include "Common.hpp"
 
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
-
-typedef struct _Visited {
-	bool	bVisitedFlag;
-	CvPoint ptReturnPoint;
-} Visited;
+#include "CVESDependent.hpp"
 
 class BlobLabeling {
 private:

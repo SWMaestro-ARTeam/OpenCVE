@@ -26,7 +26,8 @@ SOURCES += main.cpp \
     ../Common/StringTokenizer.cpp \
     ../Common/InternalProtocolSeeker.cpp \
     ../Common/Debug.cpp \
-    ../Common/CodeConverter.cpp
+    ../Common/CodeConverter.cpp \
+    ChessLineSearchAlg.cpp
 
 HEADERS += \
     HandRecognition.hpp \
@@ -43,12 +44,15 @@ HEADERS += \
     ../Common/GlobalVariables.hpp \
     ../Common/ExtendedBlackBox.hpp \
     ../Common/Debug.hpp \
-    ../Common/Common.hpp
+    ../Common/Common.hpp \
+    CVESDependent.hpp \
+    ChessLineSearchAlg.hpp
 
 #QT_PATH = ${QTDIR}
 #PROJECT_PATH = ${INVI_PROJECT_ROOT}
 #OPENCV_PATH = ${OPENCV_AROOT}
 
+MINGW_PATH = C:/System_Emulator/MinGW
 QT_PATH = C:/Qt/5.1.1/msvc2012
 PROJECT_PATH = C:/invi/Projects
 OPENCV_PATH = C:/invi/Dev_Bone/dev_libraries/opencv
@@ -62,19 +66,24 @@ OPENCVE_ROOT = $$PROJECT_PATH/OpenCVE
 # Include Path.
 INCLUDEPATH += . \
 			# Qt Open GL ES2 Root
-			+= $$QT_OPENGLES2_ROOT \
+#			+= $$QT_OPENGLES2_ROOT \
 			# OPEMCVE Root
-			+= $$OPENCVE_ROOT/CVES \
-			+= $$OPENCVE_ROOT/CVEC \
+#			+= $$OPENCVE_ROOT/CVES \
+#			+= $$OPENCVE_ROOT/CVEC \
 			+= $$OPENCVE_ROOT/Common \
 			# OPENCV Root
 			+= $$OPENCV_PATH/build/include \
 			+= $$OPENCV_PATH/include/opencv
 
+# Import libws2_32
+LIBS +=	\
+	-lws2_32 \
+	-lpsapi
+
 win32 {
 # Import Library for Debug
 win32:CONFIG(debug, debug|release): \
-		LIBS += -L$$OPENCV_MSVC12_PATH\\lib\\Debug \
+		LIBS += -L$$OPENCV_MSVC12_PATH/lib/Debug \
 	-lopencv_calib3d246d \
 	-lopencv_contrib246d \
 	-lopencv_core246d \
@@ -96,7 +105,7 @@ win32:CONFIG(debug, debug|release): \
 	-lopencv_videostab246d
 # Import Library for Release
 else:win32:CONFIG(release, debug|release): \
-		LIBS += -L$$OPENCV_MSVC12_PATH\\lib\\Release \
+		LIBS += -L$$OPENCV_MSVC12_PATH/lib/Release \
 	-lopencv_calib3d246 \
 	-lopencv_contrib246 \
 	-lopencv_core246 \
@@ -118,5 +127,5 @@ else:win32:CONFIG(release, debug|release): \
 	-lopencv_videostab246
 }
 else {
-# OSX, UNIX, Linux 등의 Path.
+
 }

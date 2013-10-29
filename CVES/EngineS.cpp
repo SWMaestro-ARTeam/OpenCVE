@@ -129,8 +129,8 @@ bool EngineS::Check_Exit() {
 }
 
 void EngineS::Go_ImageProcessing(){
-	char _TKeyWait, _TBuffer[32];
-	static bool _TImageCreateCheck = false;
+	//char _TKeyWait, _TBuffer[32];
+	//static bool _TImageCreateCheck = false;
 
 	// Cam으로부터의 영상입력.
 	_CamOriginalImage = cvQueryFrame(_Cam);
@@ -514,8 +514,8 @@ CvPoint EngineS::Get_ChessboxPos(int width, int height, vector<ChessPoint> cross
 }
 
 void EngineS::DrawWindowS(IplImage *src, float fps, CvScalar RGB){
-	const int LineLength = 30;	//관심영역을 그릴 라인.
-	const int ROI_Length = 400; //정사각형 관심영역 크기.
+	const int LineLength = 30;	// 관심영역을 그릴 라인.
+	//const int ROI_Length = 400; // 정사각형 관심영역 크기.
 	char _TBuffer[32];
 
 	//CvPoint window_center = cvPoint(SERVER_VIEW_DEFAULT_WIDTH/2, SERVER_VIEW_DEFAULT_HEIGHT/2);
@@ -531,11 +531,13 @@ void EngineS::DrawWindowS(IplImage *src, float fps, CvScalar RGB){
 
 	// Write Frame Per Sec.
 	sprintf(_TBuffer, "%.2f fps", fps);
-	cvPutText(src, _TBuffer, cvPoint(30, 30), &cvFont(1.0), cvScalar(0, 0, 255));
+	CvFont _TCvFont = cvFont(1.0);
+	cvPutText(src, _TBuffer, cvPoint(30, 30), &_TCvFont, cvScalar(0, 0, 255));
+	//cvPutText(src, _TBuffer, cvPoint(30, 30), &cvFont(1.0), cvScalar(0, 0, 255));
 }
 
 void EngineS::imgproc_mode(){
-	char _TBuffer[32];
+	//char _TBuffer[32];
 	static bool _TImageCreateCheck = false;
 	static time_t _tempsec;
 

@@ -42,7 +42,7 @@ char *Time::GetCTime() {
 char *Time::GetUTCTime() {
 	char _TTimeStr[BUFFER_MAX_128];
 
-	memset(_TTimeStr, NULL, sizeof(_TTimeStr));
+	memset(_TTimeStr, ZERO_, sizeof(_TTimeStr));
 	time(&_RawTime);
 	TimeInformation = gmtime(&_RawTime);
 	sprintf(_TTimeStr, "%2d:%02d:%02d", (TimeInformation->tm_hour % 24), TimeInformation->tm_min, TimeInformation->tm_sec);

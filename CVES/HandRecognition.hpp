@@ -28,17 +28,14 @@
 
 #include "Common.hpp"
 
+#include "CVESDependent.hpp"
+
 #if WINDOWS_SYS
 #include <Windows.h>
 #elif POSIX_SYS
 #endif
 
 #include <iostream>
-
-#include <opencv/cv.h>
-
-#define max(a,b) (((a) > (b)) ? (a) : (b))
-#define min(a,b) (((a) < (b)) ? (a) : (b))
 
 class HandRecognition {
 private:

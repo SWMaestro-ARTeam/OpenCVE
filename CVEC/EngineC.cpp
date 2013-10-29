@@ -669,9 +669,9 @@ void EngineC::EngineC_Start() {
 	// 2. CVES의 Process와 CVES <-> CVEC 간의 통신이 끊기지 않도록 Check 하는 Thread.
 #if WINDOWS_SYS
 	DWORD _TThreadID = 0;
-	#ifdef _AFXDLL
+	//#ifdef _AFXDLL
 	CreateThread(NULL, 0, CVEC_CVESCheckingThread, 0, 0, &_TThreadID);
-	#endif
+	//#endif
 #elif POSIX_SYS
 
 #endif

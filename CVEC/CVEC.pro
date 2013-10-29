@@ -45,8 +45,10 @@ HEADERS += \
     ../Common/ExtendedBlackBox.hpp \
     ../Common/Debug.hpp \
     ../Common/Common.hpp \
-    ../Common/CodeConverter.hpp
+    ../Common/CodeConverter.hpp \
+    CVECDependent.hpp
 
+MINGW_PATH = C:/System_Emulator/MinGW
 QT_PATH = C:/Qt/5.1.1/msvc2012
 PROJECT_PATH = C:/invi/Projects
 OPENCV_PATH = C:/invi/Dev_Bone/dev_libraries/opencv
@@ -61,11 +63,18 @@ OPENCVE_ROOT = $$PROJECT_PATH/OpenCVE
 # Include Path.
 INCLUDEPATH += . \
 			# Qt Open GL ES2 Root
-			+= $$QT_OPENGLES2_ROOT \
+#			+= $$QT_OPENGLES2_ROOT \
 			# OPEMCVE Root
-			+= $$OPENCVE_ROOT/CVES \
-			+= $$OPENCVE_ROOT/CVEC \
-			+= $$OPENCVE_ROOT/Common \
+#			+= $$OPENCVE_ROOT/CVES \
+#			+= $$OPENCVE_ROOT/CVEC \
+			+= $$OPENCVE_ROOT/Common
 			# OPENCV Root
-			+= $$OPENCV_PATH/build/include \
-			+= $$OPENCV_PATH/include/opencv
+#			+= $$OPENCV_PATH/build/include \
+#			+= $$OPENCV_PATH/include/opencv
+
+# Import libws2_32
+LIBS +=	\
+	-lws2_32 \
+	-lpsapi
+#LIBS += -L$$MINGW_PATH/lib \
+

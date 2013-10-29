@@ -25,11 +25,21 @@
 
 #include "Process.hpp"
 
+// only for Process Modules.
+#define STRSAFE_LIB
+#include <strsafe.h>
+
 #if WINDOWS_SYS
 #pragma region Windows Process Module
 HMODULE WindowsProcess::NtDLLOpen() {
-	HMODULE _TNtDll = LoadLibrary(_T("ntdll.dll"));
-
+	CodeConverter _TCodeConverter;
+	HMODULE _TNtDll = LoadLibrary(
+//#if MINGW_USING
+	_TCodeConverter.CharToWChar("ntdll.dll")
+//#else
+//	_T("ntdll.dll")
+//#endif
+	);
 	if (_TNtDll == NULL)
 		return NULL;
 
@@ -48,7 +58,7 @@ void WindowsProcess::NtDLLRelease(HMODULE NtDllModuleHandle) {
 	if (NtDllModuleHandle)
 		FreeLibrary(NtDllModuleHandle);
 
-	gNtQueryInformationProcess = NULL;
+	gNtQueryInformationProcess = (WindowsProcess::fnNtQueryInformationProcess)NULL;
 }
 
 bool WindowsProcess::CheckAbleProcessAccess(LPCTSTR PrivilegeName) {
@@ -279,7 +289,14 @@ bool WindowsProcess::GetProcessInformations(const DWORD PID, SProcessInformation
 		// Actual filename is ntoskrnl.exe, but other name will be in
 		// Original Filename field of version block.
 		if(_TSPI.PID == 4) {
-			ExpandEnvironmentStrings(_T("%SystemRoot%\\System32\\ntoskrnl.exe"),
+			CodeConverter _TCodeConverter;
+			ExpandEnvironmentStrings(
+//#if MINGW_USING
+			_TCodeConverter.CharToWChar("%SystemRoot%\\System32\\ntoskrnl.exe")
+//#else
+//			_T("%SystemRoot%\\System32\\ntoskrnl.exe")
+//#endif
+			,
 				_TSPI.ImgPath, sizeof(_TSPI.ImgPath));
 		}
 	}	// Read Basic Info
@@ -427,6 +444,7 @@ list<
 #if WINDOWS_SYS
 	SProcessInformations
 #elif POSIX_SYS
+
 #endif
 > Process::GetProcessInformations() {
 #if WINDOWS_SYS
@@ -435,7 +453,13 @@ list<
 	POSIXProcess
 #endif
 		_TProcess;
-	list<SProcessInformations> _TSProcessInformationsList;
+	list<
+#if WINDOWS_SYS
+		SProcessInformations
+#elif POSIX_SYS
+
+#endif
+	> _TSProcessInformationsList;
 	DWORD _TPIDs[PROCESS_MAX] = {0};
 	DWORD _TArraySize = PROCESS_MAX * sizeof(DWORD);
 	DWORD _TSizeNeeded = 0;
@@ -543,10 +567,10 @@ void *
 
 void Process::CreateProcessOnThread(char *ProcessName) {
 #if WINDOWS_SYS
-#ifdef _AFXDLL
+//#ifdef _AFXDLL
 	DWORD _TThreadID = 0;
 	CreateThread(NULL, 0, ExecProcessLoopThread, (LPVOID)ProcessName, 0, &_TThreadID);
-#endif
+//#endif
 #elif POSIX_SYS
 	pthread_t _TThread;
 	pthread_attr_t _TThreadAttr;

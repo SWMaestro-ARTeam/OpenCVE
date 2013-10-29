@@ -27,8 +27,8 @@
 #define _ChessRecognition_hpp_
 
 #include "Common.hpp"
-//#include "GlobalVariables.hpp"
-//#include "CVESDependent.hpp"
+// CVESDependent into ChessLineSearchAlg.
+#include "ChessLineSearchAlg.hpp"
 
 #if WINDOWS_SYS
 #include <Windows.h>
@@ -38,11 +38,6 @@
 
 #endif
 
-#include "ChessLineSearchAlg.hpp"
-
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
-
 using namespace std;
 
 class ChessRecognition {
@@ -51,7 +46,7 @@ private:
 	int _MODE;
 
 	vector<ChessPoint> _CP; // 교점
-	vector<std::pair<float, float>> vec_LineX, vec_LineY; // 라인 : <rho, theta>
+	vector<std::pair<float, float> > vec_LineX, vec_LineY; // 라인 : <rho, theta>
 	IplImage *img_process;
 
 	HANDLE hThread;
@@ -59,7 +54,7 @@ private:
 	void NMS2(IplImage *image, IplImage *image2, int kernel);	//
 	void cast_seq(CvSeq *linesX, CvSeq *linesY); // 벡터로 변환
 	//bool sort_first(pair<float, float> a, pair<float, float> b); //벡터 정렬 규칙
-	void mergeLine(vector<std::pair<float, float>> *Lines);
+	void mergeLine(vector<std::pair<float, float> > *Lines);
 
 	// Thread 함수에 대해서는 나중에 수정 하기로 함.
 	static UINT WINAPI thread_hough(void *arg); // 쓰레드 함수.
@@ -75,13 +70,13 @@ public:
 	//초기화
 	void Initialize_ChessRecognition(int width, int height, int mode);
 	//라인 그리기
-	void drawLines(vector<pair<float, float>> lines, IplImage *image);
+	void drawLines(vector<pair<float, float> > lines, IplImage *image);
 	void drawPoint(IplImage *src, vector<ChessPoint> point);
 	//교차점 구하기
-	void findIntersections(vector<pair<float, float>> linesX, vector<pair<float, float>> linesY, vector<ChessPoint> *point);
+	void findIntersections(vector<pair<float, float> > linesX, vector<pair<float, float> > linesY, vector<ChessPoint> *point);
 
 	//라인 return
-	void Get_Line(vector<pair<float, float>> *linesX, vector<pair<float, float>> *linesY);
+	void Get_Line(vector<pair<float, float> > *linesX, vector<pair<float, float> > *linesY);
 	//처리용 이미지 복사
 	void Copy_Img(IplImage *src);
 	//교차점 보정함수

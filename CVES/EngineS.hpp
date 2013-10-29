@@ -48,20 +48,14 @@
 // Chess Game을 위한 좌표
 #include "ChessGame.hpp"
 
-//#include "GlobalVariables.hpp"
-
-#include <stdio.h>
-
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
-#include <time.h>
-
 #if WINDOWS_SYS
 // It's for windows dependent Functions.
 #include <Windows.h>
 #elif POSIX_SYS
 
 #endif
+
+#include <stdio.h>
 #include <time.h>
 
 class EngineS {

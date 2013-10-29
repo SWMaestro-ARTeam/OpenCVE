@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////////////////////////
+﻿//////////////////////////////////////////////////////////////////////////////////////////////
 //	The OpenCVE Project.
 //
 //	The MIT License (MIT)
@@ -78,7 +78,7 @@ void ChessRecognition::Initialize_ChessRecognition(int width, int height, int mo
 	_Width = width;	_Height = height;
 }
 
-void ChessRecognition::drawLines(vector<pair<float, float>> lines, IplImage* image) {
+void ChessRecognition::drawLines(vector<pair<float, float> > lines, IplImage* image) {
 	// line fitting을 이용한 chessboard recognition의 경우 image에 라인을 그려줌.
 	for (register int i = 0; i < MIN(lines.size(), 100); i++) {
 		// 호도법에 의해 표현된 line이므로,
@@ -107,11 +107,12 @@ void ChessRecognition::drawPoint(IplImage *src, vector<ChessPoint> point) {
 	for (register int i = 0; i < point.size(); i++) {
 		cvCircle(src, point.at(i).Cordinate, 5, cvScalar(0, 255), 2);
 		sprintf(buf, "(%d,%d)", point.at(i).index.x, point.at(i).index.y);
-		cvPutText(src, buf, point.at(i).Cordinate, &cvFont(1.0), cvScalar(255, 0, 0));
+		CvFont _TCvFont = cvFont(1.0);
+		cvPutText(src, buf, point.at(i).Cordinate, &_TCvFont, cvScalar(255, 0, 0));
 	}
 }
 
-void ChessRecognition::findIntersections(vector<pair<float, float>> linesX, vector<pair<float, float>> linesY, vector<ChessPoint> *point) {
+void ChessRecognition::findIntersections(vector<pair<float, float> > linesX, vector<pair<float, float> > linesY, vector<ChessPoint> *point) {
 	// line fitting을 이용한 chessboard recognition의 경우 각 라인의 교점을 연산.
 	char buf[32];
 	ChessPoint temp_cp;
@@ -144,7 +145,7 @@ void ChessRecognition::findIntersections(vector<pair<float, float>> linesX, vect
 	}
 }
 
-void ChessRecognition::Get_Line(vector<pair<float, float>> *linesX, vector<pair<float, float>> *linesY) {
+void ChessRecognition::Get_Line(vector<pair<float, float> > *linesX, vector<pair<float, float> > *linesY) {
 	// line fitting을 이용한 chessboard recognition의 경우 thread를 통하여 연산해낸 결과를 lineX와 LineY에 return;
 	linesX->clear();
 	linesY->clear();
@@ -234,14 +235,14 @@ bool sort_first(pair<float, float> a, pair<float, float> b) {
 	return a.first < b.first;										//각도로 정렬
 }
 
-void ChessRecognition::mergeLine(vector<std::pair<float, float>> *Lines) {
+void ChessRecognition::mergeLine(vector<std::pair<float, float> > *Lines) {
 	// Threshold를 기준으로 유사한 라인을 병합함.
 	float SUB_UNDER = 0.0, SUB_MIN = 9999;
-	vector<std::pair<float, float>> temp;
+	vector<std::pair<float, float> > temp;
 	pair<int, int> Min_pair;
 
 	//연산 초기화
-	for(register int i = 0; i < Lines->size(); i++) {
+	for (register int i = 0; i < Lines->size(); i++) {
 		if (Lines->at(i).first < 0) {
 			Lines->at(i).first = fabs(Lines->at(i).first);
 			Lines->at(i).second = Lines->at(i).second - CV_PI;
@@ -472,7 +473,7 @@ void ChessRecognition::Set_CalculationDomain(CvCapture *Cam, int *ROI_WIDTH, int
 void ChessRecognition::Chess_recog_wrapper(IplImage *src, vector<ChessPoint> *point) {
 	//init함수를 통하여 설정한 mode에 맞추어 chessboard recognition & 좌표 보정 & src에 좌표 그리기 진행.
 	//src : 좌표를 그릴 이미지, point : 연산을 통하여 cross point를 저장할 vector
-	vector<std::pair<float, float>> CH_LineX, CH_LineY;
+	vector<std::pair<float, float> > CH_LineX, CH_LineY;
 	point->clear();
 
 	if (_MODE == 1) {

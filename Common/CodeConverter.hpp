@@ -27,7 +27,6 @@
 #define _CodeConverter_hpp_
 
 #include "SystemDependency.hpp"
-//#include "Common.hpp"
 
 #if WINDOWS_SYS
 	#ifdef _AFXDLL
@@ -37,8 +36,6 @@
 	#endif
 #endif
 #include <cstdio>
-
-//#define ASSERT(x)
 
 class CodeConverter {
 private:

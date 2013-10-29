@@ -44,12 +44,13 @@ using namespace std;
 #include <afxwin.h>
 #else
 #include <windows.h>
+#include <tchar.h>
 #endif
 // using WindowsProcess class.
 #include <winternl.h>
 #include <Psapi.h>
-#define STRSAFE_LIB
-#include <strsafe.h>
+//#include <processthreadsapi.h>
+//#include <securitybaseapi.h>
 
 #ifndef NTSTATUS
 #define LONG NTSTATUS

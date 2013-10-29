@@ -26,15 +26,12 @@
 #ifndef _ChessGame_hpp_
 #define _ChessGame_hpp_
 
-#include <stdio.h>
+#include "CVESDependent.hpp"
 
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
+#include <stdio.h>
 
 #define CASTLING_MOVE 4
 #define ENPASSANT_MOVE 3
-
-#define SWAP(x, y) { int t; t = x; x = y; y = t; }
 
 class ChessGame {
 	enum {

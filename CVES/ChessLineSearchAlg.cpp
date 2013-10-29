@@ -151,7 +151,7 @@ int ChessLineSearchAlg::Getgrayscale(IplImage *gray_image, int x, int y) {
 	return (int)value;
 }
 
-ChessLineSearchAlg::MyGrayPoint ChessLineSearchAlg::setMyGrayPoint(int grayscale, int x, int y) {
+MyGrayPoint ChessLineSearchAlg::setMyGrayPoint(int grayscale, int x, int y) {
 	MyGrayPoint t_graypoint;
 
 	t_graypoint.grayscale = grayscale;
@@ -161,7 +161,7 @@ ChessLineSearchAlg::MyGrayPoint ChessLineSearchAlg::setMyGrayPoint(int grayscale
 	return t_graypoint;
 }
 
-ChessLineSearchAlg::MyPoint ChessLineSearchAlg::setMyPoint(int x, int y) {
+MyPoint ChessLineSearchAlg::setMyPoint(int x, int y) {
 	MyPoint t_point;
 	t_point.x = x;
 	t_point.y = y;

@@ -43,10 +43,8 @@ Telepathy::Server::~Server() {
 
 #pragma region Server Threads
 #if WINDOWS_SYS
-	#ifdef _AFXDLL
-//UINT 
+// UINT 
 DWORD WINAPI
-	#endif
 #elif POSIX_SYS
 void *
 #endif
@@ -139,11 +137,11 @@ void Telepathy::Server::ServerStart() {
 	else {
 		// Client 관리 Thread 시작.
 #if WINDOWS_SYS
-	#ifdef _AFXDLL
+//	#ifdef _AFXDLL
 		//AfxBeginThread(Server_ConnectionThread, 0);
 		DWORD _TThreadID = 0;
 		CreateThread(NULL, 0, Server_ConnectionThread, 0, 0, &_TThreadID);
-	#endif
+//	#endif
 #elif POSIX_SYS
 #endif
 		IsServerStarted = true;
@@ -193,11 +191,11 @@ void Telepathy::Server::ServerListentoClient() {
 	// Thread Begin.
 #if WINDOWS_SYS
 	// windows용.
-	#ifdef _AFXDLL
+//	#ifdef _AFXDLL
 	//AfxBeginThread(Server_ReceivingThread, (void *)_M_HClientSocket);
 	DWORD _TThreadID = 0;
 	CreateThread(NULL, 0, Server_ReceivingThread, (LPVOID)_TSocket, 0, &_TThreadID);
-	#endif // _AFXDLL
+//	#endif // _AFXDLL
 #elif POSIX_SYS
 	pthread_t _TThread;
 	pthread_attr_t _TThreadAttr;
@@ -363,10 +361,8 @@ Telepathy::Client::~Client(){
 
 #pragma region Client Threads
 #if WINDOWS_SYS
-	#ifdef _AFXDLL
 //UINT 
 DWORD WINAPI
-	#endif
 #elif POSIX_SYS
 void *
 #endif
@@ -427,11 +423,11 @@ void Telepathy::Client::ClientReceiveStart() {
 	else {
 		// Client 관리 Thread 시작.
 #if WINDOWS_SYS
-	#ifdef _AFXDLL
+//	#ifdef _AFXDLL
 		//AfxBeginThread(Client_ReceivingThread, 0);
 		DWORD _TThreadID = 0;
 		CreateThread(NULL, 0, Client_ReceivingThread, 0, 0, &_TThreadID);
-	#endif
+//	#endif
 #elif POSIX_SYS
 		pthread_t _TThread;
 		pthread_attr_t _TThreadAttr;

@@ -26,36 +26,13 @@
 #ifndef _ChessLineSearchAlg_hpp_
 #define _ChessLineSearchAlg_hpp_
 
-//#include "GlobalVariables.hpp"
-
 #include "CVESDependent.hpp"
-
-#include <cv.h>
-#include <highgui.h>
 
 using namespace std;
 
 class ChessLineSearchAlg {
 private:
-	// 점의 위치를 저장하기 위한 구조체.
-	typedef struct _MyPoint {
-		int x, y;
-	} MyPoint;
-
-	// 라인의 양끝 점을 저장하기 위한 구조체.
-	typedef struct _MyLinePoint {
-		int x1, y1, x2, y2;
-	} MyLinePoint;
-
-	// 해당 위치와 함께 grayscale 의 값을 저장하기 위한 구조체.
-	typedef struct _MyGrayPoint {
-		int grayscale, x, y;
-	} MyGrayPoint;
-
-	// 사각형의 네 꼭지점을 저장하기 위한 구조체.
-	typedef struct _MySquarePoint {
-		MyPoint LeftTop, LeftBottom, RightTop, RightBottom;
-	} MySquarePoint;
+	
 public:
 	ChessLineSearchAlg();
 	~ChessLineSearchAlg();

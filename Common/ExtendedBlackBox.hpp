@@ -68,8 +68,8 @@ using namespace std;
 		{ \
 			case -1: {
 
-#define CASE(_StrToken) } case __LINE__: if(!_TInit) _TMap[_StrToken] = __LINE__; else {
-#define DEFAULT() } case 0: default: if(_TInit) {
+#define CASE(_StrToken) } case __LINE__: if (!_TInit) _TMap[_StrToken] = __LINE__; else {
+#define DEFAULT() } case 0: default: if (_TInit) {
 
 #define STRING_SWITCH_END() \
 			} \

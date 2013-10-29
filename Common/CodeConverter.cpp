@@ -27,7 +27,6 @@
 
 // char -> wchar
 wchar_t *CodeConverter::CharToWChar(const char *CharStr) {
-	//ASSERT(CharStr);
 	wchar_t* _TWStr = NULL;
 	int _TWStrLength, _TCharLength;
 
@@ -47,7 +46,6 @@ wchar_t *CodeConverter::CharToWChar(const char *CharStr) {
 
 // wchar -> char
 char *CodeConverter::WCharToChar(const wchar_t* WcharStr) {
-	//ASSERT(WcharStr);
 	char* _TStr = NULL;
 	int _TWStrLength, _TCharLength;
 

@@ -36,8 +36,13 @@
 	#ifdef _AFXDLL
 #include <afxwin.h>
 	#else
+		#if MINGW_USING
+#include <winsock.h>
+//#include <winsock2.h>
+		#else
 #include <windows.h>
-#include <winsock2.h>
+		#endif
+#include <tchar.h>
 	#endif
 // ws2_32.lib 링크
 #pragma comment(lib, "ws2_32.lib")

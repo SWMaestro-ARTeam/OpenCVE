@@ -24,14 +24,13 @@ SOURCES += main.cpp\
     ../Common/CodeConverter.cpp \
     ../CVEC/UCICommandSesker.cpp \
     ../CVEC/Option.cpp \
-    ../CVEC/main.cpp \
     ../CVEC/EngineC.cpp \
-    ../CVES/main.cpp \
     ../CVES/HandRecognition.cpp \
     ../CVES/EngineS.cpp \
     ../CVES/ChessRecognition.cpp \
     ../CVES/ChessGame.cpp \
-    ../CVES/BlobLabeling.cpp
+    ../CVES/BlobLabeling.cpp \
+    ../CVES/ChessLineSearchAlg.cpp
 
 HEADERS  += Celestials.h \
     ../Common/Time.hpp \
@@ -55,7 +54,10 @@ HEADERS  += Celestials.h \
     ../CVES/EngineS.hpp \
     ../CVES/ChessRecognition.hpp \
     ../CVES/ChessGame.hpp \
-    ../CVES/BlobLabeling.hpp
+    ../CVES/BlobLabeling.hpp \
+    ../CVEC/CVECDependent.hpp \
+    ../CVES/CVESDependent.hpp \
+    ../CVES/ChessLineSearchAlg.hpp
 
 FORMS    += Celestials.ui
 
@@ -63,6 +65,7 @@ FORMS    += Celestials.ui
 #PROJECT_PATH = ${INVI_PROJECT_ROOT}
 #OPENCV_PATH = ${OPENCV_AROOT}
 
+MINGW_PATH = C:/System_Emulator/MinGW
 QT_PATH = C:/Qt/5.1.1/msvc2012
 PROJECT_PATH = C:/invi/Projects
 OPENCV_PATH = C:/invi/Dev_Bone/dev_libraries/opencv
@@ -85,10 +88,15 @@ INCLUDEPATH += . \
 			+= $$OPENCV_PATH/build/include \
 			+= $$OPENCV_PATH/include/opencv
 
+# Import libws2_32
+LIBS +=	\
+	-lws2_32 \
+	-lpsapi
+
 win32 {
 # Import Library for Debug
 win32:CONFIG(debug, debug|release): \
-		LIBS += -L$$OPENCV_MSVC12_PATH\\lib\\Debug \
+		LIBS += -L$$OPENCV_MSVC12_PATH/lib/Debug \
 	-lopencv_calib3d246d \
 	-lopencv_contrib246d \
 	-lopencv_core246d \
@@ -110,7 +118,7 @@ win32:CONFIG(debug, debug|release): \
 	-lopencv_videostab246d
 # Import Library for Release
 else:win32:CONFIG(release, debug|release): \
-		LIBS += -L$$OPENCV_MSVC12_PATH\\lib\\Release \
+		LIBS += -L$$OPENCV_MSVC12_PATH/lib/Release \
 	-lopencv_calib3d246 \
 	-lopencv_contrib246 \
 	-lopencv_core246 \

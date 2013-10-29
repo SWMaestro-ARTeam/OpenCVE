@@ -26,18 +26,33 @@
 #define _SystemDependency_hpp_
 
 #if defined(_WIN32) || defined(_WIN64)
-// using windows
+// using windows.
 #define WINDOWS_SYS 1
+	#if defined(__MINGW32__)
+	// using MinGW(for windows).
+	#define MINGW_USING 1
+	#endif
 #else
-// using Linux, FreeBSD, Mac OSX
+// using Linux, FreeBSD, Mac OSX.
 #define POSIX_SYS 1
 #endif
 
-// If defined Debug mode by compiler
-#if defined(_DEBUG)
+// If defined Debug mode by compiler(M$ Visual Studio & Qt Creator).
+#if defined(_DEBUG) || !defined(QT_NO_DEBUG)
 //#define DEBUG_MODE
 #endif
 
+#define ZERO_ 0
+//#undef NULL
+//#define NULL ((void *)0)
+#if MINGW_USING
+#define NULL 0
+#define NULL_ __null
+#define NOTNULL_ __notnull
+#define MAYBENULL_ __maybenull
+#endif
+
+// Buffer Size Defines.
 #define BUFFER_MAX_16 16
 #define BUFFER_MAX_32 32
 #define BUFFER_MAX_128 128
@@ -49,7 +64,9 @@
  
 #if WINDOWS_SYS
 // using MFC.
+#if !MINGW_USING
 #define _AFXDLL
+#endif
 // or no MFC.
 
 // Maximum Process Limit.

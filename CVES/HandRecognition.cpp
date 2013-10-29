@@ -25,9 +25,6 @@
 
 #include "HandRecognition.hpp"
 
-#define max(a,b)    (((a) > (b)) ? (a) : (b))
-#define min(a,b)    (((a) < (b)) ? (a) : (b))
-
 HandRecognition::HandRecognition() {
 }
 
@@ -58,7 +55,7 @@ void HandRecognition::Init(int width, int height) {
 
 bool HandRecognition::R1(int R, int G, int B) {
 	// RGB image의 각 픽셀값을 입력받아서 skin의 범위 해당하는지 return
-	bool e1 = (R > 95) && (G > 40) && (B > 20) && ((max(R, max(G, B)) - min(R, min(G , B))) > 15) && (abs(R - G) > 15) && (R > G) && (R > B);
+	bool e1 = (R > 95) && (G > 40) && (B > 20) && ((_V_MAX(R, _V_MAX(G, B)) - _V_MIN(R, _V_MIN(G , B))) > 15) && (abs(R - G) > 15) && (R > G) && (R > B);
 	bool e2 = (R > 220) && (G > 210) && (B > 170) && (abs(R - G) <= 15) && (R > B) && (G > B);
 	return (e1||e2);
 }
