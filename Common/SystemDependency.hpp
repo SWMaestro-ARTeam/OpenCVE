@@ -47,6 +47,7 @@
 //#define NULL ((void *)0)
 #if MINGW_USING
 #define NULL 0
+#define VOIDNULL ((void *)0)
 #define NULL_ __null
 #define NOTNULL_ __notnull
 #define MAYBENULL_ __maybenull
@@ -64,9 +65,9 @@
  
 #if WINDOWS_SYS
 // using MFC.
-#if !MINGW_USING
-#define _AFXDLL
-#endif
+//#if !MINGW_USING
+//#define _AFXDLL
+//#endif
 // or no MFC.
 
 // Maximum Process Limit.

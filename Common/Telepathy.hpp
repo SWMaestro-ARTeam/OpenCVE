@@ -33,9 +33,9 @@
 #include <list>
 
 #if WINDOWS_SYS
-	#ifdef _AFXDLL
-#include <afxwin.h>
-	#else
+//	#ifdef _AFXDLL
+//#include <afxwin.h>
+//	#else
 		#if MINGW_USING
 #include <winsock.h>
 //#include <winsock2.h>
@@ -43,7 +43,7 @@
 #include <windows.h>
 		#endif
 #include <tchar.h>
-	#endif
+	//#endif
 // ws2_32.lib 링크
 #pragma comment(lib, "ws2_32.lib")
 #elif POSIX_SYS

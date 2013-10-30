@@ -34,11 +34,11 @@
 #include <stdio.h>
 #include <string.h>
 #if WINDOWS_SYS
-	#ifdef _AFXDLL
-#include <afxwin.h>
-	#else
+//	#ifdef _AFXDLL
+//#include <afxwin.h>
+//	#else
 #include <windows.h>
-	#endif
+	//#endif
 #else
 #include <unistd.h>
 #include <sys/types.h>

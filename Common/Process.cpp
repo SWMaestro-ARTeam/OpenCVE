@@ -167,10 +167,8 @@ bool WindowsProcess::GetProcessInformations(const DWORD PID, SProcessInformation
 		_TSPI.AffinityMask	 = (DWORD)_TPBI->AffinityMask;
 
 		// Read Process Environment Block (PEB)
-		if(_TPBI->PebBaseAddress)
-		{
-			if(ReadProcessMemory(_TProcess, _TPBI->PebBaseAddress, &_TPEB, sizeof(_TPEB), &_TBytesRead))
-			{
+		if (_TPBI->PebBaseAddress) {
+			if (ReadProcessMemory(_TProcess, _TPBI->PebBaseAddress, &_TPEB, sizeof(_TPEB), &_TBytesRead)) {
 				_TSPI.SessionID	   = (DWORD)_TPEB.SessionId;
 				_TSPI.BeingDebugged = (BYTE)_TPEB.BeingDebugged;
 
@@ -187,29 +185,26 @@ bool WindowsProcess::GetProcessInformations(const DWORD PID, SProcessInformation
 
 				// if PEB read, try to read Process Parameters
 				_TBytesRead = 0;
-				if(ReadProcessMemory(_TProcess,
+				if (ReadProcessMemory(_TProcess,
 					_TPEB.ProcessParameters,
 					&_TPEB_UPP,
 					sizeof(SRTLUserProcessParameters),
-					&_TBytesRead))
-				{
+					&_TBytesRead)) {
 					// We got Process Parameters, is CommandLine filled in
-					if(_TPEB_UPP.CommandLine.Length > 0) {
+					if (_TPEB_UPP.CommandLine.Length > 0) {
 						// Yes, try to read CommandLine
 						_TBuffer = (WCHAR *)HeapAlloc(_THeap,
 							HEAP_ZERO_MEMORY,
 							_TPEB_UPP.CommandLine.Length);
 						// If memory was allocated, continue
-						if(_TBuffer)
-						{
-							if(ReadProcessMemory(_TProcess,
+						if (_TBuffer)	{
+							if (ReadProcessMemory(_TProcess,
 								_TPEB_UPP.CommandLine.Buffer,
 								_TBuffer,
 								_TPEB_UPP.CommandLine.Length,
-								&_TBytesRead))
-							{
+								&_TBytesRead)) {
 								// if commandline is larger than our variable, truncate
-								if(_TPEB_UPP.CommandLine.Length >= sizeof(_TSPI.CmdLine)) 
+								if (_TPEB_UPP.CommandLine.Length >= sizeof(_TSPI.CmdLine)) 
 									_TBufferSize = sizeof(_TSPI.CmdLine) - sizeof(TCHAR);
 								else
 									_TBufferSize = _TPEB_UPP.CommandLine.Length;
@@ -231,7 +226,7 @@ bool WindowsProcess::GetProcessInformations(const DWORD PID, SProcessInformation
 									NULL, NULL);
 #endif
 							}
-							if(!HeapFree(_THeap, 0, _TBuffer)) {
+							if (!HeapFree(_THeap, 0, _TBuffer)) {
 								// failed to free memory
 								_TReturnStatus = FALSE;
 								goto gnpiFreeMemFailed;
@@ -240,22 +235,20 @@ bool WindowsProcess::GetProcessInformations(const DWORD PID, SProcessInformation
 					}	// Read CommandLine in Process Parameters
 
 					// We got Process Parameters, is ImagePath filled in
-					if(_TPEB_UPP.ImagePathName.Length > 0) {
+					if (_TPEB_UPP.ImagePathName.Length > 0) {
 						// Yes, try to read ImagePath
 						_TBytesRead = 0;
 						_TBuffer = (WCHAR *)HeapAlloc(_THeap,
 							HEAP_ZERO_MEMORY,
 							_TPEB_UPP.ImagePathName.Length);
-						if(_TBuffer)
-						{
+						if (_TBuffer) {
 							if(ReadProcessMemory(_TProcess,
 								_TPEB_UPP.ImagePathName.Buffer,
 								_TBuffer,
 								_TPEB_UPP.ImagePathName.Length,
-								&_TBytesRead))
-							{
+								&_TBytesRead)) {
 								// if ImagePath is larger than our variable, truncate
-								if(_TPEB_UPP.ImagePathName.Length >= sizeof(_TSPI.ImgPath)) 
+								if (_TPEB_UPP.ImagePathName.Length >= sizeof(_TSPI.ImgPath)) 
 									_TBufferSize = sizeof(_TSPI.ImgPath) - sizeof(TCHAR);
 								else
 									_TBufferSize = _TPEB_UPP.ImagePathName.Length;
@@ -271,7 +264,7 @@ bool WindowsProcess::GetProcessInformations(const DWORD PID, SProcessInformation
 									NULL, NULL);
 #endif
 							}
-							if(!HeapFree(_THeap, 0, _TBuffer)) {
+							if (!HeapFree(_THeap, 0, _TBuffer)) {
 								// failed to free memory
 								_TReturnStatus = FALSE;
 								goto gnpiFreeMemFailed;
@@ -288,7 +281,7 @@ bool WindowsProcess::GetProcessInformations(const DWORD PID, SProcessInformation
 		// ntkrnlmp.exe if Symmetric MultiProcessing (SMP)
 		// Actual filename is ntoskrnl.exe, but other name will be in
 		// Original Filename field of version block.
-		if(_TSPI.PID == 4) {
+		if (_TSPI.PID == 4) {
 			CodeConverter _TCodeConverter;
 			ExpandEnvironmentStrings(
 //#if MINGW_USING
@@ -304,8 +297,8 @@ bool WindowsProcess::GetProcessInformations(const DWORD PID, SProcessInformation
 gnpiFreeMemFailed:
 
 	// Free memory if allocated
-	if(_TPBI != NULL)
-		if(!HeapFree(_THeap, 0, _TPBI)) {
+	if (_TPBI != NULL)
+		if (!HeapFree(_THeap, 0, _TPBI)) {
 			// failed to free memory
 		}
 

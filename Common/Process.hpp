@@ -27,7 +27,7 @@
 #define _Process_hpp_
 
 #include "Common.hpp"
-//#include "SystemDependency.hpp"
+
 #include "CodeConverter.hpp"
 
 #include <stdio.h>
@@ -40,12 +40,12 @@ using namespace std;
 
 // Process Confirm용 Windows Library.
 #if WINDOWS_SYS
-#ifdef _AFXDLL
-#include <afxwin.h>
-#else
-#include <windows.h>
-#include <tchar.h>
-#endif
+//#		ifdef _AFXDLL
+//#		include <afxwin.h>
+//#		else
+#		include <windows.h>
+#		include <tchar.h>
+//#		endif
 // using WindowsProcess class.
 #include <winternl.h>
 #include <Psapi.h>

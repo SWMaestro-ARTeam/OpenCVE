@@ -257,7 +257,7 @@ void ChessLineSearchAlg::GrayImageBinarization(IplImage *gray_image) {
 		if (b2 == 0) b2 = 1.f;
 
 		T = (int)((u1 + u2) / 2);
-	} while(T != Told);
+	} while (T != Told);
 
 	for (register int i = 0; i < gray_image->width; i++) {
 		for (register int j = 0; j < gray_image->height; j++) {

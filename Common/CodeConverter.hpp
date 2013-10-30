@@ -29,11 +29,11 @@
 #include "SystemDependency.hpp"
 
 #if WINDOWS_SYS
-	#ifdef _AFXDLL
-#include <afxwin.h>
-	#else
+//	#ifdef _AFXDLL
+//#include <afxwin.h>
+//	#else
 #include <windows.h>
-	#endif
+	//#endif
 #endif
 #include <cstdio>
 

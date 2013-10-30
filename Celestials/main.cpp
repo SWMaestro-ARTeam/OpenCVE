@@ -29,6 +29,8 @@
 #include <string.h>
 #include <string>
 
+//#include "ExtendedBlackBox.hpp"
+
 #include "Celestials.h"
 #include <QApplication>
 
@@ -78,21 +80,85 @@ int GoCVEO() {
 int main(int argc, char *argv[]) {
 	int _TApplicationReturnValue = 0;
 
-	STRING_SWITCH_BEGIN(string((char *)argv[1]))
+	/*
+	static std::map<string, int> _TMap;
+	static bool _TInit = false;
+	bool _TLoop = true;
+	while (_TLoop)
 	{
-		CASE("/Server")
-			_TApplicationReturnValue = GoCVES(argc, argv);
-			break;
-		CASE("/Client")
-			_TApplicationReturnValue = GoCVEC();
-			break;
-		CASE("/Observer")
-			_TApplicationReturnValue = GoCVEO();
-			break;
-		DEFAULT()
-			fprintf(stdout, "Invaild Command.");
+		int _TNumberOfStr = -1;
+		if (_TInit) {
+			_TNumberOfStr = _TMap[string((char *)argv[1])];
+			_TLoop = false;
+		}
+
+		switch (_TNumberOfStr)
+		{
+			case -1: {
+
+			}
+			// Server
+			case __LINE__:
+				if (!_TInit)
+					_TMap["/Server"] = __LINE__;
+				else {
+
+				}
+			// Client
+			case __LINE__:
+				if (!_TInit)
+					_TMap["/Client"] = __LINE__;
+				else {
+
+				}
+			// Observer
+			case __LINE__:
+				if (!_TInit)
+					_TMap["/Observer"] = __LINE__;
+				else {
+
+				}
+			// Default
+			case 0:
+			default:
+				if (_TInit) {
+
+				}
+		}
+		if (!_TInit)
+			_TInit = true;
 	}
-	STRING_SWITCH_END()
+	*/
+	/*
+	char _TCharBuff[20];
+	memset(_TCharBuff, ZERO_, sizeof(_TCharBuff));
+	if (argv[1] == NULL)
+		return 0;
+	else
+		sprintf(_TCharBuff, "%s", argv[1]);
+	string _TStr = string((char *)argv[1]);
+	if (_TStr.empty())
+		return 0;
+
+	printf("On");
+	*/
+	if (argc > 1) {
+		STRING_SWITCH_BEGIN(string((char *)argv[1]))
+		{
+			CASE("/Server")
+				_TApplicationReturnValue = GoCVES(argc, argv);
+				break;
+			CASE("/Client")
+				_TApplicationReturnValue = GoCVEC();
+				break;
+			CASE("/Observer")
+				_TApplicationReturnValue = GoCVEO();
+				break;
+			//DEFAULT()
+			//	fprintf(stdout, "Invaild Command.");
+		}
+		STRING_SWITCH_END()
+	}
 
 	return _TApplicationReturnValue;
 }
