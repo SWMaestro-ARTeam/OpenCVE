@@ -37,15 +37,9 @@
 #define POSIX_SYS 1
 #endif
 
-<<<<<<< HEAD
 // If defined Debug mode by compiler(M$ Visual Studio & Qt Creator).
 #if defined(_DEBUG) || !defined(QT_NO_DEBUG)
 //#define DEBUG_MODE
-=======
-// If defined Debug mode by compiler
-#if defined(_DEBUG)
-#define DEBUG_MODE
->>>>>>> CVES_HandRecognition
 #endif
 
 #define ZERO_ 0

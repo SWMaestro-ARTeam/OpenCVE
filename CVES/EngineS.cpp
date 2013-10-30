@@ -134,7 +134,7 @@ void EngineS::Go_ImageProcessing(){
 
 	// Cam으로부터의 영상입력.
 	_CamOriginalImage = cvQueryFrame(_Cam);
-	cvFlip(_CamOriginalImage, _CamOriginalImage, FLIP_MODE);
+	//cvFlip(_CamOriginalImage, _CamOriginalImage, FLIP_MODE);
 
 	//모드에 따른 이미지 프로세스 수행
 	imgproc_mode();
@@ -514,25 +514,32 @@ CvPoint EngineS::Get_ChessboxPos(int width, int height, vector<ChessPoint> cross
 }
 
 void EngineS::DrawWindowS(IplImage *src, float fps, CvScalar RGB){
-<<<<<<< HEAD
 	const int LineLength = 30;	// 관심영역을 그릴 라인.
-	//const int ROI_Length = 400; // 정사각형 관심영역 크기.
-=======
-	const int LineLength = 30;	//관심영역을 그릴 라인.
-	const int ROI_Length = 440; //정사각형 관심영역 크기.
->>>>>>> CVES_HandRecognition
+	const int ROI_Length = 440; // 정사각형 관심영역 크기.
 	char _TBuffer[32];
 
 	//CvPoint window_center = cvPoint(SERVER_VIEW_DEFAULT_WIDTH/2, SERVER_VIEW_DEFAULT_HEIGHT/2);
 
-	CvPoint ROI_Lefttop =cvPoint(_ROIRect.x, _ROIRect.y);
+	CvPoint ROI_Lefttop = cvPoint(_ROIRect.x, _ROIRect.y);
+	//
+	CvPoint ROI_LeftBot = cvPoint(_ROIRect.x, _ROIRect.y + _ROIRect.width);
+	//
+	CvPoint ROI_Righttop = cvPoint(_ROIRect.x + _ROIRect.width, _ROIRect.y);
 	CvPoint ROI_RightBot = cvPoint(_ROIRect.x + _ROIRect.width, _ROIRect.y + _ROIRect.width);
 
 	// 관심영역 격자를 그림.
-	cvDrawLine(src, cvPoint(ROI_Lefttop.x + LineLength, ROI_Lefttop.y),  ROI_Lefttop, RGB, 4);
-	cvDrawLine(src, cvPoint(ROI_Lefttop.x, ROI_Lefttop.y + LineLength),  ROI_Lefttop, RGB, 4);
-	cvDrawLine(src, cvPoint(ROI_RightBot.x - LineLength, ROI_RightBot.y),  ROI_RightBot, RGB, 4);
-	cvDrawLine(src, cvPoint(ROI_RightBot.x, ROI_RightBot.y - LineLength),  ROI_RightBot, RGB, 4);
+	cvDrawLine(src, cvPoint(ROI_Lefttop.x + LineLength, ROI_Lefttop.y), ROI_Lefttop, RGB, 4);
+	cvDrawLine(src, cvPoint(ROI_Lefttop.x, ROI_Lefttop.y + LineLength), ROI_Lefttop, RGB, 4);
+
+	cvDrawLine(src, cvPoint(ROI_RightBot.x - LineLength, ROI_RightBot.y), ROI_RightBot, RGB, 4);
+	cvDrawLine(src, cvPoint(ROI_RightBot.x, ROI_RightBot.y - LineLength), ROI_RightBot, RGB, 4);
+
+	// 추가.
+	cvDrawLine(src, cvPoint(ROI_LeftBot.x + LineLength, ROI_LeftBot.y), ROI_LeftBot, RGB, 4);
+	cvDrawLine(src, cvPoint(ROI_LeftBot.x, ROI_LeftBot.y - LineLength), ROI_LeftBot, RGB, 4);
+
+	cvDrawLine(src, cvPoint(ROI_Righttop.x - LineLength, ROI_Righttop.y), ROI_Righttop, RGB, 4);
+	cvDrawLine(src, cvPoint(ROI_Righttop.x, ROI_Righttop.y + LineLength), ROI_Righttop, RGB, 4);
 
 	// Write Frame Per Sec.
 	sprintf(_TBuffer, "%.2f fps", fps);
