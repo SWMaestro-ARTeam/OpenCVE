@@ -274,11 +274,11 @@ void ChessLineSearchAlg::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *
 	int line_count = 0, jump_count_p = 0, jump_count_m = 0, jump_count = 0 ;
 
 	if (XYFlag) {
-		jump_count = image->width / 12;
+		jump_count = 30;/*image->width / 12;*/
 		line_point->x1 = image->width / 2;
 	}
 	else {
-		jump_count = image->height / 12;
+		jump_count = 30;/*image->height / 12;*/
 		line_point->y1 = image->height / 2;
 	}
 

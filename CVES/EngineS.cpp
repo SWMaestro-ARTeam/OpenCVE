@@ -134,7 +134,7 @@ void EngineS::Go_ImageProcessing(){
 
 	// Cam으로부터의 영상입력.
 	_CamOriginalImage = cvQueryFrame(_Cam);
-	//cvFlip(_CamOriginalImage, _CamOriginalImage, FLIP_MODE);
+	cvFlip(_CamOriginalImage, _CamOriginalImage, FLIP_MODE);
 
 	//모드에 따른 이미지 프로세스 수행
 	imgproc_mode();
@@ -438,7 +438,7 @@ void EngineS::Calculate_Movement(IplImage *bin, vector<ChessPoint> cross_point, 
 	// score / 면적 을 이용하여 가장 많이 변한 두 좌표를 반환.
 	float score_box[8][8]; // 면적비율 저장 배열.
 	float chess_area[8][8]; // 체스 영역 저장 배열.
-	const float score_threshold = 0.2; // 면적 비율 threshold.
+	const float score_threshold = 0.1; // 면적 비율 threshold.
 
 	// 각 체스 영역 면적 계산부
 	for(int i = 0; i < 8; i++){
@@ -514,8 +514,13 @@ CvPoint EngineS::Get_ChessboxPos(int width, int height, vector<ChessPoint> cross
 }
 
 void EngineS::DrawWindowS(IplImage *src, float fps, CvScalar RGB){
+<<<<<<< HEAD
 	const int LineLength = 30;	// 관심영역을 그릴 라인.
 	//const int ROI_Length = 400; // 정사각형 관심영역 크기.
+=======
+	const int LineLength = 30;	//관심영역을 그릴 라인.
+	const int ROI_Length = 440; //정사각형 관심영역 크기.
+>>>>>>> CVES_HandRecognition
 	char _TBuffer[32];
 
 	//CvPoint window_center = cvPoint(SERVER_VIEW_DEFAULT_WIDTH/2, SERVER_VIEW_DEFAULT_HEIGHT/2);
@@ -554,7 +559,7 @@ void EngineS::imgproc_mode(){
 		_tempsec = time(NULL);
 
 		//관심영역 크기 고정
-		_ROIRect = cvRect(120, 40, 400, 400);
+		_ROIRect = cvRect(100, 20, 440, 440);
 	}
 	else if (_ImageProcessMode == 1 /*&& IsStarted == true*/) {
 		// 관심영역 재설정 선택 OR 체스보드 인식 확인부.
@@ -671,10 +676,14 @@ void EngineS::imgproc_mode(){
 						_BeforeHandFirst = true;
 
 						// chessgame 이동부.
-						printf("(%d, %d) & (%d, %d)\n", out[0].x, out[0].y, out[1].x, out[1].y);
 						_ChessGame.Chess_process(out, 0);
+						// uci에 맞춰 return하는 부분 현재 printf로 출력
+						char buf[6];
+						_ChessGame.Get_RecentMove(buf);
+						printf("%s\n", buf);
 #ifdef DEBUG_MODE
-						_ChessGame.Show_chess_board();
+						//_ChessGame.Show_chess_board();
+						_ChessGame.Show_chessImage();
 #endif
 					}
 
