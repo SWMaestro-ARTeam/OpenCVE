@@ -192,7 +192,7 @@ void ChessGame::Show_chessImage(){
 }
 
 void ChessGame::MakeUCI(CvPoint before, CvPoint after, move_format *dst){
-	char buf[6];
+	char buf[6] = "\0";
 
 	sprintf(buf, "%c%d%c%d", char_mapping(before.y), before.x+1, char_mapping(after.y), after.x+1);
 	buf[5] = '\0';
@@ -202,14 +202,16 @@ void ChessGame::MakeUCI(CvPoint before, CvPoint after, move_format *dst){
 
 void ChessGame::Get_RecentMove(char *str){
 	move_format temp_move;
-	char buf[6];
+	char buf[6] = "\0";
 
 	//dequeue
-	temp_move = _chess_movement.front();
-	_chess_movement.pop();
+	if(_chess_movement.size() > 0){
+		temp_move = _chess_movement.front();
+		_chess_movement.pop();
 
-	strcpy(buf, temp_move.movement);
-	strcpy(str, buf);
+		strcpy(buf, temp_move.movement);
+		strcpy(str, buf);
+	}
 }
 
 char ChessGame::char_mapping(int position){
