@@ -59,24 +59,14 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 	move_format temp_move;
 
 	switch (MOVE_MODE) {
-<<<<<<< HEAD
 		case CASTLING_MOVE:
 			// 캐슬링.
 			for (register int i = 0; i < 4; i++)
-=======
-		case CASTLING_MOVE:					// 캐슬링
-			for (int i = 0; i < 4; i++)
->>>>>>> CVES_HandRecognition
 				_TMove[i] = input1[i];
 			break;
-<<<<<<< HEAD
 		case ENPASSANT_MOVE:
 			// 앙파상.
 			for (register int i = 0; i < 3; i++)
-=======
-		case ENPASSANT_MOVE:				// 앙파상
-			for (int i = 0; i < 3; i++)
->>>>>>> CVES_HandRecognition
 				_TMove[i] = input1[i];
 
 			int *_TValue[3];
@@ -85,12 +75,8 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 			_TValue[2] = &_Board[_TMove[2].y][_TMove[2].x];
 
 			int *white, *zero_pic, *black;
-<<<<<<< HEAD
 
 			for (register int i = 0; i < 3; i++) {
-=======
-			for (int i = 0; i < 3; i++){
->>>>>>> CVES_HandRecognition
 				if (*_TValue[i] == 0)
 					zero_pic = _TValue[0];
 				else if (*_TValue[i] == W_Pawn)
@@ -115,30 +101,6 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 			_TValue1 = _Board[_TMove[0].y][_TMove[0].x];
 			_TValue2 = _Board[_TMove[1].y][_TMove[1].x];
 
-<<<<<<< HEAD
-			// 체스 무브 진행.
-			if (_Turn == true){
-				// 백색 차례일 때.
-
-				if (1 <= _TValue1 && _TValue1 <= 6){
-					_Board[_TMove[1].y][_TMove[1].x] = 0;
-					_V_SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
-				}
-				else if (1 <= _TValue2 && _TValue2 <= 6){
-					_Board[_TMove[0].y][_TMove[0].x] = 0;
-					_V_SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
-				}
-			}
-			else if (_Turn == false) {
-				//검은색 차례일 때.
-				if (7 <= _TValue1 && _TValue1 <= 12) {
-					_Board[_TMove[1].y][_TMove[1].x] = 0;
-					_V_SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
-				}
-				else if (7 <= _TValue2 && _TValue2 <= 12) {
-					_Board[_TMove[0].y][_TMove[0].x] = 0;
-					_V_SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
-=======
 			// 체스 무브 진행
 			if (_Turn == WHITE_TURN){
 				// 백색 차례일때
@@ -146,12 +108,12 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 
 				if (1 <= _TValue1 && _TValue1 <= 6){
 					_Board[_TMove[1].y][_TMove[1].x] = 0;
-					SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
+					_V_SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
 					MakeUCI(_TMove[0], _TMove[1], &temp_move);
 				}
 				else if (1 <= _TValue2 && _TValue2 <= 6){
 					_Board[_TMove[0].y][_TMove[0].x] = 0;
-					SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
+					_V_SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
 					MakeUCI(_TMove[1], _TMove[0], &temp_move);
 				}
 			}
@@ -161,14 +123,13 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 
 				if (7 <= _TValue1 && _TValue1 <= 12) {
 					_Board[_TMove[1].y][_TMove[1].x] = 0;
-					SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
+					_V_SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
 					MakeUCI(_TMove[0], _TMove[1], &temp_move);
 				}
 				else if (7 <= _TValue2 && _TValue2 <= 12) {
 					_Board[_TMove[0].y][_TMove[0].x] = 0;
-					SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
+					_V_SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
 					MakeUCI(_TMove[1], _TMove[0], &temp_move);
->>>>>>> CVES_HandRecognition
 				}
 			}
 
@@ -250,8 +211,8 @@ void ChessGame::Get_RecentMove(char *str){
 		_chess_movement.pop();
 
 		strcpy(buf, temp_move.movement);
-		strcpy(str, buf);
 	}
+	strcpy(str, buf);
 }
 
 char ChessGame::char_mapping(int position){

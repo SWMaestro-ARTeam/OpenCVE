@@ -514,13 +514,8 @@ CvPoint EngineS::Get_ChessboxPos(int width, int height, vector<ChessPoint> cross
 }
 
 void EngineS::DrawWindowS(IplImage *src, float fps, CvScalar RGB){
-<<<<<<< HEAD
-	const int LineLength = 30;	// 관심영역을 그릴 라인.
-	//const int ROI_Length = 400; // 정사각형 관심영역 크기.
-=======
 	const int LineLength = 30;	//관심영역을 그릴 라인.
 	const int ROI_Length = 440; //정사각형 관심영역 크기.
->>>>>>> CVES_HandRecognition
 	char _TBuffer[32];
 
 	//CvPoint window_center = cvPoint(SERVER_VIEW_DEFAULT_WIDTH/2, SERVER_VIEW_DEFAULT_HEIGHT/2);
@@ -623,10 +618,6 @@ void EngineS::imgproc_mode(){
 				if (_BeforeHandFirst)
 					_BeforeHandFirst = false;
 
-				//cvDilate(img_Skin, img_Skin, 0, 10);
-#ifdef DEBUG_MODE
-				cvShowImage("img_Skin", _ImageSkin);
-#endif
 				if (Check_InChessboard(_ImageSkin, _CrossPoint)) {
 					// 물체가 체스보드 위로 들어옴.
 					cvCopy(_TempPrev2, _PrevImage);

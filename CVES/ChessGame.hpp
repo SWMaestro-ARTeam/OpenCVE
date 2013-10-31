@@ -26,11 +26,7 @@
 #ifndef _ChessGame_hpp_
 #define _ChessGame_hpp_
 
-<<<<<<< HEAD
 #include "CVESDependent.hpp"
-
-#include <stdio.h>
-=======
 #include <stdio.h>
 #include <cv.h>
 #include <highgui.h>
@@ -39,13 +35,10 @@
 #define CASTLING_MOVE				4
 #define ENPASSANT_MOVE			3
 #define DEBUGUI_PATH "./Chess_DebugUI/"
->>>>>>> CVES_HandRecognition
 
 #define WHITE_TURN	1
 #define BLACK_TURN	0
 
-<<<<<<< HEAD
-=======
 #define SWAP(x, y) { int t; t = x; x = y; y = t; }
 
 typedef struct move_format{
@@ -53,16 +46,17 @@ typedef struct move_format{
 	bool turn_flag;
 }move_format;
 
->>>>>>> CVES_HandRecognition
+enum {			//체스말
+	Ground, 
+	W_King, W_Queen, W_Rook, W_Bishop, W_Knight, W_Pawn,
+	B_King, B_Queen, B_Rook, B_Bishop, B_Knight, B_Pawn,
+};
+
 class ChessGame {
-	enum {			//체스말
-		Ground, 
-		W_King, W_Queen, W_Rook, W_Bishop, W_Knight, W_Pawn,
-		B_King, B_Queen, B_Rook, B_Bishop, B_Knight, B_Pawn,
-	};
 
 private:
 	int _Board[8][8];
+	int before_move;
 	bool _Turn;
 	CvPoint _Before, _After;
 	
