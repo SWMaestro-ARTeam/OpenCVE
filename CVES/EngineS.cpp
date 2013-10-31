@@ -135,7 +135,7 @@ void EngineS::Go_ImageProcessing(){
 	// Cam으로부터의 영상입력.
 	_CamOriginalImage = cvQueryFrame(_Cam);
 	//cvFlip(_CamOriginalImage, _CamOriginalImage, FLIP_MODE);
-
+	//cvSmooth(_CamOriginalImage, _CamOriginalImage, CV_MEDIAN, 3);
 	//모드에 따른 이미지 프로세스 수행
 	imgproc_mode();
 }
@@ -685,9 +685,10 @@ void EngineS::imgproc_mode(){
 						// chessgame 이동부.
 						_ChessGame.Chess_process(out, 0);
 						// uci에 맞춰 return하는 부분 현재 printf로 출력
-						char buf[6];
-						_ChessGame.Get_RecentMove(buf);
-						printf("%s\n", buf);
+						char *buf;
+						buf = _ChessGame.Get_RecentMove();
+						if (buf != NULL)
+							printf("%s\n", buf);
 #ifdef DEBUG_MODE
 						//_ChessGame.Show_chess_board();
 						_ChessGame.Show_chessImage();

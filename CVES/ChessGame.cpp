@@ -58,6 +58,10 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 	CvPoint _TMove[4];
 	move_format temp_move;
 
+	// 초기화.
+	temp_move.turn_flag = false;
+	//memset(temp_move.movement, NULL, sizeof(temp_move.movement));
+
 	switch (MOVE_MODE) {
 		case CASTLING_MOVE:
 			// 캐슬링.
@@ -109,12 +113,12 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 				if (1 <= _TValue1 && _TValue1 <= 6){
 					_Board[_TMove[1].y][_TMove[1].x] = 0;
 					_V_SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
-					MakeUCI(_TMove[0], _TMove[1], &temp_move);
+					temp_move.movement = MakeUCI(_TMove[0], _TMove[1]);
 				}
 				else if (1 <= _TValue2 && _TValue2 <= 6){
 					_Board[_TMove[0].y][_TMove[0].x] = 0;
 					_V_SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
-					MakeUCI(_TMove[1], _TMove[0], &temp_move);
+					temp_move.movement = MakeUCI(_TMove[1], _TMove[0]);
 				}
 			}
 			else if (_Turn == BLACK_TURN) {
@@ -124,12 +128,12 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 				if (7 <= _TValue1 && _TValue1 <= 12) {
 					_Board[_TMove[1].y][_TMove[1].x] = 0;
 					_V_SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
-					MakeUCI(_TMove[0], _TMove[1], &temp_move);
+					temp_move.movement = MakeUCI(_TMove[0], _TMove[1]);
 				}
 				else if (7 <= _TValue2 && _TValue2 <= 12) {
 					_Board[_TMove[0].y][_TMove[0].x] = 0;
 					_V_SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
-					MakeUCI(_TMove[1], _TMove[0], &temp_move);
+					temp_move.movement = MakeUCI(_TMove[1], _TMove[0]);
 				}
 			}
 
@@ -192,29 +196,29 @@ void ChessGame::Show_chessImage() {
 	cvReleaseImage(&tempgame_board);
 }
 
-void ChessGame::MakeUCI(CvPoint before, CvPoint after, move_format *dst){
-	char buf[6] = "\0";
+char *ChessGame::MakeUCI(CvPoint before, CvPoint after){
+	char buf[10];// = "\0";
 
 	memset(buf, NULL, sizeof(buf));
-	sprintf(buf, "%c%d%c%d", char_mapping(before.y), before.x+1, char_mapping(after.y), after.x+1);
-	buf[5] = '\0';
+	sprintf(buf, "%c%d%c%d\0", char_mapping(before.y), before.x+1, char_mapping(after.y), after.x+1);
+	//buf[5] = '\0';
 
-	strcpy(dst->movement, buf);
+	return buf;//strcpy(dst->movement, buf);
 }
 
-void ChessGame::Get_RecentMove(char *str){
+char *ChessGame::Get_RecentMove(){
 	move_format temp_move;
-	char buf[6] = "\0";
+	char *buf;
 
-	memset(buf, NULL, sizeof(buf));
+	//memset(buf, NULL, sizeof(buf));
 	//dequeue
 	if(_chess_movement.size() > 0){
 		temp_move = _chess_movement.front();
 		_chess_movement.pop();
 
-		strcpy(buf, temp_move.movement);
-		strcpy(str, buf);
+		return temp_move.movement;
 	}
+	return NULL;
 }
 
 char ChessGame::char_mapping(int position){

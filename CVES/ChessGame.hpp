@@ -35,13 +35,13 @@
 #define ENPASSANT_MOVE			3
 #define DEBUGUI_PATH "./Chess_DebugUI/"
 
-#define WHITE_TURN	1
-#define BLACK_TURN	0
+#define WHITE_TURN true
+#define BLACK_TURN false
 
 typedef struct move_format{
-	char movement[6];
+	char *movement;
 	bool turn_flag;
-}move_format;
+} move_format;
 
 class ChessGame {
 	enum {			//체스말
@@ -61,7 +61,7 @@ private:
 	FILE *_Movement_log;		//체스 이동경로 Log를 남길 파일포인터.
 	std::queue<move_format> _chess_movement;
 
-	void MakeUCI(CvPoint before, CvPoint after, move_format *dst);
+	char *MakeUCI(CvPoint before, CvPoint after);
 	char char_mapping(int position);	// 글자 좌표로 매핑해줌
 public:
 	ChessGame();
@@ -72,6 +72,6 @@ public:
 	void Chess_process(CvPoint input1[], int MOVE_MODE);
 	void Show_chess_board();		// cmd에 체스판을 그림.
 	void Show_chessImage();			// chess UI를 Draw
-	void Get_RecentMove(char *str);     // list에 저장된 가장 최근 movement를 return; Dequeue와 같음.
+	char *Get_RecentMove();     // list에 저장된 가장 최근 movement를 return; Dequeue와 같음.
 };
 #endif
