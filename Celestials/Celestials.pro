@@ -30,7 +30,8 @@ SOURCES += main.cpp\
     ../CVES/ChessRecognition.cpp \
     ../CVES/ChessGame.cpp \
     ../CVES/BlobLabeling.cpp \
-    ../CVES/ChessLineSearchAlg.cpp
+    ../CVES/ChessLineSearchAlg.cpp \
+    ../Common/StringTools.cpp
 
 HEADERS  += Celestials.h \
     ../Common/Time.hpp \
@@ -57,7 +58,8 @@ HEADERS  += Celestials.h \
     ../CVES/BlobLabeling.hpp \
     ../CVEC/CVECDependent.hpp \
     ../CVES/CVESDependent.hpp \
-    ../CVES/ChessLineSearchAlg.hpp
+    ../CVES/ChessLineSearchAlg.hpp \
+    ../Common/StringTools.hpp
 
 FORMS    += Celestials.ui
 
@@ -97,7 +99,8 @@ INCLUDEPATH += . \
 # Import libws2_32
 LIBS +=	\
 	-lws2_32 \
-	-lpsapi
+	-lpsapi \
+	-lAdvAPI32
 
 win32 {
 # Import Library for Debug

@@ -27,6 +27,7 @@
 #define _Option_hpp_
 
 #include "Common.hpp"
+#include "ExtendedBlackBox.hpp"
 
 #include "CVECDependent.hpp"
 
@@ -43,8 +44,9 @@ public:
 
 	void InitializeOptionValues();
 	void ClearEngineOptionValues();
-	void SetEngineValues(EngineOptions _EngineOptions);
+	void SetEngineValue(EngineOptions _EngineOptions);
 	list<EngineOptions> GetEngineValues();
+	bool FindEngineOptionName(const char *VariableName);
 
 	// Implement me.
 	void ReadOptionToINIFile();

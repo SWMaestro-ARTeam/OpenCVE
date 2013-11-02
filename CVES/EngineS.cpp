@@ -413,6 +413,12 @@ void ServerReceivedCallback(char *Buffer, SOCKET ClientSocket) {
 			// 만약 Data가 없거나, Data의 Checksum이 맞지 않아 복원에 실패하였다면, 'No'.
 			// 그게 아니라면 'Yes'를 날려준다.
 			break;
+		case VALUE_I_ISSERVERREADY :
+			// IsServerReady 질문을 하면 해야 할 것은 다음과 같다.
+			// 1. 
+			// Server(CVES)가 모든 준비 되었을 때, ServerisReady를 보낸다.
+			G_EngineS->Get_Telepathy_Server()->SendDataToOne("ServerisReady", ClientSocket);
+			break;
 
 		// Observer -> CVES
 		case VALUE_I_STATUSNOW :

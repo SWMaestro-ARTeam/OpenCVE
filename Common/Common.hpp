@@ -39,6 +39,10 @@
 #define CELESTIALS_EXEC_FILENAME "Celestials"
 #endif
 
+#define SERVER_MODE "/Server"
+#define CLIENT_MODE "/Client"
+#define OBSERVER_MODE "/Observer"
+
 #define ENGINE_EXEC_VER "0.1.0"
 
 // 통신을 위한 값

@@ -23,52 +23,13 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _Time_hpp_
-#define _Time_hpp_
+#include "StringTools.hpp"
 
-#include "SystemDependency.hpp"
+template<typename T>
+string StringTools::ToString(const T& Any) {
+	return dynamic_cast<std::ostringstream &>((std::ostringstream() << std::dec << Any)).str();
+}
 
-#include <stdio.h>
-
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <ctime>
-
-#if WINDOWS_SYS
-#include <windows.h>
-#elif POSIX_SYS
-#include <sys/resource.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <unistd.h>
-#endif
-
-#define DEFAULT_UTC_HOUR 0
-#define DEFAULT_MST_HOUR -7
-#define DEFAULT_CCT_HOUR 8 
-
-#define YEAR_DEFAULT_1900 1900
-
-class Time {
-private:
-	time_t _RawTime;
-public:
-	tm *TimeInformation;
-
-	char *GetASCTime();
-	char *GetCTime();
-	char *GetUTCTime();
-	char *GetUTCTime_Hour();
-	double GetNowCPUTimeOfProcessStarted();
-	double GetRealTime();
-};
-
-class SystemControlsOfTime :
-	protected Time {
-private:
-public:
-	bool WaitSecondsUntilSwitch(int MilliSecones, bool &KillSwitch);
-};
-
-#endif
+const char *StringTools::StirngToCharPointer(string Str) {
+	return Str.c_str();
+}

@@ -83,3 +83,17 @@ double Time::GetNowCPUTimeOfProcessStarted() {
 #endif
 	return _TCPUTime;
 }
+
+bool SystemControlsOfTime::WaitSecondsUntilSwitch(int MilliSecones, bool &KillSwitch) {
+	time_t _TNow = time(NULL);
+	time_t _TEnd = _TNow + MilliSecones;
+
+	while (KillSwitch == true && _TNow < _TEnd) {
+		_TNow = time(NULL);
+	}
+
+	if (_TNow < _TEnd && KillSwitch == true)
+		return false;
+
+	return true;
+}

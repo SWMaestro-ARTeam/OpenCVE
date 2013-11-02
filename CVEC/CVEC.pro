@@ -26,7 +26,8 @@ SOURCES += main.cpp \
     ../Common/InternalProtocolSeeker.cpp \
     ../Common/File.cpp \
     ../Common/Debug.cpp \
-    ../Common/CodeConverter.cpp
+    ../Common/CodeConverter.cpp \
+    ../Common/StringTools.cpp
 
 HEADERS += \
     UCICommandSeeker.hpp \
@@ -46,7 +47,8 @@ HEADERS += \
     ../Common/Debug.hpp \
     ../Common/Common.hpp \
     ../Common/CodeConverter.hpp \
-    CVECDependent.hpp
+    CVECDependent.hpp \
+    ../Common/StringTools.hpp
 
 MINGW_PATH = C:/System_Emulator/MinGW
 QT_PATH = C:/System_Development/Qt/5.1.1
@@ -80,6 +82,7 @@ INCLUDEPATH += . \
 # Import libws2_32
 LIBS +=	\
 	-lws2_32 \
-	-lpsapi
+	-lpsapi \
+	-lAdvAPI32
 #LIBS += -L$$MINGW_PATH/lib \
 

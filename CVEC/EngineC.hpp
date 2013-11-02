@@ -30,6 +30,8 @@
 #include <cstdlib>
 
 #include <list>
+#include <mutex>
+#include <queue>
 
 #include <stdio.h>
 #include <string.h>
@@ -53,17 +55,24 @@
 #include "Telepathy.hpp"
 // Option Module
 #include "Option.hpp"
+// String Tools
+#include "StringTools.hpp"
+
+#include "Time.hpp"
 
 class EngineC {
 private:
-	// Variables
-	char *Command_Str;
-
 	Option *_Option;
 	Telepathy::Client *_TelepathyClient;
 	Process *_ProcessConfirm;
 	UCICommandSeeker _UCICommandSeeker;
 	File _File;
+
+	// Variables
+	char *_CommandString;
+	// 내가 흑색인지 백색인지 구분.
+	bool _IsWhite;
+	bool _IsInAI;
 
 	// Functions
 	void Initialize_CommandStr();
@@ -116,12 +125,19 @@ public:
 	//bool IsSocketConnented;
 	bool IsGetCVESProcess;
 	bool IsNoCVESProcess;
+	bool IsCVESReady;
 	//bool isServerOrClient;
 	bool EngineEnable;
 	bool EnginePause;
+
+	mutex QueueMutex;
+	mutex VarProtect;
+	queue<char *> *CommandQueue;
+
 	// Functions
 	bool Connect_Server();
 	void Disconnect_Server();
+	bool Reconnect_Server();
 
 	void SendToGUI(const char *Str, ...);
 
@@ -130,8 +146,57 @@ public:
 	Telepathy::Client *Get_TelepathyClient();
 	bool CheckingCVESProcess();
 	void EngineC_Start();
-};
 
-void ClientReceivedCallback(char *Buffer);
+	static void ClientReceivedCallback(char *Buffer);
+	static
+#if WINDOWS_SYS
+	//UINT
+	DWORD WINAPI
+#elif POSIX_SYS
+	void *
+#endif
+		CVEC_CVESCheckingThread(
+#if WINDOWS_SYS
+		LPVOID
+#elif POSIX_SYS
+		void *
+#endif
+		Param);
+	static
+#if WINDOWS_SYS
+	//UINT
+	DWORD WINAPI
+#elif POSIX_SYS
+	// using pthread
+	void *
+#endif
+		CommandQueueProcessingThread(
+#if WINDOWS_SYS
+		LPVOID
+#elif POSIX_SYS
+		void *
+#endif
+		Param);
+
+
+};
+#endif
+//void ClientReceivedCallback(char *Buffer);
+/*
+#if WINDOWS_SYS
+//UINT
+DWORD WINAPI
+#elif POSIX_SYS
+// using pthread
+void *
+#endif
+	CommandQueueProcessingThread(
+#if WINDOWS_SYS
+	LPVOID
+#elif POSIX_SYS
+	void *
+#endif
+	Param);
 
 #endif
+	*/

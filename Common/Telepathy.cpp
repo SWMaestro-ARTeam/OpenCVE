@@ -374,8 +374,10 @@ void *
 #endif
 	Param) {
 	while (1) {
-		if (G_TelepathyClient->ClientReceiving() == false)
+		if (G_TelepathyClient->ClientReceiving() == false) {
+			G_TelepathyClient->ClientDisconnect();
 			break;
+		}
 	}
 
 	return 0;
@@ -383,6 +385,8 @@ void *
 #pragma endregion Client Threads
 
 bool Telepathy::Client::ClientInitialize() {
+	int _TOptVal;
+	
 	// WSAStartUp
 	if (WSAStartup(0x101, &_WSAData) != 0)
 		return false;
@@ -394,6 +398,9 @@ bool Telepathy::Client::ClientInitialize() {
 	if (_ClientSocket == INVALID_SOCKET)
 		return false;
 
+	
+	//if (setsockopt(_ClientSocket, SOL_SOCKET, SO_REUSEADDR, (const char *)&_TOptVal, sizeof(int)) == -1)
+	//	return false;
 	// Local IP Address.
 	_Address = inet_addr(IP_ADDR_LOCAL);
 	// get host entry.
@@ -445,6 +452,7 @@ void Telepathy::Client::ClientReceiveStart() {
 
 void Telepathy::Client::ClientClose() {
 	if (_ClientSocket != NULL) {
+		shutdown(_ClientSocket, 0x02); // BOTH.
 		closesocket(_ClientSocket);
 	}
 	G_TelepathyClient = NULL;
@@ -491,7 +499,14 @@ bool Telepathy::Client::ClientConnect() {
 
 void Telepathy::Client::ClientDisconnect() {
 	ClientClose();
+	//IsConnectedClient = false;
 }
+
+//bool Telepathy::Client::ClientReConnect() {
+//	ClientInitialize();
+//	ClientConnect();
+//}
+
 
 bool Telepathy::Client::SendData(char *Str) {
 	int _TSendStatus = 0;

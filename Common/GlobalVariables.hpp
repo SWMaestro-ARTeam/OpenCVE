@@ -87,10 +87,7 @@ typedef struct _CommandString {
 	}
 
 	bool PrevStringIter() {
-		list<string>::iterator _TIter = StringListIter;
-		_TIter--;
-		if (IsInitialize == true && StringList->begin() != _TIter) {
-			//if (IsInitialize == true && UCIStringList->begin() != UCIStringListIter) {
+		if (IsInitialize == true && IsFirstStringIter() != true) {
 			StringListIter--;
 			return true;
 		}
@@ -98,21 +95,33 @@ typedef struct _CommandString {
 	}
 
 	bool NextStringIter() {
-		list<string>::iterator _TIter = StringListIter;
-		_TIter++;
-		if (IsInitialize == true && StringList->end() != _TIter) {
-			//if (IsInitialize == true && UCIStringList->end() != UCIStringListIter) {
+		if (IsInitialize == true && IsLastStringIter() != true) {
 			StringListIter++;
 			return true;
 		}
 		return false;
 	}
 
-	bool PrevCharArrayIter() {
-		list<char *>::iterator _TIter = CharArrayListIter;
+	bool IsFirstStringIter() {
+		list<string>::iterator _TIter = StringListIter;
 		_TIter--;
-		if (IsInitialize == true && CharArrayList->begin() != _TIter) {
-			//if (IsInitialize == true && UCICharArrayList->begin() != UCICharArrayListIter) {
+		if (IsInitialize == true && StringList->begin() != _TIter) {
+			return false;
+		}
+		return true;
+	}
+
+	bool IsLastStringIter() {
+		list<string>::iterator _TIter = StringListIter;
+		_TIter++;
+		if (IsInitialize == true && StringList->end() != _TIter) {
+			return false;
+		}
+		return true;
+	}
+
+	bool PrevCharArrayIter() {
+		if (IsInitialize == true && IsFirstCharArrayIter() != true) {
 			CharArrayListIter--;
 			return true;
 		}
@@ -120,14 +129,29 @@ typedef struct _CommandString {
 	}
 
 	bool NextCharArrayIter() {
-		list<char *>::iterator _TIter = CharArrayListIter;
-		_TIter++;
-		if (IsInitialize == true && CharArrayList->end() != _TIter) {
-			//if (IsInitialize == true && UCICharArrayList->end() != UCICharArrayListIter) {
+		if (IsInitialize == true && IsLastCharArrayIter() != true) {
 			CharArrayListIter++;
 			return true;
 		}
 		return false;
+	}
+
+	bool IsFirstCharArrayIter() {
+		list<char *>::iterator _TIter = CharArrayListIter;
+		_TIter--;
+		if (IsInitialize == true && CharArrayList->begin() != _TIter) {
+			return false;
+		}
+		return true;
+	}
+
+	bool IsLastCharArrayIter() {
+		list<char *>::iterator _TIter = CharArrayListIter;
+		_TIter++;
+		if (IsInitialize == true && CharArrayList->end() != _TIter) {
+			return false;
+		}
+		return true;
 	}
 } CommandString;
 #pragma endregion struct_CommandString

@@ -27,7 +27,8 @@ SOURCES += main.cpp \
     ../Common/InternalProtocolSeeker.cpp \
     ../Common/Debug.cpp \
     ../Common/CodeConverter.cpp \
-    ChessLineSearchAlg.cpp
+    ChessLineSearchAlg.cpp \
+    ../Common/StringTools.cpp
 
 HEADERS += \
     HandRecognition.hpp \
@@ -46,7 +47,8 @@ HEADERS += \
     ../Common/Debug.hpp \
     ../Common/Common.hpp \
     CVESDependent.hpp \
-    ChessLineSearchAlg.hpp
+    ChessLineSearchAlg.hpp \
+    ../Common/StringTools.hpp
 
 #QT_PATH = ${QTDIR}
 #PROJECT_PATH = ${INVI_PROJECT_ROOT}
@@ -84,7 +86,8 @@ INCLUDEPATH += . \
 # Import libws2_32
 LIBS +=	\
 	-lws2_32 \
-	-lpsapi
+	-lpsapi \
+	-lAdvAPI32
 
 win32 {
 # Import Library for Debug

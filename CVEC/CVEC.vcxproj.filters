@@ -120,6 +120,15 @@
     <Filter Include="Common\StringTokenizer\Header">
       <UniqueIdentifier>{bfb3a4f6-b44b-43ec-96cb-4a2136d67bda}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Common\StringTools">
+      <UniqueIdentifier>{c53242c9-95c7-4575-a13c-0ad38cc85c46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\StringTools\Header">
+      <UniqueIdentifier>{f04d8351-83fb-4adc-8a11-2f0d7de66d44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\StringTools\Source">
+      <UniqueIdentifier>{4b08f17b-6c23-407d-9a1a-e6585fb1f7b3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UCICommandSesker.cpp">
@@ -160,6 +169,9 @@
     </ClCompile>
     <ClCompile Include="..\Common\StringTokenizer.cpp">
       <Filter>Common\StringTokenizer\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\StringTools.cpp">
+      <Filter>Common\StringTools\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -213,6 +225,9 @@
     </ClInclude>
     <ClInclude Include="..\Common\InternalProtocol.hpp">
       <Filter>Common\CVESystemCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\StringTools.hpp">
+      <Filter>Common\StringTools\Header</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

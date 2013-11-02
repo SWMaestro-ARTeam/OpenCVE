@@ -66,35 +66,68 @@ void Option::InitializeOptionValues() {
 	_EngineOptionValues.push_back(EngineOptions("Pawn Structure", true, "100", "spin", "min 0 max 400", (const char *)NULL));
 	_EngineOptionValues.push_back(EngineOptions("Passed Pawns", true, "100", "spin", "min 0 max 400", (const char *)NULL));
 
+	for_IterToEnd(list, EngineOptions, _EngineOptionValues) {
+		_TVal->_CurrentVariable = _TVal->_InitializeValue;
+	}
+	/*
 	list<EngineOptions>::iterator _TEOIter;
 	for (_TEOIter = _EngineOptionValues.begin();
 		_TEOIter != _EngineOptionValues.end(); _TEOIter++) {
 		_TEOIter->_CurrentVariable = _TEOIter->_InitializeValue;
 	}
+	*/
 }
 
 void Option::ClearEngineOptionValues() {
 	_EngineOptionValues.clear();
 }
 
-void Option::SetEngineValues(EngineOptions _EngineOptions) {
-	list<EngineOptions>::iterator _TEOIter;
+void Option::SetEngineValue(EngineOptions AnyEngineOptions) {
+	//list<EngineOptions>::iterator _TEOIter;
 	bool _IsInGameOption = false;
+
+	for_IterToEnd(list, EngineOptions, _EngineOptionValues) {
+		if (strcmp(_TVal->_VariableName, AnyEngineOptions._VariableName) == 0) {
+			//*_TVal = AnyEngineOptions;
+
+			if (AnyEngineOptions._ControlerType != NULL)
+				_TVal->_ControlerType = AnyEngineOptions._ControlerType;
+			if (AnyEngineOptions._CurrentVariable != NULL)
+				_TVal->_CurrentVariable = AnyEngineOptions._CurrentVariable;
+			if (AnyEngineOptions._InitializeValue != NULL)
+				_TVal->_InitializeValue = AnyEngineOptions._InitializeValue;
+			if (AnyEngineOptions._VariableName != NULL)
+				_TVal->_VariableName = AnyEngineOptions._VariableName;
+			if (AnyEngineOptions._VariableOptionString != NULL)
+				_TVal->_VariableOptionString = AnyEngineOptions._VariableOptionString;
+			_TVal->_OptionEnable = AnyEngineOptions._OptionEnable;
+			_IsInGameOption = true;
+		}		
+	}
+	/*
 	for (_TEOIter = _EngineOptionValues.begin();
 		_TEOIter != _EngineOptionValues.end(); _TEOIter++) {
-		if (_TEOIter->_VariableName == _EngineOptions._VariableName) {
+		if (strcmp(_TEOIter->_VariableName, _EngineOptions._VariableName) == 0) {
 			*_TEOIter = _EngineOptions;
 			_IsInGameOption = true;
 		}
 	}
-
+	*/
 	// EngineOptionValues에 포함이 되어 있지 않다면..
 	if (_IsInGameOption == false)
-		_EngineOptionValues.push_back(_EngineOptions);
+		_EngineOptionValues.push_back(AnyEngineOptions);
 }
 
 list<EngineOptions> Option::GetEngineValues() {
 	return _EngineOptionValues;
+}
+
+bool Option::FindEngineOptionName(const char *VariableName) {
+	for_IterToEnd(list, EngineOptions, _EngineOptionValues) {
+		if (strcmp(_TVal->_VariableName, VariableName) == 0)
+			return true;
+	}
+	return false;
 }
 
 void Option::ReadOptionToINIFile() {

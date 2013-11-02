@@ -47,42 +47,50 @@ int InternalProtocolSeeker::InternalProtocolString_Seeker(const char *Str) {
 		CASE(STR_I_ISRESTOREPOSSIBLE)
 			_SeekedNumber = VALUE_I_ISRESTOREPOSSIBLE;
 			break;
+		CASE(STR_I_ISSERVERREADY)
+			_SeekedNumber = VALUE_I_ISSERVERREADY;
+			break;
 
 		CASE(STR_I_ALIVE)
 			_SeekedNumber = VALUE_I_ALIVE;
-		break;
+			break;
 		CASE(STR_I_BUSY)
 			_SeekedNumber = VALUE_I_BUSY;
-		break;
+			break;
 		CASE(STR_I_MOVE)
 			_SeekedNumber = VALUE_I_MOVE;
-		break;
+			break;
 		CASE(STR_I_RESTOREOK)
 			_SeekedNumber = VALUE_I_RESTOREOK;
-		break;
+			break;
 		CASE(STR_I_RESTORENOT)
 			_SeekedNumber = VALUE_I_RESTORENOT;
-		break;
+			break;
+		CASE(STR_I_SERVERISREADY)
+			_SeekedNumber = VALUE_I_SERVERISREADY;
+			break;
+
 
 		CASE(STR_I_STATUSNOW)
 			_SeekedNumber = VALUE_I_STATUSNOW;
-		break;
+			break;
 		CASE(STR_I_TICTOKON)
 			_SeekedNumber = VALUE_I_TICTOKON;
-		break;
+			break;
 		CASE(STR_I_TICTOKOFF)
 			_SeekedNumber = VALUE_I_TICTOKOFF;
+			break;
 
-		break;
+			break;
 		CASE(STR_I_TICTOK)
 			_SeekedNumber = VALUE_I_TICTOK;
-		break;
+			break;
 		CASE(STR_I_TICTOKISON)
 			_SeekedNumber = VALUE_I_TICTOKISON;
-		break;
+			break;
 		CASE(STR_I_TICTOKISOFF)
 			_SeekedNumber = VALUE_I_TICTOKISOFF;
-		break;
+			break;
 		
 		// Here is No Command string.
 		DEFAULT()

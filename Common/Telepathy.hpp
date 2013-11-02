@@ -150,6 +150,7 @@ public:
 
 		bool ClientConnect();
 		void ClientDisconnect();
+		//bool ClientReConnect();
 
 		bool SendData(char *Str);
 
