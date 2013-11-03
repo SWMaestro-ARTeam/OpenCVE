@@ -46,7 +46,7 @@ ChessGame::ChessGame() {
 	_Board[4][7] = B_King;
 	_Board[4][0] = W_King;
 
-	chessboard_img = cvLoadImage("./Chess_DebugUI/Chessboard.png", CV_LOAD_IMAGE_UNCHANGED);
+	chessboard_img = cvLoadImage("./Chess_UI/Chessboard.png", CV_LOAD_IMAGE_UNCHANGED);
 }
 
 ChessGame::~ChessGame() {
@@ -165,7 +165,7 @@ void ChessGame::Show_chessImage() {
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
 			if(_Board[i][j] != 0){
-				sprintf(temp_buf, "./Chess_DebugUI/%d.png", _Board[i][j]);
+				sprintf(temp_buf, "./Chess_UI/%d.png", _Board[i][j]);
 				chess_piece = cvLoadImage(temp_buf, CV_LOAD_IMAGE_UNCHANGED);
 
 				//cvSetImageROI(chessboard_img, cvRect(j*64, i*64, 64, 64));
