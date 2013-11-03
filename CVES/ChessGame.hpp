@@ -33,7 +33,7 @@
 
 #define CASTLING_MOVE				4
 #define ENPASSANT_MOVE			3
-#define DEBUGUI_PATH "./Chess_DebugUI/"
+#define DEBUGUI_PATH "./Chess_UI/"
 
 #define WHITE_TURN true
 #define BLACK_TURN false

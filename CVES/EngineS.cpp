@@ -560,7 +560,7 @@ void EngineS::imgproc_mode(){
 				_ChessRecognition.Chess_recog_wrapper(_CamOriginalImage, &_CrossPoint);
 
 				// 손이 들어오기 직전 영상을 촬영.
-				_HandRecognition.Sub_prevFrame(_ImageChess, _ImageSkin, _BeforeHandFirst); // 실시간 차영상 -> 턴별 차영상
+				_HandRecognition.Sub_prevFrame(_ImageChess, _ImageSkin, _BeforeHandFirst); // 턴별 차영상
 				if (_BeforeHandFirst)
 					_BeforeHandFirst = false;
 
