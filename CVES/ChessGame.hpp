@@ -58,6 +58,7 @@ private:
 	int _Board[8][8];
 	int before_move;
 	bool _Turn;
+	char recent_move[6];		//가장 최근 움직임을 저장
 	CvPoint _Before, _After;
 	
 	IplImage *chessboard_img;
@@ -67,7 +68,7 @@ private:
 	std::queue<move_format> _chess_movement;
 
 	void MakeUCI(CvPoint before, CvPoint after, move_format *dst);
-	char char_mapping(int position);	// 글자 좌표로 매핑해줌
+	char char_mapping(int position);	// 글자 좌표로 매핑
 public:
 	ChessGame();
 	~ChessGame();

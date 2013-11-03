@@ -668,12 +668,14 @@ void EngineS::imgproc_mode(){
 
 						// chessgame 이동부.
 						_ChessGame.Chess_process(out, 0);
-						// uci에 맞춰 return하는 부분 현재 printf로 출력
-						char buf[6];
+
+						//텔레파시 콜백 호출
+						char buf[32];
 						_ChessGame.Get_RecentMove(buf);
-						printf("%s\n", buf);
+						//_TelepathyServer->SendDataToOne(buf, );
 #ifdef DEBUG_MODE
-						//_ChessGame.Show_chess_board();
+						// uci에 맞춰 return하는 부분 현재 printf로 출력
+						printf("%s\n", buf);
 						_ChessGame.Show_chessImage();
 #endif
 					}
@@ -703,6 +705,6 @@ void EngineS::imgproc_mode(){
 		cvShowImage("CVES", _CamOriginalImage);
 	}
 
-	if (cvWaitKey(10) == 27)
+	if (cvWaitKey(33) == 27)
 		_ImageProcessMode++;
 }

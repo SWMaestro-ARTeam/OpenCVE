@@ -133,7 +133,8 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 				}
 			}
 
-			//queue에 넣음
+			//recent_move에 복사
+			strcpy(recent_move, temp_move.movement);
 			_chess_movement.push(temp_move);
 
 			break;
@@ -202,16 +203,22 @@ void ChessGame::MakeUCI(CvPoint before, CvPoint after, move_format *dst){
 }
 
 void ChessGame::Get_RecentMove(char *str){
-	move_format temp_move;
-	char buf[6] = "\0";
+	//move_format temp_move;
+	//char buf[6] = "\0";
 
 	//dequeue
-	if(_chess_movement.size() > 0){
-		temp_move = _chess_movement.front();
-		_chess_movement.pop();
+	//if(_chess_movement.size() > 0){
+	//	temp_move = _chess_movement.front();
+	//	_chess_movement.pop();
 
-		strcpy(buf, temp_move.movement);
-	}
+	//	strcpy(buf, temp_move.movement);
+	//}
+	//strcpy(str, buf);
+	char buf[32];
+	
+	strcpy(buf, "Move ");
+	strcat(buf, recent_move);
+
 	strcpy(str, buf);
 }
 
