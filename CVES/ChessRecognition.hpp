@@ -47,14 +47,14 @@ private:
 
 	vector<ChessPoint> _CP; // 교점
 	vector<std::pair<float, float> > vec_LineX, vec_LineY; // 라인 : <rho, theta>
-	IplImage *img_process;
+	IplImage *img_process; // 체스보드 인식에 사용되는 내부 연산 이미지
 
 	HANDLE hThread;
 
-	void NMS2(IplImage *image, IplImage *image2, int kernel);	//
+	void Non_Maximum_Suppression(IplImage *image, IplImage *image2, int kernel);
 	void cast_seq(CvSeq *linesX, CvSeq *linesY); // 벡터로 변환
 	//bool sort_first(pair<float, float> a, pair<float, float> b); //벡터 정렬 규칙
-	void mergeLine(vector<std::pair<float, float> > *Lines);
+	void mergeLine(vector<std::pair<float, float> > *Lines); //Hough Line Trasform 결과를 체스판에 맞추어 병합.
 
 	// Thread 함수에 대해서는 나중에 수정 하기로 함.
 	static UINT WINAPI thread_hough(void *arg); // 쓰레드 함수.
@@ -81,8 +81,6 @@ public:
 	void Copy_Img(IplImage *src);
 	//교차점 보정함수
 	void Refine_CrossPoint(vector<ChessPoint> *point);
-	//관심영역 설정
-	void Set_CalculationDomain(CvCapture *Cam, int *ROI_WIDTH, int *ROI_HEIGHT);
 	//자원반환
 	void exit();
 
