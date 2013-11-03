@@ -41,7 +41,14 @@ void Option::InitializeOptionValues() {
 
 	_EngineOptionValues.push_back(EngineOptions("Ponder", true, "false", "check", "", (const char *)NULL));
 
-	_EngineOptionValues.push_back(EngineOptions("OwnBook", true, "true", "check",  "", (const char *)NULL));
+	_EngineOptionValues.push_back(EngineOptions("Save Notation", true, "false", "check", "", (const char *)NULL));
+	_EngineOptionValues.push_back(EngineOptions("Auto Recovery", true, "true", "check", "", (const char *)NULL));
+	_EngineOptionValues.push_back(EngineOptions("Observer Enable", true, "true", "check", "", (const char *)NULL));
+	_EngineOptionValues.push_back(EngineOptions("AR Enable", true, "true", "check", "", (const char *)NULL));
+	_EngineOptionValues.push_back(EngineOptions("TicTok", true, "true", "check", "", (const char *)NULL));
+	_EngineOptionValues.push_back(EngineOptions("Video Enable", true, "true", "check", "", (const char *)NULL));
+
+	/*_EngineOptionValues.push_back(EngineOptions("OwnBook", true, "true", "check",  "", (const char *)NULL));
 	_EngineOptionValues.push_back(EngineOptions("BookFile", true, "book_small.bin", "string", "", (const char *)NULL));
 
 	_EngineOptionValues.push_back(EngineOptions("NullMove Pruning", true, "Fail High", "combo", "var Always var Fail High var Never", (const char *)NULL));
@@ -64,7 +71,7 @@ void Option::InitializeOptionValues() {
 	_EngineOptionValues.push_back(EngineOptions("Piece Activity", true, "100", "spin", "min 0 max 400", (const char *)NULL));
 	_EngineOptionValues.push_back(EngineOptions("King Safety", true, "100", "spin", "min 0 max 400", (const char *)NULL));
 	_EngineOptionValues.push_back(EngineOptions("Pawn Structure", true, "100", "spin", "min 0 max 400", (const char *)NULL));
-	_EngineOptionValues.push_back(EngineOptions("Passed Pawns", true, "100", "spin", "min 0 max 400", (const char *)NULL));
+	_EngineOptionValues.push_back(EngineOptions("Passed Pawns", true, "100", "spin", "min 0 max 400", (const char *)NULL));*/
 
 	for_IterToEnd(list, EngineOptions, _EngineOptionValues) {
 		_TVal->_CurrentVariable = _TVal->_InitializeValue;

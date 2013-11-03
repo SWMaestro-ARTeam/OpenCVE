@@ -69,7 +69,14 @@ private:
 	File _File;
 
 	// Variables
-	char *_CommandString;
+	bool _IsGetCVESProcess;
+	bool _IsNoCVESProcess;
+	bool _IsCVESReady;
+
+	mutex _QueueProtectMutex;
+	mutex _VarProtectMutex;
+	
+	char *_Command;
 	// 내가 흑색인지 백색인지 구분.
 	bool _IsWhite;
 	bool _IsInAI;
@@ -97,63 +104,39 @@ private:
 
 	void Clear_ClientSocket();
 
+	// for Server Connect.
+	bool Connect_Server();
+	void Disconnect_Server();
+	bool Reconnect_Server();
+
+	// Command Functions
 	void Command_UCI();
 	void Command_Debug();
 	void Command_Isready();
 	void Command_Setoption(CommandString *_UCICS); //
-	//void Command_Setoption(); //
 	void Command_Ucinewgame();
 	void Command_Register();
 	void Command_Position(CommandString *_UCICS); //
-	//void Command_Position(); //
 	void Command_Go(CommandString *_UCICS); //
-	//void Command_Go(); //
 	void Command_Stop();
 	void Command_Ponderhit();
 	void Command_Quit();
 
 	void Parsing_Command();
 
-public:
-	// Constructor
-	EngineC();
-	~EngineC();
-
-	bool CVEC_CVESControlInitial;
-	//bool IsCVESProcessAlive;
-	//bool IsSocketInitialize;
-	//bool IsSocketConnented;
-	bool IsGetCVESProcess;
-	bool IsNoCVESProcess;
-	bool IsCVESReady;
-	//bool isServerOrClient;
-	bool EngineEnable;
-	bool EnginePause;
-
-	mutex QueueMutex;
-	mutex VarProtect;
-	queue<char *> *CommandQueue;
-
-	// Functions
-	bool Connect_Server();
-	void Disconnect_Server();
-	bool Reconnect_Server();
-
 	void SendToGUI(const char *Str, ...);
-
-	bool Get_CVESProcessStatus();
-	bool Get_CVESConnectionStatus();
-	Telepathy::Client *Get_TelepathyClient();
 	bool CheckingCVESProcess();
-	void EngineC_Start();
 
+	// ClientReceivedCallback
 	static void ClientReceivedCallback(char *Buffer);
+
+	// CVEC_CVESCheckingThread
 	static
 #if WINDOWS_SYS
-	//UINT
-	DWORD WINAPI
+		UINT WINAPI
+		//DWORD WINAPI
 #elif POSIX_SYS
-	void *
+		void *
 #endif
 		CVEC_CVESCheckingThread(
 #if WINDOWS_SYS
@@ -162,41 +145,34 @@ public:
 		void *
 #endif
 		Param);
+
+	// ClientCommandQueueProcessingThread
 	static
 #if WINDOWS_SYS
-	//UINT
-	DWORD WINAPI
+		UINT WINAPI
+		//DWORD WINAPI
 #elif POSIX_SYS
-	// using pthread
-	void *
+		// using pthread
+		void *
 #endif
-		CommandQueueProcessingThread(
+		ClientCommandQueueProcessingThread(
 #if WINDOWS_SYS
 		LPVOID
 #elif POSIX_SYS
 		void *
 #endif
 		Param);
+	
+public:
+	// Constructor
+	EngineC();
+	~EngineC();
 
+	bool EngineEnable;
+	bool EnginePause;
 
+	queue<char *> *CommandQueue;
+
+	void EngineC_Start();
 };
 #endif
-//void ClientReceivedCallback(char *Buffer);
-/*
-#if WINDOWS_SYS
-//UINT
-DWORD WINAPI
-#elif POSIX_SYS
-// using pthread
-void *
-#endif
-	CommandQueueProcessingThread(
-#if WINDOWS_SYS
-	LPVOID
-#elif POSIX_SYS
-	void *
-#endif
-	Param);
-
-#endif
-	*/

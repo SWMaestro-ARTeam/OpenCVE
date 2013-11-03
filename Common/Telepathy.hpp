@@ -109,7 +109,7 @@ public:
 		typedef void (* _T_SERVERRECEIVEDCALLBACK)(char *Buffer, SOCKET ClientSocket);
 
 		bool ServerInitialize();
-		void ServerStart();
+		bool ServerStart();
 		void ServerClose();
 		void ServerListentoClient();
 		bool ServerReceiving(SOCKET ClientSocket);

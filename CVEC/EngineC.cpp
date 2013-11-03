@@ -32,25 +32,19 @@ EngineC *G_EngineC;
 #pragma region Constructor & Destructor
 // Constructor
 EngineC::EngineC() {
-	//IsSocketInitialize = false;
-	//IsSocketConnented = false;
-	IsGetCVESProcess = false;
-	IsNoCVESProcess = false;
+	_IsGetCVESProcess = false;
+	_IsNoCVESProcess = false;
 	EngineEnable = false;
 	EnginePause = false;
-	CVEC_CVESControlInitial = true;
 	G_EngineC = this;
 }
 
 // Destructor
 EngineC::~EngineC() {
-	//IsSocketInitialize = false;
-	//IsSocketConnented = false;
-	IsGetCVESProcess = false;
-	IsNoCVESProcess = false;
+	_IsGetCVESProcess = false;
+	_IsNoCVESProcess = false;
 	EngineEnable = false;
 	EnginePause = false;
-	CVEC_CVESControlInitial = false;
 	G_EngineC = NULL;
 }
 #pragma endregion Constructor & Destructor
@@ -58,13 +52,13 @@ EngineC::~EngineC() {
 #pragma region Initialize & Deinitialize Functions
 void EngineC::Initialize_CommandStr() {
 	// Command는 BUFFER_MAX값에 의해서 결정
-	_CommandString = (char *)calloc(BUFFER_MAX_32767, sizeof(char));
+	_Command = (char *)calloc(BUFFER_MAX_32767, sizeof(char));
 	Clear_Str();
 }
 
 void EngineC::Deinitialize_CommandStr() {
 	Clear_Str();
-	free(_CommandString);
+	free(_Command);
 }
 
 void EngineC::Initialize_CVEOption() {
@@ -133,11 +127,11 @@ void EngineC::Engine_Initializing() {
 	
 	// Initialize Client Socket.
 	if (Initialize_TClient() != true)
-		SendToGUI("Socket Initialize Failed.");
-	
+		SendToGUI("Socket Initialization Failed.");
 }
 
 void EngineC::Engine_DeInitializing() {
+	while (_TelepathyClient->IsConnectedClient) ;
 	Deinitialize_CommandStr();
 	Deinitialize_CVEOption();
 	Deinitialize_ProcessConfirm();
@@ -147,20 +141,20 @@ void EngineC::Engine_DeInitializing() {
 #pragma endregion Initialize & Deinitialize Functions
 
 void EngineC::Get_Command_Str() {
-	if (fgets(_CommandString, BUFFER_MAX_32767, stdin) == NULL) {
+	if (fgets(_Command, BUFFER_MAX_32767, stdin) == NULL) {
 		if (feof(stdin)) {
 			return ;
 		}
 	}
 
-	char *_StrPtr = strchr(_CommandString,'\n');
+	char *_StrPtr = strchr(_Command,'\n');
 
 	if (_StrPtr != NULL)
 		*_StrPtr = '\0';
 }
 
 void EngineC::Clear_Str() {
-	memset(_CommandString, NULL, sizeof(_CommandString));
+	memset(_Command, NULL, sizeof(_Command));
 }
 
 bool EngineC::Connect_Server() {
@@ -175,10 +169,11 @@ bool EngineC::Connect_Server() {
 		if (_TelepathyClient->ClientConnect()) {
 			_TelepathyClient->TClientReceivedCallback = ClientReceivedCallback;
 			_TelepathyClient->ClientReceiveStart();
-			// Command 처리용 Thread를 생성.
-
 			// Command Queue 생성.
-			//CommandQueue = new queue<char *>();
+			CommandQueue = new queue<char *>();
+			// Command 처리용 Thread를 생성.
+			HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, ClientCommandQueueProcessingThread, this, 0, NULL);
+			
 			_TIsConnected = true;
 		}
 	}
@@ -188,7 +183,7 @@ bool EngineC::Connect_Server() {
 
 void EngineC::Disconnect_Server() {
 	_TelepathyClient->ClientDisconnect();
-	//delete CommandQueue;
+	delete CommandQueue;
 	_TelepathyClient->TClientReceivedCallback = NULL;
 }
 
@@ -251,21 +246,18 @@ void EngineC::Command_Debug() {
 void EngineC::Command_Isready() {
 	SystemControlsOfTime _TSystemControlsOfTime;
 	// CVES, CVEC가 Ready 되어 있느냐, 그렇지 않느냐를 판단하여 정리한다.
-	IsCVESReady = false;
+	_IsCVESReady = false;
 	// 1. CVES의 준비상태를 물어본다.
 	_TelepathyClient->SendData("IsServerReady");
 	// 2. CVEC를 잠시 while로 돌려 10초간 대기하게 한다.
 	// 이래도 안되면, 접속이 안된 것으로 간주한다.
-	/*
-	if (_TSystemControlsOfTime.WaitSecondsUntilSwitch(10000, IsCVESReady) == true) {
-		// 여기에 들어오면 일단 10초를 지난 것으로 간주.
-		// 나올 수 있는 예외를 처리해준다.
-	}
-	*/
-	//else {
-		// 3. CVEC는 이미 준비가 되어 있으므로, "readyok"를 날린다.
-		SendToGUI("readyok");
+	//if (_TSystemControlsOfTime.WaitSecondsUntilSwitch(10, _IsCVESReady) == true) {
+	//	// 여기에 들어오면 일단 10초를 지난 것으로 간주.
+	//	// 나올 수 있는 예외를 처리해준다.
+	//	return ;
 	//}
+	// 3. CVEC는 이미 준비가 되어 있으므로, "readyok"를 날린다.
+	SendToGUI("readyok");
 }
 
 void EngineC::Command_Setoption(CommandString *_UCICS) {
@@ -327,7 +319,6 @@ void EngineC::Command_Register() {
 	// No Implementation
 }
 
-//
 void EngineC::Command_Position(CommandString *_UCICS) {
 	StringTools _TStringTools;
 	string _TString = string("");
@@ -502,13 +493,15 @@ void EngineC::Command_Quit() {
 	EngineEnable = false;
 }
 
+FILE *ofp =fopen("CVEC_Log.txt", "w");
 void EngineC::Parsing_Command() {
 	StringTokenizer *_StringTokenizer = new StringTokenizer();
 	
 	// Get UCI String.
 	Get_Command_Str();
 
-	_StringTokenizer->SetInputCharString((const char *)_CommandString);
+	fprintf(ofp,"%s\n",_Command);
+	_StringTokenizer->SetInputCharString((const char *)_Command);
 	_StringTokenizer->SetSingleToken(" ");
 	if (_StringTokenizer->StringTokenGo() == false)
 		return ;
@@ -559,89 +552,6 @@ void EngineC::Parsing_Command() {
 
 	delete _UCICommandString;
 	delete _StringTokenizer;
-}
-
-#pragma region CVEC_CVESCheckingThread
-// CVEC와는 별개로 CVES 및 CVES의 통신이 죽으면 안 되므로,
-// 이를 방지하기 위해 별도의 Thread를 두어 이들을 Checking 한다.
-#if WINDOWS_SYS
-//UINT
-DWORD WINAPI
-#elif POSIX_SYS
-void *
-#endif
- EngineC::CVEC_CVESCheckingThread(
-#if WINDOWS_SYS
-	 LPVOID
-#elif POSIX_SYS
-	 void *
-#endif
-	 Param) {
-	// 맨 처음에 해야 할 일.
-	// 1. Process Checking.
-	G_EngineC->CheckingCVESProcess();
-	/*
-	if (G_EngineC->IsNoCVESProcess)
-		return 0;
-	*/
-	// Process가 시작될 때까지 기다린다.
-	// 만약 G_EngineC->IsNoCVESProcess가 true면 0(이는, Server를 가지고 있지 않으므로 while을 실행하지 않는다는 이야기)
-	// 만약 G_EngineC->IsNoCVESProcess가 false면 G_EngineC->Get_CVESProcessStatus()를 검사.
-	while ((G_EngineC->IsNoCVESProcess) ? 0 : !G_EngineC->Get_CVESProcessStatus()) ;
-	// 2. Process Enable 뒤 Server 접속.
-	G_EngineC->Connect_Server();
-	// 3. Parser가 살아있을 때 까지 무조건 계속 while 돌며 Process가 살아있는지, 통신이 살아있는지 Check 함.
-	// 간혹 Loop에 걸렸을때 갑자기 종료가 될 수 있기 때문에, 항상 전제를 Engine이 Enable일 때만 돌게 끔 작업.
-	while (G_EngineC->EngineEnable) {
-		bool _Urgency = false;
-
-		// 만약 여기서 끊기면, 게임이 끊겼다고 생각하고 재실행 및 재접속 작업에 돌입한다.
-		// 일단 될 때까지 무한 반복.
-		// Server를 가지고 있지 않아도 통신이 끊긴건 일단 비상 상황이므로, 통신을 재개할 수단을 마련해야 한다.
-		if (((G_EngineC->IsNoCVESProcess) ?
-			0 : (G_EngineC->Get_CVESProcessStatus() != true))
-			&& G_EngineC->EngineEnable == true) {
-			// CVES 없어지고 다시 실행할 때까지 계속 돈다.
-			// Server를 가지고 있지 않다면, 굳이 실행 할 필요가 없다.
-			while (((G_EngineC->IsNoCVESProcess) ? 0 : !G_EngineC->CheckingCVESProcess()) && G_EngineC->EngineEnable == true) ;
-			
-			// Process가 시작될 때까지 기다린다.
-			// 역시 Server를 가지고 있지 않다면, 굳이 실행 할 필요가 없다.
-			while ((G_EngineC->IsNoCVESProcess) ? 0 : !G_EngineC->Get_CVESProcessStatus()) ;
-			
-			// Server와 통신해야 하는 긴급한 상황(죽은 경우기 때문에).
-			_Urgency = true;
-		}
-
-		if (G_EngineC->Get_TelepathyClient()->IsConnectedClient != true && G_EngineC->EngineEnable == true) {
-			// CVES에 접속할 때까지 계속 돈다.
-			while (((G_EngineC->IsNoCVESProcess) ? 1 : G_EngineC->Get_CVESProcessStatus())
-				&& G_EngineC->EngineEnable == true) {
-				if (G_EngineC->Reconnect_Server())
-					break;
-			}
-
-			if (_Urgency == true) {
-				// 긴급한 상황.
-				// Socket이 유효할 때, 복구가 가능한지를 CVES에 물어본다.
-				G_EngineC->Get_TelepathyClient()->SendData("IsRestorePossible");
-			}
-		}
-	}
-	return 0;
-}
-#pragma endregion CVEC_CVESCheckingThread
-
-bool EngineC::Get_CVESProcessStatus() {
-	return _ProcessConfirm->IsProcessActive;
-}
-
-bool EngineC::Get_CVESConnectionStatus() {
-	return _TelepathyClient->IsConnectedClient;
-}
-
-Telepathy::Client *EngineC::Get_TelepathyClient() {
-	return _TelepathyClient;
 }
 
 bool EngineC::CheckingCVESProcess() {
@@ -707,13 +617,13 @@ bool EngineC::CheckingCVESProcess() {
 			if (_TStr == NULL)
 				continue;
 
-			VarProtect.lock();
+			_VarProtectMutex.lock();
 			memset(_TStrBuff, NULL, sizeof(_TStrBuff));
 			// 가장 마지막에 있는 '\' 뒤에는 반드시 파일이 있기 때문이다.
 			// 고로 맨 앞은 현재 파일의 Directory Path.
 			strcpy(_TStrBuff, strrchr(_TStr, '\\') + 1);
 			_TStrBuff[strlen(_TStrBuff)] = '\0';
-			VarProtect.unlock();
+			_VarProtectMutex.unlock();
 
 			// 이름은 같은데 다른 Client Process가 이미 존재하는 경우.
 			if (strcmp(_TStrBuff, CLIENT_ENGINE_EXEC_FILENAME) == 0 && _TVal->PID != _TMyPID)
@@ -733,29 +643,24 @@ bool EngineC::CheckingCVESProcess() {
 			if (!_File.CheckFileExist(SERVER_ENGINE_EXEC_FILENAME))
 				return false;
 			
-			VarProtect.lock();
+			// Image Path 만들어 주기.
+			_VarProtectMutex.lock();
 			char _TCharArr[MAX_PATH], _TImageCmd[MAX_PATH + BUFFER_MAX_2048];
 			memset(_TCharArr, NULL, sizeof(_TCharArr));
 			strcpy(_TCharArr,_File.GetCurrentPath());
 			memset(_TImageCmd, NULL, sizeof(_TImageCmd));
 			sprintf(_TImageCmd, "%s%s", _TCharArr, SERVER_ENGINE_EXEC_FILENAME);
+			_VarProtectMutex.unlock();
 			
-			VarProtect.unlock();
-			/*
-			_TString.append(" ");
-			_TString.append(SERVER_MODE);
-			*/
 			// CVES(Server) 실행.
 			if (_TIsAnotherCVECProcessActive != true) {
 				// CVES Process를 이 Process가 갖는다.
-				IsGetCVESProcess = true;
-				//_ProcessConfirm->CreateProcessOnThread(SERVER_ENGINE_EXEC_FILENAME);
+				_IsGetCVESProcess = true;
 				_ProcessConfirm->CreateProcessOnThread((char *)_TImageCmd);
 			}
 			else {
-				if (IsGetCVESProcess == true){
+				if (_IsGetCVESProcess == true){
 					// 다른 Client가 있다고 해도, 내가 Server의 실행권한을 가지고 있다면 Server 실햄.
-					//_ProcessConfirm->CreateProcessOnThread(SERVER_ENGINE_EXEC_FILENAME);
 					_ProcessConfirm->CreateProcessOnThread((char *)_TImageCmd);
 				}
 			}
@@ -764,7 +669,7 @@ bool EngineC::CheckingCVESProcess() {
 		else {
 			// 먼저 실행된 다른 Client(CVEC)가 있을 경우에는 해당 Client가 Server를 Watchdog 할 가능성이 높으므로,
 			// 혹은 이미 Server를 실행해서 가지고 있으므로 Server를 실행하지 않는다.
-			IsNoCVESProcess = true;
+			_IsNoCVESProcess = true;
 		}
 		
 		return false;
@@ -777,9 +682,8 @@ void EngineC::EngineC_Start() {
 	
 	// 2. CVES의 Process와 CVES <-> CVEC 간의 통신이 끊기지 않도록 Check 하는 Thread.
 #if WINDOWS_SYS
-	DWORD _TThreadID = 0;
 	//#ifdef _AFXDLL
-	CreateThread(NULL, 0, CVEC_CVESCheckingThread, 0, 0, &_TThreadID);
+	HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, CVEC_CVESCheckingThread, this, 0, NULL);
 	//#endif
 #elif POSIX_SYS
 
@@ -797,114 +701,163 @@ void EngineC::EngineC_Start() {
 
 #pragma region Client Received Callback
 void EngineC::ClientReceivedCallback(char *Buffer) {
-//void ClientReceivedCallback(char *Buffer) {
-	// 내부 Protocol 송신(CVEC -> CVES).
-	StringTokenizer *_StringTokenizer = new StringTokenizer();
-	InternalProtocolSeeker _InternalProtocolSeeker;
-
-	_StringTokenizer->SetInputCharString((const char *)Buffer);
-	_StringTokenizer->SetSingleToken(" ");
-	if (_StringTokenizer->StringTokenGo() == false)
-		return ;
-
-	CommandString *_InternalProtocolCS = new CommandString(_StringTokenizer->GetTokenedCharListArrays());
-	int _NSeek_CVESToCVEC = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*_InternalProtocolCS->CharArrayListIter);
-
-	//// using mutex.
-	//G_EngineC->QueueMutex.lock();
-	//G_EngineC->CommandQueue.push(_NSeek_CVESToCVEC);
-	//G_EngineC->QueueMutex.unlock();
-	
-	switch (_NSeek_CVESToCVEC) {
-		case VALUE_I_ALIVE :
-			// 게임 재개.
-			//G_EngineC->EnginePause = true;
-			G_EngineC->Get_TelepathyClient()->SendData("Start");
-			break;
-		case VALUE_I_BUSY :
-			// No Implement.
-			break;
-		case VALUE_I_MOVE :
-			// UCI로 좌표 송신.
-			_InternalProtocolCS->NextCharArrayIter();
-			G_EngineC->SendToGUI("bestmove %s", _InternalProtocolCS->CharArrayListIter);
-			break;
-		case VALUE_I_RESTOREOK :
-			// 복구 완료.
-			// 게임 재개.
-			G_EngineC->Get_TelepathyClient()->SendData("Start");
-			break;
-		case VALUE_I_RESTORENOT :
-			// 복구 미완료.
-			// All Stop the game.
-			// CVES Process를 죽인다.
-			G_EngineC->Get_TelepathyClient()->SendData("Stop");
-			G_EngineC->Get_TelepathyClient()->SendData("ServerKill");
-			G_EngineC->EngineEnable = false;
-			break;
-		case VALUE_I_SERVERISREADY :
-			// CVES가 준비 되었음을 알림.
-			G_EngineC->IsCVESReady = true;
-	}
-
-	delete _InternalProtocolCS;
-	delete _StringTokenizer;
+	// using mutex.
+	G_EngineC->_QueueProtectMutex.lock();
+	char _TBuffer[BUFFER_MAX_32767];
+	memset(_TBuffer, NULL, sizeof(_TBuffer));
+	strcpy(_TBuffer, Buffer);
+	G_EngineC->CommandQueue->push(_TBuffer);
+	G_EngineC->_QueueProtectMutex.unlock();
 }
 #pragma endregion Client Received Callback
 
+#pragma region CVEC_CVESCheckingThread
+// CVEC와는 별개로 CVES 및 CVES의 통신이 죽으면 안 되므로,
+// 이를 방지하기 위해 별도의 Thread를 두어 이들을 Checking 한다.
 #if WINDOWS_SYS
-//UINT
-DWORD WINAPI
+UINT WINAPI
+//DWORD WINAPI
+#elif POSIX_SYS
+void *
+#endif
+ EngineC::CVEC_CVESCheckingThread(
+#if WINDOWS_SYS
+	 LPVOID
+#elif POSIX_SYS
+	 void *
+#endif
+	 Param) {
+	EngineC *_TEngine_C = (EngineC *)Param;
+	// 맨 처음에 해야 할 일.
+	// 1. Process Checking.
+	_TEngine_C->CheckingCVESProcess();
+	
+	// Process가 시작될 때까지 기다린다.
+	// 만약 _TEngine_C->IsNoCVESProcess가 true면 0(이는, Server를 가지고 있지 않으므로 while을 실행하지 않는다는 이야기)
+	// 만약 _TEngine_C->IsNoCVESProcess가 false면 _TEngine_C->_ProcessConfirm->IsProcessActive를 검사.
+	while ((_TEngine_C->_IsNoCVESProcess) ? 0 : !_TEngine_C->_ProcessConfirm->IsProcessActive) ;
+	// 2. Process Enable 뒤 Server 접속.
+	_TEngine_C->Connect_Server();
+	// 3. Parser가 살아있을 때 까지 무조건 계속 while 돌며 Process가 살아있는지, 통신이 살아있는지 Check 함.
+	// 간혹 Loop에 걸렸을때 갑자기 종료가 될 수 있기 때문에, 항상 전제를 Engine이 Enable일 때만 돌게 끔 작업.
+	while (_TEngine_C->EngineEnable) {
+		bool _Urgency = false;
+
+		// 만약 여기서 끊기면, 게임이 끊겼다고 생각하고 재실행 및 재접속 작업에 돌입한다.
+		// 일단 될 때까지 무한 반복.
+		// Server를 가지고 있지 않아도 통신이 끊긴건 일단 비상 상황이므로, 통신을 재개할 수단을 마련해야 한다.
+		if (((_TEngine_C->_IsNoCVESProcess) ?
+			0 : (_TEngine_C->_ProcessConfirm->IsProcessActive != true))
+			&& _TEngine_C->EngineEnable == true) {
+			// CVES 없어지고 다시 실행할 때까지 계속 돈다.
+			// Server를 가지고 있지 않다면, 굳이 실행 할 필요가 없다.
+			while (((_TEngine_C->_IsNoCVESProcess) ? 0 : !_TEngine_C->CheckingCVESProcess()) && _TEngine_C->EngineEnable == true) ;
+			
+			// Process가 시작될 때까지 기다린다.
+			// 역시 Server를 가지고 있지 않다면, 굳이 실행 할 필요가 없다.
+			while ((_TEngine_C->_IsNoCVESProcess) ? 0 : !_TEngine_C->_ProcessConfirm->IsProcessActive) ;
+			
+			// Server와 통신해야 하는 긴급한 상황(죽은 경우기 때문에).
+			_Urgency = true;
+		}
+
+		if (_TEngine_C->_TelepathyClient->IsConnectedClient != true && _TEngine_C->EngineEnable == true) {
+			// CVES에 접속할 때까지 계속 돈다.
+			while (((_TEngine_C->_IsNoCVESProcess) ? 1 : _TEngine_C->_ProcessConfirm->IsProcessActive)
+				&& _TEngine_C->EngineEnable == true) {
+				if (_TEngine_C->Reconnect_Server())
+					break;
+			}
+
+			if (_Urgency == true) {
+				// 긴급한 상황.
+				// Socket이 유효할 때, 복구가 가능한지를 CVES에 물어본다.
+				_TEngine_C->_TelepathyClient->SendData("IsRestorePossible");
+			}
+		}
+	}
+	_endthread();
+	return 0;
+}
+#pragma endregion CVEC_CVESCheckingThread
+
+#pragma region Command Queue Processing Thread
+#if WINDOWS_SYS
+UINT WINAPI
+//DWORD WINAPI
 #elif POSIX_SYS
 // using pthread
 void *
 #endif
-	EngineC::CommandQueueProcessingThread(
+	EngineC::ClientCommandQueueProcessingThread(
 #if WINDOWS_SYS
 	LPVOID
+	//void *
 #elif POSIX_SYS
 	void *
 #endif
 	Param) {
-	//while (G_EngineC->Get_TelepathyClient()->IsConnectedClient) {
-	//	if (G_EngineC->CommandQueue.empty() != true) {
-	//		G_EngineC->QueueMutex.lock();
-	//		int Command = G_EngineC->CommandQueue.front();
-	//		G_EngineC->CommandQueue.pop();
-	//		G_EngineC->QueueMutex.unlock();
+	EngineC *_TEngine_C = (EngineC *)Param;
+	
+	while (_TEngine_C->_TelepathyClient->IsConnectedClient) {
+		if (_TEngine_C->CommandQueue->empty() != true) {
+			_TEngine_C->_QueueProtectMutex.lock();
+			char _TStrBuffer[BUFFER_MAX_32767];
+			memset(_TStrBuffer, NULL, sizeof(_TStrBuffer));
+			strcpy(_TStrBuffer, _TEngine_C->CommandQueue->front());
+			_TEngine_C->CommandQueue->pop();
+			_TEngine_C->_QueueProtectMutex.unlock();
 
-	//		switch (Command) {
-	//			case VALUE_I_ALIVE :
-	//				// 게임 재개.
-	//				//G_EngineC->EnginePause = true;
-	//				G_EngineC->Get_TelepathyClient()->SendData("Start");
-	//				break;
-	//			case VALUE_I_BUSY :
-	//				// No Implement.
-	//				break;
-	//			case VALUE_I_MOVE :
-	//				// UCI로 좌표 송신.
-	//				_InternalProtocolCS->NextCharArrayIter();
-	//				G_EngineC->SendToGUI("bestmove %s", _InternalProtocolCS->CharArrayListIter);
-	//				break;
-	//			case VALUE_I_RESTOREOK :
-	//				// 복구 완료.
-	//				// 게임 재개.
-	//				G_EngineC->Get_TelepathyClient()->SendData("Start");
-	//				break;
-	//			case VALUE_I_RESTORENOT :
-	//				// 복구 미완료.
-	//				// All Stop the game.
-	//				// CVES Process를 죽인다.
-	//				G_EngineC->Get_TelepathyClient()->SendData("Stop");
-	//				G_EngineC->Get_TelepathyClient()->SendData("ServerKill");
-	//				G_EngineC->EngineEnable = false;
-	//				break;
-	//			case VALUE_I_SERVERISREADY :
-	//				// CVES가 준비 되었음을 알림.
-	//				G_EngineC->IsCVESReady = true;
-	//		}
-	//	}
-	//}
-	 return 0;
+			// 내부 Protocol 송신(CVEC -> CVES).
+			StringTokenizer *_StringTokenizer = new StringTokenizer();
+			InternalProtocolSeeker _InternalProtocolSeeker;
+
+			_StringTokenizer->SetInputCharString((const char *)_TStrBuffer);
+			_StringTokenizer->SetSingleToken(" ");
+			if (_StringTokenizer->StringTokenGo() == false)
+				continue;
+				//return ;
+
+			CommandString *_InternalProtocolCS = new CommandString(_StringTokenizer->GetTokenedCharListArrays());
+			int _NSeek_CVESToCVEC = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*_InternalProtocolCS->CharArrayListIter);
+
+			switch (_NSeek_CVESToCVEC) {
+				case VALUE_I_ALIVE :
+					// 게임 재개.
+					//G_EngineC->EnginePause = true;
+					_TEngine_C->_TelepathyClient->SendData("Start");
+					break;
+				case VALUE_I_BUSY :
+					// No Implement.
+					break;
+				case VALUE_I_MOVE :
+					// UCI로 좌표 송신.
+					_InternalProtocolCS->NextCharArrayIter();
+					_TEngine_C->SendToGUI("bestmove %s", _InternalProtocolCS->CharArrayListIter);
+					break;
+				case VALUE_I_RESTOREOK :
+					// 복구 완료.
+					// 게임 재개.
+					_TEngine_C->_TelepathyClient->SendData("Start");
+					break;
+				case VALUE_I_RESTORENOT :
+					// 복구 미완료.
+					// All Stop the game.
+					// CVES Process를 죽인다.
+					_TEngine_C->_TelepathyClient->SendData("Stop");
+					_TEngine_C->_TelepathyClient->SendData("ServerKill");
+					_TEngine_C->EngineEnable = false;
+					break;
+				case VALUE_I_SERVERISREADY :
+					// CVES가 준비 되었음을 알림.
+					_TEngine_C->_IsCVESReady = true;
+			}
+
+			delete _InternalProtocolCS;
+			delete _StringTokenizer;
+		}
+	}
+	_endthread();
+	return 0;
 }
+#pragma endregion Command Queue Processing Thread

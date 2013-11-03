@@ -32,6 +32,7 @@ Telepathy::Server *G_TelepathyServer;
 // constructor
 Telepathy::Server::Server() {
 	IsInitializeServer = false;
+	IsServerStarted = false;
 }
 
 // destructor
@@ -130,9 +131,11 @@ bool Telepathy::Server::ServerInitialize() {
 }
 
 // Server 기동.
-void Telepathy::Server::ServerStart() {
+bool Telepathy::Server::ServerStart() {
+	bool _TIsStarted = false;
 	if (IsInitializeServer != true) {
 		// failed started server.
+		_TIsStarted = false;
 	}
 	else {
 		// Client 관리 Thread 시작.
@@ -144,8 +147,9 @@ void Telepathy::Server::ServerStart() {
 //	#endif
 #elif POSIX_SYS
 #endif
-		IsServerStarted = true;
+		_TIsStarted = IsServerStarted = true;
 	}
+	return _TIsStarted;
 }
 
 // Server 종료.
@@ -154,6 +158,7 @@ void Telepathy::Server::ServerClose() {
 		closesocket(_ServerSocket);
 		WSACleanup();
 		IsInitializeServer = false;
+		IsServerStarted = false;
 	}
 }
 

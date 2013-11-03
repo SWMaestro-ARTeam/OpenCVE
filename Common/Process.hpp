@@ -44,6 +44,7 @@ using namespace std;
 //#		include <afxwin.h>
 //#		else
 #		include <windows.h>
+#		include <process.h>
 #		include <tchar.h>
 //#		endif
 // using WindowsProcess class.
@@ -182,8 +183,7 @@ private:
 
 #endif
 
-	//bool FindProcess(char *NameOfProcess);
-
+	//
 	bool FindProcess(
 #if WINDOWS_SYS
 		DWORD 
@@ -191,6 +191,23 @@ private:
 		unsigned long
 #endif
 		PID, char *ProcessName); // windows용 함수.
+
+	// ExecProcessLoopThread
+	static
+#if WINDOWS_SYS
+		UINT WINAPI
+		//DWORD WINAPI
+#elif POSIX_SYS
+// using pthread
+		void *
+#endif
+		ExecProcessLoopThread(
+#if WINDOWS_SYS
+		LPVOID
+#elif POSIX_SYS
+		void *
+#endif
+		Param);
 public:
 	// Constructor
 	Process();

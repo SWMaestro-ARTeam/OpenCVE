@@ -26,6 +26,12 @@
 #ifndef _EngineS_hpp_
 #define _EngineS_hpp_
 
+#include <stdio.h>
+#include <time.h>
+
+#include <queue>
+#include <mutex>
+
 // 공통 상수 정의
 #include "Common.hpp"
 // 공용 변수 정의
@@ -55,8 +61,14 @@
 
 #endif
 
-#include <stdio.h>
-#include <time.h>
+typedef struct _ServerGetInformation {
+	SOCKET AnySocket;
+	char *Infomations;
+
+	_ServerGetInformation() {
+		Infomations = new char[BUFFER_MAX_32767];
+	}
+} ServerGetInformation;
 
 class EngineS {
 private:
@@ -87,6 +99,9 @@ private:
 
 	vector<ChessPoint> _CrossPoint;
 	vector<int> _PieceIndex;
+
+	mutex _QueueProtectMutex;
+	mutex _VarProtectMutex;
 
 	// image process 초기화.
 	void Initialize_ImageProcessing();
@@ -132,6 +147,25 @@ private:
 	CvPoint	Get_Chessidx(CvPoint point, vector<ChessPoint> cross_point);
 	CvPoint Get_ChessboxPos(int width, int height, vector<ChessPoint> cross_point);
 
+	static void ServerReceivedCallback(char *Buffer, SOCKET ClientSocket);
+
+	// ClientCommandQueueProcessingThread
+	static
+#if WINDOWS_SYS
+		UINT WINAPI
+		//DWORD WINAPI
+#elif POSIX_SYS
+		// using pthread
+		void *
+#endif
+		ServerCommandQueueProcessingThread(
+#if WINDOWS_SYS
+		LPVOID
+#elif POSIX_SYS
+		void *
+#endif
+		Param);
+
 public:
 	EngineS();
 	~EngineS();
@@ -140,6 +174,8 @@ public:
 	bool IsStarted;
 	bool IsTictokEnable;
 
+	queue<ServerGetInformation *> *CommandQueue;
+
 	bool Start_Server();
 	void Stop_Server();
 
@@ -147,7 +183,4 @@ public:
 
 	void EngineS_Start();
 };
-
-void ServerReceivedCallback(char *Buffer, SOCKET ClientSocket);
-
 #endif

@@ -479,13 +479,13 @@ list<
 #pragma region Exec Process thread
 // Exec Process thread
 #if WINDOWS_SYS
-//UINT
-DWORD WINAPI
+UINT WINAPI
+//DWORD WINAPI
 #elif POSIX_SYS
 // using pthread
 void *
 #endif
-	ExecProcessLoopThread(
+	Process::ExecProcessLoopThread(
 #if WINDOWS_SYS
 	LPVOID
 #elif POSIX_SYS
@@ -519,7 +519,7 @@ void *
 			NULL, // Process handle not inheritable. 
 			NULL, // Thread handle not inheritable. 
 			FALSE, // Set handle inheritance to FALSE. 
-			0, // No creation flags. Default 0.
+			CREATE_NO_WINDOW, // No creation flags. Default 0.
 			NULL, // Use parent's environment block. 
 			NULL, // Use parent's starting directory. 
 			&_TStartUpInfo, // Pointer to STARTUPINFO structure.
@@ -561,8 +561,9 @@ void *
 void Process::CreateProcessOnThread(char *ProcessName) {
 #if WINDOWS_SYS
 //#ifdef _AFXDLL
-	DWORD _TThreadID = 0;
-	CreateThread(NULL, 0, ExecProcessLoopThread, (LPVOID)ProcessName, 0, &_TThreadID);
+	//DWORD _TThreadID = 0;
+	//CreateThread(NULL, 0, ExecProcessLoopThread, (LPVOID)ProcessName, 0, &_TThreadID);
+	HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, ExecProcessLoopThread, (LPVOID)ProcessName, 0, NULL);
 //#endif
 #elif POSIX_SYS
 	pthread_t _TThread;

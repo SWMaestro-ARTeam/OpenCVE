@@ -32,6 +32,7 @@ EngineS::EngineS() {
 	IsStarted = false;
 	IsTictokEnable = false;
 	G_EngineS = this;
+
 	_TempPrev = NULL;
 	_TempPrev2 = NULL;
 	_ImageChess = NULL;
@@ -112,12 +113,10 @@ void EngineS::Deinitialize_ImageProcessing(){
 void EngineS::Engine_Initializing() {
 	// 1. Server Start.
 	Initialize_TServer();
-
-	if (_TelepathyServer->IsInitializeServer == true)
-		_TelepathyServer->ServerStart();
 }
 
 void EngineS::Engine_DeInitializing() {
+	delete CommandQueue;
 	Deinitialize_TServer();
 }
 
@@ -318,8 +317,16 @@ bool EngineS::Start_Server() {
 
 	if (_TelepathyServer->IsInitializeServer == true) {
 		_TelepathyServer->TServerReceivedCallback = ServerReceivedCallback;
-		_TelepathyServer->ServerStart();
-		_TIsStarted = true;
+		if (_TelepathyServer->ServerStart()) {
+			// Command Queue 생성.
+			CommandQueue = new queue<ServerGetInformation *>();
+			// Command 처리용 Thread를 생성.
+			HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, ServerCommandQueueProcessingThread, this, 0, NULL);
+
+			_TIsStarted = true;
+		}
+		else 
+			_TelepathyServer->TServerReceivedCallback = NULL;
 	}
 	return _TIsStarted;
 }
@@ -358,85 +365,6 @@ void EngineS::EngineS_Start() {
 	}
 
 	Deinitialize_ImageProcessing();
-}
-
-void ServerReceivedCallback(char *Buffer, SOCKET ClientSocket) {
-	// 내부 Protocol 송신(CVES -> CVEC, CVES -> Observer).
-	StringTokenizer *_TStringTokenizer = new StringTokenizer();
-	InternalProtocolSeeker _TInternalProtocolSeeker;
-
-	_TStringTokenizer->SetInputCharString((const char *)Buffer);
-	_TStringTokenizer->SetSingleToken(" ");
-	if (_TStringTokenizer->StringTokenGo() == false)
-		return ;
-
-	CommandString *_TInternalProtocolCS = new CommandString(_TStringTokenizer->GetTokenedCharListArrays());
-
-	int _TSeek_AnyToCVES = _TInternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*_TInternalProtocolCS->CharArrayListIter);
-
-	switch (_TSeek_AnyToCVES) {
-		// CVEC -> CVES
-		case VALUE_I_SERVERKILL :
-			// Server를 죽인다.
-			// 이유를 불문하고 이 명령이 들어오면 바로 죽인다.
-			G_EngineS->EngineEnable = false;
-			break;
-		case VALUE_I_SERVERISALIVE :
-			// CVEC가 Server가 살아있냐는 질문에 2가지 응답으로 답해야 한다.
-			// 그런데 실제로, Server가 'Busy' 한다는건 '살아있냐'라는 질의에 대한 응답으로 좀 맞지 않으므로,
-			// 'Alive'만 날려준다.
-			G_EngineS->Get_Telepathy_Server()->SendDataToOne("Alive", ClientSocket);
-			break;
-		case VALUE_I_IMFIRST :
-			// Server에 Socket 중, White에 Naming을 할 Socket이 필요.
-			// 어떤 Socket인지 검색하여 찾아 Naming 한다.
-			/*
-			for_IterToBegin(list, ClientsList, G_EngineS->Get_Telepathy_Server()->ClientList) {
-				if (_TVal->ClientSocket == ClientSocket) {
-					_TVal->ClientName = "White";
-				}
-			}
-			*/
-			break;
-		case VALUE_I_STOP :
-			// Stop the Server Image Processing.
-			G_EngineS->IsStarted = false;
-			break;
-		case VALUE_I_START :
-			// Start the Server Image Processing.
-			G_EngineS->IsStarted = true;
-			break;
-		case VALUE_I_ISRESTOREPOSSIBLE :
-			// 복구가 가능한가?
-			// 만약 이 Message가 왔다면, 이미 한번 죽어서 다시 실행되었다는 뜻이므로, 이전 Chess판의
-			// 정보가 있는지 없는지를 검사해야 한다.
-			// 만약 Data가 없거나, Data의 Checksum이 맞지 않아 복원에 실패하였다면, 'No'.
-			// 그게 아니라면 'Yes'를 날려준다.
-			break;
-		case VALUE_I_ISSERVERREADY :
-			// IsServerReady 질문을 하면 해야 할 것은 다음과 같다.
-			// 1. 
-			// Server(CVES)가 모든 준비 되었을 때, ServerisReady를 보낸다.
-			G_EngineS->Get_Telepathy_Server()->SendDataToOne("ServerisReady", ClientSocket);
-			break;
-
-		// Observer -> CVES
-		case VALUE_I_STATUSNOW :
-			// Status를 요청했으므로, 정보를 날려준다.
-			G_EngineS->IsStarted = false;
-			break;
-		case VALUE_I_TICTOKON :
-			// Tictok is On.
-			G_EngineS->IsTictokEnable = true;
-			break;
-		case VALUE_I_TICTOKOFF :
-			// Tictok is Off.
-			G_EngineS->IsTictokEnable = false;
-			break;
-	}
-
-	delete _TInternalProtocolCS;
-	delete _TStringTokenizer;
 }
 
 void EngineS::Calculate_Movement(IplImage *bin, vector<ChessPoint> cross_point, CvPoint *out1, CvPoint *out2){
@@ -728,4 +656,204 @@ void EngineS::imgproc_mode(){
 
 	if (cvWaitKey(10) == 27)
 		_ImageProcessMode++;
+}
+
+void EngineS::ServerReceivedCallback(char *Buffer, SOCKET ClientSocket) {
+	// using mutex.
+	G_EngineS->_QueueProtectMutex.lock();
+	ServerGetInformation *_TServerGetInformation = new ServerGetInformation;
+	char _TBuffer[BUFFER_MAX_32767];
+	memset(_TBuffer, NULL, sizeof(_TBuffer));
+	strcpy(_TBuffer, Buffer);
+	_TServerGetInformation->Infomations = _TBuffer;
+	_TServerGetInformation->AnySocket = ClientSocket;
+	G_EngineS->CommandQueue->push(_TServerGetInformation);
+	G_EngineS->_QueueProtectMutex.unlock();
+
+	//// 내부 Protocol 송신(CVES -> CVEC, CVES -> Observer).
+	//StringTokenizer *_TStringTokenizer = new StringTokenizer();
+	//InternalProtocolSeeker _TInternalProtocolSeeker;
+
+	//_TStringTokenizer->SetInputCharString((const char *)Buffer);
+	//_TStringTokenizer->SetSingleToken(" ");
+	//if (_TStringTokenizer->StringTokenGo() == false)
+	//	return ;
+
+	//CommandString *_TInternalProtocolCS = new CommandString(_TStringTokenizer->GetTokenedCharListArrays());
+
+	//int _TSeek_AnyToCVES = _TInternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*_TInternalProtocolCS->CharArrayListIter);
+
+	//switch (_TSeek_AnyToCVES) {
+	//	// CVEC -> CVES
+	//	case VALUE_I_SERVERKILL :
+	//		// Server를 죽인다.
+	//		// 이유를 불문하고 이 명령이 들어오면 바로 죽인다.
+	//		G_EngineS->EngineEnable = false;
+	//		break;
+	//	case VALUE_I_SERVERISALIVE :
+	//		// CVEC가 Server가 살아있냐는 질문에 2가지 응답으로 답해야 한다.
+	//		// 그런데 실제로, Server가 'Busy' 한다는건 '살아있냐'라는 질의에 대한 응답으로 좀 맞지 않으므로,
+	//		// 'Alive'만 날려준다.
+	//		G_EngineS->Get_Telepathy_Server()->SendDataToOne("Alive", ClientSocket);
+	//		break;
+	//	case VALUE_I_IMFIRST :
+	//		// Server에 Socket 중, White에 Naming을 할 Socket이 필요.
+	//		// 어떤 Socket인지 검색하여 찾아 Naming 한다.
+	//		/*
+	//		for_IterToBegin(list, ClientsList, G_EngineS->Get_Telepathy_Server()->ClientList) {
+	//			if (_TVal->ClientSocket == ClientSocket) {
+	//				_TVal->ClientName = "White";
+	//			}
+	//		}
+	//		*/
+	//		break;
+	//	case VALUE_I_STOP :
+	//		// Stop the Server Image Processing.
+	//		G_EngineS->IsStarted = false;
+	//		break;
+	//	case VALUE_I_START :
+	//		// Start the Server Image Processing.
+	//		G_EngineS->IsStarted = true;
+	//		break;
+	//	case VALUE_I_ISRESTOREPOSSIBLE :
+	//		// 복구가 가능한가?
+	//		// 만약 이 Message가 왔다면, 이미 한번 죽어서 다시 실행되었다는 뜻이므로, 이전 Chess판의
+	//		// 정보가 있는지 없는지를 검사해야 한다.
+	//		// 만약 Data가 없거나, Data의 Checksum이 맞지 않아 복원에 실패하였다면, 'No'.
+	//		// 그게 아니라면 'Yes'를 날려준다.
+	//		break;
+	//	case VALUE_I_ISSERVERREADY :
+	//		// IsServerReady 질문을 하면 해야 할 것은 다음과 같다.
+	//		// 1. 
+	//		// Server(CVES)가 모든 준비 되었을 때, ServerisReady를 보낸다.
+	//		G_EngineS->Get_Telepathy_Server()->SendDataToOne("ServerisReady", ClientSocket);
+	//		break;
+
+	//	// Observer -> CVES
+	//	case VALUE_I_STATUSNOW :
+	//		// Status를 요청했으므로, 정보를 날려준다.
+	//		G_EngineS->IsStarted = false;
+	//		break;
+	//	case VALUE_I_TICTOKON :
+	//		// Tictok is On.
+	//		G_EngineS->IsTictokEnable = true;
+	//		break;
+	//	case VALUE_I_TICTOKOFF :
+	//		// Tictok is Off.
+	//		G_EngineS->IsTictokEnable = false;
+	//		break;
+	//}
+
+	//delete _TInternalProtocolCS;
+	//delete _TStringTokenizer;
+}
+
+#if WINDOWS_SYS
+UINT WINAPI
+	//DWORD WINAPI
+#elif POSIX_SYS
+// using pthread
+void *
+#endif
+	EngineS::ServerCommandQueueProcessingThread(
+#if WINDOWS_SYS
+	LPVOID
+	//void *
+#elif POSIX_SYS
+	void *
+#endif
+	Param) {
+	EngineS *_TEngine_S = (EngineS *)Param;
+
+	while (_TEngine_S->_TelepathyServer->IsServerStarted) {
+		if (_TEngine_S->CommandQueue->empty() != true) {
+			_TEngine_S->_QueueProtectMutex.lock();
+			char _TStrBuffer[BUFFER_MAX_32767];
+			ServerGetInformation *_TServerGetInformation;
+			_TServerGetInformation =_TEngine_S->CommandQueue->front();
+
+			memset(_TStrBuffer, NULL, sizeof(_TStrBuffer));
+			strcpy(_TStrBuffer, _TServerGetInformation->Infomations);
+			_TEngine_S->CommandQueue->pop();
+			_TEngine_S->_QueueProtectMutex.unlock();
+
+			// 내부 Protocol 송신(CVES -> CVEC, CVES -> Observer).
+			StringTokenizer *_TStringTokenizer = new StringTokenizer();
+			InternalProtocolSeeker _TInternalProtocolSeeker;
+
+			_TStringTokenizer->SetInputCharString((const char *)_TStrBuffer);
+			_TStringTokenizer->SetSingleToken(" ");
+			if (_TStringTokenizer->StringTokenGo() == false)
+				continue;
+				//return ;
+
+			CommandString *_TInternalProtocolCS = new CommandString(_TStringTokenizer->GetTokenedCharListArrays());
+			int _TSeek_AnyToCVES = _TInternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*_TInternalProtocolCS->CharArrayListIter);
+
+			switch (_TSeek_AnyToCVES) {
+				// CVEC -> CVES
+				case VALUE_I_SERVERKILL :
+					// Server를 죽인다.
+					// 이유를 불문하고 이 명령이 들어오면 바로 죽인다.
+					_TEngine_S->EngineEnable = false;
+					break;
+				case VALUE_I_SERVERISALIVE :
+					// CVEC가 Server가 살아있냐는 질문에 2가지 응답으로 답해야 한다.
+					// 그런데 실제로, Server가 'Busy' 한다는건 '살아있냐'라는 질의에 대한 응답으로 좀 맞지 않으므로,
+					// 'Alive'만 날려준다.
+					_TEngine_S->_TelepathyServer->SendDataToOne("Alive", _TServerGetInformation->AnySocket);
+					break;
+				case VALUE_I_IMFIRST :
+					// Server에 Socket 중, White에 Naming을 할 Socket이 필요.
+					// 어떤 Socket인지 검색하여 찾아 Naming 한다.
+					/*
+					for_IterToBegin(list, ClientsList, G_EngineS->Get_Telepathy_Server()->ClientList) {
+						if (_TVal->ClientSocket == ClientSocket) {
+							_TVal->ClientName = "White";
+						}
+					}
+					*/
+					break;
+				case VALUE_I_STOP :
+					// Stop the Server Image Processing.
+					_TEngine_S->IsStarted = false;
+					break;
+				case VALUE_I_START :
+					// Start the Server Image Processing.
+					_TEngine_S->IsStarted = true;
+					break;
+				case VALUE_I_ISRESTOREPOSSIBLE :
+					// 복구가 가능한가?
+					// 만약 이 Message가 왔다면, 이미 한번 죽어서 다시 실행되었다는 뜻이므로, 이전 Chess판의
+					// 정보가 있는지 없는지를 검사해야 한다.
+					// 만약 Data가 없거나, Data의 Checksum이 맞지 않아 복원에 실패하였다면, 'No'.
+					// 그게 아니라면 'Yes'를 날려준다.
+					break;
+				case VALUE_I_ISSERVERREADY :
+					// IsServerReady 질문을 하면 해야 할 것은 다음과 같다.
+					// 1. 
+					// Server(CVES)가 모든 준비 되었을 때, ServerisReady를 보낸다.
+					_TEngine_S->_TelepathyServer->SendDataToOne("ServerisReady", _TServerGetInformation->AnySocket);
+					break;
+
+				// Observer -> CVES
+				case VALUE_I_STATUSNOW :
+					// Status를 요청했으므로, 정보를 날려준다.
+					_TEngine_S->IsStarted = false;
+					break;
+				case VALUE_I_TICTOKON :
+					// Tictok is On.
+					_TEngine_S->IsTictokEnable = true;
+					break;
+				case VALUE_I_TICTOKOFF :
+					// Tictok is Off.
+					_TEngine_S->IsTictokEnable = false;
+					break;
+			}
+
+			delete _TInternalProtocolCS;
+			delete _TStringTokenizer;
+		}
+	}
+	return 0;
 }
