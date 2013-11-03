@@ -113,12 +113,20 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 				if (1 <= _TValue1 && _TValue1 <= 6){
 					_Board[_TMove[1].y][_TMove[1].x] = 0;
 					_V_SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
+<<<<<<< HEAD
 					temp_move.movement = MakeUCI(_TMove[0], _TMove[1]);
+=======
+					MakeUCI(_TMove[0], _TMove[1], &temp_move);
+>>>>>>> CVES_HandRecognition
 				}
 				else if (1 <= _TValue2 && _TValue2 <= 6){
 					_Board[_TMove[0].y][_TMove[0].x] = 0;
 					_V_SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
+<<<<<<< HEAD
 					temp_move.movement = MakeUCI(_TMove[1], _TMove[0]);
+=======
+					MakeUCI(_TMove[1], _TMove[0], &temp_move);
+>>>>>>> CVES_HandRecognition
 				}
 			}
 			else if (_Turn == BLACK_TURN) {
@@ -128,16 +136,29 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 				if (7 <= _TValue1 && _TValue1 <= 12) {
 					_Board[_TMove[1].y][_TMove[1].x] = 0;
 					_V_SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
+<<<<<<< HEAD
 					temp_move.movement = MakeUCI(_TMove[0], _TMove[1]);
+=======
+					MakeUCI(_TMove[0], _TMove[1], &temp_move);
+>>>>>>> CVES_HandRecognition
 				}
 				else if (7 <= _TValue2 && _TValue2 <= 12) {
 					_Board[_TMove[0].y][_TMove[0].x] = 0;
 					_V_SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
+<<<<<<< HEAD
 					temp_move.movement = MakeUCI(_TMove[1], _TMove[0]);
 				}
 			}
 
 			// queue에 넣음.
+=======
+					MakeUCI(_TMove[1], _TMove[0], &temp_move);
+				}
+			}
+
+			//recent_move에 복사
+			strcpy(recent_move, temp_move.movement);
+>>>>>>> CVES_HandRecognition
 			_chess_movement.push(temp_move);
 
 			break;
@@ -206,12 +227,19 @@ char *ChessGame::MakeUCI(CvPoint before, CvPoint after){
 	return buf;//strcpy(dst->movement, buf);
 }
 
+<<<<<<< HEAD
 char *ChessGame::Get_RecentMove(){
 	move_format temp_move;
 	char *buf;
+=======
+void ChessGame::Get_RecentMove(char *str){
+	//move_format temp_move;
+	//char buf[6] = "\0";
+>>>>>>> CVES_HandRecognition
 
 	//memset(buf, NULL, sizeof(buf));
 	//dequeue
+<<<<<<< HEAD
 	if(_chess_movement.size() > 0){
 		temp_move = _chess_movement.front();
 		_chess_movement.pop();
@@ -219,6 +247,21 @@ char *ChessGame::Get_RecentMove(){
 		return temp_move.movement;
 	}
 	return NULL;
+=======
+	//if(_chess_movement.size() > 0){
+	//	temp_move = _chess_movement.front();
+	//	_chess_movement.pop();
+
+	//	strcpy(buf, temp_move.movement);
+	//}
+	//strcpy(str, buf);
+	char buf[32];
+	
+	strcpy(buf, "Move ");
+	strcat(buf, recent_move);
+
+	strcpy(str, buf);
+>>>>>>> CVES_HandRecognition
 }
 
 char ChessGame::char_mapping(int position){
