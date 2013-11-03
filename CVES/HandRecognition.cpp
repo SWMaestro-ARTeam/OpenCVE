@@ -152,8 +152,11 @@ void HandRecognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
 	// first가 true일 경우 이미지 초기화.
 	if (first) {
 		if (prev_ground != NULL) {
+			//Hand Recognition 내부 연산에 사용되는 이미지 할당해제 및 포인터 초기화
 			cvReleaseImage(&prev_ground);
+			cvReleaseImage(&present_ground); 
 			prev_ground = NULL;
+			present_ground = NULL;
 		}
 	}
 
