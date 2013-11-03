@@ -41,7 +41,7 @@ void Option::InitializeOptionValues() {
 
 	_EngineOptionValues.push_back(EngineOptions("Ponder", true, "false", "check", "", (const char *)NULL));
 
-	_EngineOptionValues.push_back(EngineOptions("Save Notation", true, "false", "check", "", (const char *)NULL));
+	_EngineOptionValues.push_back(EngineOptions("Save Notation", true, "Notation.non ", "string", "", (const char *)NULL));
 	_EngineOptionValues.push_back(EngineOptions("Auto Recovery", true, "true", "check", "", (const char *)NULL));
 	_EngineOptionValues.push_back(EngineOptions("Observer Enable", true, "true", "check", "", (const char *)NULL));
 	_EngineOptionValues.push_back(EngineOptions("AR Enable", true, "true", "check", "", (const char *)NULL));

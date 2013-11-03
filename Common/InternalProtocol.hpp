@@ -33,6 +33,10 @@
 #define STR_I_START "Start"
 #define STR_I_ISRESTOREPOSSIBLE "IsRestorePossible"
 #define STR_I_ISSERVERREADY "IsServerReady"
+#define STR_I_INFO "Info"
+
+#define STR_I_INFO_GO "Go"
+#define STR_I_INFO_POSITION "Position"
 
 // CVES -> CVEC
 #define STR_I_ALIVE "Alive"
@@ -60,6 +64,10 @@
 #define VALUE_I_START 1005
 #define VALUE_I_ISRESTOREPOSSIBLE 1006
 #define VALUE_I_ISSERVERREADY 1007
+#define VALUE_I_INFO 1008
+
+#define VALUE_I_INFO_GO 1101
+#define VALUE_I_INFO_POSITION 1102
 
 // CVES -> CVEC
 #define VALUE_I_ALIVE 2001

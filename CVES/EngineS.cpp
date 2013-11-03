@@ -476,7 +476,7 @@ void EngineS::DrawWindowS(IplImage *src, float fps, CvScalar RGB){
 	cvDrawLine(src, cvPoint(ROI_Righttop.x, ROI_Righttop.y + LineLength), ROI_Righttop, RGB, 4);
 
 	// Write Frame Per Sec.
-	sprintf(_TBuffer, "%.2f fps", fps);
+	sprintf(_TBuffer, "%3.2f fps", fps);
 	CvFont _TCvFont = cvFont(1.0);
 	cvPutText(src, _TBuffer, cvPoint(30, 30), &_TCvFont, cvScalar(0, 0, 255));
 	//cvPutText(src, _TBuffer, cvPoint(30, 30), &cvFont(1.0), cvScalar(0, 0, 255));
@@ -779,7 +779,6 @@ void *
 
 			// 내부 Protocol 송신(CVES -> CVEC, CVES -> Observer).
 			StringTokenizer *_TStringTokenizer = new StringTokenizer();
-			InternalProtocolSeeker _TInternalProtocolSeeker;
 
 			_TStringTokenizer->SetInputCharString((const char *)_TStrBuffer);
 			_TStringTokenizer->SetSingleToken(" ");
@@ -788,7 +787,7 @@ void *
 				//return ;
 
 			CommandString *_TInternalProtocolCS = new CommandString(_TStringTokenizer->GetTokenedCharListArrays());
-			int _TSeek_AnyToCVES = _TInternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*_TInternalProtocolCS->CharArrayListIter);
+			int _TSeek_AnyToCVES = _TEngine_S->_InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*_TInternalProtocolCS->CharArrayListIter);
 
 			switch (_TSeek_AnyToCVES) {
 				// CVEC -> CVES
@@ -835,6 +834,11 @@ void *
 					// Server(CVES)가 모든 준비 되었을 때, ServerisReady를 보낸다.
 					_TEngine_S->_TelepathyServer->SendDataToOne("ServerisReady", _TServerGetInformation->AnySocket);
 					break;
+				case VALUE_I_INFO :
+					// 여기에는 각종 Information이 온다.
+					// Setting 값등 중요한 정보가 오기 때문에, 처리를 잘 해주어야 한다.
+					_TEngine_S->Process_Info(_TInternalProtocolCS);
+					break;
 
 				// Observer -> CVES
 				case VALUE_I_STATUSNOW :
@@ -856,4 +860,37 @@ void *
 		}
 	}
 	return 0;
+}
+
+void EngineS::Process_Info(CommandString *IPCS)	{
+	// Fetch the next at while.
+	IPCS->NextCharArrayIter();
+		
+	int _NSeek_GUIToEngine = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*IPCS->CharArrayListIter);
+	switch (_NSeek_GUIToEngine) {
+		case VALUE_I_INFO_GO :
+			Process_Info_Go(IPCS);
+			break;
+		case VALUE_I_INFO_POSITION :
+			Process_Info_Position(IPCS);
+			break;
+	}
+}
+
+void EngineS::Process_Info_Go(CommandString *IPCS) {
+	while(IPCS->NextCharArrayIter()) {
+		int _NSeek_GUIToEngine = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*IPCS->CharArrayListIter);
+		switch (_NSeek_GUIToEngine) {
+		case VALUE_I_INFO_GO :
+			Process_Info_Go(IPCS);
+			break;
+		case VALUE_I_INFO_POSITION :
+			Process_Info_Position(IPCS);
+			break;
+		}
+	}
+}
+
+void EngineS::Process_Info_Position(CommandString *IPCS) {
+
 }

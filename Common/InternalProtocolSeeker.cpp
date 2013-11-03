@@ -69,7 +69,16 @@ int InternalProtocolSeeker::InternalProtocolString_Seeker(const char *Str) {
 		CASE(STR_I_SERVERISREADY)
 			_SeekedNumber = VALUE_I_SERVERISREADY;
 			break;
+		CASE(STR_I_INFO)
+			_SeekedNumber = VALUE_I_INFO;
+			break;
 
+		CASE(STR_I_INFO_GO)
+			_SeekedNumber = VALUE_I_INFO_GO;
+			break;
+		CASE(STR_I_INFO_POSITION)
+			_SeekedNumber = VALUE_I_INFO_POSITION;
+			break;
 
 		CASE(STR_I_STATUSNOW)
 			_SeekedNumber = VALUE_I_STATUSNOW;

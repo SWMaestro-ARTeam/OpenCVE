@@ -54,6 +54,8 @@
 // Chess Game을 위한 좌표
 #include "ChessGame.hpp"
 
+#include "StringTools.hpp"
+
 #if WINDOWS_SYS
 // It's for windows dependent Functions.
 #include <Windows.h>
@@ -78,6 +80,7 @@ private:
 	ChessGame _ChessGame;
 
 	Telepathy::Server *_TelepathyServer;
+	InternalProtocolSeeker _InternalProtocolSeeker;
 
 	int _ImageProcessMode;				//모드 설정
 	bool _SubCheck;
@@ -113,6 +116,10 @@ private:
 
 	void Engine_Initializing();
 	void Engine_DeInitializing();
+
+	void Process_Info(CommandString *IPCS);
+	void Process_Info_Go(CommandString *IPCS);
+	void Process_Info_Position(CommandString *IPCS);
 
 	// 여태 이동한 경로 큐를 가져옴. -- 미구현
 	void Get_History();

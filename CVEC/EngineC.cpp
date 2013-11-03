@@ -341,8 +341,10 @@ void EngineC::Command_Position(CommandString *_UCICS) {
 				_IsStartpos = true;
 				// Null Move인지 아닌지를 검사.
 				// Null Move 이면 White, 아니면 Black.
-				if (_UCICS->IsLastCharArrayIter() == true)
+				if (_UCICS->IsLastCharArrayIter() == true) {
 					_IsWhite = true;
+					_TString.append("NULL");
+				}
 				break;
 			case VALUE_POSITION_MOVES :
 				_IsMoves = true;
@@ -495,21 +497,20 @@ void EngineC::Command_Quit() {
 
 FILE *ofp =fopen("CVEC_Log.txt", "w");
 void EngineC::Parsing_Command() {
-	StringTokenizer *_StringTokenizer = new StringTokenizer();
+	StringTokenizer *_TStringTokenizer = new StringTokenizer();
 	
 	// Get UCI String.
 	Get_Command_Str();
 
 	fprintf(ofp,"%s\n",_Command);
-	_StringTokenizer->SetInputCharString((const char *)_Command);
-	_StringTokenizer->SetSingleToken(" ");
-	if (_StringTokenizer->StringTokenGo() == false)
+	_TStringTokenizer->SetInputCharString((const char *)_Command);
+	_TStringTokenizer->SetSingleToken(" ");
+	if (_TStringTokenizer->StringTokenGo() == false)
 		return ;
 	
-	CommandString *_UCICommandString = new CommandString(_StringTokenizer->GetTokenedCharListArrays());
-
+	CommandString *_TUCICommandString = new CommandString(_TStringTokenizer->GetTokenedCharListArrays());
 	// 단지 명령어 Matching 하여 값만 비교.
-	int _TSeek_GUIToEngine = _UCICommandSeeker.UCIString_Seeker((const char *)*_UCICommandString->CharArrayListIter);
+	int _TSeek_GUIToEngine = _UCICommandSeeker.UCIString_Seeker((const char *)*_TUCICommandString->CharArrayListIter);
 
 	switch (_TSeek_GUIToEngine) {
 		case VALUE_UCI :
@@ -522,7 +523,7 @@ void EngineC::Parsing_Command() {
 			Command_Isready();
 			break;
 		case VALUE_SETOPTION :
-			Command_Setoption(_UCICommandString); //
+			Command_Setoption(_TUCICommandString); //
 			break;
 		case VALUE_UCINEWGAME :
 			Command_Ucinewgame();
@@ -531,10 +532,10 @@ void EngineC::Parsing_Command() {
 			Command_Register();
 			break;
 		case VALUE_POSITION :
-			Command_Position(_UCICommandString); //
+			Command_Position(_TUCICommandString); //
 			break;
 		case VALUE_GO :
-			Command_Go(_UCICommandString); //
+			Command_Go(_TUCICommandString); //
 			break;
 		case VALUE_STOP :
 			Command_Stop();
@@ -550,8 +551,8 @@ void EngineC::Parsing_Command() {
 	// Clear UCI String.
 	Clear_Str();
 
-	delete _UCICommandString;
-	delete _StringTokenizer;
+	delete _TUCICommandString;
+	delete _TStringTokenizer;
 }
 
 bool EngineC::CheckingCVESProcess() {
