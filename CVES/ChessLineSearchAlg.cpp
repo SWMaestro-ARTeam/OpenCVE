@@ -39,8 +39,8 @@ void ChessLineSearchAlg::GetLinegrayScale(IplImage *gray_image, int linefindcoun
 
 	// x축의 grayscale을 얻기 위해 y축의 탐색 위치를 결정.
 
-	y1 = ((image_y / 7) * 3) - linefindcount_x1;
-	y2 = ((image_y / 7) * 4) + linefindcount_x2;
+	y1 = ((image_y / 5) * 2) - linefindcount_x1;
+	y2 = ((image_y / 5) * 3) + linefindcount_x2;
 
 	// 처음 vector 배열에 중심이 되는 값을 넣어주고,
 	// 그 이후에 짝수는 오른쪽, 홀수는 왼쪽의 수치를 넣어준다.
@@ -57,8 +57,8 @@ void ChessLineSearchAlg::GetLinegrayScale(IplImage *gray_image, int linefindcoun
 	}
 
 	// y축의 grayscale을 얻기위해 x축의 탐색위치를 결정.
-	x1 = ((image_x / 5) * 2) - linefindcount_y1;
-	x2 = ((image_x / 5) * 3) + linefindcount_y2;
+	x1 = ((image_x / 7) * 3) - linefindcount_y1;
+	x2 = ((image_x / 7) * 4) + linefindcount_y2;
 
 	// 처음 vector 배열에 중심이 되는 값을 넣어주고, 
 	// 그 이후에 짝수는 아래쪽, 홀수는 위쪽의 수치를 넣어준다.
@@ -357,7 +357,7 @@ void ChessLineSearchAlg::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *
 				}
 
 				// 확실히 하기위해 최소 3픽셀 까지 대비가 되면 경계선으로 인식한다.
-				for (register int j = 1; j <= 3; j++) {
+				for (register int j = 1; j <= 2; j++) {
 					if(i + (j * 2) > _TT.size())
 						continue;
 
@@ -412,7 +412,7 @@ void ChessLineSearchAlg::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *
 
 	int SumFlag = true;
 
-	if(XYFlag && (_TT_in1.size() != 0 || _TT_in2.size() != 0)){
+	if(XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)){
 		for(int i=0;i<_TT_in1.size()-1;i++){
 			if(abs(_TT_in1[i].x - _TT_in1[i+1].x) < 30 || abs(_TT_in1[i].x - _TT_in1[i+1].x) > 50){
 				SumFlag = false;
@@ -427,7 +427,7 @@ void ChessLineSearchAlg::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *
 			SumFlag = false;
 		}
 	}
-	else if(!XYFlag && (_TT_in1.size() != 0 || _TT_in2.size() != 0)){
+	else if(!XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)){
 		for(int i=0;i<_TT_in1.size()-1;i++){
 			if(abs(_TT_in1[i].y - _TT_in1[i+1].y) < 30 || abs(_TT_in1[i].y - _TT_in1[i+1].y) > 50){
 				SumFlag = false;
@@ -444,10 +444,14 @@ void ChessLineSearchAlg::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *
 	}
 
 	if(SumFlag){
-		for(int i=0;i<_TT_in1.size();i++)
-			in_line_point->push_back(_TT_in1[i]);
-		for(int i=0;i<_TT_in2.size();i++)
-			in_line_point->push_back(_TT_in2[i]);
+		if(_TT_in1.size() != 0){
+			for(int i=0;i<_TT_in1.size();i++)
+				in_line_point->push_back(_TT_in1[i]);
+		}
+		if(_TT_in2.size() != 0){
+			for(int i=0;i<_TT_in2.size();i++)
+				in_line_point->push_back(_TT_in2[i]);
+		}
 	}
 }
 
