@@ -133,7 +133,7 @@ void EngineS::Go_ImageProcessing(){
 
 	// Cam으로부터의 영상입력.
 	_CamOriginalImage = cvQueryFrame(_Cam);
-	//cvFlip(_CamOriginalImage, _CamOriginalImage, FLIP_MODE);
+	cvFlip(_CamOriginalImage, _CamOriginalImage, FLIP_MODE);
 	//cvSmooth(_CamOriginalImage, _CamOriginalImage, CV_MEDIAN, 3);
 	//모드에 따른 이미지 프로세스 수행
 	imgproc_mode();
@@ -448,13 +448,8 @@ CvPoint EngineS::Get_ChessboxPos(int width, int height, vector<ChessPoint> cross
 }
 
 void EngineS::DrawWindowS(IplImage *src, float fps, CvScalar RGB){
-<<<<<<< HEAD
 	const int LineLength = 30;	// 관심영역을 그릴 라인.
 	const int ROI_Length = 440; // 정사각형 관심영역 크기.
-=======
-	const int LineLength = 30;	//관심영역을 그릴 라인.
-	const int ROI_Length = 440; //정사각형 관심영역 크기.
->>>>>>> CVES_HandRecognition
 	char _TBuffer[32];
 
 	//CvPoint window_center = cvPoint(SERVER_VIEW_DEFAULT_WIDTH/2, SERVER_VIEW_DEFAULT_HEIGHT/2);
@@ -619,19 +614,11 @@ void EngineS::imgproc_mode(){
 
 						// chessgame 이동부.
 						_ChessGame.Chess_process(out, 0);
-<<<<<<< HEAD
-						// uci에 맞춰 return하는 부분 현재 printf로 출력
-						char *buf;
-						buf = _ChessGame.Get_RecentMove();
-						if (buf != NULL)
-							printf("%s\n", buf);
-=======
 
 						//텔레파시 콜백 호출
 						char buf[32];
 						_ChessGame.Get_RecentMove(buf);
 						//_TelepathyServer->SendDataToOne(buf, );
->>>>>>> CVES_HandRecognition
 #ifdef DEBUG_MODE
 						// uci에 맞춰 return하는 부분 현재 printf로 출력
 						printf("%s\n", buf);

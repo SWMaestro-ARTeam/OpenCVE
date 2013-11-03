@@ -27,45 +27,28 @@
 #define _ChessGame_hpp_
 
 #include "CVESDependent.hpp"
-<<<<<<< HEAD
 
 #include <stdio.h>
-=======
-#include <stdio.h>
-#include <cv.h>
-#include <highgui.h>
->>>>>>> CVES_HandRecognition
 #include <queue>
 
 #define CASTLING_MOVE				4
 #define ENPASSANT_MOVE			3
 #define DEBUGUI_PATH "./Chess_DebugUI/"
-<<<<<<< HEAD
 
 #define WHITE_TURN true
 #define BLACK_TURN false
-=======
-
-#define WHITE_TURN	1
-#define BLACK_TURN	0
-
-#define SWAP(x, y) { int t; t = x; x = y; y = t; }
->>>>>>> CVES_HandRecognition
 
 typedef struct move_format{
 	char *movement;
 	bool turn_flag;
 } move_format;
 
-<<<<<<< HEAD
-=======
 enum {			//체스말
 	Ground, 
 	W_King, W_Queen, W_Rook, W_Bishop, W_Knight, W_Pawn,
 	B_King, B_Queen, B_Rook, B_Bishop, B_Knight, B_Pawn,
 };
 
->>>>>>> CVES_HandRecognition
 class ChessGame {
 
 private:
@@ -81,13 +64,8 @@ private:
 	FILE *_Movement_log;		//체스 이동경로 Log를 남길 파일포인터.
 	std::queue<move_format> _chess_movement;
 
-<<<<<<< HEAD
-	char *MakeUCI(CvPoint before, CvPoint after);
-	char char_mapping(int position);	// 글자 좌표로 매핑해줌
-=======
 	void MakeUCI(CvPoint before, CvPoint after, move_format *dst);
 	char char_mapping(int position);	// 글자 좌표로 매핑
->>>>>>> CVES_HandRecognition
 public:
 	ChessGame();
 	~ChessGame();
@@ -97,6 +75,6 @@ public:
 	void Chess_process(CvPoint input1[], int MOVE_MODE);
 	void Show_chess_board();		// cmd에 체스판을 그림.
 	void Show_chessImage();			// chess UI를 Draw
-	char *Get_RecentMove();     // list에 저장된 가장 최근 movement를 return; Dequeue와 같음.
+	void Get_RecentMove(char *str);     // list에 저장된 가장 최근 movement를 return; Dequeue와 같음.
 };
 #endif
