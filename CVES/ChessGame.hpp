@@ -39,7 +39,7 @@
 #define BLACK_TURN false
 
 typedef struct move_format{
-	char *movement;
+	char movement[32];
 	bool turn_flag;
 } move_format;
 

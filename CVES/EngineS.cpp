@@ -621,7 +621,7 @@ void EngineS::imgproc_mode(){
 						//_TelepathyServer->SendDataToOne(buf, );
 #ifdef DEBUG_MODE
 						// uci에 맞춰 return하는 부분 현재 printf로 출력
-						printf("%s\n", buf);
+						//printf("%s\n", buf);
 						_ChessGame.Show_chessImage();
 #endif
 					}

@@ -74,9 +74,9 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 				_TMove[i] = input1[i];
 
 			int *_TValue[3];
-			_TValue[0] = &_Board[_TMove[0].y][_TMove[0].x];
-			_TValue[1] = &_Board[_TMove[1].y][_TMove[1].x];
-			_TValue[2] = &_Board[_TMove[2].y][_TMove[2].x];
+			_TValue[0] = &_Board[_TMove[0].x][_TMove[0].y];
+			_TValue[1] = &_Board[_TMove[1].x][_TMove[1].y];
+			_TValue[2] = &_Board[_TMove[2].x][_TMove[2].y];
 
 			int *white, *zero_pic, *black;
 
@@ -102,8 +102,8 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 				_TMove[i] = input1[i];
 
 			int _TValue1, _TValue2;
-			_TValue1 = _Board[_TMove[0].y][_TMove[0].x];
-			_TValue2 = _Board[_TMove[1].y][_TMove[1].x];
+			_TValue1 = _Board[_TMove[0].x][_TMove[0].y];
+			_TValue2 = _Board[_TMove[1].x][_TMove[1].y];
 
 			// 체스 무브 진행
 			if (_Turn == WHITE_TURN){
@@ -111,13 +111,13 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 				temp_move.turn_flag = WHITE_TURN;
 
 				if (1 <= _TValue1 && _TValue1 <= 6){
-					_Board[_TMove[1].y][_TMove[1].x] = 0;
-					_V_SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
+					_Board[_TMove[1].x][_TMove[1].y] = 0;
+					_V_SWAP(_Board[_TMove[0].x][_TMove[0].y], _Board[_TMove[1].x][_TMove[1].y]);
 					MakeUCI(_TMove[0], _TMove[1], &temp_move);
 				}
 				else if (1 <= _TValue2 && _TValue2 <= 6){
-					_Board[_TMove[0].y][_TMove[0].x] = 0;
-					_V_SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
+					_Board[_TMove[0].x][_TMove[0].y] = 0;
+					_V_SWAP(_Board[_TMove[0].x][_TMove[0].y], _Board[_TMove[1].x][_TMove[1].y]);
 					MakeUCI(_TMove[1], _TMove[0], &temp_move);
 				}
 			}
@@ -126,13 +126,13 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 				temp_move.turn_flag = BLACK_TURN;
 
 				if (7 <= _TValue1 && _TValue1 <= 12) {
-					_Board[_TMove[1].y][_TMove[1].x] = 0;
-					_V_SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
+					_Board[_TMove[1].x][_TMove[1].y] = 0;
+					_V_SWAP(_Board[_TMove[0].x][_TMove[0].y], _Board[_TMove[1].x][_TMove[1].y]);
 					MakeUCI(_TMove[0], _TMove[1], &temp_move);
 				}
 				else if (7 <= _TValue2 && _TValue2 <= 12) {
-					_Board[_TMove[0].y][_TMove[0].x] = 0;
-					_V_SWAP(_Board[_TMove[0].y][_TMove[0].x], _Board[_TMove[1].y][_TMove[1].x]);
+					_Board[_TMove[0].x][_TMove[0].y] = 0;
+					_V_SWAP(_Board[_TMove[0].x][_TMove[0].y], _Board[_TMove[1].x][_TMove[1].y]);
 					MakeUCI(_TMove[1], _TMove[0], &temp_move);
 				}
 			}
@@ -200,7 +200,7 @@ void ChessGame::Show_chessImage() {
 void ChessGame::MakeUCI(CvPoint before, CvPoint after, move_format *dst) {
 	char buf[6] = "\0";
 
-	sprintf(buf, "%c%d%c%d", char_mapping(before.y), before.x+1, char_mapping(after.y), after.x+1);
+	sprintf(buf, "%c%d%c%d", char_mapping(before.x), before.y+1, char_mapping(after.x), after.y+1);
 	buf[5] = '\0';
 
 	strcpy(dst->movement, buf);
