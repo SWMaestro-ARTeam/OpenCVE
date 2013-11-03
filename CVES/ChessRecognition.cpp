@@ -509,11 +509,11 @@ void ChessRecognition::Chess_recognition_process(IplImage *src, vector<ChessPoin
 	// 체스판의 경계를 구하여 in_line_point 변수들에 저장.
 	_CLSA->GetgraySidelinesPoint(src);
 
-	/*while (1) {
+	while (1) {
 		cvShowImage("findCrossPoint", src);
 		if (cvWaitKey(33))
 			break;
-	}*/
+	}
 
 	// 해당 라인에서 9곳의 체스판 경계를 찾지 못 하였으면
 	// 탐색라인을 이동시켜 적절한 탐색라인을 찾는다
@@ -526,25 +526,25 @@ void ChessRecognition::Chess_recognition_process(IplImage *src, vector<ChessPoin
 	if (_CLSA->Linefindcount_x1 >= (src->width / 5) * 2 - 10)
 		_CLSA->flag_x1 = false;
 
-	if (_CLSA->Linefindcount_y1 >= (src->height / 5) * 2 - 10)
+	if (_CLSA->Linefindcount_y1 >= (src->height / 7) * 3 - 10)
 		_CLSA->flag_y1 = false;
 
 	if (_CLSA->Linefindcount_x2 >= (src->width / 5) * 2 - 10)
 		_CLSA->flag_x2 = false;
 
-	if (_CLSA->Linefindcount_y2 >= (src->height / 5) * 2 - 10)
+	if (_CLSA->Linefindcount_y2 >= (src->height / 7) * 3 - 10)
 		_CLSA->flag_y2 = false;
 
-	if (_CLSA->Linefindcount_x1 <= 1)
+	if (_CLSA->Linefindcount_x1 <= 3)
 		_CLSA->flag_x1 = true;
 
-	if (_CLSA->Linefindcount_y1 <= 1)
+	if (_CLSA->Linefindcount_y1 <= 3)
 		_CLSA->flag_y1 = true;	
 
-	if (_CLSA->Linefindcount_x2 <= 1)
+	if (_CLSA->Linefindcount_x2 <= 3)
 		_CLSA->flag_x2 = true;
 
-	if (_CLSA->Linefindcount_y2 <= 1)
+	if (_CLSA->Linefindcount_y2 <= 3)
 		_CLSA->flag_y2 = true;
 
 	// 각 라인이 모든 체스판의 경계를 찾았다면 다음 과정으로 넘어가고,
