@@ -26,13 +26,37 @@
 #ifndef _ChessLineSearchAlg_hpp_
 #define _ChessLineSearchAlg_hpp_
 
+#include "SystemDependency.hpp"
 #include "CVESDependent.hpp"
+
+#ifdef WINDOWS_SYS
+#include <windows.h>
+#include <process.h>
+#elif POSIX_SYS
+
+#endif
 
 using namespace std;
 
 class ChessLineSearchAlg {
 private:
-	
+	typedef struct _GraySideLinesPointStruct {
+		ChessLineSearchAlg *T_ChessLineSearchAlg;
+		IplImage *chess_image;
+		vector<MyGrayPoint> *Lines;
+		vector<MyPoint> *InLinePoints;
+		MyLinePoint *LinePoint;
+		bool XYflag;
+
+		_GraySideLinesPointStruct(ChessLineSearchAlg *_ChessLineSearchAlg, IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool xyFlag) {
+			T_ChessLineSearchAlg = _ChessLineSearchAlg;
+			chess_image = image;
+			Lines = line;
+			LinePoint = line_point;
+			InLinePoints = in_line_point;
+			XYflag = xyFlag;
+		}
+	} GraySideLinesPointStruct;
 public:
 	ChessLineSearchAlg();
 	~ChessLineSearchAlg();
@@ -73,5 +97,21 @@ public:
 
 	MyGrayPoint setMyGrayPoint(int grayscale, int x, int y);
 	MyPoint setMyPoint(int x, int y);
+
+	static
+#if WINDOWS_SYS
+		UINT WINAPI
+		//DWORD WINAPI
+#elif POSIX_SYS
+		// using pthread
+		void *
+#endif
+		GraySideLinesPointThread(
+#if WINDOWS_SYS
+		LPVOID
+#elif POSIX_SYS
+		void *
+#endif
+		Param);
 };
 #endif

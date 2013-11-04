@@ -74,16 +74,58 @@ void ChessLineSearchAlg::GetLinegrayScale(IplImage *gray_image, int linefindcoun
 	}
 }
 
+#if WINDOWS_SYS
+UINT WINAPI
+//DWORD WINAPI
+#elif POSIX_SYS
+// using pthread
+void *
+#endif
+	ChessLineSearchAlg::GraySideLinesPointThread(
+#if WINDOWS_SYS
+	LPVOID
+#elif POSIX_SYS
+	void *
+#endif
+	Param) {
+
+	GraySideLinesPointStruct *_TGraySideLinesPointStruct = (GraySideLinesPointStruct *)Param;
+	_TGraySideLinesPointStruct->T_ChessLineSearchAlg->GetgraySidelines(_TGraySideLinesPointStruct->chess_image, _TGraySideLinesPointStruct->Lines, _TGraySideLinesPointStruct->LinePoint, _TGraySideLinesPointStruct->InLinePoints, _TGraySideLinesPointStruct->XYflag);
+	_endthread();
+	return 0;
+}
+
 void ChessLineSearchAlg::GetgraySidelinesPoint(IplImage *chess_image) {
 	// 각 grayscale이 저장되어 있는 vector 배열에서 해당 라인의 교차점을 구한다.
+	HANDLE _THandleArr[4];
+	_THandleArr[0] = (HANDLE)_beginthreadex(NULL, 0, 
+		GraySideLinesPointThread, 
+		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_x1, &line_point_x1, &in_line_point_x1, true), 
+		0, NULL);
+	_THandleArr[1] = (HANDLE)_beginthreadex(NULL, 0, 
+		GraySideLinesPointThread,
+		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_x2, &line_point_x2, &in_line_point_x2, true),
+		0, NULL);
+	_THandleArr[2] = (HANDLE)_beginthreadex(NULL, 0,
+		GraySideLinesPointThread,
+		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_y1, &line_point_y1, &in_line_point_y1, false),
+		0, NULL);
+	_THandleArr[3] = (HANDLE)_beginthreadex(NULL, 0,
+		GraySideLinesPointThread,
+		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_y2, &line_point_y2, &in_line_point_y2, false),
+		0, NULL);
 
 	// 이 함수 4개를 스레드로
-
-	GetgraySidelines(chess_image, &line_x1, &line_point_x1, &in_line_point_x1, true);
+	WaitForMultipleObjects(4, _THandleArr, TRUE, INFINITE);
+	/*GetgraySidelines(chess_image, &line_x1, &line_point_x1, &in_line_point_x1, true);
 	GetgraySidelines(chess_image, &line_x2, &line_point_x2, &in_line_point_x2, true);
 	GetgraySidelines(chess_image, &line_y1, &line_point_y1, &in_line_point_y1, false);
-	GetgraySidelines(chess_image, &line_y2, &line_point_y2, &in_line_point_y2, false);
+	GetgraySidelines(chess_image, &line_y2, &line_point_y2, &in_line_point_y2, false);*/
 
+	CloseHandle(_THandleArr[0]);
+	CloseHandle(_THandleArr[1]);
+	CloseHandle(_THandleArr[2]);
+	CloseHandle(_THandleArr[3]);
 }
 
 void ChessLineSearchAlg::GetInCrossPoint(IplImage *chess_image, vector<ChessPoint> *point) {
@@ -204,7 +246,7 @@ bool ChessLineSearchAlg::GetCrossPoint(MyLinePoint line1, MyLinePoint line2, MyP
 
 void ChessLineSearchAlg::GrayImageBinarization(IplImage *gray_image) {
 	// 이미지의 grayscale을 저장할 변수.
-	float hist[256]={0,};
+	float hist[256] = {0, };
 	int temp[256];
 
 	memset(temp, 0, sizeof(int) * 256);
@@ -277,7 +319,7 @@ void ChessLineSearchAlg::GrayImageBinarization(IplImage *gray_image) {
 
 void ChessLineSearchAlg::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool XYFlag) {
 	// 경계를 찾은 후 어느 정도의 경계에는 계산을 하지 않는다.
-	int line_count = 0, jump_count_p = 0, jump_count_m = 0, jump_count = 0 ;
+	int line_count = 0, jump_count_p = 0, jump_count_m = 0, jump_count = 0;
 
 	if (XYFlag) {
 		jump_count = 30;/*image->width / 12;*/
@@ -292,7 +334,7 @@ void ChessLineSearchAlg::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *
 	// 경계선으로 인식 되는 경우를 막는다.
 	bool change_flag_line_t, change_flag_line_t1, change_flag_line_t2;
 
-	// line vector함수 차수 변환
+	// line vector함수 차수 변환.
 	vector<MyGrayPoint> _TT = *((vector<MyGrayPoint> *)line);
 	vector<MyPoint> _TT_in = *((vector<MyPoint> *)in_line_point);
 	vector<MyPoint> _TT_in1,_TT_in2;
@@ -304,9 +346,7 @@ void ChessLineSearchAlg::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *
 	change_flag_line_t2 = 255 >= _TT[1].grayscale ? true : false;
 
 	
-	// 여기선 추가로 탐색되지 말아야할 라인을 걸러준다
-	
-	
+	// 여기선 추가로 탐색되지 말아야할 라인을 걸러준다.
 	for (register int i = 2; i < line->size() - 10; i++) {
 		if ((i % 2 == 1) && (jump_count_p > 0)) {
 			jump_count_p--;
@@ -395,48 +435,47 @@ void ChessLineSearchAlg::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *
 		}
 	}
 
-	// 점들 사이의 거리가 일정부분이상 떨어져있어야 적합한 라인이라고 인식
-
+	// 점들 사이의 거리가 일정부분이상 떨어져있어야 적합한 라인이라고 인식.
 	int SumFlag = true;
 
-	if(XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)){
-		for(int i=0;i<_TT_in1.size()-1;i++){
-			if(abs(_TT_in1[i].x - _TT_in1[i+1].x) < 35 || abs(_TT_in1[i].x - _TT_in1[i+1].x) > 50){
+	if (XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)) {
+		for (register int i = 0; i < _TT_in1.size() - 1; i++) {
+			if (abs(_TT_in1[i].x - _TT_in1[i + 1].x) < 35 || abs(_TT_in1[i].x - _TT_in1[i + 1].x) > 50) {
 				SumFlag = false;
 			}
 		}
-		for(int i=0;i<_TT_in2.size()-1;i++){
-			if(abs(_TT_in2[i].x - _TT_in2[i+1].x) < 35 || abs(_TT_in2[i].x - _TT_in2[i+1].x) > 50){
+		for (register int i = 0; i < _TT_in2.size() - 1; i++) {
+			if (abs(_TT_in2[i].x - _TT_in2[i + 1].x) < 35 || abs(_TT_in2[i].x - _TT_in2[i + 1].x) > 50) {
 				SumFlag = false;
 			}
 		}
-		if(abs(_TT_in1[0].x - _TT_in2[0].x) < 35 || abs(_TT_in1[0].x - _TT_in2[0].x) > 50){
+		if (abs(_TT_in1[0].x - _TT_in2[0].x) < 35 || abs(_TT_in1[0].x - _TT_in2[0].x) > 50) {
 			SumFlag = false;
 		}
 	}
-	else if(!XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)){
-		for(int i=0;i<_TT_in1.size()-1;i++){
-			if(abs(_TT_in1[i].y - _TT_in1[i+1].y) < 35 || abs(_TT_in1[i].y - _TT_in1[i+1].y) > 50){
+	else if (!XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)) {
+		for (register int i = 0; i < _TT_in1.size() - 1; i++) {
+			if (abs(_TT_in1[i].y - _TT_in1[i + 1].y) < 35 || abs(_TT_in1[i].y - _TT_in1[i + 1].y) > 50) {
 				SumFlag = false;
 			}
 		}
-		for(int i=0;i<_TT_in2.size()-1;i++){
-			if(abs(_TT_in2[i].y - _TT_in2[i+1].y) < 35 || abs(_TT_in2[i].y - _TT_in2[i+1].y) > 50){
+		for (register int i = 0; i <_TT_in2.size() - 1; i++) {
+			if (abs(_TT_in2[i].y - _TT_in2[i + 1].y) < 35 || abs(_TT_in2[i].y - _TT_in2[i + 1].y) > 50) {
 				SumFlag = false;
 			}
 		}
-		if(abs(_TT_in1[0].y - _TT_in2[0].y) < 35 || abs(_TT_in1[0].y - _TT_in2[0].y) > 50){
+		if (abs(_TT_in1[0].y - _TT_in2[0].y) < 35 || abs(_TT_in1[0].y - _TT_in2[0].y) > 50) {
 			SumFlag = false;
 		}
 	}
 
-	if(SumFlag){
-		if(_TT_in1.size() != 0){
-			for(int i=0;i<_TT_in1.size();i++)
+	if (SumFlag) {
+		if (_TT_in1.size() != 0) {
+			for (register int i = 0; i < _TT_in1.size(); i++)
 				in_line_point->push_back(_TT_in1[i]);
 		}
-		if(_TT_in2.size() != 0){
-			for(int i=0;i<_TT_in2.size();i++)
+		if (_TT_in2.size() != 0){
+			for (register int i = 0; i < _TT_in2.size(); i++)
 				in_line_point->push_back(_TT_in2[i]);
 		}
 	}
@@ -452,8 +491,8 @@ void ChessLineSearchAlg::ChessBoardCorrection(vector<ChessPoint> *Point){
 	
 	vector<ChessPoint> _TT = *((vector<ChessPoint> *)Point);
 
-	for(int i=0;i<9;i++){
-		for(int j=0;j<9;j++){
+	for (register int i = 0; i < 9; i++) {
+		for (register int j = 0; j < 9; j++) {
 
 		}
 	}

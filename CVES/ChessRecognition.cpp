@@ -162,16 +162,9 @@ void ChessRecognition::Get_Line(vector<pair<float, float> > *linesX, vector<pair
 	mergeLine(linesY);
 }
 
-<<<<<<< HEAD
-
-void ChessRecognition::NMS2(IplImage* image, IplImage* image2, int kernel)	{
-	// 이웃들의 값을 살펴보고 조건에 해당하지 않으면 지움.
-	// 조건은 이웃값보다 작음.
-=======
-//이웃들의 값을 살펴보고 조건에 해당하지 않으면 지움
+// 이웃들의 값을 살펴보고 조건에 해당하지 않으면 지움.
 void ChessRecognition::Non_Maximum_Suppression(IplImage* image, IplImage* image2, int kernel)	{
 	//조건은 이웃값보다 작음
->>>>>>> CVES_ChessRecognition_Extended
 	float neighbor, neighbor2;
 
 	for (register int y = 0; y < image->height; y++)	{
@@ -521,14 +514,13 @@ void ChessRecognition::Chess_recognition_process(IplImage *src, vector<ChessPoin
 			break;
 	}
 	*/
-	// 해당 라인에서 9곳의 체스판 경계를 찾지 못 하였으면
-	// 탐색라인을 이동시켜 적절한 탐색라인을 찾는다
-	// flag의 값에 따라 Linefindcount의 값을 변경한다
+	// 해당 라인에서 9곳의 체스판 경계를 찾지 못 하였으면,
+	// 탐색라인을 이동시켜 적절한 탐색라인을 찾는다.
+	// flag의 값에 따라 Linefindcount의 값을 변경한다.
 	// true  : +
 	// false : -
 
-	// 만약 9곳의 경계를 모두 찾게 되면 해당 라인으로 고정시킨다
-
+	// 만약 9곳의 경계를 모두 찾게 되면 해당 라인으로 고정시킨다.
 	if (_CLSA->Linefindcount_x1 >= (src->width / 5) * 2 - 10)
 		_CLSA->flag_x1 = false;
 
@@ -555,7 +547,6 @@ void ChessRecognition::Chess_recognition_process(IplImage *src, vector<ChessPoin
 
 	// 각 라인이 모든 체스판의 경계를 찾았다면 다음 과정으로 넘어가고,
 	// 찾지 못하였으면 x축 또는 y축을 이동시켜 경계를 찾을 수 있는 라인을 찾는다.
-
 	if (_CLSA->in_line_point_x1.size() == 9 && _CLSA->in_line_point_x2.size() ==  9 && _CLSA->in_line_point_y1.size() == 9 && _CLSA->in_line_point_y2.size() == 9) {
 		// 각 찾은 경계점들의 수직이 되는 점 모두의 교차점을 찾는다.
 		_CLSA->GetInCrossPoint(src, point);

@@ -133,13 +133,9 @@ void EngineS::Go_ImageProcessing(){
 	// Cam으로부터의 영상입력.
 	_CamOriginalImage = cvQueryFrame(_Cam);
 	cvFlip(_CamOriginalImage, _CamOriginalImage, FLIP_MODE);
-<<<<<<< HEAD
 	//cvSmooth(_CamOriginalImage, _CamOriginalImage, CV_MEDIAN, 3);
 	// 모드에 따른 이미지 프로세스 수행.
-=======
-	
-	//모드에 따른 이미지 프로세스 수행
->>>>>>> CVES_ChessRecognition_Extended
+
 	imgproc_mode();
 }
 
@@ -555,7 +551,7 @@ void EngineS::imgproc_mode(){
 
 		// mode 1에서 2초 이상 지났을 경우 다음 모드로 진행
 		if (time(NULL) - _tempsec > 2) {
-			_ImageProcessMode++;
+			//_ImageProcessMode++;
 			_RGB = cvScalar(0, 255);
 		}
 
