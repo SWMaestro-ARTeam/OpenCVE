@@ -161,10 +161,12 @@ void ChessRecognition::Get_Line(vector<pair<float, float> > *linesX, vector<pair
 	mergeLine(linesY);
 }
 
-//이웃들의 값을 살펴보고 조건에 해당하지 않으면 지움
+
 void ChessRecognition::NMS2(IplImage* image, IplImage* image2, int kernel)	{
-	//조건은 이웃값보다 작음
+	// 이웃들의 값을 살펴보고 조건에 해당하지 않으면 지움.
+	// 조건은 이웃값보다 작음.
 	float neighbor, neighbor2;
+
 	for (register int y = 0; y < image->height; y++)	{
 		for (register int x = 0; x < image->width; x++) {
 			float intensity = CV_IMAGE_ELEM(image, float, y, x);
@@ -198,7 +200,6 @@ void ChessRecognition::NMS2(IplImage* image, IplImage* image2, int kernel)	{
 					}
 				}
 			}
-
 			else {
 				CV_IMAGE_ELEM(image, float, y, x) = 0.0;
 			}
@@ -207,11 +208,11 @@ void ChessRecognition::NMS2(IplImage* image, IplImage* image2, int kernel)	{
 }
 
 void ChessRecognition::cast_seq(CvSeq* linesX, CvSeq* linesY) {
-	// CvSeq 객체를 rho, theta로 이루이전 직선으로 변환 후, stl vector에 저장
+	// CvSeq 객체를 rho, theta로 이루이전 직선으로 변환 후, stl vector에 저장.
 	vec_LineX.clear();
 	vec_LineY.clear();
 
-	// X축방향의 직선에 대하여 연산
+	// X축 방향의 직선에 대하여 연산.
 	for (register int i = 0; i < MIN(linesX->total, 100); i++)	{
 		//cvSeq로 부터 rho, theta 연산 
 		float *line = (float *)cvGetSeqElem(linesX, i);
@@ -221,7 +222,7 @@ void ChessRecognition::cast_seq(CvSeq* linesX, CvSeq* linesY) {
 		vec_LineX.push_back(pair<float, float>(rho, theta));
 	}
 
-	// Y축방향에 대하여 직선 연산
+	// Y축 방향에 대하여 직선 연산.
 	for (register int i = 0; i < MIN(linesY->total, 100); i++) {
 		float *line = (float*)cvGetSeqElem(linesY, i);
 		float rho = line[0];
@@ -249,11 +250,11 @@ void ChessRecognition::mergeLine(vector<std::pair<float, float> > *Lines) {
 		}
 	}
 
-	//벡터 복수 & 직선 벡터를 각도로 정렬
+	// 벡터 복수 & 직선 벡터를 각도로 정렬.
 	copy(Lines->begin(), Lines->end(), back_inserter(temp));
 	sort(temp.begin(), temp.end(), sort_first);
 
-	//chessboard에 존재하는 직선의 갯수가 9개 이므로 9개가 남을때까지 병합.
+	// chessboard에 존재하는 직선의 갯수가 9개 이므로 9개가 남을때까지 병합.
 	if (temp.size() > 9) {
 		for (register int i = 0; i < (int)Lines->size() - 9; i++) {
 			SUB_MIN = 9999;		
@@ -266,7 +267,7 @@ void ChessRecognition::mergeLine(vector<std::pair<float, float> > *Lines) {
 					Min_pair.second = j;
 				}
 			}
-			//vector의 first는 rho, second는 theta
+			// vector의 first는 rho, second는 theta.
 			temp.at(Min_pair.first).first = (temp.at(Min_pair.first).first + temp.at(Min_pair.second).first) / 2.0;
 			temp.at(Min_pair.first).second = (temp.at(Min_pair.first).second + temp.at(Min_pair.second).second) / 2.0;
 
@@ -331,8 +332,8 @@ UINT WINAPI ChessRecognition::thread_hough(void *arg) {
 		cvConvert(iplDoGx, iplEdgeY); // IPL_DEPTH_8U로 다시 재변환.
 		cvConvert(iplDoGy, iplEdgeX);
 
-		double rho = 1.0; // distance resolution in pixel-related units
-		double theta = 1.0; // angle resolution measured in radians
+		double rho = 1.0; // distance resolution in pixel-related units.
+		double theta = 1.0; // angle resolution measured in radians.
 		int threshold = 20;
 
 		if (threshold == 0)
@@ -365,7 +366,7 @@ UINT WINAPI ChessRecognition::thread_hough(void *arg) {
 	cvReleaseImage(&iplEdgeX);
 	cvReleaseImage(&iplEdgeY);
 
-	// houghline2에 사용된 opencv 메모리 할당 해제
+	// houghline2에 사용된 opencv 메모리 할당 해제.
 	cvReleaseMemStorage(&storageX);
 	cvReleaseMemStorage(&storageY);
 
@@ -374,8 +375,9 @@ UINT WINAPI ChessRecognition::thread_hough(void *arg) {
 	return 0;
 }
 
-// mode 2를 통하여 chessboard recognition을 수행하기 위한 thread 함수.
+
 UINT WINAPI ChessRecognition::thread_ChessLineSearchAlg(void *arg) {
+	// mode 2를 통하여 chessboard recognition을 수행하기 위한 thread 함수.
 	ChessRecognition *_TChessRecognition = (ChessRecognition *)arg;
 	IplImage *_TGray = cvCreateImage(cvSize(_TChessRecognition->_Width, _TChessRecognition->_Height), IPL_DEPTH_8U, 1);
 
@@ -453,7 +455,7 @@ void ChessRecognition::Refine_CrossPoint(vector<ChessPoint> *point){
 				point->push_back(CP_temp);
 			}
 		}
-		// cross point가 81개라면 이전좌표를 통한 보정 연산 진행.
+		// cross point가 81개라면 이전 좌표를 통한 보정 연산 진행.
 		else {
 			for (register int i = 0; i < 81; i++) {
 				// (alpha * 이전 좌표) - ((1 - alpha) * 현재 좌표)
@@ -472,7 +474,7 @@ void ChessRecognition::Set_CalculationDomain(CvCapture *Cam, int *ROI_WIDTH, int
 
 void ChessRecognition::Chess_recog_wrapper(IplImage *src, vector<ChessPoint> *point) {
 	//init함수를 통하여 설정한 mode에 맞추어 chessboard recognition & 좌표 보정 & src에 좌표 그리기 진행.
-	//src : 좌표를 그릴 이미지, point : 연산을 통하여 cross point를 저장할 vector
+	//src : 좌표를 그릴 이미지, point : 연산을 통하여 cross point를 저장할 vector.
 	vector<std::pair<float, float> > CH_LineX, CH_LineY;
 	point->clear();
 
@@ -575,7 +577,6 @@ void ChessRecognition::Chess_recognition_process(IplImage *src, vector<ChessPoin
 			_CLSA->Linefindcount_y2 -= 3;
 	}
 
-	// 메모리 초기화
-
+	// 메모리 초기화.
 	_CLSA->MemoryClear();
 }

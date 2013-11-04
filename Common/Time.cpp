@@ -50,6 +50,7 @@ char *Time::GetUTCTime() {
 	return _TTimeStr;
 }
 
+// '초' 단위 실제 시간이 나온다(Sec).
 double Time::GetRealTime() {
 	double _TRealTime = 0.0f;
 #if WINDOWS_SYS
@@ -96,4 +97,48 @@ bool SystemControlsOfTime::WaitSecondsUntilSwitch(int Seconds, bool &KillSwitch)
 		return false;
 
 	return true;
+}
+
+
+void Timer::SetTimeSeconds(int Seconds) {
+
+}
+
+void Timer::SetTimeMilliSeconds(int MilliSeconds) {
+
+}
+
+void Timer::SetTimeMicroSeconds(int MicroSeconds) {
+
+}
+
+void Timer::Start() {
+	_IsStart = true;
+	HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, TimerProcessingThread, this, 0, NULL);
+}
+
+void Timer::End() {
+	_IsStart = false;
+}
+
+#if WINDOWS_SYS
+UINT WINAPI
+	//DWORD WINAPI
+#elif POSIX_SYS
+// using pthread
+void *
+#endif
+	Timer::TimerProcessingThread(
+#if WINDOWS_SYS
+	LPVOID
+#elif POSIX_SYS
+	void * 
+#endif 
+	Param) {
+	Timer *_TTimer = (Timer *)Param;
+		
+	while (_TTimer->_IsStart) {
+		//if ()
+	}
+	return 0;
 }

@@ -37,6 +37,7 @@
 
 #if WINDOWS_SYS
 #include <windows.h>
+#include <process.h>
 #elif POSIX_SYS
 #include <sys/resource.h>
 #include <sys/time.h>
@@ -64,11 +65,44 @@ public:
 	double GetRealTime();
 };
 
-class SystemControlsOfTime :
-	protected Time {
+class SystemControlsOfTime : protected Time {
 private:
 public:
 	bool WaitSecondsUntilSwitch(int MilliSecones, bool &KillSwitch);
+};
+
+class Timer {
+private:
+	bool _IsStart;
+public:
+	void SetTimeSeconds(int Seconds);
+	void SetTimeMilliSeconds(int MilliSeconds);
+	void SetTimeMicroSeconds(int MicroSeconds);
+	
+	void Start();
+	void End();
+
+	// Callback.
+	typedef void (*_T_TIMERINVOKER)();
+
+	_T_TIMERINVOKER TTimerInvoker;
+
+	// Thread.
+	static
+#if WINDOWS_SYS
+		UINT WINAPI
+		//DWORD WINAPI
+#elif POSIX_SYS
+		// using pthread
+		void *
+#endif
+		TimerProcessingThread(
+#if WINDOWS_SYS
+		LPVOID
+#elif POSIX_SYS
+		void *
+#endif
+		Param);
 };
 
 #endif

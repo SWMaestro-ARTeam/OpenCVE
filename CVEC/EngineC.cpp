@@ -343,11 +343,15 @@ void EngineC::Command_Position(CommandString *_UCICS) {
 				// Null Move 이면 White, 아니면 Black.
 				if (_UCICS->IsLastCharArrayIter() == true) {
 					_IsWhite = true;
-					_TString.append("NULL");
+					_TString.append(STR_I_INFO_MOVENULL);
 				}
 				break;
 			case VALUE_POSITION_MOVES :
+				// Moves가 올 때, Enemy Move를 보내준다.
+				// 상대측 좌표만 보내준다.
 				_IsMoves = true;
+				_TString.append(STR_I_INFO_ENEMYMOVE);
+				_TString.append(" ");
 				break;
 			case VALUE_ANYVALUES :
 				if (_IsStartpos && _IsMoves) {
@@ -436,22 +440,33 @@ void EngineC::Command_Go(CommandString *_UCICS) {
 				else if (_IsBtime) {
 					// 현재 흑색 Player의 시간을 나타내준다.
 					// 나중에 CVES에서 흑색 Player의 현재 시간을 Check할 때 쓴다(만약 내가 흑색일 때).
-					_TString.append("BlackTime ");
-					_TString.append(string((const char *)*_UCICS->CharArrayListIter));
-					_TString.append(" ");
+					if (_IsWhite == true) {
+						_TString.append(STR_I_INFO_BLACKTIME);
+						_TString.append(" ");
+						_TString.append(string((const char *)*_UCICS->CharArrayListIter));
+						_TString.append(" ");
+					}
+					
 					_IsBtime = false;
 				}
 				else if (_IsWinc) { _IsWinc = false; }
 				else if (_IsWtime) {
 					// 현재 백색 Player의 시간을 나타내준다.
 					// 나중에 CVES에서 백색 Player의 현재 시간을 Check할 때 쓴다(만약 내가 백색일 때).
-					_TString.append(string((const char *)*_UCICS->CharArrayListIter));
-					_TString.append(" ");
+					if (_IsWhite != true) {
+						_TString.append(STR_I_INFO_WHITETIME);
+						_TString.append(" ");
+						_TString.append(string((const char *)*_UCICS->CharArrayListIter));
+						_TString.append(" ");
+					}
+					
 					_IsWtime = false;
 				}
 				else if (_IsMovestogo) {
 					// 현재 자신의 턴수를 CVES에 보낼 String에 넣는다.
 					// 항상 턴수는 마지막에 온다.
+					_TString.append(STR_I_INFO_TURN);
+					_TString.append(" ");
 					_TString.append(string((const char *)*_UCICS->CharArrayListIter));
 					_IsMovestogo = false;
 				}
@@ -495,14 +510,14 @@ void EngineC::Command_Quit() {
 	EngineEnable = false;
 }
 
-FILE *ofp =fopen("CVEC_Log.txt", "w");
+//FILE *ofp =fopen("CVEC_Log.txt", "w");
 void EngineC::Parsing_Command() {
 	StringTokenizer *_TStringTokenizer = new StringTokenizer();
 	
 	// Get UCI String.
 	Get_Command_Str();
 
-	fprintf(ofp,"%s\n",_Command);
+	//fprintf(ofp,"%s\n",_Command);
 	_TStringTokenizer->SetInputCharString((const char *)_Command);
 	_TStringTokenizer->SetSingleToken(" ");
 	if (_TStringTokenizer->StringTokenGo() == false)

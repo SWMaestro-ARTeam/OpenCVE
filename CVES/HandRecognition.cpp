@@ -174,8 +174,8 @@ void HandRecognition::Sub_prevFrame(IplImage *src, IplImage *dst, bool first) {
 		cvCopy(src, present_ground);
 
 		// image 내부의 모든 픽셀을 대상으로 rgb 차영상 적용.
-		for (int i = 0; i < src->width; i++) {
-			for (int j = 0; j < src->height; j++) {
+		for (register int i = 0; i < src->width; i++) {
+			for (register int j = 0; j < src->height; j++) {
 				unsigned char SUB_B = abs((unsigned char)src->imageData[(i * 3) + (j * src->widthStep)] - (unsigned char)prev_ground->imageData[(i * 3) + (j * prev_ground->widthStep)]);
 				unsigned char SUB_G = abs((unsigned char)src->imageData[(i * 3) + (j * src->widthStep) + 1] - (unsigned char)prev_ground->imageData[(i * 3) + (j * prev_ground->widthStep) + 1]);
 				unsigned char SUB_R = abs((unsigned char)src->imageData[(i * 3) + (j * src->widthStep) + 2] - (unsigned char)prev_ground->imageData[(i * 3) + (j * prev_ground->widthStep) + 2]);

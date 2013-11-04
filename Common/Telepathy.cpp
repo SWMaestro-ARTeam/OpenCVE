@@ -189,6 +189,7 @@ void Telepathy::Server::ServerListentoClient() {
 		// push at lists back.
 		ClientList.push_back(_TClientList);
 		//ConnectorsSocketList.push_back(_TSocket);
+		TAnyConnentionNotifier(_TSocket);
 	}
 	else
 		return ;

@@ -107,6 +107,7 @@ public:
 
 		// server Callback
 		typedef void (* _T_SERVERRECEIVEDCALLBACK)(char *Buffer, SOCKET ClientSocket);
+		typedef void (* _T_ANYCONNECTIONNOTIFIER)(SOCKET ClientSocket);
 
 		bool ServerInitialize();
 		bool ServerStart();
@@ -119,6 +120,7 @@ public:
 
 		// Server Receive Callback Pointer.
 		_T_SERVERRECEIVEDCALLBACK TServerReceivedCallback;
+		_T_ANYCONNECTIONNOTIFIER TAnyConnentionNotifier;
 	};
 
 	// Client Class

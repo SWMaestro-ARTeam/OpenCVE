@@ -135,7 +135,7 @@ void EngineS::Go_ImageProcessing(){
 	_CamOriginalImage = cvQueryFrame(_Cam);
 	cvFlip(_CamOriginalImage, _CamOriginalImage, FLIP_MODE);
 	//cvSmooth(_CamOriginalImage, _CamOriginalImage, CV_MEDIAN, 3);
-	//모드에 따른 이미지 프로세스 수행
+	// 모드에 따른 이미지 프로세스 수행.
 	imgproc_mode();
 }
 
@@ -316,6 +316,7 @@ bool EngineS::Start_Server() {
 	bool _TIsStarted = false;
 
 	if (_TelepathyServer->IsInitializeServer == true) {
+		_TelepathyServer->TAnyConnentionNotifier = AnyConnentionNotifier;
 		_TelepathyServer->TServerReceivedCallback = ServerReceivedCallback;
 		if (_TelepathyServer->ServerStart()) {
 			// Command Queue 생성.
@@ -325,14 +326,18 @@ bool EngineS::Start_Server() {
 
 			_TIsStarted = true;
 		}
-		else 
+		else {
+			_TelepathyServer->TAnyConnentionNotifier = NULL;
 			_TelepathyServer->TServerReceivedCallback = NULL;
+		}
 	}
 	return _TIsStarted;
 }
 
 void EngineS::Stop_Server() {
-
+	// 모든게 확실히 된 다음에 다시 재구현.
+	_TelepathyServer->TAnyConnentionNotifier = NULL;
+	_TelepathyServer->TServerReceivedCallback = NULL;
 }
 
 Telepathy::Server *EngineS::Get_Telepathy_Server() {
@@ -666,83 +671,11 @@ void EngineS::ServerReceivedCallback(char *Buffer, SOCKET ClientSocket) {
 	_TServerGetInformation->AnySocket = ClientSocket;
 	G_EngineS->CommandQueue->push(_TServerGetInformation);
 	G_EngineS->_QueueProtectMutex.unlock();
+}
 
-	//// 내부 Protocol 송신(CVES -> CVEC, CVES -> Observer).
-	//StringTokenizer *_TStringTokenizer = new StringTokenizer();
-	//InternalProtocolSeeker _TInternalProtocolSeeker;
-
-	//_TStringTokenizer->SetInputCharString((const char *)Buffer);
-	//_TStringTokenizer->SetSingleToken(" ");
-	//if (_TStringTokenizer->StringTokenGo() == false)
-	//	return ;
-
-	//CommandString *_TInternalProtocolCS = new CommandString(_TStringTokenizer->GetTokenedCharListArrays());
-
-	//int _TSeek_AnyToCVES = _TInternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*_TInternalProtocolCS->CharArrayListIter);
-
-	//switch (_TSeek_AnyToCVES) {
-	//	// CVEC -> CVES
-	//	case VALUE_I_SERVERKILL :
-	//		// Server를 죽인다.
-	//		// 이유를 불문하고 이 명령이 들어오면 바로 죽인다.
-	//		G_EngineS->EngineEnable = false;
-	//		break;
-	//	case VALUE_I_SERVERISALIVE :
-	//		// CVEC가 Server가 살아있냐는 질문에 2가지 응답으로 답해야 한다.
-	//		// 그런데 실제로, Server가 'Busy' 한다는건 '살아있냐'라는 질의에 대한 응답으로 좀 맞지 않으므로,
-	//		// 'Alive'만 날려준다.
-	//		G_EngineS->Get_Telepathy_Server()->SendDataToOne("Alive", ClientSocket);
-	//		break;
-	//	case VALUE_I_IMFIRST :
-	//		// Server에 Socket 중, White에 Naming을 할 Socket이 필요.
-	//		// 어떤 Socket인지 검색하여 찾아 Naming 한다.
-	//		/*
-	//		for_IterToBegin(list, ClientsList, G_EngineS->Get_Telepathy_Server()->ClientList) {
-	//			if (_TVal->ClientSocket == ClientSocket) {
-	//				_TVal->ClientName = "White";
-	//			}
-	//		}
-	//		*/
-	//		break;
-	//	case VALUE_I_STOP :
-	//		// Stop the Server Image Processing.
-	//		G_EngineS->IsStarted = false;
-	//		break;
-	//	case VALUE_I_START :
-	//		// Start the Server Image Processing.
-	//		G_EngineS->IsStarted = true;
-	//		break;
-	//	case VALUE_I_ISRESTOREPOSSIBLE :
-	//		// 복구가 가능한가?
-	//		// 만약 이 Message가 왔다면, 이미 한번 죽어서 다시 실행되었다는 뜻이므로, 이전 Chess판의
-	//		// 정보가 있는지 없는지를 검사해야 한다.
-	//		// 만약 Data가 없거나, Data의 Checksum이 맞지 않아 복원에 실패하였다면, 'No'.
-	//		// 그게 아니라면 'Yes'를 날려준다.
-	//		break;
-	//	case VALUE_I_ISSERVERREADY :
-	//		// IsServerReady 질문을 하면 해야 할 것은 다음과 같다.
-	//		// 1. 
-	//		// Server(CVES)가 모든 준비 되었을 때, ServerisReady를 보낸다.
-	//		G_EngineS->Get_Telepathy_Server()->SendDataToOne("ServerisReady", ClientSocket);
-	//		break;
-
-	//	// Observer -> CVES
-	//	case VALUE_I_STATUSNOW :
-	//		// Status를 요청했으므로, 정보를 날려준다.
-	//		G_EngineS->IsStarted = false;
-	//		break;
-	//	case VALUE_I_TICTOKON :
-	//		// Tictok is On.
-	//		G_EngineS->IsTictokEnable = true;
-	//		break;
-	//	case VALUE_I_TICTOKOFF :
-	//		// Tictok is Off.
-	//		G_EngineS->IsTictokEnable = false;
-	//		break;
-	//}
-
-	//delete _TInternalProtocolCS;
-	//delete _TStringTokenizer;
+void EngineS::AnyConnentionNotifier(SOCKET ClientSocket) {
+	// 초기 접속시에 Type을 물어보기 위한 용도로 쓰인다.
+	G_EngineS->_TelepathyServer->SendDataToOne(STR_I_PTYPE, ClientSocket);
 }
 
 #if WINDOWS_SYS
@@ -799,16 +732,15 @@ void *
 					// 'Alive'만 날려준다.
 					_TEngine_S->_TelepathyServer->SendDataToOne("Alive", _TServerGetInformation->AnySocket);
 					break;
-				case VALUE_I_IMFIRST :
+				case VALUE_I_IMWHITE :
 					// Server에 Socket 중, White에 Naming을 할 Socket이 필요.
 					// 어떤 Socket인지 검색하여 찾아 Naming 한다.
-					/*
-					for_IterToBegin(list, ClientsList, G_EngineS->Get_Telepathy_Server()->ClientList) {
-						if (_TVal->ClientSocket == ClientSocket) {
+					for_IterToEnd(list, ClientsList, _TEngine_S->Get_Telepathy_Server()->ClientList) {
+						if (_TVal->ClientSocket == _TServerGetInformation->AnySocket) {
 							_TVal->ClientName = "White";
 						}
 					}
-					*/
+					
 					break;
 				case VALUE_I_STOP :
 					// Stop the Server Image Processing.
@@ -831,10 +763,14 @@ void *
 					// Server(CVES)가 모든 준비 되었을 때, ServerisReady를 보낸다.
 					_TEngine_S->_TelepathyServer->SendDataToOne("ServerisReady", _TServerGetInformation->AnySocket);
 					break;
+				
+				// Any(CVEC, CVEO) -> CVES
 				case VALUE_I_INFO :
 					// 여기에는 각종 Information이 온다.
 					// Setting 값등 중요한 정보가 오기 때문에, 처리를 잘 해주어야 한다.
-					_TEngine_S->Process_Info(_TInternalProtocolCS);
+					_TEngine_S->Process_Info(_TInternalProtocolCS, _TServerGetInformation->AnySocket);
+					break;
+				case VALUE_I_INFO_TYPE :
 					break;
 
 				// Observer -> CVES
@@ -859,35 +795,144 @@ void *
 	return 0;
 }
 
-void EngineS::Process_Info(CommandString *IPCS)	{
+void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
+	bool _TIsInfoGo = false;
+	bool _TBlackTime = false;
+	bool _TWhiteTime = false;
+	bool _TTurn = false;
+	bool _TIsInfoPosition = false;
+	bool _TIsInfoEnemyMove = false;
+	bool _TIsInfoType = false;
+	bool _TIsInfoPID = false;
+	//bool _TIsInfoGo = false;
+
 	// Fetch the next at while.
-	IPCS->NextCharArrayIter();
-		
-	int _NSeek_GUIToEngine = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*IPCS->CharArrayListIter);
-	switch (_NSeek_GUIToEngine) {
-		case VALUE_I_INFO_GO :
-			Process_Info_Go(IPCS);
-			break;
-		case VALUE_I_INFO_POSITION :
-			Process_Info_Position(IPCS);
-			break;
+	while (IPCS->NextCharArrayIter()) {
+		int _NSeek_GUIToEngine = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*IPCS->CharArrayListIter);
+		switch (_NSeek_GUIToEngine) {
+			// Go 뒤로 부터 오는 것들.
+			// e.g> "Info Go BlackTime(WhiteTime) xxxxx Turn xxxx"
+			case VALUE_I_INFO_GO :
+				// "Info Go"
+				_TIsInfoGo = true;
+				break;
+			case VALUE_I_INFO_BLACKTIME :
+				// "Info Go BlackTime xxxxx"
+				// 현재 들어오는 Socket이외의 다른 Client(상대편)의 표시창에 현재 멈춤 시각을 알려준다.
+				// 여기에 오면, 상대편(Black)의 시각이 들어오는 것이다.
+				_TBlackTime = true;
+				break;
+			case VALUE_I_INFO_WHITETIME :
+				// "Info Go White Time xxxxx"
+				// 현재 들어오는 Socket이외의 다른 Client(상대편)의 표시창에 현재 멈춤 시각을 알려준다.
+				// 여기에 오면, 상대편(White)의 시각이 들어오는 것이다.
+				_TWhiteTime = true;
+				break;
+			case VALUE_I_INFO_TURN :
+				// "Info Go Turn xxxx"
+				// 여기에 현재 자신의 Turn 수가 적힌다.
+				_TTurn = true;
+				break;
+
+			// Position 뒤로부터 오는 것들.
+			// e.g> "Info Position MoveNULL"
+			// "Info Position EnemyMove xxxx"
+			case VALUE_I_INFO_POSITION :
+				// "Info Position"
+				_TIsInfoPosition = true;
+				break;
+			case VALUE_I_INFO_ENEMYMOVE :
+				// "Info Position EnemyMove xxxx"
+				// 적의 Move이므로.
+				// 틀리면 비교한다.
+
+				break;
+			case VALUE_I_INFO_MOVENULL :
+				// "Info Position NoveNULL"
+				// 이걸 게임의 시작으로 간주 해야 할 것 같다.
+				// Socket을 넘겨 해당하는 Client List에 White 라는 식별을 한다.
+				// 그외의 나머지(해봤자 1개 뿐..) Client는 Black으로 처리한다.
+				for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
+					if (_TVal->ClientSocket == Socket) {
+						char _TCharArr[10] = "White";
+						_TVal->ClientType = _TCharArr;
+					}
+					else if (strcmp(_TVal->ClientType, "Client") == 0) {
+						char _TCharArr[10] = "Black";
+						_TVal->ClientType = _TCharArr;
+					}
+				}
+				break;
+
+			// Type 뒤로부터 오는 것들.
+			// e.g> "Info Type Client(Observer)"
+			case VALUE_I_INFO_TYPE :
+				// "Info Type"
+				_TIsInfoType = true;
+				break;
+			case VALUE_I_INFO_TYPE_CLIENT :
+				// "Info Type Client"
+				if (_TIsInfoType == true) {
+					for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
+						if (_TVal->ClientSocket == Socket) {
+							char _TCharArr[10] = STR_I_INFO_TYPE_CLIENT;
+							_TVal->ClientType = _TCharArr;
+						}
+					}
+				}
+				break;			
+			case VALUE_I_INFO_TYPE_OBSERVER :
+				// "Info Type Observer"
+				if (_TIsInfoType == true) {
+					for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
+						if (_TVal->ClientSocket == Socket) {
+							char _TCharArr[10] = STR_I_INFO_TYPE_OBSERVER;
+							_TVal->ClientType = _TCharArr;
+						}
+					}
+				}
+				break;
+
+			
+			case VALUE_I_ANYVALUES :
+				//if ()
+				break;
+			
+		}
 	}
 }
 
 void EngineS::Process_Info_Go(CommandString *IPCS) {
 	while(IPCS->NextCharArrayIter()) {
 		int _NSeek_GUIToEngine = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*IPCS->CharArrayListIter);
+
 		switch (_NSeek_GUIToEngine) {
-		case VALUE_I_INFO_GO :
-			Process_Info_Go(IPCS);
-			break;
-		case VALUE_I_INFO_POSITION :
-			Process_Info_Position(IPCS);
-			break;
+			case VALUE_I_INFO_GO :
+				Process_Info_Go(IPCS);
+				break;
+			case VALUE_I_INFO_POSITION :
+				Process_Info_Position(IPCS);
+				break;
 		}
 	}
 }
 
 void EngineS::Process_Info_Position(CommandString *IPCS) {
+	while(IPCS->NextCharArrayIter()) {
+		int _NSeek_GUIToEngine = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*IPCS->CharArrayListIter);
+
+		switch (_NSeek_GUIToEngine) {
+			case VALUE_I_INFO_GO :
+				Process_Info_Go(IPCS);
+				break;
+			case VALUE_I_INFO_POSITION :
+				Process_Info_Position(IPCS);
+				break;
+		}
+	}
+}
+
+void EngineS::Set_ClientData( SOCKET Socket, int Type )
+{
 
 }

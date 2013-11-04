@@ -117,7 +117,8 @@ private:
 	void Engine_Initializing();
 	void Engine_DeInitializing();
 
-	void Process_Info(CommandString *IPCS);
+	void Set_ClientData(SOCKET Socket, int Type);
+	void Process_Info(CommandString *IPCS, SOCKET Socket);
 	void Process_Info_Go(CommandString *IPCS);
 	void Process_Info_Position(CommandString *IPCS);
 
@@ -155,6 +156,7 @@ private:
 	CvPoint Get_ChessboxPos(int width, int height, vector<ChessPoint> cross_point);
 
 	static void ServerReceivedCallback(char *Buffer, SOCKET ClientSocket);
+	static void AnyConnentionNotifier(SOCKET ClientSocket);
 
 	// ClientCommandQueueProcessingThread
 	static
