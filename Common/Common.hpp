@@ -43,7 +43,7 @@
 #define CLIENT_MODE "/Client"
 #define OBSERVER_MODE "/Observer"
 
-#define ENGINE_EXEC_VER "0.1.0"
+#define ENGINE_EXEC_VER "1.0.0"
 
 // 통신을 위한 값
 #define CVE_PORT 10080

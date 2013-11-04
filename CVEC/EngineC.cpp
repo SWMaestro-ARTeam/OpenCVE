@@ -834,6 +834,8 @@ void *
 				continue;
 				//return ;
 
+			StringTools _TStringTools;
+			string _TString = string("");
 			CommandString *_InternalProtocolCS = new CommandString(_StringTokenizer->GetTokenedCharListArrays());
 			int _NSeek_CVESToCVEC = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*_InternalProtocolCS->CharArrayListIter);
 
@@ -841,7 +843,7 @@ void *
 				case VALUE_I_ALIVE :
 					// 게임 재개.
 					//G_EngineC->EnginePause = true;
-					_TEngine_C->_TelepathyClient->SendData("Start");
+					_TEngine_C->_TelepathyClient->SendData(STR_I_START);
 					break;
 				case VALUE_I_BUSY :
 					// No Implement.
@@ -854,19 +856,31 @@ void *
 				case VALUE_I_RESTOREOK :
 					// 복구 완료.
 					// 게임 재개.
-					_TEngine_C->_TelepathyClient->SendData("Start");
+					_TEngine_C->_TelepathyClient->SendData(STR_I_START);
 					break;
 				case VALUE_I_RESTORENOT :
 					// 복구 미완료.
 					// All Stop the game.
 					// CVES Process를 죽인다.
-					_TEngine_C->_TelepathyClient->SendData("Stop");
-					_TEngine_C->_TelepathyClient->SendData("ServerKill");
+					_TEngine_C->_TelepathyClient->SendData(STR_I_STOP);
+					_TEngine_C->_TelepathyClient->SendData(STR_I_SERVERKILL);
 					_TEngine_C->EngineEnable = false;
 					break;
 				case VALUE_I_SERVERISREADY :
 					// CVES가 준비 되었음을 알림.
 					_TEngine_C->_IsCVESReady = true;
+					break;
+
+				case VALUE_I_PTYPE :
+					// 여기는 Client이므로 Info Type에 Client라고 실어 날려준다.
+					// make "Info Type Client"
+					_TString.append(STR_I_INFO);
+					_TString.append(" ");
+					_TString.append(STR_I_INFO_TYPE);
+					_TString.append(" ");
+					_TString.append(STR_I_INFO_TYPE_CLIENT);
+					_TEngine_C->_TelepathyClient->SendData((char *)_TStringTools.StirngToCharPointer(_TString));
+					break;
 			}
 
 			delete _InternalProtocolCS;

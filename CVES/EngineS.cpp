@@ -755,7 +755,7 @@ void *
 					// CVEC가 Server가 살아있냐는 질문에 2가지 응답으로 답해야 한다.
 					// 그런데 실제로, Server가 'Busy' 한다는건 '살아있냐'라는 질의에 대한 응답으로 좀 맞지 않으므로,
 					// 'Alive'만 날려준다.
-					_TEngine_S->_TelepathyServer->SendDataToOne("Alive", _TServerGetInformation->AnySocket);
+					_TEngine_S->_TelepathyServer->SendDataToOne(STR_I_ALIVE, _TServerGetInformation->AnySocket);
 					break;
 				case VALUE_I_IMWHITE :
 					// Server에 Socket 중, White에 Naming을 할 Socket이 필요.
@@ -822,13 +822,12 @@ void *
 
 void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
 	bool _TIsInfoGo = false;
-	bool _TBlackTime = false;
-	bool _TWhiteTime = false;
-	bool _TTurn = false;
+	bool _TIsBlackTime = false;
+	bool _TIsWhiteTime = false;
+	bool _TIsTurn = false;
 	bool _TIsInfoPosition = false;
 	bool _TIsInfoEnemyMove = false;
 	bool _TIsInfoType = false;
-	bool _TIsInfoPID = false;
 	//bool _TIsInfoGo = false;
 
 	// Fetch the next at while.
@@ -845,18 +844,18 @@ void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
 				// "Info Go BlackTime xxxxx"
 				// 현재 들어오는 Socket이외의 다른 Client(상대편)의 표시창에 현재 멈춤 시각을 알려준다.
 				// 여기에 오면, 상대편(Black)의 시각이 들어오는 것이다.
-				_TBlackTime = true;
+				_TIsBlackTime = true;
 				break;
 			case VALUE_I_INFO_WHITETIME :
 				// "Info Go White Time xxxxx"
 				// 현재 들어오는 Socket이외의 다른 Client(상대편)의 표시창에 현재 멈춤 시각을 알려준다.
 				// 여기에 오면, 상대편(White)의 시각이 들어오는 것이다.
-				_TWhiteTime = true;
+				_TIsWhiteTime = true;
 				break;
 			case VALUE_I_INFO_TURN :
 				// "Info Go Turn xxxx"
 				// 여기에 현재 자신의 Turn 수가 적힌다.
-				_TTurn = true;
+				_TIsTurn = true;
 				break;
 
 			// Position 뒤로부터 오는 것들.
@@ -870,8 +869,10 @@ void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
 				// "Info Position EnemyMove xxxx"
 				// 적의 Move이므로.
 				// 틀리면 비교한다.
-
+				_TIsInfoEnemyMove = true;
 				break;
+			// "MoveNULL"이 있다면 불필요한 존재?!
+			// 추후 없에기로 한다.
 			case VALUE_I_INFO_MOVENULL :
 				// "Info Position NoveNULL"
 				// 이걸 게임의 시작으로 간주 해야 할 것 같다.
@@ -880,11 +881,11 @@ void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
 				for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
 					if (_TVal->ClientSocket == Socket) {
 						char _TCharArr[10] = "White";
-						_TVal->ClientType = _TCharArr;
+						_TVal->ClientName = _TCharArr;
 					}
 					else if (strcmp(_TVal->ClientType, "Client") == 0) {
 						char _TCharArr[10] = "Black";
-						_TVal->ClientType = _TCharArr;
+						_TVal->ClientName = _TCharArr;
 					}
 				}
 				break;
@@ -902,6 +903,7 @@ void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
 						if (_TVal->ClientSocket == Socket) {
 							char _TCharArr[10] = STR_I_INFO_TYPE_CLIENT;
 							_TVal->ClientType = _TCharArr;
+							break;
 						}
 					}
 				}
@@ -913,14 +915,35 @@ void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
 						if (_TVal->ClientSocket == Socket) {
 							char _TCharArr[10] = STR_I_INFO_TYPE_OBSERVER;
 							_TVal->ClientType = _TCharArr;
+							break;
 						}
 					}
 				}
 				break;
 
-			
 			case VALUE_I_ANYVALUES :
-				//if ()
+				if (_TIsInfoGo) {
+					if (_TIsBlackTime) {
+						_TIsBlackTime = false;
+						// Black Time을 처리할 구문.
+					}
+					else if (_TIsWhiteTime) {
+						_TIsWhiteTime = false;
+						// White Time을 처리할 구문.
+					}
+					else if (_TIsTurn) {
+						_TIsTurn = false;
+						// Turn을 처리할 구문.
+					}
+				}
+				else if (_TIsInfoPosition) {
+					if (_TIsInfoEnemyMove) {
+					
+					}
+					else if (_TIsInfoEnemyMove) {
+					
+					}
+				}
 				break;
 			
 		}
