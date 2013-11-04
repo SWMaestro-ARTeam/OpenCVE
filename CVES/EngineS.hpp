@@ -133,6 +133,7 @@ private:
 	// chess UI 만들기
 	void DrawWindowS(IplImage *src, float fps, CvScalar RGB);
 
+	// CVES 관심영역 마우스 콜백으로 설정 - 현재 미사용
 	static void MouseCallback_SetROI(int event, int x, int y, int flags, void *param);
 
 	// 연산에 필요한 이미지 할당.
@@ -153,6 +154,7 @@ private:
 
 	// 말이 어느 체스판에 있는지를 체크.
 	CvPoint	Get_Chessidx(CvPoint point, vector<ChessPoint> cross_point);
+	// width, height가 가리키는 픽셀이 어느 체스보드 인덱스를 가지는지를 계산하여 반환.
 	CvPoint Get_ChessboxPos(int width, int height, vector<ChessPoint> cross_point);
 
 	static void ServerReceivedCallback(char *Buffer, SOCKET ClientSocket);

@@ -70,6 +70,7 @@ void ChessRecognition::Initialize_ChessRecognition(int width, int height, int mo
 		hThread = (HANDLE)_beginthreadex(NULL, 0, thread_ChessLineSearchAlg, this, 0, NULL);
 	}
 
+	//내부 연산에 사용되는 이미지
 	img_process = cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 1);
 
 	_MODE = mode;
@@ -161,10 +162,16 @@ void ChessRecognition::Get_Line(vector<pair<float, float> > *linesX, vector<pair
 	mergeLine(linesY);
 }
 
+<<<<<<< HEAD
 
 void ChessRecognition::NMS2(IplImage* image, IplImage* image2, int kernel)	{
 	// 이웃들의 값을 살펴보고 조건에 해당하지 않으면 지움.
 	// 조건은 이웃값보다 작음.
+=======
+//이웃들의 값을 살펴보고 조건에 해당하지 않으면 지움
+void ChessRecognition::Non_Maximum_Suppression(IplImage* image, IplImage* image2, int kernel)	{
+	//조건은 이웃값보다 작음
+>>>>>>> CVES_ChessRecognition_Extended
 	float neighbor, neighbor2;
 
 	for (register int y = 0; y < image->height; y++)	{
@@ -326,8 +333,8 @@ UINT WINAPI ChessRecognition::thread_hough(void *arg) {
 		cvCopy(iplDoGx, iplDoGxClone);
 
 		// NMS진행후 추가 작업
-		_TChessRecognition->NMS2(iplDoGx, iplDoGyClone, kernel);
-		_TChessRecognition->NMS2(iplDoGy, iplDoGxClone, kernel);
+		_TChessRecognition->Non_Maximum_Suppression(iplDoGx, iplDoGyClone, kernel);
+		_TChessRecognition->Non_Maximum_Suppression(iplDoGy, iplDoGxClone, kernel);
 
 		cvConvert(iplDoGx, iplEdgeY); // IPL_DEPTH_8U로 다시 재변환.
 		cvConvert(iplDoGy, iplEdgeX);
@@ -467,9 +474,6 @@ void ChessRecognition::Refine_CrossPoint(vector<ChessPoint> *point){
 			}
 		}
 	}
-}
-
-void ChessRecognition::Set_CalculationDomain(CvCapture *Cam, int *ROI_WIDTH, int *ROI_HEIGHT){
 }
 
 void ChessRecognition::Chess_recog_wrapper(IplImage *src, vector<ChessPoint> *point) {

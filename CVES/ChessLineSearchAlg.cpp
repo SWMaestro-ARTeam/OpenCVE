@@ -33,7 +33,7 @@ ChessLineSearchAlg::~ChessLineSearchAlg() {
 }
 
 void ChessLineSearchAlg::GetLinegrayScale(IplImage *gray_image, int linefindcount_x1, int linefindcount_y1, int linefindcount_x2, int linefindcount_y2) {
-	// 중간 부터 검사.
+
 	int image_y = gray_image->height, image_x = gray_image->width;
 	int x1, x2, y1, y2;
 
@@ -42,7 +42,7 @@ void ChessLineSearchAlg::GetLinegrayScale(IplImage *gray_image, int linefindcoun
 	y1 = ((image_y / 5) * 2) - linefindcount_x1;
 	y2 = ((image_y / 5) * 3) + linefindcount_x2;
 
-	// 처음 vector 배열에 중심이 되는 값을 넣어주고,
+	// 처음에는 각  vector 배열에 중심이 되는 값을 넣어주고,
 	// 그 이후에 짝수는 오른쪽, 홀수는 왼쪽의 수치를 넣어준다.
 
 	line_x1.push_back(setMyGrayPoint(Getgrayscale(gray_image, image_x / 2, y1), image_x / 2, y1));
@@ -76,11 +76,13 @@ void ChessLineSearchAlg::GetLinegrayScale(IplImage *gray_image, int linefindcoun
 
 void ChessLineSearchAlg::GetgraySidelinesPoint(IplImage *chess_image) {
 	// 각 grayscale이 저장되어 있는 vector 배열에서 해당 라인의 교차점을 구한다.
+
+	// 이 함수 4개를 스레드로
+
 	GetgraySidelines(chess_image, &line_x1, &line_point_x1, &in_line_point_x1, true);
 	GetgraySidelines(chess_image, &line_x2, &line_point_x2, &in_line_point_x2, true);
 	GetgraySidelines(chess_image, &line_y1, &line_point_y1, &in_line_point_y1, false);
 	GetgraySidelines(chess_image, &line_y2, &line_point_y2, &in_line_point_y2, false);
-
 
 }
 
@@ -117,21 +119,6 @@ void ChessLineSearchAlg::GetInCrossPoint(IplImage *chess_image, vector<ChessPoin
 			}
 		}
 	}
-
-	// 잘못된 포인트 정점 수정
-
-// 	for(int i=0;i<in_line_point_x1.size();i++){
-// 		if(abs(in_line_point_x1[i].y - in_line_point_x2[i].y) > 20){
-// 			in_line_point_x1.clear();
-// 			in_line_point_x2.clear();
-// 			return;
-// 		}
-// 		if(abs(in_line_point_y1[i].x - in_line_point_y2[i].x) > 20){
-// 			in_line_point_y1.clear();
-// 			in_line_point_x2.clear();
-// 			return;
-// 		}
-// 	}
 
 	// 찾은 모든 경계점들을 수직이 되는 라인의 경계점들과의 모든 교차점을 찾는다.
 	// 9 * 9 = 81
@@ -414,31 +401,31 @@ void ChessLineSearchAlg::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *
 
 	if(XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)){
 		for(int i=0;i<_TT_in1.size()-1;i++){
-			if(abs(_TT_in1[i].x - _TT_in1[i+1].x) < 30 || abs(_TT_in1[i].x - _TT_in1[i+1].x) > 50){
+			if(abs(_TT_in1[i].x - _TT_in1[i+1].x) < 35 || abs(_TT_in1[i].x - _TT_in1[i+1].x) > 50){
 				SumFlag = false;
 			}
 		}
 		for(int i=0;i<_TT_in2.size()-1;i++){
-			if(abs(_TT_in2[i].x - _TT_in2[i+1].x) < 30 || abs(_TT_in2[i].x - _TT_in2[i+1].x) > 50){
+			if(abs(_TT_in2[i].x - _TT_in2[i+1].x) < 35 || abs(_TT_in2[i].x - _TT_in2[i+1].x) > 50){
 				SumFlag = false;
 			}
 		}
-		if(abs(_TT_in1[0].x - _TT_in2[0].x) < 30 || abs(_TT_in1[0].x - _TT_in2[0].x) > 50){
+		if(abs(_TT_in1[0].x - _TT_in2[0].x) < 35 || abs(_TT_in1[0].x - _TT_in2[0].x) > 50){
 			SumFlag = false;
 		}
 	}
 	else if(!XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)){
 		for(int i=0;i<_TT_in1.size()-1;i++){
-			if(abs(_TT_in1[i].y - _TT_in1[i+1].y) < 30 || abs(_TT_in1[i].y - _TT_in1[i+1].y) > 50){
+			if(abs(_TT_in1[i].y - _TT_in1[i+1].y) < 35 || abs(_TT_in1[i].y - _TT_in1[i+1].y) > 50){
 				SumFlag = false;
 			}
 		}
 		for(int i=0;i<_TT_in2.size()-1;i++){
-			if(abs(_TT_in2[i].y - _TT_in2[i+1].y) < 30 || abs(_TT_in2[i].y - _TT_in2[i+1].y) > 50){
+			if(abs(_TT_in2[i].y - _TT_in2[i+1].y) < 35 || abs(_TT_in2[i].y - _TT_in2[i+1].y) > 50){
 				SumFlag = false;
 			}
 		}
-		if(abs(_TT_in1[0].y - _TT_in2[0].y) < 30 || abs(_TT_in1[0].y - _TT_in2[0].y) > 50){
+		if(abs(_TT_in1[0].y - _TT_in2[0].y) < 35 || abs(_TT_in1[0].y - _TT_in2[0].y) > 50){
 			SumFlag = false;
 		}
 	}
