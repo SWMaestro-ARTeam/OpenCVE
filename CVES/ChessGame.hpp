@@ -30,9 +30,11 @@
 
 #include <stdio.h>
 #include <queue>
+#include <vector>
 
-#define CASTLING_MOVE				4
+#define CASTLING_MOVE			4
 #define ENPASSANT_MOVE			3
+#define DEFAULT_MOVE			2
 #define DEBUGUI_PATH "./Chess_UI/"
 
 #define WHITE_TURN true
@@ -48,6 +50,8 @@ enum {			//체스말
 	W_King, W_Queen, W_Rook, W_Bishop, W_Knight, W_Pawn,
 	B_King, B_Queen, B_Rook, B_Bishop, B_Knight, B_Pawn,
 };
+
+using namespace std;
 
 class ChessGame {
 
@@ -70,9 +74,9 @@ private:
 	// MODE 판독 함수 
 
 	// 각 체스 룰을 다루는 함수
-	void castling_move();
-	void enpassant_move();
-	void default_move();
+	void castling_move(CvPoint move_input[]);
+	void enpassant_move(CvPoint move_input[]);
+	void default_move(CvPoint move_input[]);
 
 public:
 	ChessGame();
