@@ -69,22 +69,22 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 			for (register int i = 0; i < 4; i++)
 				_TMove[i] = input1[i];
 
-			// 두개의 말(King, Rook) 위치를 옮겨준다
+			//// 두개의 말(King, Rook) 위치를 옮겨준다
 
-			_V_SWAP(_Board[_TMove[0].x][_TMove[0].y], _Board[_TMove[1].x][_TMove[1].y]);
-			_V_SWAP(_Board[_TMove[2].x][_TMove[2].y], _Board[_TMove[3].x][_TMove[3].y]);
+			//_V_SWAP(_Board[_TMove[0].x][_TMove[0].y], _Board[_TMove[1].x][_TMove[1].y]);
+			//_V_SWAP(_Board[_TMove[2].x][_TMove[2].y], _Board[_TMove[3].x][_TMove[3].y]);
 
-			// 이동 전과 이동 후의 위치 순서가 일정하기 않기 때문에 옮긴 후 두개의 위치 중 각 플레이어 턴에 해당하는
-			// King ~ Pawn 까지의 범위가 존재 한다면 해당 위치를 반환하여 각각 반환된 위치를 swap한다
+			//// 이동 전과 이동 후의 위치 순서가 일정하기 않기 때문에 옮긴 후 두개의 위치 중 각 플레이어 턴에 해당하는
+			//// King ~ Pawn 까지의 범위가 존재 한다면 해당 위치를 반환하여 각각 반환된 위치를 swap한다
 
-			if(_Turn == WHITE_TURN){
-				_V_SWAP((W_King <=_Board[_TMove[0].x][_TMove[0].y] && _Board[_TMove[0].x][_TMove[0].y] <= W_Pawn) ? _Board[_TMove[0].x][_TMove[0].y] : _Board[_TMove[1].x][_TMove[1].y],
-					(W_King <=_Board[_TMove[2].x][_TMove[2].y] && _Board[_TMove[2].x][_TMove[2].y] <= W_Pawn) ? _Board[_TMove[2].x][_TMove[2].y] : _Board[_TMove[3].x][_TMove[3].y] ? _Board[_TMove[2].x][_TMove[2].y] : _Board[_TMove[3].x][_TMove[3].y]);
-			}
-			else if(_Turn == BLACK_TURN){
-				_V_SWAP((B_King <=_Board[_TMove[0].x][_TMove[0].y] && _Board[_TMove[0].x][_TMove[0].y] <= B_Pawn) ? _Board[_TMove[0].x][_TMove[0].y] : _Board[_TMove[1].x][_TMove[1].y],
-					(B_King <=_Board[_TMove[2].x][_TMove[2].y] && _Board[_TMove[2].x][_TMove[2].y] <= B_Pawn) ? _Board[_TMove[2].x][_TMove[2].y] : _Board[_TMove[3].x][_TMove[3].y] ? _Board[_TMove[2].x][_TMove[2].y] : _Board[_TMove[3].x][_TMove[3].y]);
-			}
+			//if(_Turn == WHITE_TURN){
+			//	_V_SWAP((W_King <=_Board[_TMove[0].x][_TMove[0].y] && _Board[_TMove[0].x][_TMove[0].y] <= W_Pawn) ? _Board[_TMove[0].x][_TMove[0].y] : _Board[_TMove[1].x][_TMove[1].y],
+			//		(W_King <=_Board[_TMove[2].x][_TMove[2].y] && _Board[_TMove[2].x][_TMove[2].y] <= W_Pawn) ? _Board[_TMove[2].x][_TMove[2].y] : _Board[_TMove[3].x][_TMove[3].y] ? _Board[_TMove[2].x][_TMove[2].y] : _Board[_TMove[3].x][_TMove[3].y]);
+			//}
+			//else if(_Turn == BLACK_TURN){
+			//	_V_SWAP((B_King <=_Board[_TMove[0].x][_TMove[0].y] && _Board[_TMove[0].x][_TMove[0].y] <= B_Pawn) ? _Board[_TMove[0].x][_TMove[0].y] : _Board[_TMove[1].x][_TMove[1].y],
+			//		(B_King <=_Board[_TMove[2].x][_TMove[2].y] && _Board[_TMove[2].x][_TMove[2].y] <= B_Pawn) ? _Board[_TMove[2].x][_TMove[2].y] : _Board[_TMove[3].x][_TMove[3].y] ? _Board[_TMove[2].x][_TMove[2].y] : _Board[_TMove[3].x][_TMove[3].y]);
+			//}
 			
 			// UCI로 넘겨줄 표기는 알아서 ...
 			
@@ -151,6 +151,10 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 					_V_SWAP(_Board[_TMove[0].x][_TMove[0].y], _Board[_TMove[1].x][_TMove[1].y]);
 					MakeUCI(_TMove[1], _TMove[0], &temp_move);
 				}
+				/*else {
+					char _TChar[32] = "";
+					temp_move.movement = _TChar;
+				}*/
 			}
 			else if (_Turn == BLACK_TURN) {
 				//검은색 차례일때

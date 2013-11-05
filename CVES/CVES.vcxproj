@@ -95,6 +95,7 @@
     <ClInclude Include="..\Common\InternalProtocolSeeker.hpp" />
     <ClInclude Include="..\Common\Process.hpp" />
     <ClInclude Include="..\Common\StringTokenizer.hpp" />
+    <ClInclude Include="..\Common\StringTools.hpp" />
     <ClInclude Include="..\Common\SystemDependency.hpp" />
     <ClInclude Include="..\Common\Telepathy.hpp" />
     <ClInclude Include="..\Common\Time.hpp" />
@@ -113,6 +114,7 @@
     <ClCompile Include="..\Common\InternalProtocolSeeker.cpp" />
     <ClCompile Include="..\Common\Process.cpp" />
     <ClCompile Include="..\Common\StringTokenizer.cpp" />
+    <ClCompile Include="..\Common\StringTools.cpp" />
     <ClCompile Include="..\Common\Telepathy.cpp" />
     <ClCompile Include="..\Common\Time.cpp" />
     <ClCompile Include="BlobLabeling.cpp" />

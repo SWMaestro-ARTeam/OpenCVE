@@ -144,6 +144,7 @@ public:
 
 		// client Callback
 		typedef void (* _T_CLIENTRECEIVEDCALLBACK)(char *Buffer);
+		typedef void (* _T_CLIENTDISCONNECTEDCALLBACK)();
 
 		bool ClientInitialize();
 		void ClientReceiveStart();
@@ -158,6 +159,7 @@ public:
 
 		// Client Receive Callback Pointer.
 		_T_CLIENTRECEIVEDCALLBACK TClientReceivedCallback;
+		_T_CLIENTDISCONNECTEDCALLBACK TClientDisconnectedCallback;
 	};
 };
 #endif

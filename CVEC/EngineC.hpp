@@ -129,6 +129,7 @@ private:
 
 	// ClientReceivedCallback
 	static void ClientReceivedCallback(char *Buffer);
+	static void ClientDisconnectedCallback();
 
 	// CVEC_CVESCheckingThread
 	static

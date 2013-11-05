@@ -119,8 +119,8 @@ private:
 
 	void Set_ClientData(SOCKET Socket, int Type);
 	void Process_Info(CommandString *IPCS, SOCKET Socket);
-	void Process_Info_Go(CommandString *IPCS);
-	void Process_Info_Position(CommandString *IPCS);
+	/*void Process_Info_Go(CommandString *IPCS);
+	void Process_Info_Position(CommandString *IPCS);*/
 
 	// 여태 이동한 경로 큐를 가져옴. -- 미구현
 	void Get_History();

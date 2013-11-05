@@ -46,6 +46,9 @@
     <ClCompile Include="..\Common\Telepathy.cpp">
       <Filter>Common\Telepathy\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\Common\StringTools.cpp">
+      <Filter>Common\StringTools\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BlobLabeling.hpp">
@@ -107,6 +110,9 @@
     </ClInclude>
     <ClInclude Include="..\Common\Telepathy.hpp">
       <Filter>Common\Telepathy\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\StringTools.hpp">
+      <Filter>Common\StringTools\Header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -238,6 +244,15 @@
     </Filter>
     <Filter Include="Common\Telepathy\Header">
       <UniqueIdentifier>{e2b37a4d-2716-478d-8baa-8d62d07d3be6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\StringTools">
+      <UniqueIdentifier>{ab2b941e-93f8-4c05-b53e-d20eb4115ac9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\StringTools\Header">
+      <UniqueIdentifier>{7d561059-892a-4b8e-840e-8d39907de832}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\StringTools\Source">
+      <UniqueIdentifier>{0d19ab40-2817-4d47-ada9-00624b2a9455}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

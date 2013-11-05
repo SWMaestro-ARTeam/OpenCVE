@@ -36,7 +36,9 @@ private:
 public:
 	template<typename T>
 	string ToString(const T& Any);
-	const char *StirngToCharPointer(string Str);
+	const char *StirngToConstCharPointer(string Str);
+	char *ConstCharToChar(const char *Str);
+	char *StringToChar(string Str);
 };
 
 #endif

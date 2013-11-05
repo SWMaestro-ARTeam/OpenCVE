@@ -721,6 +721,7 @@ void *
 	EngineS *_TEngine_S = (EngineS *)Param;
 
 	while (_TEngine_S->_TelepathyServer->IsServerStarted) {
+		Sleep(10);
 		if (_TEngine_S->CommandQueue->empty() != true) {
 			_TEngine_S->_QueueProtectMutex.lock();
 			char _TStrBuffer[BUFFER_MAX_32767];
@@ -829,9 +830,10 @@ void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
 	bool _TIsInfoEnemyMove = false;
 	bool _TIsInfoType = false;
 	//bool _TIsInfoGo = false;
-
+	
 	// Fetch the next at while.
 	while (IPCS->NextCharArrayIter()) {
+		StringTools _TStringTools;
 		int _NSeek_GUIToEngine = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*IPCS->CharArrayListIter);
 		switch (_NSeek_GUIToEngine) {
 			// Go 뒤로 부터 오는 것들.
@@ -901,8 +903,7 @@ void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
 				if (_TIsInfoType == true) {
 					for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
 						if (_TVal->ClientSocket == Socket) {
-							char _TCharArr[10] = STR_I_INFO_TYPE_CLIENT;
-							_TVal->ClientType = _TCharArr;
+							_TVal->ClientType = _TStringTools.ConstCharToChar(STR_I_INFO_TYPE_CLIENT);
 							break;
 						}
 					}
@@ -913,8 +914,7 @@ void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
 				if (_TIsInfoType == true) {
 					for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
 						if (_TVal->ClientSocket == Socket) {
-							char _TCharArr[10] = STR_I_INFO_TYPE_OBSERVER;
-							_TVal->ClientType = _TCharArr;
+							_TVal->ClientType = _TStringTools.ConstCharToChar(STR_I_INFO_TYPE_OBSERVER);
 							break;
 						}
 					}
@@ -950,35 +950,35 @@ void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
 	}
 }
 
-void EngineS::Process_Info_Go(CommandString *IPCS) {
-	while(IPCS->NextCharArrayIter()) {
-		int _NSeek_GUIToEngine = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*IPCS->CharArrayListIter);
-
-		switch (_NSeek_GUIToEngine) {
-			case VALUE_I_INFO_GO :
-				Process_Info_Go(IPCS);
-				break;
-			case VALUE_I_INFO_POSITION :
-				Process_Info_Position(IPCS);
-				break;
-		}
-	}
-}
-
-void EngineS::Process_Info_Position(CommandString *IPCS) {
-	while(IPCS->NextCharArrayIter()) {
-		int _NSeek_GUIToEngine = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*IPCS->CharArrayListIter);
-
-		switch (_NSeek_GUIToEngine) {
-			case VALUE_I_INFO_GO :
-				Process_Info_Go(IPCS);
-				break;
-			case VALUE_I_INFO_POSITION :
-				Process_Info_Position(IPCS);
-				break;
-		}
-	}
-}
+//void EngineS::Process_Info_Go(CommandString *IPCS) {
+//	while(IPCS->NextCharArrayIter()) {
+//		int _NSeek_GUIToEngine = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*IPCS->CharArrayListIter);
+//
+//		switch (_NSeek_GUIToEngine) {
+//			case VALUE_I_INFO_GO :
+//				Process_Info_Go(IPCS);
+//				break;
+//			case VALUE_I_INFO_POSITION :
+//				Process_Info_Position(IPCS);
+//				break;
+//		}
+//	}
+//}
+//
+//void EngineS::Process_Info_Position(CommandString *IPCS) {
+//	while(IPCS->NextCharArrayIter()) {
+//		int _NSeek_GUIToEngine = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*IPCS->CharArrayListIter);
+//
+//		switch (_NSeek_GUIToEngine) {
+//			case VALUE_I_INFO_GO :
+//				Process_Info_Go(IPCS);
+//				break;
+//			case VALUE_I_INFO_POSITION :
+//				Process_Info_Position(IPCS);
+//				break;
+//		}
+//	}
+//}
 
 void EngineS::Set_ClientData( SOCKET Socket, int Type )
 {
