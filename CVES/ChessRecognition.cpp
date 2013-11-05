@@ -547,6 +547,10 @@ void ChessRecognition::Chess_recognition_process(IplImage *src, vector<ChessPoin
 
 	// 각 라인이 모든 체스판의 경계를 찾았다면 다음 과정으로 넘어가고,
 	// 찾지 못하였으면 x축 또는 y축을 이동시켜 경계를 찾을 수 있는 라인을 찾는다.
+	// 만약 9개의 정점을 찾지 못하면 적합한 탐색라인이 아니라 판단하여 
+	// 라인 위치를 바꾼다
+	// count : 3
+	
 	if (_CLSA->in_line_point_x1.size() == 9 && _CLSA->in_line_point_x2.size() ==  9 && _CLSA->in_line_point_y1.size() == 9 && _CLSA->in_line_point_y2.size() == 9) {
 		// 각 찾은 경계점들의 수직이 되는 점 모두의 교차점을 찾는다.
 		_CLSA->GetInCrossPoint(src, point);

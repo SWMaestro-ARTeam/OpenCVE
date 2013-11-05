@@ -175,9 +175,13 @@ void ChessLineSearchAlg::GetInCrossPoint(IplImage *chess_image, vector<ChessPoin
 			
 			// 같은 축의 라인의 양끝을 이은 직선을 구해 수직이 되는 라인과의 교차점을 찾아
 			// 반환해 주는 point에 push한다
-
+			
 			SetMyLinePoint(in_line_point_x1[i].x, in_line_point_x1[i].y, in_line_point_x2[i].x, in_line_point_x2[i].y, &t_in_line_point_x);
 			SetMyLinePoint(in_line_point_y1[j].x, in_line_point_y1[j].y, in_line_point_y2[j].x, in_line_point_y2[j].y, &t_in_line_point_y);
+
+			// in_line_point 4개의 변수 모두 9개의 경계점을 가지고 있으므로
+			// 각 수직이 되는 직선 9*9로 총 81개의 교차점이 생기게 된다
+			// 그것이 체스판의 모든 정점의 위치로 인식을 하고 넘겨준다
 
 			GetCrossPoint(t_in_line_point_x, t_in_line_point_y, &t_in_point);
 
@@ -187,8 +191,6 @@ void ChessLineSearchAlg::GetInCrossPoint(IplImage *chess_image, vector<ChessPoin
 			point->push_back(temp);
 		}
 	}
-
-	ChessBoardCorrection(point);
 }
 
 void ChessLineSearchAlg::SetMyLinePoint(int x1, int y1, int x2, int y2, MyLinePoint *setLinePoint) {
