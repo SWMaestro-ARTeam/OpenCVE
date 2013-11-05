@@ -519,8 +519,12 @@ void ChessRecognition::Chess_recognition_process(IplImage *src, vector<ChessPoin
 	// flag의 값에 따라 Linefindcount의 값을 변경한다.
 	// true  : +
 	// false : -
+	// 가로 기준으로는 너비를 5로 나눈 값으로 각각 2/5와 3/5 위치를 기준으로 탐색을 한다
+	// 세로 기준으로는 높이를 7로 나는 값으로 각각 3/7과 4/7 위치를 기죽으로 탐색을 한다
 
 	// 만약 9곳의 경계를 모두 찾게 되면 해당 라인으로 고정시킨다.
+
+	// x1 ~ y2의 flag여부에 따라 값을 증가시킬지 감소시킬지를 판단하는 요소로 사용한다
 	if (_CLSA->Linefindcount_x1 >= (src->width / 5) * 2 - 10)
 		_CLSA->flag_x1 = false;
 
@@ -556,6 +560,9 @@ void ChessRecognition::Chess_recognition_process(IplImage *src, vector<ChessPoin
 		_CLSA->GetInCrossPoint(src, point);
 	}
 	else if (_CLSA->in_line_point_x1.size() != 9 || _CLSA->in_line_point_x2.size() != 9) {
+
+		// flag의 방향성과 모든경계를 찾지 못한 경우에는 해당되는 라인을 3씩 증감시켜준다
+
 		if (_CLSA->flag_x1 && (_CLSA->in_line_point_x1.size() != 9))
 			_CLSA->Linefindcount_x1 += 3;
 		else if (!_CLSA->flag_x1 && (_CLSA->in_line_point_x1.size() != 9))
