@@ -30,9 +30,11 @@
 
 #include <stdio.h>
 #include <queue>
+#include <vector>
 
-#define CASTLING_MOVE				4
+#define CASTLING_MOVE			4
 #define ENPASSANT_MOVE			3
+#define DEFAULT_MOVE			2
 #define DEBUGUI_PATH "./Chess_UI/"
 
 #define WHITE_TURN true
@@ -48,6 +50,8 @@ enum {			//체스말
 	W_King, W_Queen, W_Rook, W_Bishop, W_Knight, W_Pawn,
 	B_King, B_Queen, B_Rook, B_Bishop, B_Knight, B_Pawn,
 };
+
+using namespace std;
 
 class ChessGame {
 
@@ -66,6 +70,14 @@ private:
 
 	void MakeUCI(CvPoint before, CvPoint after, move_format *dst);
 	char char_mapping(int position);	// 글자 좌표로 매핑
+
+	// MODE 판독 함수 
+
+	// 각 체스 룰을 다루는 함수
+	void castling_move(CvPoint move_input[]);
+	void enpassant_move(CvPoint move_input[]);
+	void default_move(CvPoint move_input[]);
+
 public:
 	ChessGame();
 	~ChessGame();
@@ -76,5 +88,6 @@ public:
 	void Show_chess_board();		// cmd에 체스판을 그림.
 	void Show_chessImage();			// chess UI를 Draw
 	void Get_RecentMove(char *str);     // list에 저장된 가장 최근 movement를 return; Dequeue와 같음.
+	int Mode_read();
 };
 #endif

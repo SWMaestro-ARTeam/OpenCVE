@@ -53,6 +53,8 @@
 #include "BlobLabeling.hpp"
 // Chess Game을 위한 좌표
 #include "ChessGame.hpp"
+// Chessboard 면적 계산 및 체스보드 인접 체크
+#include "CheckInChessboard.h"
 
 #include "StringTools.hpp"
 
@@ -78,6 +80,7 @@ private:
 	ChessRecognition _ChessRecognition;
 	BlobLabeling _BlobLabeling;
 	ChessGame _ChessGame;
+	CheckInChessboard *_CheckInChess;
 
 	Telepathy::Server *_TelepathyServer;
 	InternalProtocolSeeker _InternalProtocolSeeker;
@@ -122,10 +125,6 @@ private:
 	/*void Process_Info_Go(CommandString *IPCS);
 	void Process_Info_Position(CommandString *IPCS);*/
 
-	// 여태 이동한 경로 큐를 가져옴. -- 미구현
-	void Get_History();
-	// 차영상의 결과로 나온 이진 이미지를 계산하여 체스말의 좌표이동을 반환.
-	void Calculate_Movement(IplImage *bin, vector<ChessPoint> cross_point, CvPoint *out1, CvPoint *out2);
 	bool Check_Exit();
 
 	// 매 루프에서 호출되는 image process 함수.
@@ -133,29 +132,14 @@ private:
 	// chess UI 만들기
 	void DrawWindowS(IplImage *src, float fps, CvScalar RGB);
 
-	// CVES 관심영역 마우스 콜백으로 설정 - 현재 미사용
-	static void MouseCallback_SetROI(int event, int x, int y, int flags, void *param);
-
 	// 연산에 필요한 이미지 할당.
 	void Inter_imageCraete(int roi_width, int roi_height);
 	// 차영상 진행.
 	void Sub_image(IplImage *src1, IplImage *src2, IplImage *dst);
 	// 차영상 결과 이미지에 RGB 색 씌우기.
 	void Compose_diffImage(IplImage *rgb, IplImage *bin, CvScalar RGB);
-	// p,q,r로 이루어진 삼각형의 넓이 return
-	float area_tri(CvPoint p, CvPoint q, CvPoint r);
 	//입력 영상으로 내부 모드에 따라 이미지 연산. (case문 대체)
 	void imgproc_mode();
-
-	// binary image가 체스보드 안에 픽셀을 가지는지 검사.
-	bool Check_InChessboard(IplImage *img, vector<ChessPoint> point);
-	// img가 픽셀값을 아무것도 가지지 않는지 체크.
-	bool Check_imgZero(IplImage *img);
-
-	// 말이 어느 체스판에 있는지를 체크.
-	CvPoint	Get_Chessidx(CvPoint point, vector<ChessPoint> cross_point);
-	// width, height가 가리키는 픽셀이 어느 체스보드 인덱스를 가지는지를 계산하여 반환.
-	CvPoint Get_ChessboxPos(int width, int height, vector<ChessPoint> cross_point);
 
 	static void ServerReceivedCallback(char *Buffer, SOCKET ClientSocket);
 	static void AnyConnentionNotifier(SOCKET ClientSocket);

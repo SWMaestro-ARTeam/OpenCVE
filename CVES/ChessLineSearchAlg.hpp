@@ -90,8 +90,6 @@ public:
 	void GrayImageBinarization(IplImage *gray_image);
 	// 체스판 경계 탐색 함수.
 	void GetgraySidelines(IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool XYFlag);
-	// 체스판 보정 함수
-	void ChessBoardCorrection(vector<ChessPoint> *Point);
 
 	void MemoryClear();
 
