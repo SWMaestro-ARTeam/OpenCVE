@@ -34,6 +34,7 @@ EngineC *G_EngineC;
 EngineC::EngineC() {
 	_IsGetCVESProcess = false;
 	_IsNoCVESProcess = false;
+	_ServerPID = 0;
 	EngineEnable = false;
 	EnginePause = false;
 	G_EngineC = this;
@@ -43,6 +44,7 @@ EngineC::EngineC() {
 EngineC::~EngineC() {
 	_IsGetCVESProcess = false;
 	_IsNoCVESProcess = false;
+	_ServerPID = 0;
 	EngineEnable = false;
 	EnginePause = false;
 	G_EngineC = NULL;
@@ -648,8 +650,10 @@ bool EngineC::CheckingCVESProcess() {
 				_TIsAnotherCVECProcessActive = true;
 
 			// Server Process가 존재하는 경우.
-			if (strcmp(_TStrBuff, SERVER_ENGINE_EXEC_FILENAME) == 0)
+			if (strcmp(_TStrBuff, SERVER_ENGINE_EXEC_FILENAME) == 0) {
 				_TIsCVESProcessActive = true;
+				_ServerPID = _TVal->PID;
+			}
 		}
 		
 		// 2. CVES Process가 없다면 Process 실행.
@@ -746,6 +750,17 @@ void EngineC::ClientDisconnectedCallback() {
 		if (((G_EngineC->_IsNoCVESProcess) ?
 			0 : (G_EngineC->_ProcessConfirm->IsProcessActive != true))
 			&& G_EngineC->EngineEnable == true) {
+				// Server가 Error가 나서 죽었는데 Process가 Active 된 경우에는 일단 해당 Server Process를 죽이고 들어간다.
+				HANDLE _TServerProcessHandle = G_EngineC->_ProcessConfirm->FindProcessByPID(G_EngineC->_ServerPID);
+				if (G_EngineC->_ProcessConfirm->GetProcessStatus(_TServerProcessHandle) ==
+#if WINDOWS_SYS
+					STILL_ACTIVE
+#elif POSIX_SYS
+
+#endif
+					) {
+						G_EngineC->_ProcessConfirm->TerminateProcess(_TServerProcessHandle);
+				}
 				// CVES 없어지고 다시 실행할 때까지 계속 돈다.
 				// Server를 가지고 있지 않다면, 굳이 실행 할 필요가 없다.
 				while (((G_EngineC->_IsNoCVESProcess) ? 0 : !G_EngineC->CheckingCVESProcess()) && G_EngineC->EngineEnable == true) ;
@@ -934,7 +949,7 @@ void *
 					_TString.append(STR_I_INFO_TYPE);
 					_TString.append(" ");
 					_TString.append(STR_I_INFO_TYPE_CLIENT);
-					_TEngine_C->_TelepathyClient->SendData(_TStringTools.StringToChar(_TString));
+					_TEngine_C->_TelepathyClient->SendData((char *)_TStringTools.StirngToConstCharPointer(_TString));
 					//_TEngine_C->_TelepathyClient->SendData("Info Type Client");
 					break;
 			}

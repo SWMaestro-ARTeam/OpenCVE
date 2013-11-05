@@ -73,6 +73,8 @@ private:
 	bool _IsNoCVESProcess;
 	bool _IsCVESReady;
 
+	DWORD _ServerPID;
+
 	mutex _QueueProtectMutex;
 	mutex _VarProtectMutex;
 	

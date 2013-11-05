@@ -31,6 +31,7 @@
 
 #include "CVECDependent.hpp"
 
+#include <string.h>
 #include <list>
 
 using namespace std;

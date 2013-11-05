@@ -34,8 +34,8 @@ class StringTools {
 private:
 
 public:
-	template<typename T>
-	string ToString(const T& Any);
+	/*template<typename T>
+	string ToString(const T& Any);*/
 	const char *StirngToConstCharPointer(string Str);
 	char *ConstCharToChar(const char *Str);
 	char *StringToChar(string Str);

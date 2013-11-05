@@ -309,6 +309,18 @@ gnpiFreeMemFailed:
 
 		return _TReturnStatus;
 }
+
+DWORD WindowsProcess::GetProcessStatus(HANDLE ProcessPID) {
+	DWORD _TExitCode = 0;
+	::GetExitCodeProcess(ProcessPID, &_TExitCode);
+	return _TExitCode;
+}
+
+void WindowsProcess::TerminateProcess(HANDLE ProcessPID) {
+	::TerminateProcess(ProcessPID, 0);
+}
+
+
 #pragma endregion Windows Process Module
 #elif POSIX_SYS
 #pragma region POSIX Process Module
@@ -355,31 +367,73 @@ bool Process::FindProcess(
 #endif
 	PID, char *ProcessName) {
 #if WINDOWS_SYS
-		HANDLE _TModuleSnap = NULL; 
-		MODULEENTRY32 _TME32 = {0};
+	HANDLE _TModuleSnap = NULL; 
+	MODULEENTRY32 _TME32 = {0};
 
-		_TModuleSnap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, PID);
+	_TModuleSnap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, PID);
 
-		if (_TModuleSnap == (HANDLE) - 1)
-			return false;
+	if (_TModuleSnap == (HANDLE) - 1)
+		return false;
 
-		_TME32.dwSize = sizeof(MODULEENTRY32);
+	_TME32.dwSize = sizeof(MODULEENTRY32);
 
-		if (Module32First(_TModuleSnap, &_TME32)) {
-			do {
-				// 똑같은 이름이 존재 할 때 True.
-				if (strcmp((char *)_TME32.szModule, ProcessName) == 0) {
-					CloseHandle(_TModuleSnap);
-					return true;
-				}
-			} while (Module32Next(_TModuleSnap, &_TME32));
-		}
+	if (Module32First(_TModuleSnap, &_TME32)) {
+		do {
+			// 똑같은 이름이 존재 할 때 True.
+			if (strcmp((char *)_TME32.szModule, ProcessName) == 0) {
+				CloseHandle(_TModuleSnap);
+				return true;
+			}
+		} while (Module32Next(_TModuleSnap, &_TME32));
+	}
 
-		CloseHandle(_TModuleSnap);
+	CloseHandle(_TModuleSnap);
 #elif POSIX_SYS
 
 #endif
+	return false;
+}
+
+#if WINDOWS_SYS
+HANDLE
+#elif POSIX_SYS
+unsigned long
+#endif
+	Process::FindHandleGetOneProcess(
+#if WINDOWS_SYS
+	DWORD
+#elif POSIX_SYS
+	unsigned long
+#endif
+	PID) {
+#if WINDOWS_SYS
+	HANDLE _TModuleSnap = NULL; 
+	MODULEENTRY32 _TME32 = {0};
+
+	_TModuleSnap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, PID);
+
+	if (_TModuleSnap == (HANDLE) - 1)
 		return false;
+
+	_TME32.dwSize = sizeof(MODULEENTRY32);
+
+	if (Process32First(_TModuleSnap, &_ProcessEntry32)) {
+		MODULEENTRY32 _ME32 = {0};
+
+		do {
+			if (PID == _TME32.th32ModuleID) {
+				HANDLE _TProcessHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, _ProcessEntry32.th32ProcessID);
+				CloseHandle(_TModuleSnap);
+				return _TProcessHandle;
+			}
+		} while (Process32Next(_TModuleSnap, &_ProcessEntry32));
+	}
+
+	CloseHandle(_TModuleSnap);
+#elif POSIX_SYS
+
+#endif
+	return false;
 }
 
 bool Process::CheckProcessExistByFileName(char *ProcessName){
@@ -578,4 +632,46 @@ void Process::CreateProcessOnThread(char *ProcessName) {
 	pthread_create(&_TThread, NULL, ExecProcessLoopThread, (void *)ProcessName);
 #endif
 }
+
+#if WINDOWS_SYS
+DWORD
+#elif POSIX_SYS
+unsigned long
+#endif
+	Process::GetProcessStatus(
+#if	WINDOWS_SYS 
+	HANDLE
+#elif POSIX_SYS
+
+#endif
+	ProcessHandle) {
+#if WINDOWS_SYS
+	WindowsProcess 
+#elif POSIX_SYS
+	POSIXProcess
+#endif
+		_TProcess;
+	return _TProcess.GetProcessStatus(ProcessHandle);
+}
+
+void Process::TerminateProcess(
+#if WINDOWS_SYS
+	HANDLE
+#elif POSIX_SYS
+
+#endif
+	ProcessHandle) {
+#if WINDOWS_SYS
+	WindowsProcess 
+#elif POSIX_SYS
+	POSIXProcess
+#endif
+		_TProcess;
+	_TProcess.TerminateProcess(ProcessHandle);
+}
+
+HANDLE Process::FindProcessByPID(DWORD ProcessPID) {
+	return FindHandleGetOneProcess(ProcessPID);
+}
+
 #pragma endregion Process Module

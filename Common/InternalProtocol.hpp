@@ -25,6 +25,10 @@
 #ifndef _InternalProtocol_hpp_
 #define _InternalProtocol_hpp_
 
+/************************************************************************/
+/* Type String.                                                         */
+/************************************************************************/
+
 // CVES -> Any(CVEC, CVEO)
 #define STR_I_PTYPE "PType"
 

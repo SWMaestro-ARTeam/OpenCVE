@@ -7,6 +7,7 @@
 QT       += core
 
 QT       -= gui
+QMAKE_CXXFLAGS += -std=c++0x -fpermissive
 
 TARGET = CVEC
 CONFIG   += console
