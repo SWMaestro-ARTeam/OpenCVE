@@ -99,6 +99,7 @@
     <ClInclude Include="..\Common\Telepathy.hpp" />
     <ClInclude Include="..\Common\Time.hpp" />
     <ClInclude Include="BlobLabeling.hpp" />
+    <ClInclude Include="CheckInChessboard.h" />
     <ClInclude Include="ChessGame.hpp" />
     <ClInclude Include="ChessRecognition.hpp" />
     <ClInclude Include="ChessLineSearchAlg.hpp" />
@@ -116,6 +117,7 @@
     <ClCompile Include="..\Common\Telepathy.cpp" />
     <ClCompile Include="..\Common\Time.cpp" />
     <ClCompile Include="BlobLabeling.cpp" />
+    <ClCompile Include="CheckInChessboard.cpp" />
     <ClCompile Include="ChessGame.cpp" />
     <ClCompile Include="ChessRecognition.cpp" />
     <ClCompile Include="ChessLineSearchAlg.cpp" />

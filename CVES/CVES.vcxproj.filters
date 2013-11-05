@@ -46,6 +46,9 @@
     <ClCompile Include="..\Common\Telepathy.cpp">
       <Filter>Common\Telepathy\Source</Filter>
     </ClCompile>
+    <ClCompile Include="CheckInChessboard.cpp">
+      <Filter>CVES_System\Recognitions\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BlobLabeling.hpp">
@@ -107,6 +110,9 @@
     </ClInclude>
     <ClInclude Include="..\Common\Telepathy.hpp">
       <Filter>Common\Telepathy\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckInChessboard.h">
+      <Filter>CVES_System\Recognitions\Header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
