@@ -551,7 +551,7 @@ void EngineS::imgproc_mode(){
 
 		// mode 1에서 2초 이상 지났을 경우 다음 모드로 진행
 		if (time(NULL) - _tempsec > 2) {
-			//_ImageProcessMode++;
+			_ImageProcessMode++;
 			_RGB = cvScalar(0, 255);
 		}
 
@@ -650,7 +650,7 @@ void EngineS::imgproc_mode(){
 						//_TelepathyServer->SendDataToOne(buf, );
 #ifdef DEBUG_MODE
 						// uci에 맞춰 return하는 부분 현재 printf로 출력
-						//printf("%s\n", buf);
+						printf("%s\n", buf);
 						_ChessGame.Show_chessImage();
 #endif
 					}

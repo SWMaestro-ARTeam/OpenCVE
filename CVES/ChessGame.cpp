@@ -151,6 +151,12 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 					_V_SWAP(_Board[_TMove[0].x][_TMove[0].y], _Board[_TMove[1].x][_TMove[1].y]);
 					MakeUCI(_TMove[1], _TMove[0], &temp_move);
 				}
+				else {
+					//자신의 턴이 아닐때 체스말을 움직임.
+					strcpy(temp_move.movement, "Invalid");
+					// 턴을 안옮기기 위해서 반전시킴
+					_Turn = !_Turn;
+				}
 			}
 			else if (_Turn == BLACK_TURN) {
 				//검은색 차례일때
@@ -165,6 +171,12 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 					_Board[_TMove[0].x][_TMove[0].y] = 0;
 					_V_SWAP(_Board[_TMove[0].x][_TMove[0].y], _Board[_TMove[1].x][_TMove[1].y]);
 					MakeUCI(_TMove[1], _TMove[0], &temp_move);
+				}
+				else {
+					// 자신의 턴이 아닐때 체스말을 움직임.
+					strcpy(temp_move.movement, "Invalid");
+					// 턴을 안옮기기 위해서 반전시킴
+					_Turn = !_Turn;
 				}
 			}
 
