@@ -228,9 +228,9 @@ void EngineS::Stop_Server() {
 	_TelepathyServer->TServerReceivedCallback = NULL;
 }
 
-Telepathy::Server *EngineS::Get_Telepathy_Server() {
-	return _TelepathyServer;
-}
+//Telepathy::Server *EngineS::Get_Telepathy_Server() {
+//	return _TelepathyServer;
+//}
 
 void EngineS::EngineS_Start() {
 	// 1. Engine이 Start 되면, 우선 Server 기동부터 한다.
@@ -560,7 +560,7 @@ void *
 				case VALUE_I_IMWHITE :
 					// Server에 Socket 중, White에 Naming을 할 Socket이 필요.
 					// 어떤 Socket인지 검색하여 찾아 Naming 한다.
-					for_IterToEnd(list, ClientsList, _TEngine_S->Get_Telepathy_Server()->ClientList) {
+					for_IterToEnd(list, ClientsList, _TEngine_S->_TelepathyServer->ClientList) {
 						if (_TVal->ClientSocket == _TServerGetInformation->AnySocket) {
 							_TVal->ClientName = "White";
 						}

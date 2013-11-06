@@ -46,14 +46,10 @@
     <ClCompile Include="..\Common\Telepathy.cpp">
       <Filter>Common\Telepathy\Source</Filter>
     </ClCompile>
-<<<<<<< HEAD
     <ClCompile Include="..\Common\StringTools.cpp">
       <Filter>Common\StringTools\Source</Filter>
-=======
-    <ClCompile Include="CheckInChessboard.cpp">
-      <Filter>CVES_System\Recognitions\Source</Filter>
->>>>>>> origin/CVES_ChessRecognition_Extended
     </ClCompile>
+    <ClCompile Include="CheckInChessboard.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BlobLabeling.hpp">
@@ -116,14 +112,10 @@
     <ClInclude Include="..\Common\Telepathy.hpp">
       <Filter>Common\Telepathy\Header</Filter>
     </ClInclude>
-<<<<<<< HEAD
     <ClInclude Include="..\Common\StringTools.hpp">
       <Filter>Common\StringTools\Header</Filter>
-=======
-    <ClInclude Include="CheckInChessboard.h">
-      <Filter>CVES_System\Recognitions\Header</Filter>
->>>>>>> origin/CVES_ChessRecognition_Extended
     </ClInclude>
+    <ClInclude Include="CheckInChessboard.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Common">

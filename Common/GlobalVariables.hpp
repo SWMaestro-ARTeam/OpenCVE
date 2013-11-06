@@ -52,12 +52,12 @@ typedef struct _CommandString {
 	}
 
 	_CommandString(list<string> *_UCIStringList) {
-		if (IsInitialize == true) Release();
+		//if (IsInitialize == true) Release();
 		UCIStringInitialize(_UCIStringList);
 	}
 
 	_CommandString(list<char *> *_UCICharArrayList) {
-		if (IsInitialize == true) Release();
+		//if (IsInitialize == true) Release();
 		UCICharArrayInitialize(_UCICharArrayList);
 	}
 

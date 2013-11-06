@@ -23,29 +23,42 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef CELESTIALS_H
-#define CELESTIALS_H
+#ifndef _APPLICATIONSMAIN_H_
+#define _APPLICATIONSMAIN_H_
+
+#include "SystemDependency.hpp"
 
 #include "EngineS.hpp"
+#include "EngineC.hpp"
 
-#include <QMainWindow>
+#include "Celestials.h"
+#if MINGW_USING
+#include <QApplication>
+#include <QtGui>
+#include <QThread>
+#endif
 
-namespace Ui {
-	class Celestials;
-}
+Celestials *G_Celestials;
 
-class Celestials : public QMainWindow
-{
+class ServerInitThread : public QThread {
 	Q_OBJECT
-
 private:
-	Ui::Celestials *ui;
-
+protected:
+	void run();
 public:
-	explicit Celestials(QWidget *parent = 0);
-	~Celestials();
-
-	EngineS *_EngineS;
+	ServerInitThread();
 };
 
-#endif // CELESTIALS_H
+class ApplicationsMain {
+private:
+	ServerInitThread _ServerInitThread;
+
+public:
+	ApplicationsMain();
+
+	int GoCVEC();
+	int GoCVES(int argc, char *argv[]);
+	int GoCVEO();
+};
+
+#endif // _APPLICATIONSMAIN_H_

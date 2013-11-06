@@ -100,7 +100,7 @@
     <ClInclude Include="..\Common\Telepathy.hpp" />
     <ClInclude Include="..\Common\Time.hpp" />
     <ClInclude Include="BlobLabeling.hpp" />
-    <ClInclude Include="CheckInChessboard.h" />
+    <ClInclude Include="CheckInChessboard.hpp" />
     <ClInclude Include="ChessGame.hpp" />
     <ClInclude Include="ChessRecognition.hpp" />
     <ClInclude Include="ChessLineSearchAlg.hpp" />

@@ -44,6 +44,8 @@
 #include "Telepathy.hpp"
 // Time Module
 #include "Time.hpp"
+// String Tools
+#include "StringTools.hpp"
 
 // 손 인식
 #include "HandRecognition.hpp"
@@ -54,9 +56,7 @@
 // Chess Game을 위한 좌표
 #include "ChessGame.hpp"
 // Chessboard 면적 계산 및 체스보드 인접 체크
-#include "CheckInChessboard.h"
-
-#include "StringTools.hpp"
+#include "CheckInChessboard.hpp"
 
 #if WINDOWS_SYS
 // It's for windows dependent Functions.
@@ -120,6 +120,9 @@ private:
 	void Engine_Initializing();
 	void Engine_DeInitializing();
 
+	bool Start_Server();
+	void Stop_Server();
+
 	void Set_ClientData(SOCKET Socket, int Type);
 	void Process_Info(CommandString *IPCS, SOCKET Socket);
 	/*void Process_Info_Go(CommandString *IPCS);
@@ -171,10 +174,7 @@ public:
 
 	queue<ServerGetInformation *> *CommandQueue;
 
-	bool Start_Server();
-	void Stop_Server();
-
-	Telepathy::Server *Get_Telepathy_Server();
+	/*Telepathy::Server *Get_Telepathy_Server();*/
 
 	void EngineS_Start();
 };

@@ -23,29 +23,68 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef CELESTIALS_H
-#define CELESTIALS_H
+#include "ApplicationsMain.h"
 
-#include "EngineS.hpp"
 
-#include <QMainWindow>
-
-namespace Ui {
-	class Celestials;
+ServerInitThread::ServerInitThread() {
 }
 
-class Celestials : public QMainWindow
-{
-	Q_OBJECT
+void ServerInitThread::run() {
+	//Celestials w;
+	// 1. CVES Engine 생성.
+	//EngineS *_EngineS = new EngineS();
+	//G_Celestials._EngineS = _EngineS;
+	// CVES View 보여주기.
+	G_Celestials->show();
 
-private:
-	Ui::Celestials *ui;
+	// 2. Engine Enable.
+	G_Celestials->_EngineS->EngineEnable = true;
+	// 3. Engine Start.
+	G_Celestials->_EngineS->EngineS_Start();
+	delete G_Celestials->_EngineS;
+}
 
-public:
-	explicit Celestials(QWidget *parent = 0);
-	~Celestials();
+ApplicationsMain::ApplicationsMain() {
+	G_Celestials = new Celestials();
+}
 
-	EngineS *_EngineS;
-};
+int ApplicationsMain::GoCVEC() {
+	int _TApplicationReturnValue = 0;
+	// 1. CVEC Engine 생성.
+	EngineC *_EngineC = new EngineC();
+	// 2. Engine Enable.
+	_EngineC->EngineEnable = true;
+	// 3. Engine Start.
+	_EngineC->EngineC_Start();
 
-#endif // CELESTIALS_H
+	// 4. Delete pointer.
+	delete _EngineC;
+	return _TApplicationReturnValue;
+}
+
+int ApplicationsMain::GoCVES(int argc, char *argv[]) {
+	int _TApplicationReturnValue = 0;
+	// 1. CVES Engine 생성.
+	EngineS *_EngineS = new EngineS();
+	G_Celestials->_EngineS = _EngineS;
+	QApplication a(argc, argv);
+
+	_ServerInitThread.start();
+
+	// 2. Engine Enable.
+	//_Celestials._EngineS->EngineEnable = true;
+	// 3. Engine Start.
+	//w._EngineS->EngineS_Start();
+	_TApplicationReturnValue = a.exec();
+
+	// 4. Delete pointer.
+//	delete _EngineS;
+	return _TApplicationReturnValue;
+}
+
+int ApplicationsMain::GoCVEO() {
+	int _TApplicationReturnValue = 0;
+	// 아직 미구현.
+
+	return _TApplicationReturnValue;
+}

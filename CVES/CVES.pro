@@ -7,11 +7,18 @@
 QT       += core
 
 QT       -= gui
+
+QMAKE_CXXFLAGS -= -fno-keep-inline-dllexport
 QMAKE_CXXFLAGS += -std=c++0x -fpermissive
+QMAKE_LFLAGS += -static -static-libgcc
+#QMAKE_LFLAGS += -static -static-libgcc -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
 
 TARGET = CVES
 CONFIG   += console
 CONFIG   -= app_bundle
+
+#CONFIG	+= qt warn_on release static staticlib
+CONFIG	+= static staticlib
 
 TEMPLATE = app
 
@@ -29,7 +36,8 @@ SOURCES += main.cpp \
     ../Common/Debug.cpp \
     ../Common/CodeConverter.cpp \
     ChessLineSearchAlg.cpp \
-    ../Common/StringTools.cpp
+    ../Common/StringTools.cpp \
+    CheckInChessboard.cpp
 
 HEADERS += \
     HandRecognition.hpp \
@@ -49,7 +57,8 @@ HEADERS += \
     ../Common/Common.hpp \
     CVESDependent.hpp \
     ChessLineSearchAlg.hpp \
-    ../Common/StringTools.hpp
+    ../Common/StringTools.hpp \
+    CheckInChessboard.hpp
 
 #QT_PATH = ${QTDIR}
 #PROJECT_PATH = ${INVI_PROJECT_ROOT}

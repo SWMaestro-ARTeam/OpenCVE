@@ -1,12 +1,12 @@
-//////////////////////////////////////////////////////////////////////////////////////////////
+ï»¿//////////////////////////////////////////////////////////////////////////////////////////////
 //	The OpenCVE Project.
 //
 //	The MIT License (MIT)
-//	Copyright ? 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
+//	Copyright Â© 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
 //	{invi.dh.kim, munsp9103, aiaipming} at gmail.com
 //
 //	Permission is hereby granted, free of charge, to any person obtaining a copy of
-//	this software and associated documentation files (the ¡°Software¡±), to deal
+//	this software and associated documentation files (the â€œSoftwareâ€), to deal
 //	in the Software without restriction, including without limitation the rights to
 //	use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
 //	the Software, and to permit persons to whom the Software is furnished to do so,
@@ -15,56 +15,55 @@
 //	The above copyright notice and this permission notice shall be included in all
 //	copies or substantial portions of the Software.
 //
-//	THE SOFTWARE IS PROVIDED ¡°AS IS¡±, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+//	THE SOFTWARE IS PROVIDED â€œAS ISâ€, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 //	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 //	PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 //	LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 //	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
-#include "CheckInChessboard.h"
 
-CheckInChessboard::CheckInChessboard(void)
-{
+#include "CheckInChessboard.hpp"
+
+CheckInChessboard::CheckInChessboard() {
 }
 
-CheckInChessboard::~CheckInChessboard(void)
-{
+CheckInChessboard::~CheckInChessboard() {
 }
 
 float CheckInChessboard::area_tri(CvPoint p, CvPoint q, CvPoint r) {
-	// 2Â÷¿ø ÁÂÇ¥ p,q,r·Î »ı¼ºµÇ´Â »ï°¢ÇüÀÇ ³ĞÀÌ¸¦ ±¸ÇÔ.
+	// 2ì°¨ì› ì¢Œí‘œ p,q,rë¡œ ìƒì„±ë˜ëŠ” ì‚¼ê°í˜•ì˜ ë„“ì´ë¥¼ êµ¬í•¨.
 	return (float)abs(((p.x * q.y) + (q.x * r.y) + (r.x * p.y)) - ((p.y * q.x) + (q.y * r.x) + (r.y * p.x))) / 2.0;
 }
 
-bool CheckInChessboard::Check_InChessboard(IplImage *img, vector<ChessPoint> point){
-	// Chess_point¸¦ ÅëÇÏ¿© binary imageÀÇ ÇÈ¼¿ÀÌ chess board ³»ºÎ¿¡ Á¸ÀçÇÏ´ÂÁö¸¦ È®ÀÎ.
-	// 1) Ã¼½ºÆÇ »ç°¢ÇüÀÇ Å©±â¸¦ ¿¬»êÇÏ¿© _TTriangleArea¿¡ ÀúÀå
-	// 2) Â÷¿µ»ó °á°ú DetectionµÈ ÇÈ¼¿ÀÇ ÁÂÇ¥¿Í Ã¼½ºÆÇ »ç°¢ÇüÀÇ ³¡Á¡µé·Î ÀÌ·ç¾îÁø »ï°¢ÇüÀÇ ³ĞÀÌ¸¦ °¢°¢ °è»ê
-	// 3) 2¹ø °úÁ¤¿¡¼­ ¿¬»êµÈ »ï°¢Çü ³×°³ÀÇ ÇÕÀÌ Ã¼½ºÆÇ »ç°¢ÇüÀÇ Å©±â¿Í Â÷ÀÌ°¡ ÀûÀ» °æ¿ì ÇÈ¼¿ÀÇ ÁÂÇ¥°¡ »ç°¢Çü ³»ºÎ¿¡ ÀÖÀ½À¸·Î ÆÇÁ¤
-	// 4) »ç°¢Çü ³»ºÎÀÇ ÇÈ¼¿ ÁÂÇ¥°¡ ÀÖ´Ù´Â ÆÇÁ¤ÀÌ µÇ¸é return true;
+bool CheckInChessboard::Check_InChessboard(IplImage *img, vector<ChessPoint> point) {
+	// Chess_pointë¥¼ í†µí•˜ì—¬ binary imageì˜ í”½ì…€ì´ chess board ë‚´ë¶€ì— ì¡´ì¬í•˜ëŠ”ì§€ë¥¼ í™•ì¸.
+	// 1) ì²´ìŠ¤íŒ ì‚¬ê°í˜•ì˜ í¬ê¸°ë¥¼ ì—°ì‚°í•˜ì—¬ _TTriangleAreaì— ì €ì¥
+	// 2) ì°¨ì˜ìƒ ê²°ê³¼ Detectionëœ í”½ì…€ì˜ ì¢Œí‘œì™€ ì²´ìŠ¤íŒ ì‚¬ê°í˜•ì˜ ëì ë“¤ë¡œ ì´ë£¨ì–´ì§„ ì‚¼ê°í˜•ì˜ ë„“ì´ë¥¼ ê°ê° ê³„ì‚°
+	// 3) 2ë²ˆ ê³¼ì •ì—ì„œ ì—°ì‚°ëœ ì‚¼ê°í˜• ë„¤ê°œì˜ í•©ì´ ì²´ìŠ¤íŒ ì‚¬ê°í˜•ì˜ í¬ê¸°ì™€ ì°¨ì´ê°€ ì ì„ ê²½ìš° í”½ì…€ì˜ ì¢Œí‘œê°€ ì‚¬ê°í˜• ë‚´ë¶€ì— ìˆìŒìœ¼ë¡œ íŒì •
+	// 4) ì‚¬ê°í˜• ë‚´ë¶€ì˜ í”½ì…€ ì¢Œí‘œê°€ ìˆë‹¤ëŠ” íŒì •ì´ ë˜ë©´ return true;
 
-	CvPoint _T_LH, _T_LL, _T_RH, _T_RL; // ¿ŞÂÊ À§, ¿ŞÂÊ ¾Æ·¡, ¿À¸¥ÂÊ À§ ¿À¸¥ÂÊ ¾Æ·¡.
+	CvPoint _T_LH, _T_LL, _T_RH, _T_RL; // ì™¼ìª½ ìœ„, ì™¼ìª½ ì•„ë˜, ì˜¤ë¥¸ìª½ ìœ„ ì˜¤ë¥¸ìª½ ì•„ë˜.
 
-	// tArea : chessboard ÀüÃ¼ ³ĞÀÌ, ³ª¸ÓÁö : »ï°¢Çü ³ĞÀÌ.
+	// tArea : chessboard ì „ì²´ ë„“ì´, ë‚˜ë¨¸ì§€ : ì‚¼ê°í˜• ë„“ì´.
 	float _TTriangleArea, _TTriangle1Area, _TTriangle2Area, _TTriangle3Area, _TTriangle4Area;
 
-	// chessboardÀÇ ÄÚ³ÊÁ¡À» ±¸ÇÔ.
+	// chessboardì˜ ì½”ë„ˆì ì„ êµ¬í•¨.
 	_T_LH = point.at(0).Cordinate;
 	_T_RH = point.at(8).Cordinate;
 	_T_LL = point.at(72).Cordinate;
 	_T_RL = point.at(80).Cordinate;
 
-	// ÄÚ³ÊÁ¡À» ÀÌ¿ëÇÏ¿© chessboardÀÇ ³ĞÀÌ ¿¬»ê.
+	// ì½”ë„ˆì ì„ ì´ìš©í•˜ì—¬ chessboardì˜ ë„“ì´ ì—°ì‚°.
 	_TTriangleArea = area_tri(_T_LH, _T_LL, _T_RH) + area_tri(_T_RH, _T_RL, _T_LL);
 
-	// binary image¿¡ Á¸ÀçÇÏ´Â ¸ğµç ÇÈ¼¿À» ´ë»óÀ¸·Î °¢ ÄÚ³ÊÁ¡°ú ÀÌ·ç´Â »ï°¢ÇüÀÇ ³ĞÀÌ¸¦ ¿¬»ê.
+	// binary imageì— ì¡´ì¬í•˜ëŠ” ëª¨ë“  í”½ì…€ì„ ëŒ€ìƒìœ¼ë¡œ ê° ì½”ë„ˆì ê³¼ ì´ë£¨ëŠ” ì‚¼ê°í˜•ì˜ ë„“ì´ë¥¼ ì—°ì‚°.
 	for (register int i = 0; i < img->width; i++) {
 		for (register int j = 0; j < img->height; j++) {
 			unsigned char pixel_value = (unsigned char)img->imageData[i + j * img->widthStep];
 
 			if (pixel_value == 255) {
-				// DetectionµÈ ÀÓÀÇÀÇ ÇÈ¼¿ ÁÂÇ¥¿Í Ã¼½ºÆÇÀÇ ÄÚ³ÊÁ¡À¸·Î ÀÌ·ç¾îÁø »ï°¢Çü ³×°³ÀÇ ³ĞÀÌ¸¦ ¿¬»ê 
+				// Detectionëœ ì„ì˜ì˜ í”½ì…€ ì¢Œí‘œì™€ ì²´ìŠ¤íŒì˜ ì½”ë„ˆì ìœ¼ë¡œ ì´ë£¨ì–´ì§„ ì‚¼ê°í˜• ë„¤ê°œì˜ ë„“ì´ë¥¼ ì—°ì‚°.
 				_TTriangle1Area = area_tri(cvPoint(i,j), _T_LH, _T_RH);
 				_TTriangle2Area = area_tri(cvPoint(i,j), _T_RH, _T_RL);
 				_TTriangle3Area = area_tri(cvPoint(i,j), _T_RL, _T_LL);
@@ -72,19 +71,19 @@ bool CheckInChessboard::Check_InChessboard(IplImage *img, vector<ChessPoint> poi
 
 				float totalArea = _TTriangle1Area + _TTriangle2Area + _TTriangle3Area + _TTriangle4Area;
 
-				// °¢ »ï°¢ÇüÀÇ ÇÕÀÌ chessboardÀÇ ³ĞÀÌ¿Í °°´Ù¸é return true; => ÇÈ¼¿ÀÌ chessboard ³»ºÎ¿¡ Á¸ÀçÇÔ.
+				// ê° ì‚¼ê°í˜•ì˜ í•©ì´ chessboardì˜ ë„“ì´ì™€ ê°™ë‹¤ë©´ return true; => í”½ì…€ì´ chessboard ë‚´ë¶€ì— ì¡´ì¬í•¨.
 				if (fabs(_TTriangleArea - totalArea) < 2)
 					return true;
 			}
 		}
 	}
 
-	// binary imageÀÇ ÇÈ¼¿ÀÌ chessboard ³»ºÎ¿¡ Á¸ÀçÇÏÁö ¾ÊÀ½
+	// binary imageì˜ í”½ì…€ì´ chessboard ë‚´ë¶€ì— ì¡´ì¬í•˜ì§€ ì•ŠìŒ.
 	return false;
 }
 
-bool CheckInChessboard::Check_imgZero(IplImage *img){
-	// binary image¿¡ ÇÈ¼¿°ªÀÌ ¸ğµå 0ÀÎÁö¸¦ È®ÀÎ
+bool CheckInChessboard::Check_imgZero(IplImage *img) {
+	// binary imageì— í”½ì…€ê°’ì´ ëª¨ë“œ 0ì¸ì§€ë¥¼ í™•ì¸
 	unsigned char _TPixelValue;
 
 	for (register int i = 0; i < img->width; i++)
@@ -98,9 +97,9 @@ bool CheckInChessboard::Check_imgZero(IplImage *img){
 		return true;
 }
 
-CvPoint CheckInChessboard::Get_Chessidx(CvPoint point, vector<ChessPoint> cross_point){
-	// chessboardÀÇ ±³Á¡ÀÇ index¸¦ ºÎ¿©.
-	// left-topÀÌ ¿øÁ¡ÀÎ ÁÂÇ¥°è·Î index¸¦ ºÎ¿©
+CvPoint CheckInChessboard::Get_Chessidx(CvPoint point, vector<ChessPoint> cross_point) {
+	// chessboardì˜ êµì ì˜ indexë¥¼ ë¶€ì—¬.
+	// left-topì´ ì›ì ì¸ ì¢Œí‘œê³„ë¡œ indexë¥¼ ë¶€ì—¬
 	for (register int i = 0; i < cross_point.size() - 10; i++) {
 		if (cross_point.at(i).Cordinate.x <= point.x && cross_point.at(i).Cordinate.y <= point.y) {
 			if (cross_point.at(i + 10).Cordinate.x > point.x && cross_point.at(i + 10).Cordinate.y > point.y)
@@ -111,10 +110,10 @@ CvPoint CheckInChessboard::Get_Chessidx(CvPoint point, vector<ChessPoint> cross_
 }
 
 CvPoint CheckInChessboard::Get_ChessboxPos(int width, int height, vector<ChessPoint> cross_point) {
-	// width, height°¡ °¡¸®Å°´Â ÇÈ¼¿ÀÌ ¾î´À Ã¼½ºº¸µå ÀÎµ¦½º¸¦ °¡Áö´ÂÁö¸¦ °è»êÇÏ¿© ¹İÈ¯.
-	// Â÷¿µ»ó °á°ú·Î ÀÌÁøÈ­µÈ ÀÌ¹ÌÁöÀÇ true °ªÀ» °¡Áö´Â ÇÈ¼¿ÀÇ ÁÂÇ¥·Î Ã¼½ºÆÇÀÇ ÀÎµ¦½º ¹İÈ¯.
-	for (int i = 0; i < 8; i++) {
-		for (int j = 0; j < 8; j++) {
+	// width, heightê°€ ê°€ë¦¬í‚¤ëŠ” í”½ì…€ì´ ì–´ëŠ ì²´ìŠ¤ë³´ë“œ ì¸ë±ìŠ¤ë¥¼ ê°€ì§€ëŠ”ì§€ë¥¼ ê³„ì‚°í•˜ì—¬ ë°˜í™˜.
+	// ì°¨ì˜ìƒ ê²°ê³¼ë¡œ ì´ì§„í™”ëœ ì´ë¯¸ì§€ì˜ true ê°’ì„ ê°€ì§€ëŠ” í”½ì…€ì˜ ì¢Œí‘œë¡œ ì²´ìŠ¤íŒì˜ ì¸ë±ìŠ¤ ë°˜í™˜.
+	for (register int i = 0; i < 8; i++) {
+		for (register int j = 0; j < 8; j++) {
 			CvPoint top_left = cross_point.at((i * 9) + j).Cordinate;
 			CvPoint bot_right = cross_point.at((i * 9) + j + 10).Cordinate;
 
@@ -128,16 +127,16 @@ CvPoint CheckInChessboard::Get_ChessboxPos(int width, int height, vector<ChessPo
 	return cvPoint(-1,-1);
 }
 
-void CheckInChessboard::Calculate_Movement(IplImage *bin, vector<ChessPoint> cross_point, CvPoint *out1, CvPoint *out2){
-	// Â÷¿µ»óÀÇ °á°ú ÀÌ¹ÌÁö¸¦ ÀÌ¿ëÇÏ¿© Ã¼½ºº¸µåÀÇ score¸¦ ºÎ¿©.
-	// score / ¸éÀû À» ÀÌ¿ëÇÏ¿© °¡Àå ¸¹ÀÌ º¯ÇÑ µÎ ÁÂÇ¥¸¦ ¹İÈ¯.
-	float score_box[8][8]; // ¸éÀûºñÀ² ÀúÀå ¹è¿­.
-	float chess_area[8][8]; // Ã¼½º ¿µ¿ª ÀúÀå ¹è¿­.
-	const float score_threshold = 0.1; // ¸éÀû ºñÀ² threshold.
+void CheckInChessboard::Calculate_Movement(IplImage *bin, vector<ChessPoint> cross_point, CvPoint *out1, CvPoint *out2) {
+	// ì°¨ì˜ìƒì˜ ê²°ê³¼ ì´ë¯¸ì§€ë¥¼ ì´ìš©í•˜ì—¬ ì²´ìŠ¤ë³´ë“œì˜ scoreë¥¼ ë¶€ì—¬.
+	// score / ë©´ì  ì„ ì´ìš©í•˜ì—¬ ê°€ì¥ ë§ì´ ë³€í•œ ë‘ ì¢Œí‘œë¥¼ ë°˜í™˜.
+	float score_box[8][8]; // ë©´ì ë¹„ìœ¨ ì €ì¥ ë°°ì—´.
+	float chess_area[8][8]; // ì²´ìŠ¤ ì˜ì—­ ì €ì¥ ë°°ì—´.
+	const float score_threshold = 0.1; // ë©´ì  ë¹„ìœ¨ threshold.
 
-	// °¢ Ã¼½º ¿µ¿ª ¸éÀû °è»êºÎ
-	for(int i = 0; i < 8; i++){
-		for(int j = 0; j < 8; j++){
+	// ê° ì²´ìŠ¤ ì˜ì—­ ë©´ì  ê³„ì‚°ë¶€
+	for (register int i = 0; i < 8; i++) {
+		for (register int j = 0; j < 8; j++) {
 			int cross_idx = i + (j * 9);
 			CvPoint Head_point = cross_point.at(cross_idx).Cordinate;
 			CvPoint Head_right = cross_point.at(cross_idx + 1).Cordinate;
@@ -148,13 +147,13 @@ void CheckInChessboard::Calculate_Movement(IplImage *bin, vector<ChessPoint> cro
 		}
 	}
 
-	// Â÷¿µ»ó ¸éÀû °è»êºÎ.
-	for (int i = 0; i < bin->width; i++){
-		for (int j = 0; j < bin->height; j++){
+	// ì°¨ì˜ìƒ ë©´ì  ê³„ì‚°ë¶€.
+	for (register int i = 0; i < bin->width; i++) {
+		for (register int j = 0; j < bin->height; j++) {
 			unsigned char pixel_value = bin->imageData[i + (j * bin->widthStep)];
 
-			// ¾î´À ÁÂÇ¥¿¡ À§Ä¡ÇÏ´ÂÁö È®ÀÎ.
-			if (pixel_value != 0){
+			// ì–´ëŠ ì¢Œí‘œì— ìœ„ì¹˜í•˜ëŠ”ì§€ í™•ì¸.
+			if (pixel_value != 0) {
 				CvPoint chessbox_pos = Get_ChessboxPos(i, j, cross_point);
 				if (chessbox_pos.x != -1 || chessbox_pos.y != -1)
 					score_box[chessbox_pos.x][chessbox_pos.y]++;
@@ -162,15 +161,15 @@ void CheckInChessboard::Calculate_Movement(IplImage *bin, vector<ChessPoint> cro
 		}
 	}
 
-	// ½ºÄÚ¾î¸¦ ¸éÀûÀ¸·Î ³ª´²Áà¼­ ºñÀ²À» ±¸ÇÔ.
-	// °¡Àå ºñÀ²ÀÌ Å« µÎ ÁÂÇ¥¸¦ ¸®ÅÏ.
+	// ìŠ¤ì½”ì–´ë¥¼ ë©´ì ìœ¼ë¡œ ë‚˜ëˆ ì¤˜ì„œ ë¹„ìœ¨ì„ êµ¬í•¨.
+	// ê°€ì¥ ë¹„ìœ¨ì´ í° ë‘ ì¢Œí‘œë¥¼ ë¦¬í„´.
 	float temp_max1, temp_max2;
 	CvPoint p_max1, p_max2;
 
 	temp_max1 = temp_max2 = -1.0;
 	p_max1 = p_max2 = cvPoint(-1, -1);
-	for (int i = 0 ; i < 8; i++) {
-		for (int j = 0; j < 8; j++) {
+	for (register int i = 0 ; i < 8; i++) {
+		for (register int j = 0; j < 8; j++) {
 			score_box[i][j] /= chess_area[i][j];
 
 			if (score_box[i][j] >= score_threshold) {

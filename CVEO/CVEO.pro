@@ -7,11 +7,18 @@
 QT       += core
 
 QT       -= gui
+
+QMAKE_CXXFLAGS -= -fno-keep-inline-dllexport
 QMAKE_CXXFLAGS += -std=c++0x -fpermissive
+QMAKE_LFLAGS += -static -static-libgcc
+#QMAKE_LFLAGS += -static -static-libgcc -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
 
 TARGET = CVEO
 CONFIG   += console
 CONFIG   -= app_bundle
+
+#CONFIG	+= qt warn_on release static staticlib
+CONFIG	+= static staticlib
 
 TEMPLATE = app
 

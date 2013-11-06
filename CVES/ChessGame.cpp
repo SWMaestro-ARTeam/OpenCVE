@@ -85,32 +85,6 @@ void ChessGame::castling_move(CvPoint move_input[]){
 	move_format temp_move;
 	int _TValue1, _TValue2, _TValue3, _TValue4;
 
-<<<<<<< HEAD
-			//// 두개의 말(King, Rook) 위치를 옮겨준다
-
-			//_V_SWAP(_Board[_TMove[0].x][_TMove[0].y], _Board[_TMove[1].x][_TMove[1].y]);
-			//_V_SWAP(_Board[_TMove[2].x][_TMove[2].y], _Board[_TMove[3].x][_TMove[3].y]);
-
-			//// 이동 전과 이동 후의 위치 순서가 일정하기 않기 때문에 옮긴 후 두개의 위치 중 각 플레이어 턴에 해당하는
-			//// King ~ Pawn 까지의 범위가 존재 한다면 해당 위치를 반환하여 각각 반환된 위치를 swap한다
-
-			//if(_Turn == WHITE_TURN){
-			//	_V_SWAP((W_King <=_Board[_TMove[0].x][_TMove[0].y] && _Board[_TMove[0].x][_TMove[0].y] <= W_Pawn) ? _Board[_TMove[0].x][_TMove[0].y] : _Board[_TMove[1].x][_TMove[1].y],
-			//		(W_King <=_Board[_TMove[2].x][_TMove[2].y] && _Board[_TMove[2].x][_TMove[2].y] <= W_Pawn) ? _Board[_TMove[2].x][_TMove[2].y] : _Board[_TMove[3].x][_TMove[3].y] ? _Board[_TMove[2].x][_TMove[2].y] : _Board[_TMove[3].x][_TMove[3].y]);
-			//}
-			//else if(_Turn == BLACK_TURN){
-			//	_V_SWAP((B_King <=_Board[_TMove[0].x][_TMove[0].y] && _Board[_TMove[0].x][_TMove[0].y] <= B_Pawn) ? _Board[_TMove[0].x][_TMove[0].y] : _Board[_TMove[1].x][_TMove[1].y],
-			//		(B_King <=_Board[_TMove[2].x][_TMove[2].y] && _Board[_TMove[2].x][_TMove[2].y] <= B_Pawn) ? _Board[_TMove[2].x][_TMove[2].y] : _Board[_TMove[3].x][_TMove[3].y] ? _Board[_TMove[2].x][_TMove[2].y] : _Board[_TMove[3].x][_TMove[3].y]);
-			//}
-			
-			// UCI로 넘겨줄 표기는 알아서 ...
-			
-			break;
-		case ENPASSANT_MOVE:
-			// 앙파상.
-			for (register int i = 0; i < 3; i++)
-				_TMove[i] = input1[i];
-=======
 	CvPoint t_King, t_Rook;
 	vector<CvPoint> t_Ground;
 
@@ -156,7 +130,6 @@ void ChessGame::castling_move(CvPoint move_input[]){
 			else if(_Board[move_input[i].x][move_input[i].y] == Ground)
 				t_Ground.push_back(cvPoint(move_input[i].x, move_input[i].y));
 		}
->>>>>>> origin/CVES_ChessRecognition_Extended
 
 		if(t_King.y < t_Rook.y){
 			if(t_Ground[0].y < t_Ground[1].y){
@@ -276,41 +249,8 @@ void ChessGame::default_move(CvPoint move_input[]){
 
 	temp_move.turn_flag = false;
 
-<<<<<<< HEAD
-				if (1 <= _TValue1 && _TValue1 <= 6){
-					_Board[_TMove[1].x][_TMove[1].y] = 0;
-					_V_SWAP(_Board[_TMove[0].x][_TMove[0].y], _Board[_TMove[1].x][_TMove[1].y]);
-					MakeUCI(_TMove[0], _TMove[1], &temp_move);
-				}
-				else if (1 <= _TValue2 && _TValue2 <= 6){
-					_Board[_TMove[0].x][_TMove[0].y] = 0;
-					_V_SWAP(_Board[_TMove[0].x][_TMove[0].y], _Board[_TMove[1].x][_TMove[1].y]);
-					MakeUCI(_TMove[1], _TMove[0], &temp_move);
-				}
-				/*else {
-					char _TChar[32] = "";
-					temp_move.movement = _TChar;
-				}*/
-			}
-			else if (_Turn == BLACK_TURN) {
-				//검은색 차례일때
-				temp_move.turn_flag = BLACK_TURN;
-
-				if (7 <= _TValue1 && _TValue1 <= 12) {
-					_Board[_TMove[1].x][_TMove[1].y] = 0;
-					_V_SWAP(_Board[_TMove[0].x][_TMove[0].y], _Board[_TMove[1].x][_TMove[1].y]);
-					MakeUCI(_TMove[0], _TMove[1], &temp_move);
-				}
-				else if (7 <= _TValue2 && _TValue2 <= 12) {
-					_Board[_TMove[0].x][_TMove[0].y] = 0;
-					_V_SWAP(_Board[_TMove[0].x][_TMove[0].y], _Board[_TMove[1].x][_TMove[1].y]);
-					MakeUCI(_TMove[1], _TMove[0], &temp_move);
-				}
-			}
-=======
 	_TValue1 = _Board[move_input[0].x][move_input[0].y];
 	_TValue2 = _Board[move_input[1].x][move_input[1].y];
->>>>>>> origin/CVES_ChessRecognition_Extended
 
 	// 체스 무브 진행
 	if (_Turn == WHITE_TURN){
