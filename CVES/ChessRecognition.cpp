@@ -507,13 +507,13 @@ void ChessRecognition::Chess_recognition_process(IplImage *src, vector<ChessPoin
 
 	// 체스판의 경계를 구하여 in_line_point 변수들에 저장.
 	_CLSA->GetgraySidelinesPoint(src);
-	/*
+	
 	while (1) {
 		cvShowImage("findCrossPoint", src);
 		if (cvWaitKey(33))
 			break;
 	}
-	*/
+	
 	// 해당 라인에서 9곳의 체스판 경계를 찾지 못 하였으면,
 	// 탐색라인을 이동시켜 적절한 탐색라인을 찾는다.
 	// flag의 값에 따라 Linefindcount의 값을 변경한다.

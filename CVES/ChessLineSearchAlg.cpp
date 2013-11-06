@@ -126,10 +126,6 @@ void ChessLineSearchAlg::GetgraySidelinesPoint(IplImage *chess_image) {
 
 	// 이 함수 4개를 스레드로
 	WaitForMultipleObjects(4, _THandleArr, TRUE, INFINITE);
-	/*GetgraySidelines(chess_image, &line_x1, &line_point_x1, &in_line_point_x1, true);
-	GetgraySidelines(chess_image, &line_x2, &line_point_x2, &in_line_point_x2, true);
-	GetgraySidelines(chess_image, &line_y1, &line_point_y1, &in_line_point_y1, false);
-	GetgraySidelines(chess_image, &line_y2, &line_point_y2, &in_line_point_y2, false);*/
 
 	CloseHandle(_THandleArr[0]);
 	CloseHandle(_THandleArr[1]);
@@ -394,7 +390,7 @@ void ChessLineSearchAlg::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *
 	// 여기선 추가로 탐색되지 말아야할 라인을 걸러준다.
 	// 홀수면 오른쪽 짝수면 왼쪽으로 판단하여 계산해준다
 
-	for (register int i = 2; i < line->size() - 10; i++) {
+	for (register int i = 0; i < line->size() - 10; i++) {
 		
 		// jump_count 가 유효할 경우 탐색을 하지 않아도 될 영역으로 판단 하여 넘긴다
 		// 해당되는 jump_count를 건너 뛰며 홀수와 짝수로 판단하여 변수를 분리하였으므로 양쪽 탐색에 문제가 되지 않는다

@@ -99,7 +99,6 @@ void ChessGame::castling_move(CvPoint move_input[]){
 			else if(_Board[move_input[i].x][move_input[i].y] == Ground)
 				t_Ground.push_back(cvPoint(move_input[i].x, move_input[i].y));
 		}
-
 		if(t_King.y < t_Rook.y){
 			if(t_Ground[0].y < t_Ground[1].y){
 				_V_SWAP(_Board[t_Ground[0].x][t_Ground[0].y], _Board[t_Rook.x][t_Rook.y]);
@@ -260,11 +259,19 @@ void ChessGame::default_move(CvPoint move_input[]){
 		if (W_King <= _TValue1 && _TValue1 <= W_Pawn){
 			_Board[move_input[1].x][move_input[1].y] = Ground;
 			_V_SWAP(_Board[move_input[0].x][move_input[0].y], _Board[move_input[1].x][move_input[1].y]);
+			
+			if(_TValue1 == W_Pawn && move_input[1].x == 8)
+				 _Board[move_input[1].x][move_input[1].y] = W_Queen;
+			
 			MakeUCI(move_input[0], move_input[1], &temp_move);
 		}
 		else if (W_King <= _TValue2 && _TValue2 <= W_Pawn){
 			_Board[move_input[0].x][move_input[0].y] = Ground;
 			_V_SWAP(_Board[move_input[0].x][move_input[0].y], _Board[move_input[1].x][move_input[1].y]);
+			
+			if(_TValue1 == W_Pawn && move_input[0].x == 8)
+				_Board[move_input[0].x][move_input[0].y] = W_Queen;
+			
 			MakeUCI(move_input[1], move_input[0], &temp_move);
 		}
 	}
@@ -275,11 +282,19 @@ void ChessGame::default_move(CvPoint move_input[]){
 		if (B_King <= _TValue1 && _TValue1 <= B_Pawn) {
 			_Board[move_input[1].x][move_input[1].y] = Ground;
 			_V_SWAP(_Board[move_input[0].x][move_input[0].y], _Board[move_input[1].x][move_input[1].y]);
+
+			if(_TValue1 == B_Pawn && move_input[1].x == 8)
+				_Board[move_input[1].x][move_input[1].y] = B_Queen;
+
 			MakeUCI(move_input[0], move_input[1], &temp_move);
 		}
 		else if (B_King <= _TValue2 && _TValue2 <= B_Pawn) {
 			_Board[move_input[0].x][move_input[0].y] = Ground;
 			_V_SWAP(_Board[move_input[0].x][move_input[0].y], _Board[move_input[1].x][move_input[1].y]);
+
+			if(_TValue1 == B_Pawn && move_input[0].x == 8)
+				_Board[move_input[0].x][move_input[0].y] = B_Queen;
+
 			MakeUCI(move_input[1], move_input[0], &temp_move);
 		}
 	}
@@ -288,119 +303,6 @@ void ChessGame::default_move(CvPoint move_input[]){
 	strcpy(recent_move, temp_move.movement);
 	_chess_movement.push(temp_move);
 }
-
-// 	switch (MOVE_MODE) {
-// 		case CASTLING_MOVE:
-// 			// 캐슬링.
-// 
-// 			for (register int i = 0; i < 4; i++)
-// 				_TMove[i] = input1[i];
-// 
-// 			// 두개의 말(King, Rook) 위치를 옮겨준다
-// 
-// 			_V_SWAP(_Board[_TMove[0].x][_TMove[0].y], _Board[_TMove[1].x][_TMove[1].y]);
-// 			_V_SWAP(_Board[_TMove[2].x][_TMove[2].y], _Board[_TMove[3].x][_TMove[3].y]);
-// 
-// 			// 이동 전과 이동 후의 위치 순서가 일정하기 않기 때문에 옮긴 후 두개의 위치 중 각 플레이어 턴에 해당하는
-// 			// King ~ Pawn 까지의 범위가 존재 한다면 해당 위치를 반환하여 각각 반환된 위치를 swap한다
-// 			`
-// 			if(_Turn == WHITE_TURN){
-// 				_V_SWAP((W_King <=_Board[_TMove[0].x][_TMove[0].y] && _Board[_TMove[0].x][_TMove[0].y] <= W_Pawn) ? _Board[_TMove[0].x][_TMove[0].y] : _Board[_TMove[1].x][_TMove[1].y],
-// 					(W_King <=_Board[_TMove[2].x][_TMove[2].y] && _Board[_TMove[2].x][_TMove[2].y] <= W_Pawn) ? _Board[_TMove[2].x][_TMove[2].y] : _Board[_TMove[3].x][_TMove[3].y] ? _Board[_TMove[2].x][_TMove[2].y] : _Board[_TMove[3].x][_TMove[3].y]);
-// 			}
-// 			else if(_Turn == BLACK_TURN){
-// 				_V_SWAP((B_King <=_Board[_TMove[0].x][_TMove[0].y] && _Board[_TMove[0].x][_TMove[0].y] <= B_Pawn) ? _Board[_TMove[0].x][_TMove[0].y] : _Board[_TMove[1].x][_TMove[1].y],
-// 					(B_King <=_Board[_TMove[2].x][_TMove[2].y] && _Board[_TMove[2].x][_TMove[2].y] <= B_Pawn) ? _Board[_TMove[2].x][_TMove[2].y] : _Board[_TMove[3].x][_TMove[3].y] ? _Board[_TMove[2].x][_TMove[2].y] : _Board[_TMove[3].x][_TMove[3].y]);
-// 			}
-// 			
-// 			// UCI로 넘겨줄 표기는 알아서 ...
-// 			
-// 			break;
-// 		case ENPASSANT_MOVE:
-// 			// 앙파상.
-// 			for (register int i = 0; i < 3; i++)
-// 				_TMove[i] = input1[i];
-// 
-// 			// 앙파상 입력시에는 어떻게 입력이 되나? 
-// 			// 사라진 말을 CVES상에서 제거를 해주는 건가? 아니면 제거된 것이 input으로 받아 온 것을 단순히 UCI로 쏴주는 것인가?
-// 			// UCI에서는 앙파상으로 말이 사라는 것을 어떻게 표현하나?
-// 
-// 
-// 			// ????
-// 
-// // 			int *_TValue[3];
-// // 			_TValue[0] = &_Board[_TMove[0].x][_TMove[0].y];
-// // 			_TValue[1] = &_Board[_TMove[1].x][_TMove[1].y];
-// // 			_TValue[2] = &_Board[_TMove[2].x][_TMove[2].y];
-// // 
-// // 			int *white, *zero_pic, *black;
-// // 
-// // 			for (register int i = 0; i < 3; i++) {
-// // 				if (*_TValue[i] == 0)
-// // 					zero_pic = _TValue[0];
-// // 				else if (*_TValue[i] == W_Pawn)
-// // 					white = _TValue[i];
-// // 				else if (*_TValue[i] == B_Pawn)
-// // 					black = _TValue[i];
-// // 			}
-// // 
-// // 			if (_Turn == WHITE_TURN) {
-// // 			
-// // 			}
-// // 			else if (_Turn == BLACK_TURN) {
-// // 
-// // 			}
-// 			break;
-// 		default :
-// 			// 기본 무브
-// 			for (int i = 0; i < 2; i++)
-// 				_TMove[i] = input1[i];
-// 
-// 			// 해당 위치의 말의 값을 저장
-// 
-// 			int _TValue1, _TValue2;
-// 
-// 			_TValue1 = _Board[_TMove[0].x][_TMove[0].y];
-// 			_TValue2 = _Board[_TMove[1].x][_TMove[1].y];
-// 
-// 			// 체스 무브 진행
-// 			if (_Turn == WHITE_TURN){
-// 				// 백색 차례일때
-// 				temp_move.turn_flag = WHITE_TURN;
-// 
-// 				if (1 <= _TValue1 && _TValue1 <= 6){
-// 					_Board[_TMove[1].x][_TMove[1].y] = 0;
-// 					_V_SWAP(_Board[_TMove[0].x][_TMove[0].y], _Board[_TMove[1].x][_TMove[1].y]);
-// 					MakeUCI(_TMove[0], _TMove[1], &temp_move);
-// 				}
-// 				else if (1 <= _TValue2 && _TValue2 <= 6){
-// 					_Board[_TMove[0].x][_TMove[0].y] = 0;
-// 					_V_SWAP(_Board[_TMove[0].x][_TMove[0].y], _Board[_TMove[1].x][_TMove[1].y]);
-// 					MakeUCI(_TMove[1], _TMove[0], &temp_move);
-// 				}
-// 			}
-// 			else if (_Turn == BLACK_TURN) {
-// 				//검은색 차례일때
-// 				temp_move.turn_flag = BLACK_TURN;
-// 
-// 				if (7 <= _TValue1 && _TValue1 <= 12) {
-// 					_Board[_TMove[1].x][_TMove[1].y] = 0;
-// 					_V_SWAP(_Board[_TMove[0].x][_TMove[0].y], _Board[_TMove[1].x][_TMove[1].y]);
-// 					MakeUCI(_TMove[0], _TMove[1], &temp_move);
-// 				}
-// 				else if (7 <= _TValue2 && _TValue2 <= 12) {
-// 					_Board[_TMove[0].x][_TMove[0].y] = 0;
-// 					_V_SWAP(_Board[_TMove[0].x][_TMove[0].y], _Board[_TMove[1].x][_TMove[1].y]);
-// 					MakeUCI(_TMove[1], _TMove[0], &temp_move);
-// 				}
-// 			}
-// 
-// 			//recent_move에 복사
-// 			strcpy(recent_move, temp_move.movement);
-// 			_chess_movement.push(temp_move);
-// 
-// 			break;
-// 	}
 
 void ChessGame::Show_chess_board() {
 	for (int i = 0; i < 8; i++) {
