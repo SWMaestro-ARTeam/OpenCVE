@@ -4,13 +4,23 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT	+= core gui
+QT	+= widgets
+
+QMAKE_CXXFLAGS -= -fno-keep-inline-dllexport
+QMAKE_CXXFLAGS += -std=c++0x -fpermissive
+
+QMAKE_LFLAGS += -static -static-libgcc
+#QMAKE_LFLAGS += -static -static-libgcc -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = Celestials
 TEMPLATE = app
 
+CONFIG   += console
+#CONFIG	+= qt warn_on release static staticlib
+CONFIG	+= static staticlib
 
 SOURCES += main.cpp\
         Celestials.cpp \
@@ -31,7 +41,9 @@ SOURCES += main.cpp\
     ../CVES/ChessGame.cpp \
     ../CVES/BlobLabeling.cpp \
     ../CVES/ChessLineSearchAlg.cpp \
-    ../Common/StringTools.cpp
+    ../Common/StringTools.cpp \
+    ApplicationsMain.cpp \
+    ../CVES/CheckInChessboard.cpp
 
 HEADERS  += Celestials.h \
     ../Common/Time.hpp \
@@ -59,7 +71,9 @@ HEADERS  += Celestials.h \
     ../CVEC/CVECDependent.hpp \
     ../CVES/CVESDependent.hpp \
     ../CVES/ChessLineSearchAlg.hpp \
-    ../Common/StringTools.hpp
+    ../Common/StringTools.hpp \
+    ApplicationsMain.h \
+    ../CVES/CheckInChessboard.hpp
 
 FORMS    += Celestials.ui
 
@@ -91,6 +105,7 @@ INCLUDEPATH += . \
 			# OPEMCVE Root
 			+= $$OPENCVE_ROOT/CVES \
 			+= $$OPENCVE_ROOT/CVEC \
+			+= $$OPENCVE_ROOT/CVEO \
 			+= $$OPENCVE_ROOT/Common \
 			# OPENCV Root
 			+= $$OPENCV_PATH/build/include \
@@ -105,7 +120,10 @@ LIBS +=	\
 win32 {
 # Import Library for Debug
 win32:CONFIG(debug, debug|release): \
-		LIBS += -L$$OPENCV_MSVC12_PATH/lib/Debug \
+	LIBS += -lQt5Cored \
+	-lQt5Guid \
+	-lQt5Widgetsd
+	LIBS += -L$$OPENCV_MSVC12_PATH/lib/Debug \
 	-lopencv_calib3d246d \
 	-lopencv_contrib246d \
 	-lopencv_core246d \
@@ -127,7 +145,10 @@ win32:CONFIG(debug, debug|release): \
 	-lopencv_videostab246d
 # Import Library for Release
 else:win32:CONFIG(release, debug|release): \
-		LIBS += -L$$OPENCV_MSVC12_PATH/lib/Release \
+	LIBS += -lQt5Core \
+	-lQt5Gui \
+	-lQt5Widgets
+	LIBS += -L$$OPENCV_MSVC12_PATH/lib/Release \
 	-lopencv_calib3d246 \
 	-lopencv_contrib246 \
 	-lopencv_core246 \

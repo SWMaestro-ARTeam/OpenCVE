@@ -8,12 +8,20 @@ QT       += core
 
 QT       -= gui
 
+QMAKE_CXXFLAGS -= -fno-keep-inline-dllexport
+QMAKE_CXXFLAGS += -std=c++0x -fpermissive
+
+QMAKE_LFLAGS += -static -static-libgcc
+#QMAKE_LFLAGS += -static -static-libgcc -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
+
 TARGET = CVES
 CONFIG   += console
 CONFIG   -= app_bundle
 
-TEMPLATE = app
+#CONFIG	+= qt warn_on release static staticlib
+CONFIG	+= static staticlib
 
+TEMPLATE = app
 
 SOURCES += main.cpp \
     HandRecognition.cpp \
@@ -28,7 +36,8 @@ SOURCES += main.cpp \
     ../Common/Debug.cpp \
     ../Common/CodeConverter.cpp \
     ChessLineSearchAlg.cpp \
-    ../Common/StringTools.cpp
+    ../Common/StringTools.cpp \
+    CheckInChessboard.cpp
 
 HEADERS += \
     HandRecognition.hpp \
@@ -48,7 +57,8 @@ HEADERS += \
     ../Common/Common.hpp \
     CVESDependent.hpp \
     ChessLineSearchAlg.hpp \
-    ../Common/StringTools.hpp
+    ../Common/StringTools.hpp \
+    CheckInChessboard.hpp
 
 #QT_PATH = ${QTDIR}
 #PROJECT_PATH = ${INVI_PROJECT_ROOT}
@@ -92,7 +102,10 @@ LIBS +=	\
 win32 {
 # Import Library for Debug
 win32:CONFIG(debug, debug|release): \
-		LIBS += -L$$OPENCV_MSVC12_PATH/lib/Debug \
+#	LIBS += -lQt5Cored \
+#	-lQt5Guid \
+#	-lQt5Widgetsd \
+	LIBS += -L$$OPENCV_MSVC12_PATH/lib/Debug \
 	-lopencv_calib3d246d \
 	-lopencv_contrib246d \
 	-lopencv_core246d \
@@ -114,7 +127,10 @@ win32:CONFIG(debug, debug|release): \
 	-lopencv_videostab246d
 # Import Library for Release
 else:win32:CONFIG(release, debug|release): \
-		LIBS += -L$$OPENCV_MSVC12_PATH/lib/Release \
+#	LIBS += -lQt5Core \
+#	-lQt5Gui \
+#	-lQt5Widgets \
+	LIBS += -L$$OPENCV_MSVC12_PATH/lib/Release \
 	-lopencv_calib3d246 \
 	-lopencv_contrib246 \
 	-lopencv_core246 \

@@ -73,9 +73,11 @@ private:
 	bool _IsNoCVESProcess;
 	bool _IsCVESReady;
 
+	DWORD _ServerPID;
+
 	mutex _QueueProtectMutex;
 	mutex _VarProtectMutex;
-	
+
 	char *_Command;
 	// 내가 흑색인지 백색인지 구분.
 	bool _IsWhite;
@@ -84,7 +86,7 @@ private:
 	// Functions
 	void Initialize_CommandStr();
 	void Deinitialize_CommandStr();
-	
+
 	void Initialize_CVEOption();
 	void Deinitialize_CVEOption();
 
@@ -129,6 +131,7 @@ private:
 
 	// ClientReceivedCallback
 	static void ClientReceivedCallback(char *Buffer);
+	static void ClientDisconnectedCallback();
 
 	// CVEC_CVESCheckingThread
 	static
@@ -162,7 +165,7 @@ private:
 		void *
 #endif
 		Param);
-	
+
 public:
 	// Constructor
 	EngineC();

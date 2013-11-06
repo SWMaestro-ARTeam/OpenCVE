@@ -32,9 +32,9 @@
 #include <queue>
 #include <vector>
 
-#define CASTLING_MOVE			4
-#define ENPASSANT_MOVE			3
-#define DEFAULT_MOVE			2
+#define CASTLING_MOVE	4
+#define ENPASSANT_MOVE 3
+#define DEFAULT_MOVE 2
 #define DEBUGUI_PATH "./Chess_UI/"
 
 #define WHITE_TURN true

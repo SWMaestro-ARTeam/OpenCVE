@@ -1,12 +1,12 @@
-//////////////////////////////////////////////////////////////////////////////////////////////
+ï»¿//////////////////////////////////////////////////////////////////////////////////////////////
 //	The OpenCVE Project.
 //
 //	The MIT License (MIT)
-//	Copyright ? 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
+//	Copyright Â© 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
 //	{invi.dh.kim, munsp9103, aiaipming} at gmail.com
 //
 //	Permission is hereby granted, free of charge, to any person obtaining a copy of
-//	this software and associated documentation files (the ¡°Software¡±), to deal
+//	this software and associated documentation files (the â€œSoftwareâ€), to deal
 //	in the Software without restriction, including without limitation the rights to
 //	use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
 //	the Software, and to permit persons to whom the Software is furnished to do so,
@@ -15,7 +15,7 @@
 //	The above copyright notice and this permission notice shall be included in all
 //	copies or substantial portions of the Software.
 //
-//	THE SOFTWARE IS PROVIDED ¡°AS IS¡±, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+//	THE SOFTWARE IS PROVIDED â€œAS ISâ€, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 //	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 //	PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 //	LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
@@ -23,29 +23,32 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
+#ifndef _CheckInChessboard_hpp_
+#define _CheckInChessboard_hpp_
+
 #include "CVESDependent.hpp"
 
 using namespace std;
 
-class CheckInChessboard
-{
+class CheckInChessboard {
 private:
-	// p,q,r·Î ÀÌ·ç¾îÁø »ï°¢ÇüÀÇ ³ĞÀÌ return
+	// p,q,rë¡œ ì´ë£¨ì–´ì§„ ì‚¼ê°í˜•ì˜ ë„“ì´ return
 	float area_tri(CvPoint p, CvPoint q, CvPoint r);
-	// ¸»ÀÌ ¾î´À Ã¼½ºÆÇ¿¡ ÀÖ´ÂÁö¸¦ Ã¼Å©.
+	// ë§ì´ ì–´ëŠ ì²´ìŠ¤íŒì— ìˆëŠ”ì§€ë¥¼ ì²´í¬.
 	CvPoint	Get_Chessidx(CvPoint point, vector<ChessPoint> cross_point);
-	// width, height°¡ °¡¸®Å°´Â ÇÈ¼¿ÀÌ ¾î´À Ã¼½ºº¸µå ÀÎµ¦½º¸¦ °¡Áö´ÂÁö¸¦ °è»êÇÏ¿© ¹İÈ¯.
+	// width, heightê°€ ê°€ë¦¬í‚¤ëŠ” í”½ì…€ì´ ì–´ëŠ ì²´ìŠ¤ë³´ë“œ ì¸ë±ìŠ¤ë¥¼ ê°€ì§€ëŠ”ì§€ë¥¼ ê³„ì‚°í•˜ì—¬ ë°˜í™˜.
 	CvPoint Get_ChessboxPos(int width, int height, vector<ChessPoint> cross_point);
 
 public:
-	CheckInChessboard(void);
-	~CheckInChessboard(void);
+	CheckInChessboard();
+	~CheckInChessboard();
 
-	// binary image°¡ Ã¼½ºº¸µå ¾È¿¡ ÇÈ¼¿À» °¡Áö´ÂÁö °Ë»ç.
+	// binary imageê°€ ì²´ìŠ¤ë³´ë“œ ì•ˆì— í”½ì…€ì„ ê°€ì§€ëŠ”ì§€ ê²€ì‚¬.
 	bool Check_InChessboard(IplImage *img, vector<ChessPoint> point);
-	// img°¡ ÇÈ¼¿°ªÀ» ¾Æ¹«°Íµµ °¡ÁöÁö ¾Ê´ÂÁö Ã¼Å©.
+	// imgê°€ í”½ì…€ê°’ì„ ì•„ë¬´ê²ƒë„ ê°€ì§€ì§€ ì•ŠëŠ”ì§€ ì²´í¬.
 	bool Check_imgZero(IplImage *img);
-	// Â÷¿µ»óÀÇ °á°ú·Î ³ª¿Â ÀÌÁø ÀÌ¹ÌÁö¸¦ °è»êÇÏ¿© Ã¼½º¸»ÀÇ ÁÂÇ¥ÀÌµ¿À» ¹İÈ¯.
+	// ì°¨ì˜ìƒì˜ ê²°ê³¼ë¡œ ë‚˜ì˜¨ ì´ì§„ ì´ë¯¸ì§€ë¥¼ ê³„ì‚°í•˜ì—¬ ì²´ìŠ¤ë§ì˜ ì¢Œí‘œì´ë™ì„ ë°˜í™˜.
 	void Calculate_Movement(IplImage *bin, vector<ChessPoint> cross_point, CvPoint *out1, CvPoint *out2);
 };
 
+#endif

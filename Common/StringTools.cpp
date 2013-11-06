@@ -24,12 +24,21 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "StringTools.hpp"
-
+/*
 template<typename T>
 string StringTools::ToString(const T& Any) {
 	return dynamic_cast<std::ostringstream &>((std::ostringstream() << std::dec << Any)).str();
 }
-
-const char *StringTools::StirngToCharPointer(string Str) {
+*/
+const char *StringTools::StirngToConstCharPointer(string Str) {
 	return Str.c_str();
 }
+
+char *StringTools::ConstCharToChar(const char *Str) {
+	return const_cast<char *>(Str);
+}
+
+char *StringTools::StringToChar(string Str) {
+	return ConstCharToChar(StirngToConstCharPointer(Str));
+}
+

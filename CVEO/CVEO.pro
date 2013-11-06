@@ -8,15 +8,22 @@ QT       += core
 
 QT       -= gui
 
+QMAKE_CXXFLAGS -= -fno-keep-inline-dllexport
+QMAKE_CXXFLAGS += -std=c++0x -fpermissive
+
+QMAKE_LFLAGS += -static -static-libgcc
+#QMAKE_LFLAGS += -static -static-libgcc -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
+
 TARGET = CVEO
 CONFIG   += console
 CONFIG   -= app_bundle
 
+#CONFIG	+= qt warn_on release static staticlib
+CONFIG	+= static staticlib
+
 TEMPLATE = app
 
-
 SOURCES += main.cpp
-
 
 MINGW_PATH = C:/System_Emulator/MinGW
 QT_PATH = C:/System_Development/Qt/5.1.1
@@ -32,3 +39,39 @@ OPENCV_MSVC12_PATH = C:/invi/Dev_Bone/dev_libraries/OpenCV_MSVC12
 
 # This path only used MSVC2012 32bit Ver.
 QT_OPENGLES2_ROOT = $$QT_MSVC2012_32_PATH/include/QtANGLE
+
+OPENCVE_ROOT = $$PROJECT_PATH/OpenCVE
+
+## Include Path.
+#INCLUDEPATH += . \
+#			# Qt Open GL ES2 Root
+##			+= $$QT_OPENGLES2_ROOT \
+#			# OPEMCVE Root
+##			+= $$OPENCVE_ROOT/CVES \
+##			+= $$OPENCVE_ROOT/CVEC \
+#			+= $$OPENCVE_ROOT/Common
+#			# OPENCV Root
+##			+= $$OPENCV_PATH/build/include \
+##			+= $$OPENCV_PATH/include/opencv
+
+## Import libws2_32
+#LIBS +=	\
+#	-lws2_32 \
+#	-lpsapi \
+#	-lAdvAPI32
+##LIBS += -L$$MINGW_PATH/lib \
+
+#win32 {
+## Import Library for Debug
+#win32:CONFIG(debug, debug|release): \
+#	LIBS += -lQt5Cored \
+#	-lQt5Guid \
+#	-lQt5Widgetsd
+## Import Library for Release
+#else:win32:CONFIG(release, debug|release): \
+#	LIBS += -lQt5Core \
+#	-lQt5Gui \
+#	-lQt5Widgets
+#}
+#else {
+#}

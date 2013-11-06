@@ -154,6 +154,9 @@ public:
 
 	// Get Process Information
 	bool GetProcessInformations(const DWORD PID, SProcessInformations *ProcessInfo);
+
+	DWORD GetProcessStatus(HANDLE ProcessPID);
+	void TerminateProcess(HANDLE ProcessPID);
 };
 #elif POSIX_SYS
 class POSIXProcess {
@@ -190,7 +193,20 @@ private:
 #elif POSIX_SYS
 		unsigned long
 #endif
-		PID, char *ProcessName); // windows용 함수.
+		PID, char *ProcessName);
+
+#if WINDOWS_SYS
+	HANDLE
+#elif POSIX_SYS
+	unsigned long
+#endif
+		FindHandleGetOneProcess(
+#if WINDOWS_SYS
+		DWORD 
+#elif POSIX_SYS
+		unsigned long
+#endif
+		PID);
 
 	// ExecProcessLoopThread
 	static
@@ -198,7 +214,7 @@ private:
 		UINT WINAPI
 		//DWORD WINAPI
 #elif POSIX_SYS
-// using pthread
+		// using pthread
 		void *
 #endif
 		ExecProcessLoopThread(
@@ -224,6 +240,26 @@ public:
 	list<SProcessInformations> GetProcessInformations();
 
 	void CreateProcessOnThread(char *ProcessName);
+	HANDLE FindProcessByPID(DWORD ProcessPID);
+
+#if WINDOWS_SYS
+	DWORD
+#elif POSIX_SYS
+	unsigned long
+#endif
+		GetProcessStatus(
+#if WINDOWS_SYS
+		HANDLE
+#elif POSIX_SYS
+#endif
+		ProcessHandle);
+
+	void TerminateProcess(
+#if WINDOWS_SYS
+		HANDLE
+#elif POSIX_SYS
+#endif
+		ProcessHandle);
 };
 
 #endif

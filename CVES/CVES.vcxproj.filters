@@ -49,6 +49,9 @@
     <ClCompile Include="CheckInChessboard.cpp">
       <Filter>CVES_System\Recognitions\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\Common\StringTools.cpp">
+      <Filter>Common\StringTools\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BlobLabeling.hpp">
@@ -111,8 +114,11 @@
     <ClInclude Include="..\Common\Telepathy.hpp">
       <Filter>Common\Telepathy\Header</Filter>
     </ClInclude>
-    <ClInclude Include="CheckInChessboard.h">
+    <ClInclude Include="CheckInChessboard.hpp">
       <Filter>CVES_System\Recognitions\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\StringTools.hpp">
+      <Filter>Common\StringTools\Header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -244,6 +250,15 @@
     </Filter>
     <Filter Include="Common\Telepathy\Header">
       <UniqueIdentifier>{e2b37a4d-2716-478d-8baa-8d62d07d3be6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\StringTools">
+      <UniqueIdentifier>{9d33169f-26c1-4921-b9b6-701d7dc4d812}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\StringTools\Header">
+      <UniqueIdentifier>{632758b5-2165-4494-9df4-98cf86f95157}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\StringTools\Source">
+      <UniqueIdentifier>{89fa566b-af7d-48ad-88d1-88f00e6baddb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

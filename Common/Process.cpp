@@ -34,12 +34,12 @@
 HMODULE WindowsProcess::NtDLLOpen() {
 	CodeConverter _TCodeConverter;
 	HMODULE _TNtDll = LoadLibrary(
-//#if MINGW_USING
-	_TCodeConverter.CharToWChar("ntdll.dll")
-//#else
-//	_T("ntdll.dll")
-//#endif
-	);
+		//#if MINGW_USING
+		_TCodeConverter.CharToWChar("ntdll.dll")
+		//#else
+		//	_T("ntdll.dll")
+		//#endif
+		);
 	if (_TNtDll == NULL)
 		return NULL;
 
@@ -190,87 +190,87 @@ bool WindowsProcess::GetProcessInformations(const DWORD PID, SProcessInformation
 					&_TPEB_UPP,
 					sizeof(SRTLUserProcessParameters),
 					&_TBytesRead)) {
-					// We got Process Parameters, is CommandLine filled in
-					if (_TPEB_UPP.CommandLine.Length > 0) {
-						// Yes, try to read CommandLine
-						_TBuffer = (WCHAR *)HeapAlloc(_THeap,
-							HEAP_ZERO_MEMORY,
-							_TPEB_UPP.CommandLine.Length);
-						// If memory was allocated, continue
-						if (_TBuffer)	{
-							if (ReadProcessMemory(_TProcess,
-								_TPEB_UPP.CommandLine.Buffer,
-								_TBuffer,
-								_TPEB_UPP.CommandLine.Length,
-								&_TBytesRead)) {
-								// if commandline is larger than our variable, truncate
-								if (_TPEB_UPP.CommandLine.Length >= sizeof(_TSPI.CmdLine)) 
-									_TBufferSize = sizeof(_TSPI.CmdLine) - sizeof(TCHAR);
-								else
-									_TBufferSize = _TPEB_UPP.CommandLine.Length;
+						// We got Process Parameters, is CommandLine filled in
+						if (_TPEB_UPP.CommandLine.Length > 0) {
+							// Yes, try to read CommandLine
+							_TBuffer = (WCHAR *)HeapAlloc(_THeap,
+								HEAP_ZERO_MEMORY,
+								_TPEB_UPP.CommandLine.Length);
+							// If memory was allocated, continue
+							if (_TBuffer)	{
+								if (ReadProcessMemory(_TProcess,
+									_TPEB_UPP.CommandLine.Buffer,
+									_TBuffer,
+									_TPEB_UPP.CommandLine.Length,
+									&_TBytesRead)) {
+										// if commandline is larger than our variable, truncate
+										if (_TPEB_UPP.CommandLine.Length >= sizeof(_TSPI.CmdLine)) 
+											_TBufferSize = sizeof(_TSPI.CmdLine) - sizeof(TCHAR);
+										else
+											_TBufferSize = _TPEB_UPP.CommandLine.Length;
 
-								// Copy CommandLine to our structure variable
+										// Copy CommandLine to our structure variable
 #if defined(UNICODE) || defined(_UNICODE)
-								// Since core NT functions operate in Unicode
-								// there is no conversion if application is
-								// compiled for Unicode
-								StringCbCopyN(_TSPI.CmdLine, sizeof(_TSPI.CmdLine),
-									_TBuffer, _TBufferSize);
+										// Since core NT functions operate in Unicode
+										// there is no conversion if application is
+										// compiled for Unicode
+										StringCbCopyN(_TSPI.CmdLine, sizeof(_TSPI.CmdLine),
+											_TBuffer, _TBufferSize);
 #else
-								// Since core NT functions operate in Unicode
-								// we must convert to Ansi since our application
-								// is not compiled for Unicode
-								WideCharToMultiByte(CP_ACP, 0, _TBuffer,
-									(int)(_TBufferSize / sizeof(WCHAR)),
-									_TSPI.CmdLine, sizeof(_TSPI.CmdLine),
-									NULL, NULL);
+										// Since core NT functions operate in Unicode
+										// we must convert to Ansi since our application
+										// is not compiled for Unicode
+										WideCharToMultiByte(CP_ACP, 0, _TBuffer,
+											(int)(_TBufferSize / sizeof(WCHAR)),
+											_TSPI.CmdLine, sizeof(_TSPI.CmdLine),
+											NULL, NULL);
 #endif
+								}
+								if (!HeapFree(_THeap, 0, _TBuffer)) {
+									// failed to free memory
+									_TReturnStatus = FALSE;
+									goto gnpiFreeMemFailed;
+								}
 							}
-							if (!HeapFree(_THeap, 0, _TBuffer)) {
-								// failed to free memory
-								_TReturnStatus = FALSE;
-								goto gnpiFreeMemFailed;
-							}
-						}
-					}	// Read CommandLine in Process Parameters
+						}	// Read CommandLine in Process Parameters
 
-					// We got Process Parameters, is ImagePath filled in
-					if (_TPEB_UPP.ImagePathName.Length > 0) {
-						// Yes, try to read ImagePath
-						_TBytesRead = 0;
-						_TBuffer = (WCHAR *)HeapAlloc(_THeap,
-							HEAP_ZERO_MEMORY,
-							_TPEB_UPP.ImagePathName.Length);
-						if (_TBuffer) {
-							if(ReadProcessMemory(_TProcess,
-								_TPEB_UPP.ImagePathName.Buffer,
-								_TBuffer,
-								_TPEB_UPP.ImagePathName.Length,
-								&_TBytesRead)) {
-								// if ImagePath is larger than our variable, truncate
-								if (_TPEB_UPP.ImagePathName.Length >= sizeof(_TSPI.ImgPath)) 
-									_TBufferSize = sizeof(_TSPI.ImgPath) - sizeof(TCHAR);
-								else
-									_TBufferSize = _TPEB_UPP.ImagePathName.Length;
+						// We got Process Parameters, is ImagePath filled in
+						if (_TPEB_UPP.ImagePathName.Length > 0) {
+							// Yes, try to read ImagePath
+							_TBytesRead = 0;
+							_TBuffer = (WCHAR *)HeapAlloc(_THeap,
+								HEAP_ZERO_MEMORY,
+								_TPEB_UPP.ImagePathName.Length);
+							if (_TBuffer) {
+								if(ReadProcessMemory(_TProcess,
+									_TPEB_UPP.ImagePathName.Buffer,
+									_TBuffer,
+									_TPEB_UPP.ImagePathName.Length,
+									&_TBytesRead)) {
+										// if ImagePath is larger than our variable, truncate
+										if (_TPEB_UPP.ImagePathName.Length >= sizeof(_TSPI.ImgPath)) 
+											_TBufferSize = sizeof(_TSPI.ImgPath) - sizeof(TCHAR);
+										else
+											_TBufferSize = _TPEB_UPP.ImagePathName.Length;
 
-								// Copy ImagePath to our structure
+										// Copy ImagePath to our structure
 #if defined(UNICODE) || defined(_UNICODE)
-								StringCbCopyN(_TSPI.ImgPath, sizeof(_TSPI.ImgPath),
-									_TBuffer, _TBufferSize);
+										StringCbCopyN(_TSPI.ImgPath, sizeof(_TSPI.ImgPath),
+											_TBuffer, _TBufferSize);
 #else
-								WideCharToMultiByte(CP_ACP, 0, _TBuffer,
-									(int)(_TBufferSize / sizeof(WCHAR)),
-									_TSPI.ImgPath, sizeof(_TSPI.ImgPath),
-									NULL, NULL);
+										WideCharToMultiByte(CP_ACP, 0, _TBuffer,
+											(int)(_TBufferSize / sizeof(WCHAR)),
+											_TSPI.ImgPath, sizeof(_TSPI.ImgPath),
+											NULL, NULL);
 #endif
+								}
+								if (!HeapFree(_THeap, 0, _TBuffer)) {
+									// failed to free memory
+									_TReturnStatus = FALSE;
+									goto gnpiFreeMemFailed;
+								}
 							}
-							if (!HeapFree(_THeap, 0, _TBuffer)) {
-								// failed to free memory
-								_TReturnStatus = FALSE;
-								goto gnpiFreeMemFailed;
-							}
-						}
-					}	// Read ImagePath in Process Parameters
+						}	// Read ImagePath in Process Parameters
 				}	// Read Process Parameters
 			}	// Read PEB 
 		}	// Check for PEB
@@ -284,12 +284,12 @@ bool WindowsProcess::GetProcessInformations(const DWORD PID, SProcessInformation
 		if (_TSPI.PID == 4) {
 			CodeConverter _TCodeConverter;
 			ExpandEnvironmentStrings(
-//#if MINGW_USING
-			_TCodeConverter.CharToWChar("%SystemRoot%\\System32\\ntoskrnl.exe")
-//#else
-//			_T("%SystemRoot%\\System32\\ntoskrnl.exe")
-//#endif
-			,
+				//#if MINGW_USING
+				_TCodeConverter.CharToWChar("%SystemRoot%\\System32\\ntoskrnl.exe")
+				//#else
+				//			_T("%SystemRoot%\\System32\\ntoskrnl.exe")
+				//#endif
+				,
 				_TSPI.ImgPath, sizeof(_TSPI.ImgPath));
 		}
 	}	// Read Basic Info
@@ -309,6 +309,18 @@ gnpiFreeMemFailed:
 
 		return _TReturnStatus;
 }
+
+DWORD WindowsProcess::GetProcessStatus(HANDLE ProcessPID) {
+	DWORD _TExitCode = 0;
+	::GetExitCodeProcess(ProcessPID, &_TExitCode);
+	return _TExitCode;
+}
+
+void WindowsProcess::TerminateProcess(HANDLE ProcessPID) {
+	::TerminateProcess(ProcessPID, 0);
+}
+
+
 #pragma endregion Windows Process Module
 #elif POSIX_SYS
 #pragma region POSIX Process Module
@@ -373,6 +385,48 @@ bool Process::FindProcess(
 					return true;
 				}
 			} while (Module32Next(_TModuleSnap, &_TME32));
+		}
+
+		CloseHandle(_TModuleSnap);
+#elif POSIX_SYS
+
+#endif
+		return false;
+}
+
+#if WINDOWS_SYS
+HANDLE
+#elif POSIX_SYS
+unsigned long
+#endif
+	Process::FindHandleGetOneProcess(
+#if WINDOWS_SYS
+	DWORD
+#elif POSIX_SYS
+	unsigned long
+#endif
+	PID) {
+#if WINDOWS_SYS
+		HANDLE _TModuleSnap = NULL; 
+		MODULEENTRY32 _TME32 = {0};
+
+		_TModuleSnap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, PID);
+
+		if (_TModuleSnap == (HANDLE) - 1)
+			return false;
+
+		_TME32.dwSize = sizeof(MODULEENTRY32);
+
+		if (Process32First(_TModuleSnap, &_ProcessEntry32)) {
+			MODULEENTRY32 _ME32 = {0};
+
+			do {
+				if (PID == _TME32.th32ModuleID) {
+					HANDLE _TProcessHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, _ProcessEntry32.th32ProcessID);
+					CloseHandle(_TModuleSnap);
+					return _TProcessHandle;
+				}
+			} while (Process32Next(_TModuleSnap, &_ProcessEntry32));
 		}
 
 		CloseHandle(_TModuleSnap);
@@ -466,8 +520,8 @@ list<
 			_TPIDCount = _TSizeNeeded / sizeof(DWORD);
 			for (DWORD _ProcessCount = 0;
 				_ProcessCount < PROCESS_MAX && _ProcessCount < _TPIDCount; _ProcessCount++) {
-				_TProcess.GetProcessInformations(_TPIDs[_ProcessCount], &__SProcessInformation[_ProcessCount]);
-				_TSProcessInformationsList.push_back(__SProcessInformation[_ProcessCount]);
+					_TProcess.GetProcessInformations(_TPIDs[_ProcessCount], &__SProcessInformation[_ProcessCount]);
+					_TSProcessInformationsList.push_back(__SProcessInformation[_ProcessCount]);
 			}
 			_TProcess.NtDLLRelease(_TNtDll);
 		}
@@ -480,7 +534,7 @@ list<
 // Exec Process thread
 #if WINDOWS_SYS
 UINT WINAPI
-//DWORD WINAPI
+	//DWORD WINAPI
 #elif POSIX_SYS
 // using pthread
 void *
@@ -560,11 +614,11 @@ void *
 
 void Process::CreateProcessOnThread(char *ProcessName) {
 #if WINDOWS_SYS
-//#ifdef _AFXDLL
+	//#ifdef _AFXDLL
 	//DWORD _TThreadID = 0;
 	//CreateThread(NULL, 0, ExecProcessLoopThread, (LPVOID)ProcessName, 0, &_TThreadID);
 	HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, ExecProcessLoopThread, (LPVOID)ProcessName, 0, NULL);
-//#endif
+	//#endif
 #elif POSIX_SYS
 	pthread_t _TThread;
 	pthread_attr_t _TThreadAttr;
@@ -578,4 +632,46 @@ void Process::CreateProcessOnThread(char *ProcessName) {
 	pthread_create(&_TThread, NULL, ExecProcessLoopThread, (void *)ProcessName);
 #endif
 }
+
+#if WINDOWS_SYS
+DWORD
+#elif POSIX_SYS
+unsigned long
+#endif
+	Process::GetProcessStatus(
+#if	WINDOWS_SYS 
+	HANDLE
+#elif POSIX_SYS
+
+#endif
+	ProcessHandle) {
+#if WINDOWS_SYS
+		WindowsProcess 
+#elif POSIX_SYS
+		POSIXProcess
+#endif
+			_TProcess;
+		return _TProcess.GetProcessStatus(ProcessHandle);
+}
+
+void Process::TerminateProcess(
+#if WINDOWS_SYS
+	HANDLE
+#elif POSIX_SYS
+
+#endif
+	ProcessHandle) {
+#if WINDOWS_SYS
+		WindowsProcess 
+#elif POSIX_SYS
+		POSIXProcess
+#endif
+			_TProcess;
+		_TProcess.TerminateProcess(ProcessHandle);
+}
+
+HANDLE Process::FindProcessByPID(DWORD ProcessPID) {
+	return FindHandleGetOneProcess(ProcessPID);
+}
+
 #pragma endregion Process Module

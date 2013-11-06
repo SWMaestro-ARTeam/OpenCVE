@@ -38,8 +38,6 @@
 #include <QThread>
 #endif
 
-Celestials *G_Celestials;
-
 class ServerInitThread : public QThread {
 	Q_OBJECT
 private:

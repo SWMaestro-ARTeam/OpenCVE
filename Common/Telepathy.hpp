@@ -36,14 +36,14 @@
 //	#ifdef _AFXDLL
 //#include <afxwin.h>
 //	#else
-		#if MINGW_USING
+#if MINGW_USING
 #include <winsock.h>
 //#include <winsock2.h>
-		#else
+#else
 #include <windows.h>
-		#endif
+#endif
 #include <tchar.h>
-	//#endif
+//#endif
 // ws2_32.lib 링크
 #pragma comment(lib, "ws2_32.lib")
 #elif POSIX_SYS
@@ -82,7 +82,7 @@ typedef struct _ClientsList {
 
 class Telepathy {
 private:
-	
+
 public:
 	// Server Class
 	class Server {
@@ -144,6 +144,7 @@ public:
 
 		// client Callback
 		typedef void (* _T_CLIENTRECEIVEDCALLBACK)(char *Buffer);
+		typedef void (* _T_CLIENTDISCONNECTEDCALLBACK)();
 
 		bool ClientInitialize();
 		void ClientReceiveStart();
@@ -158,6 +159,7 @@ public:
 
 		// Client Receive Callback Pointer.
 		_T_CLIENTRECEIVEDCALLBACK TClientReceivedCallback;
+		_T_CLIENTDISCONNECTEDCALLBACK TClientDisconnectedCallback;
 	};
 };
 #endif

@@ -228,9 +228,9 @@ void EngineS::Stop_Server() {
 	_TelepathyServer->TServerReceivedCallback = NULL;
 }
 
-Telepathy::Server *EngineS::Get_Telepathy_Server() {
-	return _TelepathyServer;
-}
+//Telepathy::Server *EngineS::Get_Telepathy_Server() {
+//	return _TelepathyServer;
+//}
 
 void EngineS::EngineS_Start() {
 	// 1. Engine이 Start 되면, 우선 Server 기동부터 한다.
@@ -350,7 +350,7 @@ void EngineS::imgproc_mode(){
 
 		// mode 1에서 2초 이상 지났을 경우 다음 모드로 진행
 		if (time(NULL) - _tempsec > 2) {
-			_ImageProcessMode++;
+			//_ImageProcessMode++;
 			_RGB = cvScalar(0, 255);
 		}
 
@@ -520,6 +520,7 @@ void *
 	EngineS *_TEngine_S = (EngineS *)Param;
 
 	while (_TEngine_S->_TelepathyServer->IsServerStarted) {
+		Sleep(10);
 		if (_TEngine_S->CommandQueue->empty() != true) {
 			_TEngine_S->_QueueProtectMutex.lock();
 			char _TStrBuffer[BUFFER_MAX_32767];
@@ -559,7 +560,7 @@ void *
 				case VALUE_I_IMWHITE :
 					// Server에 Socket 중, White에 Naming을 할 Socket이 필요.
 					// 어떤 Socket인지 검색하여 찾아 Naming 한다.
-					for_IterToEnd(list, ClientsList, _TEngine_S->Get_Telepathy_Server()->ClientList) {
+					for_IterToEnd(list, ClientsList, _TEngine_S->_TelepathyServer->ClientList) {
 						if (_TVal->ClientSocket == _TServerGetInformation->AnySocket) {
 							_TVal->ClientName = "White";
 						}
@@ -628,9 +629,10 @@ void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
 	bool _TIsInfoEnemyMove = false;
 	bool _TIsInfoType = false;
 	//bool _TIsInfoGo = false;
-
+	
 	// Fetch the next at while.
 	while (IPCS->NextCharArrayIter()) {
+		StringTools _TStringTools;
 		int _NSeek_GUIToEngine = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*IPCS->CharArrayListIter);
 		switch (_NSeek_GUIToEngine) {
 			// Go 뒤로 부터 오는 것들.
@@ -700,8 +702,7 @@ void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
 				if (_TIsInfoType == true) {
 					for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
 						if (_TVal->ClientSocket == Socket) {
-							char _TCharArr[10] = STR_I_INFO_TYPE_CLIENT;
-							_TVal->ClientType = _TCharArr;
+							_TVal->ClientType = _TStringTools.ConstCharToChar(STR_I_INFO_TYPE_CLIENT);
 							break;
 						}
 					}
@@ -712,8 +713,7 @@ void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
 				if (_TIsInfoType == true) {
 					for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
 						if (_TVal->ClientSocket == Socket) {
-							char _TCharArr[10] = STR_I_INFO_TYPE_OBSERVER;
-							_TVal->ClientType = _TCharArr;
+							_TVal->ClientType = _TStringTools.ConstCharToChar(STR_I_INFO_TYPE_OBSERVER);
 							break;
 						}
 					}
@@ -749,35 +749,35 @@ void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
 	}
 }
 
-void EngineS::Process_Info_Go(CommandString *IPCS) {
-	while(IPCS->NextCharArrayIter()) {
-		int _NSeek_GUIToEngine = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*IPCS->CharArrayListIter);
-
-		switch (_NSeek_GUIToEngine) {
-			case VALUE_I_INFO_GO :
-				Process_Info_Go(IPCS);
-				break;
-			case VALUE_I_INFO_POSITION :
-				Process_Info_Position(IPCS);
-				break;
-		}
-	}
-}
-
-void EngineS::Process_Info_Position(CommandString *IPCS) {
-	while(IPCS->NextCharArrayIter()) {
-		int _NSeek_GUIToEngine = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*IPCS->CharArrayListIter);
-
-		switch (_NSeek_GUIToEngine) {
-			case VALUE_I_INFO_GO :
-				Process_Info_Go(IPCS);
-				break;
-			case VALUE_I_INFO_POSITION :
-				Process_Info_Position(IPCS);
-				break;
-		}
-	}
-}
+//void EngineS::Process_Info_Go(CommandString *IPCS) {
+//	while(IPCS->NextCharArrayIter()) {
+//		int _NSeek_GUIToEngine = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*IPCS->CharArrayListIter);
+//
+//		switch (_NSeek_GUIToEngine) {
+//			case VALUE_I_INFO_GO :
+//				Process_Info_Go(IPCS);
+//				break;
+//			case VALUE_I_INFO_POSITION :
+//				Process_Info_Position(IPCS);
+//				break;
+//		}
+//	}
+//}
+//
+//void EngineS::Process_Info_Position(CommandString *IPCS) {
+//	while(IPCS->NextCharArrayIter()) {
+//		int _NSeek_GUIToEngine = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*IPCS->CharArrayListIter);
+//
+//		switch (_NSeek_GUIToEngine) {
+//			case VALUE_I_INFO_GO :
+//				Process_Info_Go(IPCS);
+//				break;
+//			case VALUE_I_INFO_POSITION :
+//				Process_Info_Position(IPCS);
+//				break;
+//		}
+//	}
+//}
 
 void EngineS::Set_ClientData( SOCKET Socket, int Type )
 {

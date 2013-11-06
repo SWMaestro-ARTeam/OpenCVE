@@ -505,6 +505,7 @@ bool Telepathy::Client::ClientConnect() {
 
 void Telepathy::Client::ClientDisconnect() {
 	ClientClose();
+	TClientDisconnectedCallback();
 	//IsConnectedClient = false;
 }
 

@@ -25,6 +25,7 @@
 
 #include "ApplicationsMain.h"
 
+Celestials *G_Celestials;
 
 ServerInitThread::ServerInitThread() {
 }
@@ -35,7 +36,6 @@ void ServerInitThread::run() {
 	//EngineS *_EngineS = new EngineS();
 	//G_Celestials._EngineS = _EngineS;
 	// CVES View 보여주기.
-	G_Celestials->show();
 
 	// 2. Engine Enable.
 	G_Celestials->_EngineS->EngineEnable = true;
@@ -67,6 +67,7 @@ int ApplicationsMain::GoCVES(int argc, char *argv[]) {
 	// 1. CVES Engine 생성.
 	EngineS *_EngineS = new EngineS();
 	G_Celestials->_EngineS = _EngineS;
+	G_Celestials->show();
 	QApplication a(argc, argv);
 
 	_ServerInitThread.start();

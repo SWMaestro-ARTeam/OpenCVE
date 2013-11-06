@@ -8,12 +8,20 @@ QT       += core
 
 QT       -= gui
 
+QMAKE_CXXFLAGS -= -fno-keep-inline-dllexport
+QMAKE_CXXFLAGS += -std=c++0x -fpermissive
+
+QMAKE_LFLAGS += -static -static-libgcc
+#QMAKE_LFLAGS += -static -static-libgcc -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
+
 TARGET = CVEC
 CONFIG   += console
 CONFIG   -= app_bundle
 
-TEMPLATE = app
+#CONFIG	+= qt warn_on release static staticlib
+CONFIG	+= static staticlib
 
+TEMPLATE = app
 
 SOURCES += main.cpp \
     UCICommandSesker.cpp \
@@ -86,3 +94,17 @@ LIBS +=	\
 	-lAdvAPI32
 #LIBS += -L$$MINGW_PATH/lib \
 
+#win32 {
+## Import Library for Debug
+#win32:CONFIG(debug, debug|release): \
+#	LIBS += -lQt5Cored \
+#	-lQt5Guid \
+#	-lQt5Widgetsd
+## Import Library for Release
+#else:win32:CONFIG(release, debug|release): \
+#	LIBS += -lQt5Core \
+#	-lQt5Gui \
+#	-lQt5Widgets
+#}
+#else {
+#}
