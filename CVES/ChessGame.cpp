@@ -47,6 +47,9 @@ ChessGame::ChessGame() {
 	_Board[4][0] = W_King;
 
 	chessboard_img = cvLoadImage("./Chess_UI/Chessboard.png", CV_LOAD_IMAGE_UNCHANGED);
+
+	_before_move.piece = -1;
+	_before_move.position = cvPoint(-1,-1);
 }
 
 ChessGame::~ChessGame() {
@@ -60,19 +63,19 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 	switch(MOVE_MODE){
 	case CASTLING_MOVE:
 		for (register int i = 0; i < 4; i++)
-			_TMove[i] = input1[i];
+			_TMove[i] = cvPoint(input1[i].y, input1[i].x);
 		
 		castling_move(_TMove);
 		break;
 	case ENPASSANT_MOVE:
 		for (register int i = 0; i < 3; i++)
-			_TMove[i] = input1[i];
+			_TMove[i] = cvPoint(input1[i].y, input1[i].x);
 
 		enpassant_move(_TMove);
 		break;
 	case DEFAULT_MOVE:
 		for (register int i = 0; i < 2; i++)
-			_TMove[i] = input1[i];
+			_TMove[i] = cvPoint(input1[i].y, input1[i].x);
 
 		default_move(_TMove);
 		break;
@@ -88,9 +91,8 @@ void ChessGame::castling_move(CvPoint move_input[]){
 	CvPoint t_King, t_Rook;
 	vector<CvPoint> t_Ground;
 
-	temp_move.turn_flag = false;
-
 	if(_Turn == WHITE_TURN){
+		temp_move.turn_flag = WHITE_TURN;
 		for(int i=0;i<4;i++){
 			if(_Board[move_input[i].x][move_input[i].y] == W_King)
 				t_King = cvPoint(move_input[i].x, move_input[i].y);
@@ -121,6 +123,7 @@ void ChessGame::castling_move(CvPoint move_input[]){
 		}
 	}
 	else if(_Turn == BLACK_TURN){
+		temp_move.turn_flag = BLACK_TURN;
 		for(int i=0;i<4;i++){
 			if(_Board[move_input[i].x][move_input[i].y] == B_King)
 				t_King = cvPoint(move_input[i].x, move_input[i].y);
@@ -156,8 +159,6 @@ void ChessGame::castling_move(CvPoint move_input[]){
 void ChessGame::enpassant_move(CvPoint move_input[]){
 	move_format temp_move;
 	int _TValue1, _TValue2, _TValue3;
-
-	temp_move.turn_flag = false;
 
 	_TValue1 = _Board[move_input[0].x][move_input[0].y];
 	_TValue2 = _Board[move_input[1].x][move_input[1].y];
@@ -246,11 +247,12 @@ void ChessGame::default_move(CvPoint move_input[]){
 	move_format temp_move;
 	int _TValue1, _TValue2;
 
-	temp_move.turn_flag = false;
-
 	_TValue1 = _Board[move_input[0].x][move_input[0].y];
 	_TValue2 = _Board[move_input[1].x][move_input[1].y];
 
+	// 이전 움직임 초기화
+	_before_move.position = cvPoint(-1,-1);
+	_before_move.piece = -1;
 	// 체스 무브 진행
 	if (_Turn == WHITE_TURN){
 		// 백색 차례일때
@@ -264,6 +266,8 @@ void ChessGame::default_move(CvPoint move_input[]){
 				 _Board[move_input[1].x][move_input[1].y] = W_Queen;
 			
 			MakeUCI(move_input[0], move_input[1], &temp_move);
+			_before_move.piece = _TValue1;
+			_before_move.position = move_input[1];
 		}
 		else if (W_King <= _TValue2 && _TValue2 <= W_Pawn){
 			_Board[move_input[0].x][move_input[0].y] = Ground;
@@ -273,6 +277,13 @@ void ChessGame::default_move(CvPoint move_input[]){
 				_Board[move_input[0].x][move_input[0].y] = W_Queen;
 			
 			MakeUCI(move_input[1], move_input[0], &temp_move);
+			_before_move.piece = _TValue2;
+			_before_move.position = move_input[0];
+		}else{
+			//자신의 턴이 아닐때 체스말을 움직임.
+			strcpy(temp_move.movement, "Invalid");
+			// 턴을 안옮기기 위해서 반전시킴
+			_Turn = !_Turn;
 		}
 	}
 	else if (_Turn == BLACK_TURN) {
@@ -287,6 +298,8 @@ void ChessGame::default_move(CvPoint move_input[]){
 				_Board[move_input[1].x][move_input[1].y] = B_Queen;
 
 			MakeUCI(move_input[0], move_input[1], &temp_move);
+			_before_move.piece = _TValue1;
+			_before_move.position = move_input[1];
 		}
 		else if (B_King <= _TValue2 && _TValue2 <= B_Pawn) {
 			_Board[move_input[0].x][move_input[0].y] = Ground;
@@ -296,6 +309,13 @@ void ChessGame::default_move(CvPoint move_input[]){
 				_Board[move_input[0].x][move_input[0].y] = B_Queen;
 
 			MakeUCI(move_input[1], move_input[0], &temp_move);
+			_before_move.piece = _TValue2;
+			_before_move.position = move_input[0];
+		}else{
+			//자신의 턴이 아닐때 체스말을 움직임.
+			strcpy(temp_move.movement, "Invalid");
+			// 턴을 안옮기기 위해서 반전시킴
+			_Turn = !_Turn;
 		}
 	}
 
@@ -404,5 +424,49 @@ char ChessGame::char_mapping(int position){
 			return 'h';
 		default:		//error
 			break;
+	}
+}
+
+int ChessGame::Mode_read(){
+	static int W_King_MOVED = false;
+	static int B_King_MOVED = false;
+	static int W_Rook_MOVED = false;
+	static int B_Rook_MOVED = false;
+
+	// 이전 움직임 좌표를 확인하여 flag를 지움
+	if(_before_move.piece == W_King)
+		W_King_MOVED = true;
+	else if(_before_move.piece == B_King)
+		B_King_MOVED = true;
+	else if(_before_move.piece == W_Rook)
+		W_Rook_MOVED = true;
+	else if(_before_move.piece == B_Rook)
+		B_Rook_MOVED = true;
+
+	if(_before_move.position.x == -1 || _before_move.position.y == -1){
+		return DEFAULT_MOVE;
+	}else{
+		// 앙파상 & 캐슬링 판정부
+		if(_Turn == WHITE_TURN){
+			if(W_King_MOVED == false && W_Rook_MOVED == false){
+				if((_Board[1][0] == Ground && _Board[2][0] == Ground && _Board[3][0] == Ground) || (_Board[5][0] == Ground && _Board[6][0] == Ground))
+					return CASTLING_MOVE;
+			}
+			
+			if(_before_move.piece == W_Pawn)
+				return ENPASSANT_MOVE;
+			else
+				return DEFAULT_MOVE;
+		}else if(_Turn == BLACK_TURN){
+			if(B_King_MOVED == false && B_Rook_MOVED == false){
+				if((_Board[1][7] == Ground && _Board[2][7] == Ground && _Board[3][7] == Ground) || (_Board[5][7] == Ground && _Board[6][7] == Ground))
+					return CASTLING_MOVE;
+			}
+			
+			if(_before_move.piece == B_Pawn){
+				return ENPASSANT_MOVE;
+			}else
+				return DEFAULT_MOVE;
+		}
 	}
 }

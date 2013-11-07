@@ -30,10 +30,7 @@ ChessRecognition::ChessRecognition() {
 }
 
 ChessRecognition::~ChessRecognition() {
-	CloseHandle(hThread);
-	DeleteCriticalSection(&cs);
-	DeleteCriticalSection(&vec_cs);
-	cvReleaseImage(&img_process);
+	exit();
 }
 
 void ChessRecognition::exit() {

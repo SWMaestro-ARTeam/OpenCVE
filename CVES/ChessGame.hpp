@@ -45,6 +45,11 @@ typedef struct move_format{
 	bool turn_flag;
 } move_format;
 
+typedef struct before_move{
+	int piece;
+	CvPoint position;
+} before_move;
+
 enum {			//체스말
 	Ground, 
 	W_King, W_Queen, W_Rook, W_Bishop, W_Knight, W_Pawn,
@@ -57,11 +62,10 @@ class ChessGame {
 
 private:
 	int _Board[8][8];
-	int before_move;
 	bool _Turn;
 	char recent_move[6];		//가장 최근 움직임을 저장
 	CvPoint _Before, _After;
-	
+	before_move _before_move;
 	IplImage *chessboard_img;
 	IplImage *chess_piece;
 

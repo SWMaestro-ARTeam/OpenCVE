@@ -32,6 +32,7 @@ EngineS::EngineS() {
 	IsStarted = false;
 	IsTictokEnable = false;
 	G_EngineS = this;
+	_Cam = NULL;
 
 	// 내부 연산에 사용되는 이미지 포인터 초기화
 	_TempPrev = NULL;
@@ -70,6 +71,11 @@ void EngineS::Initialize_ImageProcessing() {
 	if (_Cam != NULL) {
 		cvSetCaptureProperty(_Cam, CV_CAP_PROP_FRAME_WIDTH, SERVER_VIEW_DEFAULT_WIDTH);
 		cvSetCaptureProperty(_Cam, CV_CAP_PROP_FRAME_HEIGHT, SERVER_VIEW_DEFAULT_HEIGHT);
+	}
+	else {
+		CodeConverter _TCodeConverter;
+		MessageBox(NULL, _TCodeConverter.CharToWChar("Camera not Found."), _TCodeConverter.CharToWChar("Error"), 0);
+		EngineEnable = false;
 	}
 
 	// 모드 초기화.
@@ -350,7 +356,7 @@ void EngineS::imgproc_mode(){
 
 		// mode 1에서 2초 이상 지났을 경우 다음 모드로 진행
 		if (time(NULL) - _tempsec > 2) {
-			//_ImageProcessMode++;
+			_ImageProcessMode++;
 			_RGB = cvScalar(0, 255);
 		}
 
@@ -431,7 +437,7 @@ void EngineS::imgproc_mode(){
 					CvPoint out[4];
 					out[0] = out[1] = out[2] = out[3] = cvPoint(-1, -1);
 					// 체스말의 움직임을 계산.
-					_CheckInChess->Calculate_Movement(_OtherBinaryImage, _CrossPoint, &out[0], &out[1]);
+					_CheckInChess->Calculate_Movement(_OtherBinaryImage, _CrossPoint, out);
 
 					// 디텍션 된 결과가 두개 이상 존재한다면 실행
 					if (out[0].x != -1 && out[1].x != -1) {
@@ -440,8 +446,18 @@ void EngineS::imgproc_mode(){
 						_SubCheck = false;
 						_BeforeHandFirst = true;
 
+						// 이전 보드의 상태를 보고 예측함
+						int predicted_mode = _ChessGame.Mode_read();
+						printf("%d\n", predicted_mode);
+						// 예측값과 현재 디텍션된 값을 비교하여 실측값을 넘겨줌
+						int out_count = 0;
+						for(int i = 0; i < 4; i++){
+							if(out[i].x != -1)	out_count++;
+						}
+						predicted_mode = (out_count > predicted_mode ? out_count : predicted_mode);
+
 						// chessgame 이동부.
-						_ChessGame.Chess_process(out, 0);
+						_ChessGame.Chess_process(out, /*predicted_mode*/2);
 
 						//텔레파시 콜백 호출
 						char buf[32];
