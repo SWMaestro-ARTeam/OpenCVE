@@ -65,6 +65,7 @@ private:
 	bool _Turn;
 	char recent_move[6];		//가장 최근 움직임을 저장
 	CvPoint _Before, _After;
+	CvPoint before_move_pawn;
 	before_move _before_move;
 	IplImage *chessboard_img;
 	IplImage *chess_piece;
