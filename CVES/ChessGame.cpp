@@ -180,106 +180,79 @@ void ChessGame::enpassant_move(CvPoint move_input[]){
 	_TValue3 = _Board[move_input[2].x][move_input[2].y];
 
 	if(_Turn == WHITE_TURN){
-		if(_TValue1 == Ground && move_input[0].x - 1 == before_move_pawn.x){
+		if(_TValue1 == Ground && move_input[0].y - 1 == before_move_pawn.x){
+			if(_TValue2 == W_Pawn){
+
+				// 1. 폰이 이동할 예정인 빈공간과 현재 이동한 폰의 위치를 스왑한다
+				// 2. 나머지 하나는 다른 색 폰이므로 제거를 해주기 위해 Ground로 바꾸어준다
+
+				_V_SWAP(_Board[move_input[0].x][move_input[0].y],_Board[move_input[1].x][move_input[1].y]);
+				_Board[move_input[2].x][move_input[2].y] = Ground;
+			}
+			else if(_TValue3 == W_Pawn){
+				_V_SWAP(_Board[move_input[0].x][move_input[0].y],_Board[move_input[2].x][move_input[2].y]);
+				_Board[move_input[1].x][move_input[1].y] = Ground;
+			}
+		}
+		else if(_TValue2 == Ground && move_input[1].y - 1 == before_move_pawn.x){
+			if(_TValue1 == W_Pawn){
+				_V_SWAP(_Board[move_input[1].x][move_input[1].y],_Board[move_input[0].x][move_input[0].y]);
+				_Board[move_input[2].x][move_input[2].y] = Ground;
+			}
+			else if(_TValue3 == W_Pawn){
+				_V_SWAP(_Board[move_input[1].x][move_input[1].y],_Board[move_input[2].x][move_input[2].y]);
+				_Board[move_input[0].x][move_input[0].y] = Ground;
+			}
+		}
+		else if(_TValue3 == Ground && move_input[2].y - 1 == before_move_pawn.x){
+			if(_TValue1 == W_Pawn){
+				_V_SWAP(_Board[move_input[2].x][move_input[2].y],_Board[move_input[0].x][move_input[0].y]);
+				_Board[move_input[1].x][move_input[1].y] = Ground;
+			}
+			else if(_TValue2 == W_Pawn){
+				_V_SWAP(_Board[move_input[2].x][move_input[2].y],_Board[move_input[1].x][move_input[1].y]);
+				_Board[move_input[0].x][move_input[0].y] = Ground;
+			}
+		}
+		else{
 			default_move(move_input);
 			return;
-		}
-		else if(_TValue2 == Ground && move_input[1].x - 1 == before_move_pawn.x){
-			default_move(move_input);
-			return;
-		}
-		else if(_TValue3 == Ground && move_input[2].x - 1 == before_move_pawn.x){
-			default_move(move_input);
-			return;
-		}
-		
-		if(_TValue1 == W_Pawn){
-			if(_TValue2 == B_Pawn){
-				_V_SWAP(_Board[move_input[0].x][move_input[0].y], _Board[move_input[2].x][move_input[2].y]);
-				_Board[move_input[0].x][move_input[0].y] = 0;
-				_Board[move_input[1].x][move_input[1].y] = 0;
-			}
-			else if(_TValue3 == B_Pawn){
-				_V_SWAP(_Board[move_input[0].x][move_input[0].y], _Board[move_input[1].x][move_input[1].y]);
-				_Board[move_input[0].x][move_input[0].y] = 0;
-				_Board[move_input[2].x][move_input[2].y] = 0;
-			}
-		}
-		else if(_TValue2 == W_Pawn){
-			if(_TValue1 == B_Pawn){
-				_V_SWAP(_Board[move_input[1].x][move_input[1].y], _Board[move_input[2].x][move_input[2].y]);
-				_Board[move_input[0].x][move_input[0].y] = 0;
-				_Board[move_input[1].x][move_input[1].y] = 0;
-			}
-			else if(_TValue3 == B_Pawn){
-				_V_SWAP(_Board[move_input[1].x][move_input[1].y], _Board[move_input[0].x][move_input[0].y]);
-				_Board[move_input[1].x][move_input[1].y] = 0;
-				_Board[move_input[2].x][move_input[2].y] = 0;
-			}
-		}
-		else if(_TValue3 == W_Pawn){
-			if(_TValue2 == B_Pawn){
-				_V_SWAP(_Board[move_input[2].x][move_input[2].y], _Board[move_input[0].x][move_input[0].y]);
-				_Board[move_input[2].x][move_input[2].y] = 0;
-				_Board[move_input[1].x][move_input[1].y] = 0;
-			}
-			else if(_TValue1 == B_Pawn){
-				_V_SWAP(_Board[move_input[2].x][move_input[2].y], _Board[move_input[1].x][move_input[1].y]);
-				_Board[move_input[0].x][move_input[0].y] = 0;
-				_Board[move_input[2].x][move_input[2].y] = 0;
-			}
 		}
 	}
 	else if(_Turn == BLACK_TURN){
-
-		if(_TValue1 == Ground && move_input[0].x + 1 == before_move_pawn.x){
+		if(_TValue1 == Ground && move_input[0].y + 1 == before_move_pawn.x){
+			if(_TValue2 == B_Pawn){
+				_V_SWAP(_Board[move_input[0].x][move_input[0].y],_Board[move_input[1].x][move_input[1].y]);
+				_Board[move_input[2].x][move_input[2].y] = Ground;
+			}
+			else if(_TValue3 == B_Pawn){
+				_V_SWAP(_Board[move_input[0].x][move_input[0].y],_Board[move_input[2].x][move_input[2].y]);
+				_Board[move_input[1].x][move_input[1].y] = Ground;
+			}
+		}
+		else if(_TValue2 == Ground && move_input[1].y + 1 == before_move_pawn.x){
+			if(_TValue1 == B_Pawn){
+				_V_SWAP(_Board[move_input[1].x][move_input[1].y],_Board[move_input[0].x][move_input[0].y]);
+				_Board[move_input[2].x][move_input[2].y] = Ground;
+			}
+			else if(_TValue3 == B_Pawn){
+				_V_SWAP(_Board[move_input[1].x][move_input[1].y],_Board[move_input[2].x][move_input[2].y]);
+				_Board[move_input[0].x][move_input[0].y] = Ground;
+			}
+		}
+		else if(_TValue3 == Ground && move_input[2].y + 1 == before_move_pawn.x){
+			if(_TValue1 == B_Pawn){
+				_V_SWAP(_Board[move_input[2].x][move_input[2].y],_Board[move_input[0].x][move_input[0].y]);
+				_Board[move_input[1].x][move_input[1].y] = Ground;
+			}
+			else if(_TValue2 == B_Pawn){
+				_V_SWAP(_Board[move_input[2].x][move_input[2].y],_Board[move_input[1].x][move_input[1].y]);
+				_Board[move_input[0].x][move_input[0].y] = Ground;
+			}
+		}
+		else{
 			default_move(move_input);
 			return;
-		}
-		else if(_TValue2 == Ground && move_input[1].x + 1 == before_move_pawn.x){
-			default_move(move_input);
-			return;
-		}
-		else if(_TValue3 == Ground && move_input[2].x + 1 == before_move_pawn.x){
-			default_move(move_input);
-			return;
-		}
-
-		if(_TValue1 == B_Pawn){
-			if(_TValue2 == W_Pawn){
-				_V_SWAP(_Board[move_input[0].x][move_input[0].y], _Board[move_input[2].x][move_input[2].y]);
-				_Board[move_input[0].x][move_input[0].y] = 0;
-				_Board[move_input[1].x][move_input[1].y] = 0;
-			}
-			else if(_TValue3 == W_Pawn){
-				_V_SWAP(_Board[move_input[0].x][move_input[0].y], _Board[move_input[1].x][move_input[1].y]);
-				_Board[move_input[0].x][move_input[0].y] = 0;
-				_Board[move_input[2].x][move_input[2].y] = 0;
-			}
-		}
-		else if(_TValue2 == B_Pawn){
-			if(_TValue1 == W_Pawn){
-				_V_SWAP(_Board[move_input[1].x][move_input[1].y], _Board[move_input[2].x][move_input[2].y]);
-				_Board[move_input[0].x][move_input[0].y] = 0;
-				_Board[move_input[1].x][move_input[1].y] = 0;
-			}
-			else if(_TValue3 == W_Pawn){
-				_V_SWAP(_Board[move_input[1].x][move_input[1].y], _Board[move_input[0].x][move_input[0].y]);
-				_Board[move_input[1].x][move_input[1].y] = 0;
-				_Board[move_input[2].x][move_input[2].y] = 0;
-			}
-		}
-		else if(_TValue3 == B_Pawn){
-			if(_TValue2 == W_Pawn){
-				_V_SWAP(_Board[move_input[2].x][move_input[2].y], _Board[move_input[0].x][move_input[0].y]);
-				_Board[move_input[2].x][move_input[2].y] = 0;
-				_Board[move_input[1].x][move_input[1].y] = 0;
-			}
-			else if(_TValue1 == W_Pawn){
-				_V_SWAP(_Board[move_input[2].x][move_input[2].y], _Board[move_input[1].x][move_input[1].y]);
-				_Board[move_input[0].x][move_input[0].y] = 0;
-				_Board[move_input[2].x][move_input[2].y] = 0;
-			}
 		}
 	}
 }
