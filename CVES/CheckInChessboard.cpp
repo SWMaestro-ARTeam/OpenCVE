@@ -127,7 +127,7 @@ CvPoint CheckInChessboard::Get_ChessboxPos(int width, int height, vector<ChessPo
 	return cvPoint(-1,-1);
 }
 
-void CheckInChessboard::Calculate_Movement(IplImage *bin, vector<ChessPoint> cross_point, CvPoint *out1, CvPoint *out2) {
+void CheckInChessboard::Calculate_Movement(IplImage *bin, vector<ChessPoint> cross_point, CvPoint out[]) {
 	// 차영상의 결과 이미지를 이용하여 체스보드의 score를 부여.
 	// score / 면적 을 이용하여 가장 많이 변한 두 좌표를 반환.
 	float score_box[8][8]; // 면적비율 저장 배열.
@@ -162,30 +162,57 @@ void CheckInChessboard::Calculate_Movement(IplImage *bin, vector<ChessPoint> cro
 	}
 
 	// 스코어를 면적으로 나눠줘서 비율을 구함.
-	// 가장 비율이 큰 두 좌표를 리턴.
-	float temp_max1, temp_max2;
-	CvPoint p_max1, p_max2;
+	// 가장 비율이 큰 두 좌표를 리턴. -> num 개의 좌표를 리턴
+	float temp_max[4];
+	CvPoint p_max[4];
 
-	temp_max1 = temp_max2 = -1.0;
-	p_max1 = p_max2 = cvPoint(-1, -1);
+	//초기화
+	for(int i = 0; i < 4; i++){
+		p_max[i] = cvPoint(-1,-1);
+		temp_max[i] = -1.0;
+	}
+
+	//0번지부터 큰순으로 연산한 결과 저장
 	for (register int i = 0 ; i < 8; i++) {
 		for (register int j = 0; j < 8; j++) {
 			score_box[i][j] /= chess_area[i][j];
 
 			if (score_box[i][j] >= score_threshold) {
-				if (temp_max1 <= score_box[i][j]) {
-					temp_max2 = temp_max1;
-					p_max2 = p_max1;
-					temp_max1 = score_box[i][j];
-					p_max1 = cvPoint(i, j);
-				}
-				else if (temp_max1 > score_box[i][j] && score_box[i][j] > temp_max2) {
-					temp_max2 = score_box[i][j];
-					p_max2 = cvPoint(i, j);
+				if(temp_max[0] <= score_box[i][j]){
+					temp_max[3] = temp_max[2];
+					temp_max[2] = temp_max[1];
+					temp_max[1] = temp_max[0];
+					temp_max[0] = score_box[i][j];
+
+					p_max[3] = p_max[2];
+					p_max[2] = p_max[1];
+					p_max[1] = p_max[0];
+					p_max[0] = cvPoint(i,j);
+				}else if(temp_max[0] > score_box[i][j] && score_box[i][i] >= temp_max[1]){
+					temp_max[3] = temp_max[2];
+					temp_max[2] = temp_max[1];
+					temp_max[1] = score_box[i][j];
+
+					p_max[3] = p_max[2];
+					p_max[2] = p_max[1];
+					p_max[1] = cvPoint(i,j);
+				}else if(temp_max[1] > score_box[i][j] && score_box[i][i] >= temp_max[2]){
+					temp_max[3] = temp_max[2];
+					temp_max[2] = score_box[i][j];
+
+					p_max[3] = p_max[2];
+					p_max[2] = cvPoint(i,j);
+				}else if(temp_max[2] > score_box[i][j] && score_box[i][i] >= temp_max[3]){
+					temp_max[3] = score_box[i][j];
+
+					p_max[3] = cvPoint(i,j);
 				}
 			}
 		}
 	}
 
-	*out1 = p_max1, *out2 = p_max2;
+	//4개에 할당
+	for(int i = 0; i < 4; i++){
+		out[i] = p_max[i];
+	}
 }

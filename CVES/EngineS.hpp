@@ -44,6 +44,8 @@
 #include "Telepathy.hpp"
 // Time Module
 #include "Time.hpp"
+
+#include "CodeConverter.hpp"
 // String Tools
 #include "StringTools.hpp"
 

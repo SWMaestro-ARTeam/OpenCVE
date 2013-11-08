@@ -30,7 +30,11 @@ ChessRecognition::ChessRecognition() {
 }
 
 ChessRecognition::~ChessRecognition() {
+<<<<<<< HEAD
 	//exit();
+=======
+	exit();
+>>>>>>> origin/CVES_ChessRecognition_Extended
 }
 
 void ChessRecognition::exit() {
@@ -507,6 +511,9 @@ void ChessRecognition::Chess_recognition_process(IplImage *src, vector<ChessPoin
 	// 영상 이진화.
 	_CLSA->GrayImageBinarization(src);
 
+// 	cvDilate(src, src, 0, 3);
+// 	cvErode(src, src, 0, 3);
+
 	/*while (1) {
 		cvShowImage("ImageBin",src);
 		if (cvWaitKey(33))
@@ -517,12 +524,12 @@ void ChessRecognition::Chess_recognition_process(IplImage *src, vector<ChessPoin
 
 	// 체스판의 경계를 구하여 in_line_point 변수들에 저장.
 	_CLSA->GetgraySidelinesPoint(src);
-	//
-	//while (1) {
-	//	cvShowImage("findCrossPoint", src);
-	//	if (cvWaitKey(33))
-	//		break;
-	//}
+	
+	while (1) {
+		cvShowImage("findCrossPoint", src);
+		if (cvWaitKey(33))
+			break;
+	}
 	
 	// 해당 라인에서 9곳의 체스판 경계를 찾지 못 하였으면,
 	// 탐색라인을 이동시켜 적절한 탐색라인을 찾는다.
