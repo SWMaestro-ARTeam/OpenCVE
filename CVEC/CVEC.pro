@@ -91,20 +91,23 @@ INCLUDEPATH += . \
 LIBS +=	\
 	-lws2_32 \
 	-lpsapi \
-	-lAdvAPI32
+	-lAdvAPI32 \
+	-lrpcrt4
 #LIBS += -L$$MINGW_PATH/lib \
 
-#win32 {
-## Import Library for Debug
-#win32:CONFIG(debug, debug|release): \
-#	LIBS += -lQt5Cored \
+win32 {
+# Import Library for Debug
+win32:CONFIG(debug, debug|release): \
+#	LIBS +=	-L$$QT_MINGW_PATH/lib \
+#	-lQt5Cored \
 #	-lQt5Guid \
 #	-lQt5Widgetsd
-## Import Library for Release
-#else:win32:CONFIG(release, debug|release): \
-#	LIBS += -lQt5Core \
+# Import Library for Release
+win32:CONFIG(release, debug|release): \
+#	LIBS +=	-L$$QT_MINGW_PATH/lib \
+#	-lQt5Core \
 #	-lQt5Gui \
 #	-lQt5Widgets
-#}
-#else {
-#}
+}
+else {
+}

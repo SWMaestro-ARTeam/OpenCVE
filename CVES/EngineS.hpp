@@ -84,11 +84,14 @@ private:
 
 	Telepathy::Server *_TelepathyServer;
 	InternalProtocolSeeker _InternalProtocolSeeker;
+	StringTools _StringTools;
 
 	int _ImageProcessMode;				//모드 설정
 	bool _SubCheck;
 	bool _InHandCheck;
 	bool _BeforeHandFirst;
+	bool _IsRestorePossible;
+	bool _IsTrun;
 
 	CvCapture *_Cam; // 캠.
 	IplImage *_CamOriginalImage; // 원본 이미지.
@@ -125,8 +128,6 @@ private:
 
 	void Set_ClientData(SOCKET Socket, int Type);
 	void Process_Info(CommandString *IPCS, SOCKET Socket);
-	/*void Process_Info_Go(CommandString *IPCS);
-	void Process_Info_Position(CommandString *IPCS);*/
 
 	bool Check_Exit();
 
@@ -173,8 +174,6 @@ public:
 	bool IsTictokEnable;
 
 	queue<ServerGetInformation *> *CommandQueue;
-
-	/*Telepathy::Server *Get_Telepathy_Server();*/
 
 	void EngineS_Start();
 };

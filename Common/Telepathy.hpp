@@ -41,6 +41,7 @@
 //#include <winsock2.h>
 #else
 #include <windows.h>
+#include <process.h>
 #endif
 #include <tchar.h>
 //#endif
@@ -109,6 +110,10 @@ public:
 		typedef void (* _T_SERVERRECEIVEDCALLBACK)(char *Buffer, SOCKET ClientSocket);
 		typedef void (* _T_ANYCONNECTIONNOTIFIER)(SOCKET ClientSocket);
 
+		// Server Receive Callback Pointer.
+		_T_SERVERRECEIVEDCALLBACK TServerReceivedCallback;
+		_T_ANYCONNECTIONNOTIFIER TAnyConnentionNotifier;
+
 		bool ServerInitialize();
 		bool ServerStart();
 		void ServerClose();
@@ -118,9 +123,37 @@ public:
 		bool SendDataToOne(char *Str, SOCKET ClientSocket);
 		void SendDataToAll(char *Str);
 
-		// Server Receive Callback Pointer.
-		_T_SERVERRECEIVEDCALLBACK TServerReceivedCallback;
-		_T_ANYCONNECTIONNOTIFIER TAnyConnentionNotifier;
+		static
+#if WINDOWS_SYS
+		UINT WINAPI
+			//DWORD WINAPI
+#elif POSIX_SYS
+		// using pthread
+		void *
+#endif
+			Server_ConnectionThread(
+#if WINDOWS_SYS
+			LPVOID
+#elif POSIX_SYS
+			void *
+#endif
+			Param);
+
+		static
+#if WINDOWS_SYS
+			UINT WINAPI
+			//DWORD WINAPI
+#elif POSIX_SYS
+			// using pthread
+			void *
+#endif
+			Server_ReceivingThread(
+#if WINDOWS_SYS
+			LPVOID
+#elif POSIX_SYS
+			void *
+#endif
+			Param);
 	};
 
 	// Client Class
@@ -146,6 +179,10 @@ public:
 		typedef void (* _T_CLIENTRECEIVEDCALLBACK)(char *Buffer);
 		typedef void (* _T_CLIENTDISCONNECTEDCALLBACK)();
 
+		// Client Receive Callback Pointer.
+		_T_CLIENTRECEIVEDCALLBACK TClientReceivedCallback;
+		_T_CLIENTDISCONNECTEDCALLBACK TClientDisconnectedCallback;
+
 		bool ClientInitialize();
 		void ClientReceiveStart();
 		void ClientClose();
@@ -157,9 +194,21 @@ public:
 
 		bool SendData(char *Str);
 
-		// Client Receive Callback Pointer.
-		_T_CLIENTRECEIVEDCALLBACK TClientReceivedCallback;
-		_T_CLIENTDISCONNECTEDCALLBACK TClientDisconnectedCallback;
+		static 
+#if WINDOWS_SYS
+		UINT WINAPI
+			//DWORD WINAPI
+#elif POSIX_SYS
+		// using pthread
+		void *
+#endif
+			Client_ReceivingThread(
+#if WINDOWS_SYS
+			LPVOID
+#elif POSIX_SYS
+			void *
+#endif
+			Param);
 	};
 };
 #endif

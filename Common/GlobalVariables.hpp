@@ -41,23 +41,39 @@ typedef struct _CommandString {
 	list<string>::iterator StringListIter;
 	list<char *>::iterator CharArrayListIter;
 
+	bool IsIsInitializeToStringList;
+	bool IsIsInitializeToCharArrayList;
+
 	bool IsInitialize;
 	int EndPoint;
 	//int SeekPoint;
 
+	/*
 	_CommandString() {
 		StringList = new list<string>();
 		CharArrayList = new list<char *>();
+		//IsIsInitializeToStringList = true;
+		//IsIsInitializeToCharArrayList = true;
 		EndPoint = 0;
+		IsInitialize = false;
+	}
+	*/
+	~_CommandString() {
+		if (IsInitialize == true)
+			Release();
 	}
 
 	_CommandString(list<string> *_UCIStringList) {
-		if (IsInitialize == true) Release();
+		IsIsInitializeToStringList = false;
+		IsIsInitializeToCharArrayList = false;
+		IsInitialize = false;
 		UCIStringInitialize(_UCIStringList);
 	}
 
 	_CommandString(list<char *> *_UCICharArrayList) {
-		if (IsInitialize == true) Release();
+		IsIsInitializeToStringList = false;
+		IsIsInitializeToCharArrayList = false;
+		IsInitialize = false;
 		UCICharArrayInitialize(_UCICharArrayList);
 	}
 
@@ -68,6 +84,7 @@ typedef struct _CommandString {
 		StringListIter = StringList->begin();
 		EndPoint = _UCIStringList->size();
 		IsInitialize = true;
+		IsIsInitializeToStringList = true;
 	}
 
 	void UCICharArrayInitialize(list<char *> *_UCICharArrayList) {
@@ -77,11 +94,15 @@ typedef struct _CommandString {
 		CharArrayListIter = CharArrayList->begin();
 		EndPoint = CharArrayList->size();
 		IsInitialize = true;
+		IsIsInitializeToCharArrayList = true;
 	}
 
 	void Release() {
-		if (StringList != NULL) delete StringList;
-		if (CharArrayList != NULL) delete CharArrayList;
+		if (StringList != NULL && IsIsInitializeToStringList == true)
+			delete StringList;
+
+		if (CharArrayList != NULL && IsIsInitializeToCharArrayList == true)
+			delete CharArrayList;
 
 		IsInitialize = false;
 	}

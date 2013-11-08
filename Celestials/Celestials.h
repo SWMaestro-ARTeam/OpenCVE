@@ -31,6 +31,7 @@
 
 #include <QMainWindow>
 
+#include <qglobal.h>
 namespace Ui {
 	class Celestials;
 }

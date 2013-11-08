@@ -54,7 +54,7 @@ ChessGame::~ChessGame() {
 }
 
 
-void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
+bool ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 	CvPoint _TMove[4];
 
 	switch(MOVE_MODE){
@@ -78,7 +78,10 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 		break;
 	}
 
+	//
 	_Turn = !_Turn;
+
+	return !_Turn;
 }
 
 void ChessGame::castling_move(CvPoint move_input[]){
@@ -349,8 +352,9 @@ void ChessGame::Show_chessImage() {
 			}
 		}
 	}
-
+#if !USING_QT
 	cvShowImage("ChessGame", tempgame_board);
+#endif
 	cvReleaseImage(&tempgame_board);
 }
 
@@ -377,7 +381,8 @@ void ChessGame::Get_RecentMove(char *str){
 	//}
 	//strcpy(str, buf);
 	char buf[32];
-	
+
+	memset(buf, NULL, sizeof(buf));
 	strcpy(buf, "Move ");
 	strcat(buf, recent_move);
 

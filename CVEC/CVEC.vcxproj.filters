@@ -129,6 +129,15 @@
     <Filter Include="Common\StringTools\Source">
       <UniqueIdentifier>{4b08f17b-6c23-407d-9a1a-e6585fb1f7b3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="CVEC_System\Settings">
+      <UniqueIdentifier>{9aacf44a-de6a-46fb-8d78-87f862ae596a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVEC_System\Settings\Header">
+      <UniqueIdentifier>{42c40d48-0019-4a90-a1d3-324daa083c0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVEC_System\Settings\Source">
+      <UniqueIdentifier>{5aaf3882-aaba-4623-a486-bd4d6b87673d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UCICommandSesker.cpp">

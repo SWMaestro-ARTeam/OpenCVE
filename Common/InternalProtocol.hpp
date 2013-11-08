@@ -25,6 +25,9 @@
 #ifndef _InternalProtocol_hpp_
 #define _InternalProtocol_hpp_
 
+// + : 작업 완료.
+// ? : 작업 미정.
+
 /************************************************************************/
 /* Type String.                                                         */
 /************************************************************************/
@@ -37,50 +40,52 @@
 #define STR_I_INFO_TYPE "Type"
 
 // CVEC -> CVES
-#define STR_I_SERVERKILL "ServerKill"
-#define STR_I_SERVERISALIVE "ServerIsAlive"
-#define STR_I_IMWHITE "ImWhite"
-#define STR_I_STOP "Stop"
-#define STR_I_START "Start"
-#define STR_I_ISRESTOREPOSSIBLE "IsRestorePossible"
-#define STR_I_ISSERVERREADY "IsServerReady"
+#define STR_I_SERVERKILL "ServerKill" // +
+#define STR_I_SERVERISALIVE "ServerIsAlive" // ?
+#define STR_I_STOP "Stop" // +
+#define STR_I_START "Start" // +
+#define STR_I_ISRESTOREPOSSIBLE "IsRestorePossible" // +
+#define STR_I_ISSERVERREADY "IsServerReady" // +
 // Info Command For 'CVEC' Only.
-#define STR_I_INFO_TYPE_CLIENT "Client" //
+#define STR_I_INFO_TYPE_CLIENT "Client" // +
 
-#define STR_I_INFO_GO "Go" //
-#define STR_I_INFO_BLACKTIME "BlackTime" //
-#define STR_I_INFO_WHITETIME "WhiteTime" //
-#define STR_I_INFO_TURN "Turn" //
+#define STR_I_INFO_GO "Go" // +
+#define STR_I_INFO_BLACKTIME "BlackTime" // +
+#define STR_I_INFO_WHITETIME "WhiteTime" // +
+#define STR_I_INFO_TURN "Turn" // +
 
 #define STR_I_INFO_POSITION "Position" //
 #define STR_I_INFO_ENEMYMOVE "EnemyMove" //
 #define STR_I_INFO_MOVENULL "MoveNULL" //
+#define STR_I_INFO_WHITE "White"
+#define STR_I_INFO_BLACK "Black"
 
 // CVES -> CVEC
-#define STR_I_ALIVE "Alive"
-#define STR_I_BUSY "Busy"
+#define STR_I_ALIVE "Alive" // +
+#define STR_I_BUSY "Busy" // ?
 #define STR_I_MOVE "Move"
-#define STR_I_RESTOREOK "RestoreOK"
-#define STR_I_RESTORENOT "RestoreNOT"
-#define STR_I_SERVERISREADY "ServerisReady"
+#define STR_I_RESTOREOK "RestoreOK" // +
+#define STR_I_RESTORENOT "RestoreNOT" // +
+#define STR_I_SERVERISREADY "ServerisReady" // +
 
 // CVES -> Observer
+#define STR_I_TICTOK "TicTok" // ?
+#define STR_I_TICTOKISON "TicTokisOn" // +
+#define STR_I_TICTOKISOFF "TicTokisOff" // +
+
+// Observer -> CVES
 #define STR_I_STATUSNOW "StatusNow"
 #define STR_I_TICTOKON "TicTokOn"
 #define STR_I_TICTOKOFF "TicTokOff"
-
-// Observer -> CVES
-#define STR_I_TICTOK "TicTok"
-#define STR_I_TICTOKISON "TicTokisOn"
-#define STR_I_TICTOKISOFF "TicTokisOff"
 // Info Command For 'CVEO' Only.
-#define STR_I_INFO_TYPE_OBSERVER "Observer" //
+#define STR_I_INFO_TYPE_OBSERVER "Observer" // +
 
 /************************************************************************/
 /* Type Number.                                                         */
 /************************************************************************/
 
 // CVES -> Any(CVEC, CVEO)
+// Program Type.
 #define VALUE_I_PTYPE 10001
 
 // Any(CVEC, CVEO) -> CVES
@@ -90,22 +95,25 @@
 // CVEC -> CVES
 #define VALUE_I_SERVERKILL 1100
 #define VALUE_I_SERVERISALIVE 1200
-#define VALUE_I_IMWHITE 1300
-#define VALUE_I_STOP 1400
-#define VALUE_I_START 1500
-#define VALUE_I_ISRESTOREPOSSIBLE 1600
-#define VALUE_I_ISSERVERREADY 1700
+#define VALUE_I_STOP 1300
+#define VALUE_I_START 1400
+#define VALUE_I_ISRESTOREPOSSIBLE 1500
+#define VALUE_I_ISSERVERREADY 1600
 // Info Command For 'CVEC' Only.
 #define VALUE_I_INFO_TYPE_CLIENT 11110 //
 
+// Info Go.
 #define VALUE_I_INFO_GO 11200 //
 #define VALUE_I_INFO_BLACKTIME 11210 //
 #define VALUE_I_INFO_WHITETIME 11220 //
 #define VALUE_I_INFO_TURN 11230 //
 
+// Info Position.
 #define VALUE_I_INFO_POSITION 11300 //
-#define VALUE_I_INFO_ENEMYMOVE 11400 //
-#define VALUE_I_INFO_MOVENULL 11500 //
+#define VALUE_I_INFO_ENEMYMOVE 11310 //
+#define VALUE_I_INFO_MOVENULL 11320 //
+#define VALUE_I_INFO_WHITE 11330 // +
+#define VALUE_I_INFO_BLACK 11340 // +
 
 // CVES -> CVEC
 #define VALUE_I_ALIVE 2100
@@ -116,14 +124,14 @@
 #define VALUE_I_SERVERISREADY 2600
 
 // CVES -> Observer
-#define VALUE_I_STATUSNOW 3100
-#define VALUE_I_TICTOKON 3200
-#define VALUE_I_TICTOKOFF 3300
+#define VALUE_I_TICTOK 3100
+#define VALUE_I_TICTOKISON 3200
+#define VALUE_I_TICTOKISOFF 3300
 
 // Observer -> CVES
-#define VALUE_I_TICTOK 4100
-#define VALUE_I_TICTOKISON 4200
-#define VALUE_I_TICTOKISOFF 4300
+#define VALUE_I_STATUSNOW 4100
+#define VALUE_I_TICTOKON 5200
+#define VALUE_I_TICTOKOFF 6300
 // Info Command For 'CVEO' Only.
 #define VALUE_I_INFO_TYPE_OBSERVER 11120
 

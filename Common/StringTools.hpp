@@ -26,6 +26,7 @@
 #ifndef _StringTools_hpp_
 #define _StringTools_hpp_
 
+#include <string.h>
 #include <string>
 
 using namespace std;
@@ -36,7 +37,7 @@ private:
 public:
 	/*template<typename T>
 	string ToString(const T& Any);*/
-	const char *StirngToConstCharPointer(string Str);
+	const char *StringToConstCharPointer(string Str);
 	char *ConstCharToChar(const char *Str);
 	char *StringToChar(string Str);
 };

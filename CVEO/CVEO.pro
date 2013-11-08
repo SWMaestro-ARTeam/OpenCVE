@@ -43,35 +43,38 @@ QT_OPENGLES2_ROOT = $$QT_MSVC2012_32_PATH/include/QtANGLE
 OPENCVE_ROOT = $$PROJECT_PATH/OpenCVE
 
 ## Include Path.
-#INCLUDEPATH += . \
-#			# Qt Open GL ES2 Root
-##			+= $$QT_OPENGLES2_ROOT \
-#			# OPEMCVE Root
-##			+= $$OPENCVE_ROOT/CVES \
-##			+= $$OPENCVE_ROOT/CVEC \
-#			+= $$OPENCVE_ROOT/Common
-#			# OPENCV Root
-##			+= $$OPENCV_PATH/build/include \
-##			+= $$OPENCV_PATH/include/opencv
+INCLUDEPATH += . \
+			# Qt Open GL ES2 Root
+#			+= $$QT_OPENGLES2_ROOT \
+			# OPEMCVE Root
+#			+= $$OPENCVE_ROOT/CVES \
+#			+= $$OPENCVE_ROOT/CVEC \
+			+= $$OPENCVE_ROOT/Common
+			# OPENCV Root
+#			+= $$OPENCV_PATH/build/include \
+#			+= $$OPENCV_PATH/include/opencv
 
-## Import libws2_32
-#LIBS +=	\
-#	-lws2_32 \
-#	-lpsapi \
-#	-lAdvAPI32
+# Import libws2_32
+LIBS +=	\
+	-lws2_32 \
+	-lpsapi \
+	-lAdvAPI32 \
+	-lrpcrt4
 ##LIBS += -L$$MINGW_PATH/lib \
 
-#win32 {
-## Import Library for Debug
-#win32:CONFIG(debug, debug|release): \
-#	LIBS += -lQt5Cored \
+win32 {
+# Import Library for Debug
+win32:CONFIG(debug, debug|release): \
+#	LIBS +=	-L$$QT_MINGW_PATH/lib \
+#	-lQt5Cored \
 #	-lQt5Guid \
 #	-lQt5Widgetsd
-## Import Library for Release
-#else:win32:CONFIG(release, debug|release): \
-#	LIBS += -lQt5Core \
+# Import Library for Release
+win32:CONFIG(release, debug|release): \
+#	LIBS +=	-L$$QT_MINGW_PATH/lib \
+#	-lQt5Core \
 #	-lQt5Gui \
 #	-lQt5Widgets
-#}
-#else {
-#}
+}
+else {
+}
