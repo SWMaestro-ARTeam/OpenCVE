@@ -63,19 +63,19 @@ void ChessGame::Chess_process(CvPoint input1[], int MOVE_MODE) {
 	switch(MOVE_MODE){
 	case CASTLING_MOVE:
 		for (register int i = 0; i < 4; i++)
-			_TMove[i] = cvPoint(input1[i].y, input1[i].x);
+			_TMove[i] = cvPoint(input1[i].x, input1[i].y);
 		
 		castling_move(_TMove);
 		break;
 	case ENPASSANT_MOVE:
 		for (register int i = 0; i < 3; i++)
-			_TMove[i] = cvPoint(input1[i].y, input1[i].x);
+			_TMove[i] = cvPoint(input1[i].x, input1[i].y);
 
 		enpassant_move(_TMove);
 		break;
 	case DEFAULT_MOVE:
 		for (register int i = 0; i < 2; i++)
-			_TMove[i] = cvPoint(input1[i].y, input1[i].x);
+			_TMove[i] = cvPoint(input1[i].x, input1[i].y);
 
 		default_move(_TMove);
 		break;
@@ -304,7 +304,7 @@ void ChessGame::default_move(CvPoint move_input[]){
 			_Board[move_input[1].x][move_input[1].y] = Ground;
 			_V_SWAP(_Board[move_input[0].x][move_input[0].y], _Board[move_input[1].x][move_input[1].y]);
 			
-			if(_TValue1 == W_Pawn && move_input[1].x == 8)
+			if(_TValue1 == W_Pawn && move_input[1].y == 7)
 				 _Board[move_input[1].x][move_input[1].y] = W_Queen;
 			
 			MakeUCI(move_input[0], move_input[1], &temp_move);
@@ -315,7 +315,7 @@ void ChessGame::default_move(CvPoint move_input[]){
 			_Board[move_input[0].x][move_input[0].y] = Ground;
 			_V_SWAP(_Board[move_input[0].x][move_input[0].y], _Board[move_input[1].x][move_input[1].y]);
 			
-			if(_TValue1 == W_Pawn && move_input[0].x == 8)
+			if(_TValue2 == W_Pawn && move_input[0].y == 7)
 				_Board[move_input[0].x][move_input[0].y] = W_Queen;
 			
 			MakeUCI(move_input[1], move_input[0], &temp_move);
@@ -336,7 +336,7 @@ void ChessGame::default_move(CvPoint move_input[]){
 			_Board[move_input[1].x][move_input[1].y] = Ground;
 			_V_SWAP(_Board[move_input[0].x][move_input[0].y], _Board[move_input[1].x][move_input[1].y]);
 
-			if(_TValue1 == B_Pawn && move_input[1].x == 8)
+			if(_TValue1 == B_Pawn && move_input[1].y == 0)
 				_Board[move_input[1].x][move_input[1].y] = B_Queen;
 
 			MakeUCI(move_input[0], move_input[1], &temp_move);
@@ -347,7 +347,7 @@ void ChessGame::default_move(CvPoint move_input[]){
 			_Board[move_input[0].x][move_input[0].y] = Ground;
 			_V_SWAP(_Board[move_input[0].x][move_input[0].y], _Board[move_input[1].x][move_input[1].y]);
 
-			if(_TValue1 == B_Pawn && move_input[0].x == 8)
+			if(_TValue2 == B_Pawn && move_input[0].y == 0)
 				_Board[move_input[0].x][move_input[0].y] = B_Queen;
 
 			MakeUCI(move_input[1], move_input[0], &temp_move);
