@@ -30,7 +30,7 @@
 #include <cstdlib>
 
 #include <list>
-#include <mutex>
+//#include <mutex>
 #include <queue>
 
 #include <stdio.h>
@@ -76,8 +76,8 @@ private:
 
 	DWORD _ServerPID;
 
-	mutex _QueueProtectMutex;
-	mutex _VarProtectMutex;
+	//mutex _QueueProtectMutex;
+	//mutex _VarProtectMutex;
 
 	char *_Command;
 	// Client가 흑색인지 백색인지 구분.

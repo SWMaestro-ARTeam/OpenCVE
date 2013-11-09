@@ -68,13 +68,13 @@ int InternalProtocolSeeker::InternalProtocolString_Seeker(const char *Str) {
 			break;
 		CASE(STR_I_INFO_BLACKTIME)
 			_SeekedNumber = VALUE_I_INFO_BLACKTIME;
-		break;
+			break;
 		CASE(STR_I_INFO_WHITETIME)
 			_SeekedNumber = VALUE_I_INFO_WHITETIME;
-		break;
+			break;
 		CASE(STR_I_INFO_TURN)
 			_SeekedNumber = VALUE_I_INFO_TURN;
-		break;
+			break;
 
 		CASE(STR_I_INFO_POSITION)
 			_SeekedNumber = VALUE_I_INFO_POSITION;

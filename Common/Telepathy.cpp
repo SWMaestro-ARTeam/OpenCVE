@@ -108,6 +108,9 @@ bool Telepathy::Server::ServerInitialize() {
 
 	// Socket Create.
 	_ServerSocket = socket(AF_INET, SOCK_STREAM, 0);
+	int _TOptionValue = 1;
+	// TCP No Delay Option.
+	setsockopt(_ServerSocket, IPPROTO_TCP, TCP_NODELAY, (const char *)&_TOptionValue, sizeof(_TOptionValue));
 
 	// Socket이 잘못 되었다면..
 	if (_ServerSocket == INVALID_SOCKET)
@@ -175,6 +178,10 @@ void Telepathy::Server::ServerListentoClient() {
 
 	// Accept를 하여 Socket을 연결한다.
 	_TSocket = accept(_ServerSocket, (struct sockaddr *)&_TClientAddress, &_TClientLength);
+
+	int _TOptionValue = 1;
+	// TCP No Delay Option.
+	setsockopt(_TSocket, IPPROTO_TCP, TCP_NODELAY, (const char *)&_TOptionValue, sizeof(_TOptionValue));
 
 	// Client Sockets를 넣어준다.
 	if (_TSocket != INVALID_SOCKET) {
@@ -412,7 +419,9 @@ bool Telepathy::Client::ClientInitialize() {
 	if (_ClientSocket == INVALID_SOCKET)
 		return false;
 
-	
+	int _TOptionValue = 1;
+	// TCP No Delay Option.
+	setsockopt(_ClientSocket, IPPROTO_TCP, TCP_NODELAY, (const char *)&_TOptionValue, sizeof(_TOptionValue));
 	//if (setsockopt(_ClientSocket, SOL_SOCKET, SO_REUSEADDR, (const char *)&_TOptVal, sizeof(int)) == -1)
 	//	return false;
 	// Local IP Address.

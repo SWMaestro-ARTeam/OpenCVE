@@ -166,8 +166,8 @@ void CheckInChessboard::Calculate_Movement(IplImage *bin, vector<ChessPoint> cro
 	float temp_max[4];
 	CvPoint p_max[4];
 
-	//초기화
-	for(int i = 0; i < 4; i++){
+	// 초기화
+	for (register int i = 0; i < 4; i++){
 		p_max[i] = cvPoint(-1,-1);
 		temp_max[i] = -1.0;
 	}
@@ -188,7 +188,8 @@ void CheckInChessboard::Calculate_Movement(IplImage *bin, vector<ChessPoint> cro
 					p_max[2] = p_max[1];
 					p_max[1] = p_max[0];
 					p_max[0] = cvPoint(i,j);
-				}else if(temp_max[0] > score_box[i][j] && score_box[i][i] >= temp_max[1]){
+				}
+				else if(temp_max[0] > score_box[i][j] && score_box[i][i] >= temp_max[1]) {
 					temp_max[3] = temp_max[2];
 					temp_max[2] = temp_max[1];
 					temp_max[1] = score_box[i][j];
@@ -196,13 +197,15 @@ void CheckInChessboard::Calculate_Movement(IplImage *bin, vector<ChessPoint> cro
 					p_max[3] = p_max[2];
 					p_max[2] = p_max[1];
 					p_max[1] = cvPoint(i,j);
-				}else if(temp_max[1] > score_box[i][j] && score_box[i][i] >= temp_max[2]){
+				}
+				else if(temp_max[1] > score_box[i][j] && score_box[i][i] >= temp_max[2]) {
 					temp_max[3] = temp_max[2];
 					temp_max[2] = score_box[i][j];
 
 					p_max[3] = p_max[2];
 					p_max[2] = cvPoint(i,j);
-				}else if(temp_max[2] > score_box[i][j] && score_box[i][i] >= temp_max[3]){
+				}
+				else if(temp_max[2] > score_box[i][j] && score_box[i][i] >= temp_max[3]) {
 					temp_max[3] = score_box[i][j];
 
 					p_max[3] = cvPoint(i,j);
@@ -212,7 +215,7 @@ void CheckInChessboard::Calculate_Movement(IplImage *bin, vector<ChessPoint> cro
 	}
 
 	//4개에 할당
-	for(int i = 0; i < 4; i++){
+	for (register int i = 0; i < 4; i++){
 		out[i] = p_max[i];
 	}
 }

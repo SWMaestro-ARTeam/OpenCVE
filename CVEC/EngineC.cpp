@@ -333,10 +333,12 @@ void EngineC::Command_Register() {
 void EngineC::Command_Position(CommandString *_UCICS) {
 	string _TString = string("");
 
-	bool _IsFen = false;
-	bool _IsStartpos = false;
-	bool _IsMoves = false;
-	int _IsMoveCount = 0;
+	bool _TIsFen = false;
+	bool _TIsStartpos = false;
+	bool _TIsMoves = false;
+
+	bool _TSideCheck = false;
+	int _TIsMoveCount = 0;
 
 	_TString.append("Info Position ");
 
@@ -346,49 +348,61 @@ void EngineC::Command_Position(CommandString *_UCICS) {
 			case VALUE_POSITION_FEN :
 				// No Implementation.
 				// 당장에 필요가 없을 것 같다.
-				_IsFen = true;
+				_TIsFen = true;
 				break;
 			case VALUE_POSITION_STARTPOS :
-				_IsStartpos = true;
+				_TIsStartpos = true;
 				// Null Move인지 아닌지를 검사.
 				// Null Move 이면 White, 아니면 Black.
 				if (_UCICS->IsLastCharArrayIter() == true) {
 					_IsWhite = true;
+					_TSideCheck = true;
 					//_TString.append(STR_I_INFO_MOVENULL);
 					_TString.append(STR_I_INFO_WHITE);
+					//Sleep(10);
 					_TelepathyClient->SendData((char *)_StringTools.StringToConstCharPointer(STR_I_START));
-					Sleep(10);
+					//Sleep(10);
 				}
 				break;
 			case VALUE_POSITION_MOVES :
 				// Moves가 올 때, Enemy Move를 보내준다.
 				// 상대측 좌표만 보내준다.
-				_IsMoves = true;
+				_TIsMoves = true;
 				_TString.append(STR_I_INFO_ENEMYMOVE);
 				_TString.append(" ");
 				break;
 			case VALUE_ANYVALUES :
-				if (_IsStartpos && _IsMoves) {
+				if (_TIsStartpos && _TIsMoves) {
 					// CVES에서는 상대의 움직임을 맨 마지막 것만 보내준다.
 					// 실제로 모든 정보를 다 가지고 있을 필요는 없으며, Human vs AI를 위한 처리이다.
 					if (_UCICS->IsLastCharArrayIter() == true)
 						_TString.append(string((const char *)*_UCICS->CharArrayListIter));
 					
-					_IsMoveCount++;
+					_TIsMoveCount++;
 
 					// Black이라고 Server에 보냄.
-					if (_IsMoveCount == 1 && _UCICS->IsLastCharArrayIter() == true) {
+					if (_TIsMoveCount == 1 && _UCICS->IsLastCharArrayIter() == true) {
 						_IsWhite = false;
-						// 밑에완 무관하게 해당 Client가 Black임을 알려준다.
+						//_TSideCheck = true;
 						_TelepathyClient->SendData((char *)_StringTools.StringToConstCharPointer("Info Position Black"));
 					}
 				}
 				break;
 		}
-		Sleep(10);
+		//Sleep(10);
 	}
+	//Sleep(10);
 	// while이 종료되면 해야 할 것들.
 	// 1. while에서 받아놓은 Move String을 보낸다.
+	/*
+	if (_TSideCheck == true) {
+		if (_IsWhite == true) {
+			_TString.append(STR_I_INFO_WHITE);
+		}
+		else
+			_TString.append(STR_I_INFO_BLACK);
+	}
+	*/
 	_TelepathyClient->SendData((char *)_StringTools.StringToConstCharPointer(_TString));
 }
 
@@ -403,6 +417,7 @@ void EngineC::Command_Go(CommandString *_UCICS) {
 	bool _IsMovestogo = false;
 	bool _IsPonder = false;
 	
+	//Sleep(20);
 	_TString.append("Info Go ");
 	// Fetch the next at while.
 	while (_UCICS->NextCharArrayIter()) {
@@ -654,13 +669,13 @@ bool EngineC::CheckingCVESProcess() {
 			if (_TStr == NULL)
 				continue;
 
-			_VarProtectMutex.lock();
+			//_VarProtectMutex.lock();
 			memset(_TStrBuff, NULL, sizeof(_TStrBuff));
 			// 가장 마지막에 있는 '\' 뒤에는 반드시 파일이 있기 때문이다.
 			// 고로 맨 앞은 현재 파일의 Directory Path.
 			strcpy(_TStrBuff, strrchr(_TStr, '\\') + 1);
 			_TStrBuff[strlen(_TStrBuff)] = '\0';
-			_VarProtectMutex.unlock();
+			//_VarProtectMutex.unlock();
 
 			// 이름은 같은데 다른 Client Process가 이미 존재하는 경우.
 			if (strcmp(_TStrBuff, CLIENT_ENGINE_EXEC_FILENAME) == 0 && _TVal->PID != _TMyPID)
@@ -683,13 +698,13 @@ bool EngineC::CheckingCVESProcess() {
 				return false;
 			
 			// Image Path 만들어 주기.
-			_VarProtectMutex.lock();
+			//_VarProtectMutex.lock();
 			char _TCharArr[MAX_PATH], _TImageCmd[MAX_PATH];
 			memset(_TCharArr, NULL, sizeof(_TCharArr));
 			strcpy(_TCharArr,_File.GetCurrentPath());
 			memset(_TImageCmd, NULL, sizeof(_TImageCmd));
 			sprintf(_TImageCmd, "%s%s", _TCharArr, SERVER_ENGINE_EXEC_FILENAME);
-			_VarProtectMutex.unlock();
+			//_VarProtectMutex.unlock();
 			
 			// CVES(Server) 실행.
 			if (_TIsAnotherCVECProcessActive != true) {
@@ -748,12 +763,12 @@ void EngineC::EngineC_Start() {
 #pragma region Client Received Callback
 void EngineC::ClientReceivedCallback(char *Buffer) {
 	// using mutex.
-	G_EngineC->_QueueProtectMutex.lock();
+	//G_EngineC->_QueueProtectMutex.lock();
 	char _TBuffer[BUFFER_MAX_32767];
 	memset(_TBuffer, NULL, sizeof(_TBuffer));
 	strcpy(_TBuffer, Buffer);
 	G_EngineC->CommandQueue->push(_TBuffer);
-	G_EngineC->_QueueProtectMutex.unlock();
+	//G_EngineC->_QueueProtectMutex.unlock();
 }
 #pragma endregion Client Received Callback
 
@@ -817,7 +832,7 @@ void EngineC::ClientDisconnectedCallback() {
 			if (_TIsConnected == true)
 				break;
 		}
-		Sleep(10);
+		//Sleep(10);
 	}
 }
 #pragma endregion Client Disconnented Callback
@@ -842,12 +857,12 @@ void *
 	
 	while (_TEngine_C->_TelepathyClient->IsConnectedClient) {
 		if (_TEngine_C->CommandQueue->empty() != true) {
-			_TEngine_C->_QueueProtectMutex.lock();
+			//_TEngine_C->_QueueProtectMutex.lock();
 			char _TStrBuffer[BUFFER_MAX_32767];
 			memset(_TStrBuffer, NULL, sizeof(_TStrBuffer));
 			strcpy(_TStrBuffer, _TEngine_C->CommandQueue->front());
 			_TEngine_C->CommandQueue->pop();
-			_TEngine_C->_QueueProtectMutex.unlock();
+			//_TEngine_C->_QueueProtectMutex.unlock();
 
 			// 내부 Protocol 송신(CVEC -> CVES).
 			StringTokenizer *_StringTokenizer = new StringTokenizer();
@@ -874,7 +889,7 @@ void *
 				case VALUE_I_MOVE :
 					// UCI로 좌표 송신.
 					_InternalProtocolCS->NextCharArrayIter();
-					_TEngine_C->SendToGUI("bestmove %s", _InternalProtocolCS->CharArrayListIter);
+					_TEngine_C->SendToGUI("bestmove %s ponder a1a1", (const char *)*_InternalProtocolCS->CharArrayListIter);
 					break;
 				case VALUE_I_RESTOREOK :
 					// 복구 완료.
@@ -899,6 +914,7 @@ void *
 				case VALUE_I_PTYPE :
 					// 여기는 Client이므로 Info Type에 Client라고 실어 날려준다.
 					// make "Info Type Client"
+					//Sleep(10);
 					_TString.append(STR_I_INFO);
 					_TString.append(" ");
 					_TString.append(STR_I_INFO_TYPE);
@@ -906,13 +922,14 @@ void *
 					_TString.append(STR_I_INFO_TYPE_CLIENT);
 					_TEngine_C->_TelepathyClient->SendData((char *)_TEngine_C->_StringTools.StringToConstCharPointer(_TString));
 					//_TEngine_C->_TelepathyClient->SendData("Info Type Client");
+					
 					break;
 			}
 
 			delete _InternalProtocolCS;
 			delete _StringTokenizer;
 		}
-		Sleep(10);
+		//Sleep(10);
 	}
 	_endthread();
 	return 0;

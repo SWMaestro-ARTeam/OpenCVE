@@ -43,7 +43,7 @@
 using namespace std;
 
 typedef struct move_format{
-	char movement[32];
+	char *movement;
 	bool turn_flag;
 } move_format;
 
@@ -67,13 +67,14 @@ private:
 	CvPoint _Before, _After;
 	CvPoint before_move_pawn;
 	before_move _before_move;
+	move_format temp_move;
 	IplImage *chessboard_img;
 	IplImage *chess_piece;
 
 	FILE *_Movement_log; //체스 이동경로 Log를 남길 파일포인터.
 	std::queue<move_format> _chess_movement;
 
-	void MakeUCI(CvPoint before, CvPoint after, move_format *dst);
+	void MakeUCI(CvPoint before, CvPoint after);
 	char char_mapping(int position); // 글자 좌표로 매핑
 
 	// MODE 판독 함수 
@@ -92,7 +93,7 @@ public:
 	bool Chess_process(CvPoint input1[], int MOVE_MODE);
 	void Show_chess_board(); // cmd에 체스판을 그림.
 	void Show_chessImage(); // chess UI를 Draw
-	void Get_RecentMove(char *str); // list에 저장된 가장 최근 movement를 return; Dequeue와 같음.
+	string Get_RecentMove(); // list에 저장된 가장 최근 movement를 return; Dequeue와 같음.
 	int Mode_read();
 };
 #endif

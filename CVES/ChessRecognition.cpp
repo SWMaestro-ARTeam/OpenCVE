@@ -30,11 +30,7 @@ ChessRecognition::ChessRecognition() {
 }
 
 ChessRecognition::~ChessRecognition() {
-<<<<<<< HEAD
 	//exit();
-=======
-	exit();
->>>>>>> origin/CVES_ChessRecognition_Extended
 }
 
 void ChessRecognition::exit() {
@@ -262,7 +258,7 @@ void ChessRecognition::mergeLine(vector<std::pair<float, float> > *Lines) {
 		for (register int i = 0; i < (int)Lines->size() - 9; i++) {
 			SUB_MIN = 9999;		
 			for (register int j = 1; j < temp.size(); j++) {
-				float SUB = temp.at(j).first - temp.at(j-1).first;
+				float SUB = temp.at(j).first - temp.at(j - 1).first;
 
 				if (SUB < SUB_MIN) {
 					SUB_MIN = SUB;
@@ -299,7 +295,8 @@ UINT WINAPI ChessRecognition::thread_hough(void *arg) {
 	IplImage *iplTemp = cvCreateImage(cvSize(_TChessRecognition->_Width, _TChessRecognition->_Height), IPL_DEPTH_32F, 1);                   
 	IplImage *iplDoGx = cvCreateImage(cvGetSize(iplTemp), IPL_DEPTH_32F, 1);  
 	IplImage *iplDoGy = cvCreateImage(cvGetSize(iplTemp), IPL_DEPTH_32F, 1);  
-	IplImage *iplDoGyClone = cvCloneImage(iplDoGy), *iplDoGxClone = cvCloneImage(iplDoGx);
+	IplImage *iplDoGyClone = cvCloneImage(iplDoGy);
+	IplImage *iplDoGxClone = cvCloneImage(iplDoGx);
 	IplImage *iplEdgeX = cvCreateImage(cvGetSize(iplTemp), 8, 1);
 	IplImage *iplEdgeY = cvCreateImage(cvGetSize(iplTemp), 8, 1);
 
@@ -355,7 +352,7 @@ UINT WINAPI ChessRecognition::thread_hough(void *arg) {
 		//LeaveCriticalSection(&_TChessRecognition->vec_cs);
 		_TChessRecognition->_Vec_CSProtectionMutex.unlock();
 
-		Sleep(10);
+		Sleep(2);
 
 		if (_TChessRecognition->thread_exit == true)
 			break;
@@ -525,11 +522,11 @@ void ChessRecognition::Chess_recognition_process(IplImage *src, vector<ChessPoin
 	// 체스판의 경계를 구하여 in_line_point 변수들에 저장.
 	_CLSA->GetgraySidelinesPoint(src);
 	
-	while (1) {
+	/*while (1) {
 		cvShowImage("findCrossPoint", src);
 		if (cvWaitKey(33))
 			break;
-	}
+	}*/
 	
 	// 해당 라인에서 9곳의 체스판 경계를 찾지 못 하였으면,
 	// 탐색라인을 이동시켜 적절한 탐색라인을 찾는다.

@@ -362,11 +362,7 @@ void EngineS::imgproc_mode(){
 			_TTempSec = time(NULL);
 
 		// mode 1에서 2초 이상 지났을 경우 다음 모드로 진행
-<<<<<<< HEAD
 		if (time(NULL) - _TTempSec > 2) {
-=======
-		if (time(NULL) - _tempsec > 2) {
->>>>>>> origin/CVES_ChessRecognition_Extended
 			_ImageProcessMode++;
 			_RGB = cvScalar(0, 255);
 		}
@@ -476,24 +472,21 @@ void EngineS::imgproc_mode(){
 						predicted_mode = (out_count > predicted_mode ? out_count : predicted_mode);
 
 						// chessgame 이동부.
-<<<<<<< HEAD
-						_IsTrun = _ChessGame.Chess_process(out, 0);
-=======
-						_ChessGame.Chess_process(out, /*predicted_mode*/2);
->>>>>>> origin/CVES_ChessRecognition_Extended
+						_IsTrun =_ChessGame.Chess_process(out, /*predicted_mode*/2);
 
-						//텔레파시 콜백 호출
-						char _TStr[32];
-						_ChessGame.Get_RecentMove(_TStr);
-						string _TString = string(_TStr);
+						// .
+
+						string _TString = string("Move ").append(string(_ChessGame.Get_RecentMove()));
 						for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
 							if (_IsTrun == true && strcmp("White", _TVal->ClientName) == 0) {
 								// White Turn일 때.
-								_TelepathyServer->SendDataToOne((char *)_StringTools.StringToConstCharPointer(_TString), _TVal->ClientSocket);
+								char *_TCharArr = (char *)_StringTools.StringToConstCharPointer(_TString.c_str());
+								_TelepathyServer->SendDataToOne(_TCharArr, _TVal->ClientSocket);
 							}
 							else if (_IsTrun != true && strcmp("Black", _TVal->ClientName) == 0) {
 								// Black Turn일 때.
-								_TelepathyServer->SendDataToOne((char *)_StringTools.StringToConstCharPointer(_TString), _TVal->ClientSocket);
+								char *_TCharArr = (char *)_StringTools.StringToConstCharPointer(_TString.c_str());
+								_TelepathyServer->SendDataToOne(_TCharArr, _TVal->ClientSocket);
 							}
 						}
 #ifdef DEBUG_MODE
@@ -537,8 +530,9 @@ void EngineS::imgproc_mode(){
 }
 
 void EngineS::ServerReceivedCallback(char *Buffer, SOCKET ClientSocket) {
+	//Sleep(100);
 	// using mutex.
-	G_EngineS->_QueueProtectMutex.lock();
+	//G_EngineS->_QueueProtectMutex.lock();
 	ServerGetInformation *_TServerGetInformation = new ServerGetInformation;
 	char _TBuffer[BUFFER_MAX_32767];
 	memset(_TBuffer, NULL, sizeof(_TBuffer));
@@ -546,10 +540,11 @@ void EngineS::ServerReceivedCallback(char *Buffer, SOCKET ClientSocket) {
 	_TServerGetInformation->Infomations = _TBuffer;
 	_TServerGetInformation->AnySocket = ClientSocket;
 	G_EngineS->CommandQueue->push(_TServerGetInformation);
-	G_EngineS->_QueueProtectMutex.unlock();
+	//G_EngineS->_QueueProtectMutex.unlock();
 }
 
 void EngineS::AnyConnentionNotifier(SOCKET ClientSocket) {
+	Sleep(100);
 	// 초기 접속시에 Type을 물어보기 위한 용도로 쓰인다.
 	G_EngineS->_TelepathyServer->SendDataToOne((char *)G_EngineS->_StringTools.StringToConstCharPointer(STR_I_PTYPE), ClientSocket);
 }
@@ -573,7 +568,7 @@ void *
 
 	while (_TEngine_S->_TelepathyServer->IsServerStarted) {
 		if (_TEngine_S->CommandQueue->empty() != true) {
-			_TEngine_S->_QueueProtectMutex.lock();
+			//_TEngine_S->_QueueProtectMutex.lock();
 			char _TStrBuffer[BUFFER_MAX_32767];
 			ServerGetInformation *_TServerGetInformation;
 			_TServerGetInformation =_TEngine_S->CommandQueue->front();
@@ -581,7 +576,7 @@ void *
 			memset(_TStrBuffer, NULL, sizeof(_TStrBuffer));
 			strcpy(_TStrBuffer, _TServerGetInformation->Infomations);
 			_TEngine_S->CommandQueue->pop();
-			_TEngine_S->_QueueProtectMutex.unlock();
+			//_TEngine_S->_QueueProtectMutex.unlock();
 
 			// 내부 Protocol 송신(CVES -> CVEC, CVES -> Observer).
 			StringTokenizer *_TStringTokenizer = new StringTokenizer();
@@ -666,7 +661,7 @@ void *
 			delete _TInternalProtocolCS;
 			delete _TStringTokenizer;
 		}
-		Sleep(10);
+		//Sleep(10);
 	}
 
 	//_endthread();
@@ -685,7 +680,6 @@ void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
 	
 	// Fetch the next at while.
 	while (IPCS->NextCharArrayIter()) {
-		StringTools _TStringTools;
 		int _NSeek_GUIToEngine = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*IPCS->CharArrayListIter);
 		switch (_NSeek_GUIToEngine) {
 			// Go 뒤로 부터 오는 것들.
@@ -738,7 +732,7 @@ void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
 				for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
 					if (_TVal->ClientSocket == Socket && strcmp(_TVal->ClientType, "Client") == 0) {
 						// White.
-						_TVal->ClientName = _TStringTools.ConstCharToChar("White");
+						_TVal->ClientName = _StringTools.ConstCharToChar("White");
 					}
 				}
 				break;
@@ -746,7 +740,7 @@ void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
 				for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
 					if (_TVal->ClientSocket == Socket && strcmp(_TVal->ClientType, "Client") == 0) {
 						// Null Move가 오면 일단 White.
-						_TVal->ClientName = _TStringTools.ConstCharToChar("Black");
+						_TVal->ClientName = _StringTools.ConstCharToChar("Black");
 					}
 				}
 				break;
@@ -762,7 +756,7 @@ void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
 				if (_TIsInfoType == true) {
 					for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
 						if (_TVal->ClientSocket == Socket) {
-							_TVal->ClientType = _TStringTools.ConstCharToChar(STR_I_INFO_TYPE_CLIENT);
+							_TVal->ClientType = _StringTools.ConstCharToChar(STR_I_INFO_TYPE_CLIENT);
 							break;
 						}
 					}
@@ -773,7 +767,7 @@ void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
 				if (_TIsInfoType == true) {
 					for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
 						if (_TVal->ClientSocket == Socket) {
-							_TVal->ClientType = _TStringTools.ConstCharToChar(STR_I_INFO_TYPE_OBSERVER);
+							_TVal->ClientType = _StringTools.ConstCharToChar(STR_I_INFO_TYPE_OBSERVER);
 							break;
 						}
 					}

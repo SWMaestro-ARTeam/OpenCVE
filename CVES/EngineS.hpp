@@ -30,7 +30,7 @@
 #include <time.h>
 
 #include <queue>
-#include <mutex>
+//#include <mutex>
 
 // 공통 상수 정의
 #include "Common.hpp"
@@ -111,8 +111,8 @@ private:
 	vector<ChessPoint> _CrossPoint;
 	vector<int> _PieceIndex;
 
-	mutex _QueueProtectMutex;
-	mutex _VarProtectMutex;
+	//mutex _QueueProtectMutex;
+	//mutex _VarProtectMutex;
 
 	// image process 초기화.
 	void Initialize_ImageProcessing();
