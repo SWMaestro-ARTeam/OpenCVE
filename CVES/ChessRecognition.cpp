@@ -494,16 +494,8 @@ void ChessRecognition::Chess_recognition_process(IplImage *src, vector<ChessPoin
 	// 영상 이진화.
 	_CLSA->GrayImageBinarization(src);
 
-// 	cvDilate(src, src, 0, 3);
-// 	cvErode(src, src, 0, 3);
-
-	/*while (1) {
-		cvShowImage("ImageBin",src);
-		if (cvWaitKey(33))
-			break;
-	}*/
 	// 해당 영상에서의 좌표 x,y 와 grayscale을 추출하여 vector<MyGrayPoint> 형의 line에 저장.
-	_CLSA->GetLinegrayScale(src, _CLSA->Linefindcount_x1, _CLSA->Linefindcount_y1, _CLSA->Linefindcount_x2, _CLSA->Linefindcount_y2);
+	_CLSA->GetLinegrayScale(src, _CLSA->Linefindcount_x1, _CLSA->Linefindcount_y1, _CLSA->Linefindcount_x2, _CLSA->Linefindcount_y2, _CLSA->Linefindcount_x11, _CLSA->Linefindcount_y11, _CLSA->Linefindcount_x22, _CLSA->Linefindcount_y22);
 
 	// 체스판의 경계를 구하여 in_line_point 변수들에 저장.
 	_CLSA->GetgraySidelinesPoint(src);
@@ -513,7 +505,7 @@ void ChessRecognition::Chess_recognition_process(IplImage *src, vector<ChessPoin
 		if (cvWaitKey(33))
 			break;
 	}
-	
+
 	// 해당 라인에서 9곳의 체스판 경계를 찾지 못 하였으면,
 	// 탐색라인을 이동시켜 적절한 탐색라인을 찾는다.
 	// flag의 값에 따라 Linefindcount의 값을 변경한다.
@@ -525,29 +517,53 @@ void ChessRecognition::Chess_recognition_process(IplImage *src, vector<ChessPoin
 	// 만약 9곳의 경계를 모두 찾게 되면 해당 라인으로 고정시킨다.
 
 	// x1 ~ y2의 flag여부에 따라 값을 증가시킬지 감소시킬지를 판단하는 요소로 사용한다
-	if (_CLSA->Linefindcount_x1 >= (src->width / 5) * 2 - 10)
+	if (_CLSA->Linefindcount_x1 >= (src->width / 5))
 		_CLSA->flag_x1 = false;
 
-	if (_CLSA->Linefindcount_y1 >= (src->height / 7) * 3 - 10)
-		_CLSA->flag_y1 = false;
+	if (_CLSA->Linefindcount_x11 >= (src->width / 5))
+		_CLSA->flag_x11 = false;
 
-	if (_CLSA->Linefindcount_x2 >= (src->width / 5) * 2 - 10)
+	if (_CLSA->Linefindcount_x2 >= (src->width / 5))
 		_CLSA->flag_x2 = false;
 
-	if (_CLSA->Linefindcount_y2 >= (src->height / 7) * 3 - 10)
+	if (_CLSA->Linefindcount_x22 >= (src->width / 5))
+		_CLSA->flag_x22 = false;
+
+	if (_CLSA->Linefindcount_y1 >= (src->height / 5))
+		_CLSA->flag_y1 = false;
+
+	if (_CLSA->Linefindcount_y11 >= (src->height / 5))
+		_CLSA->flag_y11 = false;
+
+	if (_CLSA->Linefindcount_y2 >= (src->height / 5))
 		_CLSA->flag_y2 = false;
+	
+	if (_CLSA->Linefindcount_y22 >= (src->height / 5))
+		_CLSA->flag_y22 = false;
 
 	if (_CLSA->Linefindcount_x1 <= 3)
 		_CLSA->flag_x1 = true;
 
-	if (_CLSA->Linefindcount_y1 <= 3)
-		_CLSA->flag_y1 = true;	
+	if (_CLSA->Linefindcount_x11 <= 3)
+		_CLSA->flag_x11 = true;
 
 	if (_CLSA->Linefindcount_x2 <= 3)
 		_CLSA->flag_x2 = true;
 
+	if (_CLSA->Linefindcount_x22 <= 3)
+		_CLSA->flag_x22 = true;
+
+	if (_CLSA->Linefindcount_y1 <= 3)
+		_CLSA->flag_y1 = true;	
+
+	if (_CLSA->Linefindcount_y11 <= 3)
+		_CLSA->flag_y11 = true;	
+
 	if (_CLSA->Linefindcount_y2 <= 3)
 		_CLSA->flag_y2 = true;
+
+	if (_CLSA->Linefindcount_y22 <= 3)
+		_CLSA->flag_y22 = true;
 
 	// 각 라인이 모든 체스판의 경계를 찾았다면 다음 과정으로 넘어가고,
 	// 찾지 못하였으면 x축 또는 y축을 이동시켜 경계를 찾을 수 있는 라인을 찾는다.
@@ -555,11 +571,11 @@ void ChessRecognition::Chess_recognition_process(IplImage *src, vector<ChessPoin
 	// 라인 위치를 바꾼다
 	// count : 3
 	
-	if (_CLSA->in_line_point_x1.size() == 9 && _CLSA->in_line_point_x2.size() ==  9 && _CLSA->in_line_point_y1.size() == 9 && _CLSA->in_line_point_y2.size() == 9) {
+	if (_CLSA->true_line_point_x1.size() == 9 && _CLSA->true_line_point_x2.size() ==  9 && _CLSA->true_line_point_y1.size() == 9 && _CLSA->true_line_point_y2.size() == 9) {
 		// 각 찾은 경계점들의 수직이 되는 점 모두의 교차점을 찾는다.
 		_CLSA->GetInCrossPoint(src, point);
 	}
-	else if (_CLSA->in_line_point_x1.size() != 9 || _CLSA->in_line_point_x2.size() != 9) {
+	else /*if (_CLSA->in_line_point_x1.size() != 9 || _CLSA->in_line_point_x2.size() != 9 || _CLSA->in_line_point_x1.size() != 9 || _CLSA->in_line_point_x2.size() != 9) */{
 
 		// flag의 방향성과 모든경계를 찾지 못한 경우에는 해당되는 라인을 3씩 증감시켜준다
 
@@ -567,20 +583,36 @@ void ChessRecognition::Chess_recognition_process(IplImage *src, vector<ChessPoin
 			_CLSA->Linefindcount_x1 += 3;
 		else if (!_CLSA->flag_x1 && (_CLSA->in_line_point_x1.size() != 9))
 			_CLSA->Linefindcount_x1 -= 3;
+		if (_CLSA->flag_x11 && (_CLSA->in_line_point_x11.size() != 9))
+			_CLSA->Linefindcount_x11 += 3;
+		else if (!_CLSA->flag_x11 && (_CLSA->in_line_point_x11.size() != 9))
+			_CLSA->Linefindcount_x11 -= 3;
 		if (_CLSA->flag_x2 && (_CLSA->in_line_point_x2.size() != 9))
 			_CLSA->Linefindcount_x2 += 3;
 		else if (!_CLSA->flag_x2 && (_CLSA->in_line_point_x2.size() != 9))
 			_CLSA->Linefindcount_x2 -= 3;
-	}
-	else if (_CLSA->in_line_point_y1.size() != 9 || _CLSA->in_line_point_y2.size() != 9) {
+		if (_CLSA->flag_x22 && (_CLSA->in_line_point_x22.size() != 9))
+			_CLSA->Linefindcount_x22 += 3;
+		else if (!_CLSA->flag_x22 && (_CLSA->in_line_point_x22.size() != 9))
+			_CLSA->Linefindcount_x22 -= 3;
+// 	}
+// 	else if (_CLSA->in_line_point_y1.size() != 9 || _CLSA->in_line_point_y2.size() != 9 || _CLSA->in_line_point_y11.size() != 9 || _CLSA->in_line_point_y22.size() != 9) {
 		if (_CLSA->flag_y1 && (_CLSA->in_line_point_y1.size() != 9))
 			_CLSA->Linefindcount_y1 += 3;
 		else if (!_CLSA->flag_y1 && (_CLSA->in_line_point_y1.size() != 9))
 			_CLSA->Linefindcount_y1 -= 3;
+		if (_CLSA->flag_y11 && (_CLSA->in_line_point_y11.size() != 9))
+			_CLSA->Linefindcount_y11 += 3;
+		else if (!_CLSA->flag_y11 && (_CLSA->in_line_point_y11.size() != 9))
+			_CLSA->Linefindcount_y11 -= 3;
 		if (_CLSA->flag_y2 && (_CLSA->in_line_point_y2.size() != 9))
 			_CLSA->Linefindcount_y2 += 3;
 		else if (!_CLSA->flag_y2 && (_CLSA->in_line_point_y2.size() != 9))
 			_CLSA->Linefindcount_y2 -= 3;
+		if (_CLSA->flag_y22 && (_CLSA->in_line_point_y22.size() != 9))
+			_CLSA->Linefindcount_y22 += 3;
+		else if (!_CLSA->flag_y22 && (_CLSA->in_line_point_y22.size() != 9))
+			_CLSA->Linefindcount_y22 -= 3;
 	}
 
 	// 메모리 초기화.
