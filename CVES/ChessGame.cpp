@@ -456,7 +456,7 @@ int ChessGame::Mode_read(){
 					return CASTLING_MOVE;
 			}
 			
-			if(_before_move.piece == W_Pawn)
+			if(_before_move.piece == B_Pawn)
 				return ENPASSANT_MOVE;
 			else
 				return DEFAULT_MOVE;
@@ -466,7 +466,7 @@ int ChessGame::Mode_read(){
 					return CASTLING_MOVE;
 			}
 			
-			if(_before_move.piece == B_Pawn){
+			if(_before_move.piece == W_Pawn){
 				return ENPASSANT_MOVE;
 			}else
 				return DEFAULT_MOVE;
