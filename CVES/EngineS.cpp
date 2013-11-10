@@ -27,6 +27,7 @@
 
 EngineS *G_EngineS;
 
+#pragma region Constructor & Destructor
 EngineS::EngineS() {
 	_IsRestorePossible = false;
 	
@@ -59,7 +60,9 @@ EngineS::~EngineS() {
 
 	cvReleaseImage(&_CamHSV);
 }
+#pragma endregion Constructor & Destructor
 
+#pragma region Initialize & Deinitialize Functions
 bool EngineS::Initialize_TServer() {
 	_TelepathyServer = new Telepathy::Server();
 
@@ -139,6 +142,7 @@ void EngineS::Engine_DeInitializing() {
 	delete CommandQueue;
 	Deinitialize_TServer();
 }
+#pragma endregion Initialize & Deinitialize Functions
 
 bool EngineS::Check_Exit() {
 	if (_ImageProcessMode == 3)
@@ -377,7 +381,7 @@ void EngineS::imgproc_mode(){
 		float _fps = 1000.f/ (float)_TTick;
 		
 		// CVES main Window에 UI 구성
-		DrawWindowS(_CamOriginalImage, _fps, _RGB);
+		//DrawWindowS(_CamOriginalImage, _fps, _RGB);
 #if !USING_QT
 		cvShowImage("CVES", _CamOriginalImage);
 #endif

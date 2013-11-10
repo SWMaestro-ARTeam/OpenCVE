@@ -1,25 +1,46 @@
-#include "ChessObjDetection.h"
+Ôªø//////////////////////////////////////////////////////////////////////////////////////////////
+//	The OpenCVE Project.
+//
+//	The MIT License (MIT)
+//	Copyright ¬© 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
+//	{invi.dh.kim, munsp9103, aiaipming} at gmail.com
+//
+//	Permission is hereby granted, free of charge, to any person obtaining a copy of
+//	this software and associated documentation files (the ‚ÄúSoftware‚Äù), to deal
+//	in the Software without restriction, including without limitation the rights to
+//	use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+//	the Software, and to permit persons to whom the Software is furnished to do so,
+//	subject to the following conditions:
+//
+//	The above copyright notice and this permission notice shall be included in all
+//	copies or substantial portions of the Software.
+//
+//	THE SOFTWARE IS PROVIDED ‚ÄúAS IS‚Äù, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+//	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+//	PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+//	LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+//	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+//	OR OTHER DEALINGS IN THE SOFTWARE.
+//////////////////////////////////////////////////////////////////////////////////////////////
 
 
-ChessObjDetection::ChessObjDetection(void)
-{
+#include "ChessObjDetection.hpp"
+
+ChessObjDetection::ChessObjDetection(void) {
 	_Canny_HighThreshold = 250;
 	_Canny_LowThreshold = 240;
 }
 
 
-ChessObjDetection::~ChessObjDetection(void)
-{
+ChessObjDetection::~ChessObjDetection(void) {
 }
 
-void ChessObjDetection::SetCannyThreshold( int Low, int High )
-{
+void ChessObjDetection::SetCannyThreshold(int Low, int High) {
 	_Canny_LowThreshold = Low;
 	_Canny_HighThreshold = High;
 }
 
-void ChessObjDetection::ConvertHplane( IplImage *src )
-{
+void ChessObjDetection::ConvertHplane(IplImage *src) {
 	IplImage *temp_src = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 3);
 
 	cvCvtColor(src, temp_src, CV_BGR2HSV);
@@ -29,8 +50,7 @@ void ChessObjDetection::ConvertHplane( IplImage *src )
 	cvReleaseImage(&temp_src);
 }
 
-void ChessObjDetection::ConvertSplane( IplImage *src )
-{
+void ChessObjDetection::ConvertSplane(IplImage *src) {
 	IplImage *temp_src = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 3);
 
 	cvCvtColor(src, temp_src, CV_BGR2HSV);
@@ -40,23 +60,21 @@ void ChessObjDetection::ConvertSplane( IplImage *src )
 	cvReleaseImage(&temp_src);
 }
 
-void ChessObjDetection::add_CannyImg( IplImage *H_canny, IplImage *S_canny, IplImage *dst )
-{
+void ChessObjDetection::add_CannyImg(IplImage *H_canny, IplImage *S_canny, IplImage *dst) {
 	cvZero(dst);
 
-	for(int i = 0; i < dst->width; i++){
-		for(int j = 0; j < dst->height; j++){
+	for (int i = 0; i < dst->width; i++) {
+		for (int j = 0; j < dst->height; j++) {
 			unsigned char H_Value = (unsigned char)H_canny->imageData[i + j * H_canny->widthStep];
 			unsigned char S_Value = (unsigned char)S_canny->imageData[i + j * S_canny->widthStep];
 
-			if(H_Value != 0 || S_Value != 0)
+			if (H_Value != 0 || S_Value != 0)
 				dst->imageData[i + j * dst->widthStep] = 255;
 		}
 	}
 }
 
-void ChessObjDetection::DetectObj( IplImage *src, vector<_ChessPoint> _cross_point, bool *board[] )
-{
+void ChessObjDetection::DetectObj(IplImage *src, vector<_ChessPoint> _cross_point, bool *board[]) {
 	IplImage *H_Canny = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 1);
 	IplImage *S_Canny = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 1); 
 	IplImage *Add_Canny = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 1);
@@ -69,12 +87,14 @@ void ChessObjDetection::DetectObj( IplImage *src, vector<_ChessPoint> _cross_poi
 
 	add_CannyImg(H_Canny, S_Canny, Add_Canny);
 
-	// √ºΩ∫∫∏µÂ¿« ∂Û¿Œøµ«‚¿ª √÷º“»≠Ω√≈¥
+	cvShowImage("Canny", Add_Canny);
+
+	// Ï≤¥Ïä§Î≥¥ÎìúÏùò ÎùºÏù∏ÏòÅÌñ•ÏùÑ ÏµúÏÜåÌôîÏãúÌÇ¥
 	Delete_ChessLine(Add_Canny, _cross_point);
 
-	// ø¿∫Í¡ß∆Æ ¿Øπ´∏¶ »Æ¿Œ«œ±‚ ¿ß«ÿº≠
-	// ∞¢ √ºΩ∫∫∏µÂ ±◊∏ÆµÂ æ»ø° øß¡ˆ∞° ¡∏¿Á«œ¥¬ ∏È¿˚∫Ò∏¶ ø¨ªÍ
-	float score_board[8][8]; // øß¡ˆ / √ºΩ∫±◊∏ÆµÂ ∏È¿˚ => Ω∫ƒ⁄æÓ
+	// Ïò§Î∏åÏ†ùÌä∏ Ïú†Î¨¥Î•º ÌôïÏù∏ÌïòÍ∏∞ ÏúÑÌï¥ÏÑú
+	// Í∞Å Ï≤¥Ïä§Î≥¥Îìú Í∑∏Î¶¨Îìú ÏïàÏóê Ïó£ÏßÄÍ∞Ä Ï°¥Ïû¨ÌïòÎäî Î©¥Ï†ÅÎπÑÎ•º Ïó∞ÏÇ∞
+	float score_board[8][8]; // Ïó£ÏßÄ / Ï≤¥Ïä§Í∑∏Î¶¨Îìú Î©¥Ï†Å => Ïä§ÏΩîÏñ¥
 	_CheckChessboard->Cal_BoardScore(Add_Canny, _cross_point, score_board);
 
 
@@ -83,7 +103,6 @@ void ChessObjDetection::DetectObj( IplImage *src, vector<_ChessPoint> _cross_poi
 	cvReleaseImage(&S_Canny);
 }
 
-void ChessObjDetection::Delete_ChessLine( IplImage *edge, vector<_ChessPoint> _cross_point )
-{
+void ChessObjDetection::Delete_ChessLine(IplImage *edge, vector<_ChessPoint> _cross_point) {
 
 }

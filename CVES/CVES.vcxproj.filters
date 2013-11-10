@@ -123,7 +123,7 @@
     <ClInclude Include="..\Common\StringTools.hpp">
       <Filter>Common\StringTools\Header</Filter>
     </ClInclude>
-    <ClInclude Include="ChessObjDetection.h">
+    <ClInclude Include="ChessObjDetection.hpp">
       <Filter>CVES_System\Recognitions\Header</Filter>
     </ClInclude>
   </ItemGroup>

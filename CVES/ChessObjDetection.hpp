@@ -23,13 +23,15 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
+#ifndef _ChessObjDetection_hpp_
+#define _ChessObjDetection_hpp_
+
 #include "CVESDependent.hpp"
 #include "CheckInChessboard.hpp"
 
 using namespace std;
 
-class ChessObjDetection
-{
+class ChessObjDetection {
 private:
 	CheckInChessboard *_CheckChessboard;
 
@@ -41,7 +43,7 @@ private:
 	void ConvertHplane(IplImage *src);	// src - RGB, RGB 색상계에서 HSV 색상계의  H평면 분리
 	void ConvertSplane(IplImage *src);  // src - RGB, RGB 색상계에서 HSV 색상계의  S평면 분리
 
-	void add_CannyImg(IplImage *H_canny, IplImage *S_Canny, IplImage *dst); // 두가지 CannyEdge Detection OR 연산 이미지 생성
+	void add_CannyImg(IplImage *H_canny, IplImage *S_Canny, IplImage *dst); // 두 가지 CannyEdge Detection OR 연산 이미지 생성
 	void Delete_ChessLine(IplImage *edge, vector<_ChessPoint> _cross_point); // 디텍션된 엣지 영상에서 교점들을 사용하여 엣지들을 최소화함
 
 public:
@@ -52,3 +54,4 @@ public:
 	void DetectObj(IplImage *src, vector<_ChessPoint> _cross_point, bool *board[]); // RGB영상과 좌표를 출력을 이용하여 오브젝트의 좌표를 디텍션
 };
 
+#endif
