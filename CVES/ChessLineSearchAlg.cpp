@@ -27,20 +27,23 @@
 
 ChessLineSearchAlg::ChessLineSearchAlg() {
 	Linefindcount_x1 = 0, Linefindcount_y1 = 0, Linefindcount_x2 = 0, Linefindcount_y2 = 0;
+	Linefindcount_x11 = 0, Linefindcount_y11 = 0, Linefindcount_x22 = 0, Linefindcount_y22 = 0;
 }
 
 ChessLineSearchAlg::~ChessLineSearchAlg() {
 }
 
-void ChessLineSearchAlg::GetLinegrayScale(IplImage *gray_image, int linefindcount_x1, int linefindcount_y1, int linefindcount_x2, int linefindcount_y2) {
+void ChessLineSearchAlg::GetLinegrayScale(IplImage *gray_image, int linefindcount_x1, int linefindcount_y1, int linefindcount_x2, int linefindcount_y2, int linefindcount_x11, int linefindcount_y11, int linefindcount_x22, int linefindcount_y22) {
 
 	int image_y = gray_image->height, image_x = gray_image->width;
-	int x1, x2, y1, y2;
+	int x1, x2, y1, y2, x11, x22, y11, y22;
 
 	// x축의 grayscale을 얻기 위해 y축의 탐색 위치를 결정.
 
-	y1 = ((image_y / 5) * 2) - linefindcount_x1;
-	y2 = ((image_y / 5) * 3) + linefindcount_x2;
+	y1 = linefindcount_x1;
+	y11 = (image_y / 5) + linefindcount_x11;
+	y2 = ((image_y / 5) * 4) - linefindcount_x2;
+	y22 = image_y - linefindcount_x22;
 
 	// 처음에는 각  vector 배열에 중심이 되는 값을 넣어주고,
 	// 그 이후에 짝수는 오른쪽, 홀수는 왼쪽의 수치를 넣어준다.
@@ -48,7 +51,9 @@ void ChessLineSearchAlg::GetLinegrayScale(IplImage *gray_image, int linefindcoun
 	// line vector에 push하기 위해 해당 위치의 grayscale을 구해 x축과 y축의 값들을 MyGrayPoint형식으로 반환하여 push해준다
 
 	line_x1.push_back(setMyGrayPoint(Getgrayscale(gray_image, image_x / 2, y1), image_x / 2, y1));
+	line_x11.push_back(setMyGrayPoint(Getgrayscale(gray_image, image_x / 2, y11), image_x / 2, y11));
 	line_x2.push_back(setMyGrayPoint(Getgrayscale(gray_image, image_x / 2, y2), image_x / 2, y2));
+	line_x22.push_back(setMyGrayPoint(Getgrayscale(gray_image, image_x / 2, y22), image_x / 2, y22));
 
 	for (register int x = 1; x <= image_x / 2; x++) {
 
@@ -56,28 +61,40 @@ void ChessLineSearchAlg::GetLinegrayScale(IplImage *gray_image, int linefindcoun
 
 		line_x1.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) + x, y1), (image_x / 2) + x, y1));
 		line_x1.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) - x, y1), (image_x / 2) - x, y1));
+		line_x11.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) + x, y11), (image_x / 2) + x, y11));
+		line_x11.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) - x, y11), (image_x / 2) - x, y11));
 
 		// 일부러 for문을 두개를 쓸 필요는 없으므로 한번에 양쪽과 같은 축을 가지는 라인을 함께 처리해준다
 
 		line_x2.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) + x, y2) ,(image_x / 2) + x, y2));
 		line_x2.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) - x, y2) ,(image_x / 2) - x, y2));
+		line_x22.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) + x, y22) ,(image_x / 2) + x, y22));
+		line_x22.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) - x, y22) ,(image_x / 2) - x, y22));
 	}
 
 	// y축의 grayscale을 얻기위해 x축의 탐색위치를 결정.
-	x1 = ((image_x / 7) * 3) - linefindcount_y1;
-	x2 = ((image_x / 7) * 4) + linefindcount_y2;
+	x1 = linefindcount_y1;
+	x11 = (image_x / 5) + linefindcount_y11;
+	x2 = ((image_x / 5) * 4) - linefindcount_y2;
+	x22 = image_x - linefindcount_y22;
 
 	// 처음 vector 배열에 중심이 되는 값을 넣어주고, 
 	// 그 이후에 짝수는 아래쪽, 홀수는 위쪽의 수치를 넣어준다.
 	line_y1.push_back(setMyGrayPoint(Getgrayscale(gray_image, x1, image_y / 2), x1, image_y / 2));
+	line_y11.push_back(setMyGrayPoint(Getgrayscale(gray_image, x11, image_y / 2), x11, image_y / 2));
 	line_y2.push_back(setMyGrayPoint(Getgrayscale(gray_image, x2, image_y / 2), x2, image_y / 2));
+	line_y22.push_back(setMyGrayPoint(Getgrayscale(gray_image, x22, image_y / 2), x22, image_y / 2));
 
 	for (register int y = 1; y <= image_y / 2; y++) {
 		line_y1.push_back(setMyGrayPoint(Getgrayscale(gray_image, x1, (image_y / 2) + y), x1, (image_y / 2) + y));
 		line_y1.push_back(setMyGrayPoint(Getgrayscale(gray_image, x1, (image_y / 2) - y), x1, (image_y / 2) - y));
+		line_y11.push_back(setMyGrayPoint(Getgrayscale(gray_image, x11, (image_y / 2) + y), x11, (image_y / 2) + y));
+		line_y11.push_back(setMyGrayPoint(Getgrayscale(gray_image, x11, (image_y / 2) - y), x11, (image_y / 2) - y));
 
 		line_y2.push_back(setMyGrayPoint(Getgrayscale(gray_image, x2, (image_y / 2) + y), x2, (image_y / 2) + y));
 		line_y2.push_back(setMyGrayPoint(Getgrayscale(gray_image, x2, (image_y / 2) - y), x2, (image_y / 2) - y));
+		line_y22.push_back(setMyGrayPoint(Getgrayscale(gray_image, x22, (image_y / 2) + y), x22, (image_y / 2) + y));
+		line_y22.push_back(setMyGrayPoint(Getgrayscale(gray_image, x22, (image_y / 2) - y), x22, (image_y / 2) - y));
 	}
 }
 
@@ -106,7 +123,7 @@ void ChessLineSearchAlg::GetgraySidelinesPoint(IplImage *chess_image) {
 	// GetLinegrayScale에서 얻은 4개의 라인에서 경계점을 탐색한다
 
 	// 각 grayscale이 저장되어 있는 vector 배열에서 해당 라인의 교차점을 구한다.
-	HANDLE _THandleArr[4];
+	HANDLE _THandleArr[8];
 	_THandleArr[0] = (HANDLE)_beginthreadex(NULL, 0, 
 		GraySideLinesPointThread, 
 		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_x1, &line_point_x1, &in_line_point_x1, true), 
@@ -123,21 +140,48 @@ void ChessLineSearchAlg::GetgraySidelinesPoint(IplImage *chess_image) {
 		GraySideLinesPointThread,
 		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_y2, &line_point_y2, &in_line_point_y2, false),
 		0, NULL);
+	_THandleArr[4] = (HANDLE)_beginthreadex(NULL, 0, 
+		GraySideLinesPointThread, 
+		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_x11, &line_point_x11, &in_line_point_x11, true), 
+		0, NULL);
+	_THandleArr[5] = (HANDLE)_beginthreadex(NULL, 0, 
+		GraySideLinesPointThread,
+		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_x22, &line_point_x22, &in_line_point_x22, true),
+		0, NULL);
+	_THandleArr[6] = (HANDLE)_beginthreadex(NULL, 0,
+		GraySideLinesPointThread,
+		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_y11, &line_point_y11, &in_line_point_y11, false),
+		0, NULL);
+	_THandleArr[7] = (HANDLE)_beginthreadex(NULL, 0,
+		GraySideLinesPointThread,
+		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_y22, &line_point_y22, &in_line_point_y22, false),
+		0, NULL);
 
 	// 이 함수 4개를 스레드로
-	WaitForMultipleObjects(4, _THandleArr, TRUE, INFINITE);
+	WaitForMultipleObjects(8, _THandleArr, TRUE, INFINITE);
 
 	CloseHandle(_THandleArr[0]);
 	CloseHandle(_THandleArr[1]);
 	CloseHandle(_THandleArr[2]);
 	CloseHandle(_THandleArr[3]);
+	CloseHandle(_THandleArr[4]);
+	CloseHandle(_THandleArr[5]);
+	CloseHandle(_THandleArr[6]);
+	CloseHandle(_THandleArr[7]);
 
-	// 	GetgraySidelines(chess_image, &line_x1, &line_point_x1, &in_line_point_x1, true);
-	// 	GetgraySidelines(chess_image, &line_x2, &line_point_x2, &in_line_point_x2, true);
-	// 	GetgraySidelines(chess_image, &line_y1, &line_point_y1, &in_line_point_y1, false);
-	// 	GetgraySidelines(chess_image, &line_y2, &line_point_y2, &in_line_point_y2, false);
+// 	GetgraySidelines(chess_image, &line_x1, &line_point_x1, &in_line_point_x1, true);
+// 	GetgraySidelines(chess_image, &line_x2, &line_point_x2, &in_line_point_x2, true);
+// 	GetgraySidelines(chess_image, &line_y1, &line_point_y1, &in_line_point_y1, false);
+// 	GetgraySidelines(chess_image, &line_y2, &line_point_y2, &in_line_point_y2, false);
+// 	GetgraySidelines(chess_image, &line_x11, &line_point_x11, &in_line_point_x11, true);
+// 	GetgraySidelines(chess_image, &line_x22, &line_point_x22, &in_line_point_x22, true);
+// 	GetgraySidelines(chess_image, &line_y11, &line_point_y11, &in_line_point_y11, false);
+// 	GetgraySidelines(chess_image, &line_y22, &line_point_y22, &in_line_point_y22, false);
 
-
+	GetTrueLines(in_line_point_x1, in_line_point_x11, &true_line_point_x1);
+	GetTrueLines(in_line_point_x22, in_line_point_x2, &true_line_point_x2);
+	GetTrueLines(in_line_point_y1, in_line_point_y11, &true_line_point_y1);
+	GetTrueLines(in_line_point_y22, in_line_point_y2, &true_line_point_y2);
 }
 
 void ChessLineSearchAlg::GetInCrossPoint(IplImage *chess_image, vector<ChessPoint> *point) {
@@ -145,35 +189,35 @@ void ChessLineSearchAlg::GetInCrossPoint(IplImage *chess_image, vector<ChessPoin
 
 	// in_line_point 오름차순 정렬.
 	// 찾은 경계점들을 x또는 y를 중심으로 재정렬한다.
-	for (register int i = 0; i < in_line_point_x1.size(); i++) {
-		for (register int j = i + 1; j < in_line_point_x1.size(); j++) {
+	for (register int i = 0; i < true_line_point_x1.size(); i++) {
+		for (register int j = i + 1; j < true_line_point_x1.size(); j++) {
 
 			// in_line_point 4개의 vector를 간단한 버블 정렬로 정렬을 한다
 			// 각 축의 탐색 방향과 대비되는 x 또는 y를 기준으로 삼는다
 
-			if (in_line_point_x1[i].x > in_line_point_x1[j].x) {
-				MyPoint t_point = in_line_point_x1[i];
+			if (true_line_point_x1[i].x > true_line_point_x1[j].x) {
+				MyPoint t_point = true_line_point_x1[i];
 
-				in_line_point_x1[i] = in_line_point_x1[j];
-				in_line_point_x1[j] = t_point;
+				true_line_point_x1[i] = true_line_point_x1[j];
+				true_line_point_x1[j] = t_point;
 			}
-			if (in_line_point_x2[i].x > in_line_point_x2[j].x) {
-				MyPoint t_point = in_line_point_x2[i];
+			if (true_line_point_x2[i].x > true_line_point_x2[j].x) {
+				MyPoint t_point = true_line_point_x2[i];
 
-				in_line_point_x2[i] = in_line_point_x2[j];
-				in_line_point_x2[j] = t_point;
+				true_line_point_x2[i] = true_line_point_x2[j];
+				true_line_point_x2[j] = t_point;
 			}
-			if (in_line_point_y1[i].y > in_line_point_y1[j].y) {
-				MyPoint t_point = in_line_point_y1[i];
+			if (true_line_point_y1[i].y > true_line_point_y1[j].y) {
+				MyPoint t_point = true_line_point_y1[i];
 
-				in_line_point_y1[i] = in_line_point_y1[j];
-				in_line_point_y1[j] = t_point;
+				true_line_point_y1[i] = true_line_point_y1[j];
+				true_line_point_y1[j] = t_point;
 			}
-			if (in_line_point_y2[i].y > in_line_point_y2[j].y) {
-				MyPoint t_point = in_line_point_y2[i];
+			if (true_line_point_y2[i].y > true_line_point_y2[j].y) {
+				MyPoint t_point = true_line_point_y2[i];
 
-				in_line_point_y2[i] = in_line_point_y2[j];
-				in_line_point_y2[j] = t_point;
+				true_line_point_y2[i] = true_line_point_y2[j];
+				true_line_point_y2[j] = t_point;
 			}
 		}
 	}
@@ -184,14 +228,14 @@ void ChessLineSearchAlg::GetInCrossPoint(IplImage *chess_image, vector<ChessPoin
 	MyLinePoint t_in_line_point_x, t_in_line_point_y;
 	MyPoint t_in_point;
 
-	for (register int i = 0; i < in_line_point_x1.size(); i++) {
-		for (register int j = 0; j < in_line_point_x1.size(); j++) {
+	for (register int i = 0; i < true_line_point_x1.size(); i++) {
+		for (register int j = 0; j < true_line_point_x1.size(); j++) {
 
 			// 같은 축의 라인의 양끝을 이은 직선을 구해 수직이 되는 라인과의 교차점을 찾아
 			// 반환해 주는 point에 push한다
 
-			SetMyLinePoint(in_line_point_x1[i].x, in_line_point_x1[i].y, in_line_point_x2[i].x, in_line_point_x2[i].y, &t_in_line_point_x);
-			SetMyLinePoint(in_line_point_y1[j].x, in_line_point_y1[j].y, in_line_point_y2[j].x, in_line_point_y2[j].y, &t_in_line_point_y);
+			SetMyLinePoint(true_line_point_x1[i].x, true_line_point_x1[i].y, true_line_point_x2[i].x, true_line_point_x2[i].y, &t_in_line_point_x);
+			SetMyLinePoint(true_line_point_y1[j].x, true_line_point_y1[j].y, true_line_point_y2[j].x, true_line_point_y2[j].y, &t_in_line_point_y);
 
 			// in_line_point 4개의 변수 모두 9개의 경계점을 가지고 있으므로
 			// 각 수직이 되는 직선 9*9로 총 81개의 교차점이 생기게 된다
@@ -477,8 +521,11 @@ void ChessLineSearchAlg::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *
 							_TT_in1.push_back(setMyPoint(_TT[i].x, _TT[i].y));
 						else
 							_TT_in2.push_back(setMyPoint(_TT[i].x, _TT[i].y));
-
-						cvCircle(image, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(0, 0, 0));
+						
+						if(XYFlag)
+							cvCircle(image, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(0, 0, 0));
+						else
+							cvCircle(image, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(0, 0, 0));
 
 						line_count++;
 
@@ -518,31 +565,31 @@ void ChessLineSearchAlg::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *
 
 			// _TT는 각 라인의 중심에서 양쪽으로 뻗어나가며 찾은 경계점들이 순차적으로 push가 되어있으므로 자신과 그 이후에 탐색된 점과 비교를 한다
 
-			if (abs(_TT_in1[i].x - _TT_in1[i + 1].x) < 35 || abs(_TT_in1[i].x - _TT_in1[i + 1].x) > 50) {
+			if (abs(_TT_in1[i].x - _TT_in1[i + 1].x) < 30 || abs(_TT_in1[i].x - _TT_in1[i + 1].x) > 60) {
 				SumFlag = false;
 			}
 		}
 		for (register int i = 0; i < _TT_in2.size() - 1; i++) {
-			if (abs(_TT_in2[i].x - _TT_in2[i + 1].x) < 35 || abs(_TT_in2[i].x - _TT_in2[i + 1].x) > 50) {
+			if (abs(_TT_in2[i].x - _TT_in2[i + 1].x) < 30 || abs(_TT_in2[i].x - _TT_in2[i + 1].x) > 60) {
 				SumFlag = false;
 			}
 		}
-		if (abs(_TT_in1[0].x - _TT_in2[0].x) < 35 || abs(_TT_in1[0].x - _TT_in2[0].x) > 50) {
+		if (abs(_TT_in1[0].x - _TT_in2[0].x) < 30 || abs(_TT_in1[0].x - _TT_in2[0].x) > 50) {
 			SumFlag = false;
 		}
 	}
 	else if (!XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)) {
 		for (register int i = 0; i < _TT_in1.size() - 1; i++) {
-			if (abs(_TT_in1[i].y - _TT_in1[i + 1].y) < 35 || abs(_TT_in1[i].y - _TT_in1[i + 1].y) > 50) {
+			if (abs(_TT_in1[i].y - _TT_in1[i + 1].y) < 30 || abs(_TT_in1[i].y - _TT_in1[i + 1].y) > 60) {
 				SumFlag = false;
 			}
 		}
 		for (register int i = 0; i <_TT_in2.size() - 1; i++) {
-			if (abs(_TT_in2[i].y - _TT_in2[i + 1].y) < 35 || abs(_TT_in2[i].y - _TT_in2[i + 1].y) > 50) {
+			if (abs(_TT_in2[i].y - _TT_in2[i + 1].y) < 30 || abs(_TT_in2[i].y - _TT_in2[i + 1].y) > 60) {
 				SumFlag = false;
 			}
 		}
-		if (abs(_TT_in1[0].y - _TT_in2[0].y) < 35 || abs(_TT_in1[0].y - _TT_in2[0].y) > 50) {
+		if (abs(_TT_in1[0].y - _TT_in2[0].y) < 30 || abs(_TT_in1[0].y - _TT_in2[0].y) > 50) {
 			SumFlag = false;
 		}
 	}
@@ -620,7 +667,23 @@ void ChessLineSearchAlg::MemoryClear() {
 
 	// 전역으로 쓰인 모든 변수들을 clear해준다
 
-	line_x1.clear(), line_x2.clear(), line_x_mid.clear(), line_y1.clear(), line_y2.clear(), line_y_mid.clear();
+	line_x1.clear(), line_x2.clear(), line_y1.clear(), line_y2.clear(), line_x11.clear(), line_x22.clear(), line_y11.clear(), line_y22.clear();
 
-	in_line_point_x1.clear(), in_line_point_x2.clear(), in_line_point_y1.clear(), in_line_point_y2.clear();
+	in_line_point_x1.clear(), in_line_point_x2.clear(), in_line_point_y1.clear(), in_line_point_y2.clear(), in_line_point_x11.clear(), in_line_point_x22.clear(), in_line_point_y11.clear(), in_line_point_y22.clear();
+
+	true_line_point_x1.clear(), true_line_point_x2.clear(), true_line_point_y1.clear(), true_line_point_y2.clear();
+
+}
+
+
+void ChessLineSearchAlg::GetTrueLines(vector<MyPoint> in_line_point1, vector<MyPoint> in_line_point2, vector<MyPoint> *Ture_in_line_point){
+	
+	if(in_line_point1.size() == 9){
+		for(int i=0;i<in_line_point1.size();i++)
+			Ture_in_line_point->push_back(in_line_point1[i]);
+	}
+	else if(in_line_point2.size() == 9){
+		for(int i=0;i<in_line_point2.size();i++)
+			Ture_in_line_point->push_back(in_line_point2[i]);
+	}
 }

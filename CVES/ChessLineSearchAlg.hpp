@@ -62,20 +62,23 @@ public:
 	~ChessLineSearchAlg();
 
 	// 모든 체스판 라인이 검출되기 위한 위치는 찾는데 사용되는 변수.
-	int Linefindcount_x1, Linefindcount_y1, Linefindcount_x2, Linefindcount_y2;
+	int Linefindcount_x1, Linefindcount_x11, Linefindcount_y1, Linefindcount_y11, Linefindcount_x2, Linefindcount_x22, Linefindcount_y2, Linefindcount_y22;
 
 	// Linefindcount 함수들의 증감을 결정하는 변수.
-	bool flag_x1, flag_y1, flag_x2, flag_y2;
+	bool flag_x1, flag_y1, flag_x2, flag_y2, flag_x11, flag_y11, flag_x22, flag_y22;
 
-	vector<MyPoint> in_line_point_x1, in_line_point_x2, in_line_point_y1, in_line_point_y2;
-	vector<MyGrayPoint> line_x1, line_x2, line_x_mid, line_y1, line_y2, line_y_mid;
+	vector<MyPoint> in_line_point_x1, in_line_point_x2, in_line_point_y1, in_line_point_y2, in_line_point_x11, in_line_point_x22, in_line_point_y11, in_line_point_y22;
+	vector<MyPoint> true_line_point_x1, true_line_point_x2, true_line_point_y1, true_line_point_y2;
 
-	MyLinePoint line_point_x1, line_point_x2, line_point_x_mid, line_point_y1, line_point_y2, line_point_y_mid;
+	vector<MyGrayPoint> line_x1, line_x2, line_y1, line_y2, line_x11, line_x22, line_y11, line_y22;
 
+	MyLinePoint line_point_x1, line_point_x2, line_point_y1, line_point_y2, line_point_x11, line_point_x22, line_point_y11, line_point_y22;
+
+	
 	// MySquarePoint main_square;
 
 	// 영상에서 해당 부분의 grayscale 추출.
-	void GetLinegrayScale(IplImage *gray_image, int linefindcount_x1, int linefindcount_y1, int linefindcount_x2, int linefindcount_y2);
+	void GetLinegrayScale(IplImage *gray_image, int linefindcount_x1, int linefindcount_y1, int linefindcount_x2, int linefindcount_y2, int linefindcount_x11, int linefindcount_y11, int linefindcount_x22, int linefindcount_y22);
 	// 체스판에서 각 체스판의 경계를 추출
 	void GetgraySidelinesPoint(IplImage *chess_image);
 	// 추출된 모든 수직이 되는 모든 선들의 교차점을 구함.
@@ -90,6 +93,9 @@ public:
 	void GrayImageBinarization(IplImage *gray_image);
 	// 체스판 경계 탐색 함수.
 	void GetgraySidelines(IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool XYFlag);
+	// 체스 코너를 결정할 라인 선택 함수
+	void GetTrueLines(vector<MyPoint> in_line_point1, vector<MyPoint> in_line_point2, vector<MyPoint> *Ture_in_line_point);
+
 
 	void MemoryClear();
 
