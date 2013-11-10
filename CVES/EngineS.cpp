@@ -330,7 +330,7 @@ void EngineS::imgproc_mode(){
 		// 관심영역 크기 고정.
 		_ROIRect = cvRect(100, 20, 440, 440);
 	}
-	else if (_ImageProcessMode == 1 /*&& IsStarted == true*/) {
+	else if (_ImageProcessMode == 1/* && IsStarted == true*/) {
 		// 관심영역 재설정 선택 OR 체스보드 인식 확인부.
 		int _TTick = GetTickCount();
 
@@ -475,7 +475,7 @@ void EngineS::imgproc_mode(){
 
 						// chessgame 이동부.
 						//printf("predict: %d, out_count : %d\n", predicted_mode, out_count);
-						_ChessGame.Chess_process(out, predicted_mode);
+						_IsTrun = _ChessGame.Chess_process(out, predicted_mode);
 
 						// .
 
