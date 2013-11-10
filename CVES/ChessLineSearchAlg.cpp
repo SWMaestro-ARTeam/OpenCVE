@@ -565,31 +565,31 @@ void ChessLineSearchAlg::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *
 
 			// _TT는 각 라인의 중심에서 양쪽으로 뻗어나가며 찾은 경계점들이 순차적으로 push가 되어있으므로 자신과 그 이후에 탐색된 점과 비교를 한다
 
-			if (abs(_TT_in1[i].x - _TT_in1[i + 1].x) < 35 || abs(_TT_in1[i].x - _TT_in1[i + 1].x) > 50) {
+			if (abs(_TT_in1[i].x - _TT_in1[i + 1].x) < 30 || abs(_TT_in1[i].x - _TT_in1[i + 1].x) > 60) {
 				SumFlag = false;
 			}
 		}
 		for (register int i = 0; i < _TT_in2.size() - 1; i++) {
-			if (abs(_TT_in2[i].x - _TT_in2[i + 1].x) < 35 || abs(_TT_in2[i].x - _TT_in2[i + 1].x) > 50) {
+			if (abs(_TT_in2[i].x - _TT_in2[i + 1].x) < 30 || abs(_TT_in2[i].x - _TT_in2[i + 1].x) > 60) {
 				SumFlag = false;
 			}
 		}
-		if (abs(_TT_in1[0].x - _TT_in2[0].x) < 35 || abs(_TT_in1[0].x - _TT_in2[0].x) > 50) {
+		if (abs(_TT_in1[0].x - _TT_in2[0].x) < 30 || abs(_TT_in1[0].x - _TT_in2[0].x) > 50) {
 			SumFlag = false;
 		}
 	}
 	else if (!XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)) {
 		for (register int i = 0; i < _TT_in1.size() - 1; i++) {
-			if (abs(_TT_in1[i].y - _TT_in1[i + 1].y) < 35 || abs(_TT_in1[i].y - _TT_in1[i + 1].y) > 50) {
+			if (abs(_TT_in1[i].y - _TT_in1[i + 1].y) < 30 || abs(_TT_in1[i].y - _TT_in1[i + 1].y) > 60) {
 				SumFlag = false;
 			}
 		}
 		for (register int i = 0; i <_TT_in2.size() - 1; i++) {
-			if (abs(_TT_in2[i].y - _TT_in2[i + 1].y) < 35 || abs(_TT_in2[i].y - _TT_in2[i + 1].y) > 50) {
+			if (abs(_TT_in2[i].y - _TT_in2[i + 1].y) < 30 || abs(_TT_in2[i].y - _TT_in2[i + 1].y) > 60) {
 				SumFlag = false;
 			}
 		}
-		if (abs(_TT_in1[0].y - _TT_in2[0].y) < 35 || abs(_TT_in1[0].y - _TT_in2[0].y) > 50) {
+		if (abs(_TT_in1[0].y - _TT_in2[0].y) < 30 || abs(_TT_in1[0].y - _TT_in2[0].y) > 50) {
 			SumFlag = false;
 		}
 	}
