@@ -59,6 +59,8 @@
 #include "ChessGame.hpp"
 // Chessboard 면적 계산 및 체스보드 인접 체크
 #include "CheckInChessboard.hpp"
+// 캐니 엣지를 사용한 Obj Detection
+#include "ChessObjDetection.h"
 
 #if WINDOWS_SYS
 // It's for windows dependent Functions.
@@ -83,6 +85,7 @@ private:
 	BlobLabeling _BlobLabeling;
 	ChessGame _ChessGame;
 	CheckInChessboard *_CheckInChess;
+	ChessObjDetection _ChessObjDetect;
 
 	Telepathy::Server *_TelepathyServer;
 	InternalProtocolSeeker _InternalProtocolSeeker;
@@ -105,6 +108,7 @@ private:
 	IplImage *_TempPrev2; // 임시 이전 영상 저장 이미지.
 	IplImage *_OtherBinaryImage; // 손을 제외한 나머지 이진 영상.
 	IplImage *_PureImage;	//원본 ROI 셋팅 영상을 저장하기 위한 이미지.
+	IplImage *_CamHSV;
 	CvRect _ROIRect; // 관심영역 크기.
 	CvScalar _RGB; // 관심영역을 그릴 RGB color 저장변수
 

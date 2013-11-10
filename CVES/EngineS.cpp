@@ -44,6 +44,8 @@ EngineS::EngineS() {
 	_ImageSkin = NULL;
 	_PrevImage = NULL;
 	_ImageSub = NULL;
+
+	_CamHSV = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 3);
 }
 
 EngineS::~EngineS() {
@@ -54,6 +56,8 @@ EngineS::~EngineS() {
 	IsTictokEnable = false;
 	
 	G_EngineS = NULL;
+
+	cvReleaseImage(&_CamHSV);
 }
 
 bool EngineS::Initialize_TServer() {
@@ -147,6 +151,7 @@ void EngineS::Go_ImageProcessing(){
 	// Cam으로부터의 영상입력.
 	_CamOriginalImage = cvQueryFrame(_Cam);
 	cvFlip(_CamOriginalImage, _CamOriginalImage, FLIP_MODE);
+	cvCvtColor(_CamOriginalImage, _CamHSV, CV_BGR2HSV);
 	//cvSmooth(_CamOriginalImage, _CamOriginalImage, CV_MEDIAN, 3);
 	// 모드에 따른 이미지 프로세스 수행.
 

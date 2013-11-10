@@ -23,34 +23,32 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _CheckInChessboard_hpp_
-#define _CheckInChessboard_hpp_
-
 #include "CVESDependent.hpp"
+#include "CheckInChessboard.hpp"
 
 using namespace std;
 
-class CheckInChessboard {
+class ChessObjDetection
+{
 private:
-	// p, q, r로 이루어진 삼각형의 넓이 return.
-	float area_tri(CvPoint p, CvPoint q, CvPoint r);
-	// 말이 어느 체스판에 있는지를 체크.
-	CvPoint	Get_Chessidx(CvPoint point, vector<ChessPoint> cross_point);
-	// width, height가 가리키는 픽셀이 어느 체스보드 인덱스를 가지는지를 계산하여 반환.
-	CvPoint Get_ChessboxPos(int width, int height, vector<ChessPoint> cross_point);
+	CheckInChessboard *_CheckChessboard;
+
+	int _Canny_LowThreshold, _Canny_HighThreshold;	// Canny Edge Detection에 사용되는 Threshold
+
+	IplImage *_H_Plane;	// HSV에 H 평면
+	IplImage *_S_Plane; // HSV에 S 평면
+
+	void ConvertHplane(IplImage *src);	// src - RGB, RGB 색상계에서 HSV 색상계의  H평면 분리
+	void ConvertSplane(IplImage *src);  // src - RGB, RGB 색상계에서 HSV 색상계의  S평면 분리
+
+	void add_CannyImg(IplImage *H_canny, IplImage *S_Canny, IplImage *dst); // 두가지 CannyEdge Detection OR 연산 이미지 생성
+	void Delete_ChessLine(IplImage *edge, vector<_ChessPoint> _cross_point); // 디텍션된 엣지 영상에서 교점들을 사용하여 엣지들을 최소화함
 
 public:
-	CheckInChessboard();
-	~CheckInChessboard();
+	ChessObjDetection(void);
+	~ChessObjDetection(void);
 
-	// binary image가 체스보드 안에 픽셀을 가지는지 검사.
-	bool Check_InChessboard(IplImage *img, vector<ChessPoint> point);
-	// img가 픽셀값을 아무것도 가지지 않는지 체크.
-	bool Check_imgZero(IplImage *img);
-	// 차영상의 결과로 나온 이진 이미지를 계산하여 체스말의 좌표이동을 반환.
-	void Calculate_Movement(IplImage *bin, vector<ChessPoint> cross_point, CvPoint out[], float score_threshold = 0.1);
-	// binary 이미지를 이용하여 보드의 각 칸에 스코어를 연산함
-	void Cal_BoardScore(IplImage *bin, vector<ChessPoint> cross_point, float score_box[][8]);
+	void SetCannyThreshold(int Low, int High); // Canny Edge Detection Threshold 재설정
+	void DetectObj(IplImage *src, vector<_ChessPoint> _cross_point, bool *board[]); // RGB영상과 좌표를 출력을 이용하여 오브젝트의 좌표를 디텍션
 };
 
-#endif
