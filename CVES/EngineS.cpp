@@ -368,9 +368,12 @@ void EngineS::imgproc_mode(){
 
 		// mode 1에서 2초 이상 지났을 경우 다음 모드로 진행
 		if (time(NULL) - _TTempSec > 2) {
-			_ImageProcessMode++;
+			//_ImageProcessMode++;
 			_RGB = cvScalar(0, 255);
 		}
+
+		cvSmooth(_PureImage,_PureImage, CV_MEDIAN);
+		_ChessObjDetect.DetectObj(_PureImage, _CrossPoint);
 
 		// fps 계산.
 		_TTick = GetTickCount() - _TTick;
