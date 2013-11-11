@@ -23,35 +23,29 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ChessObjDetection_hpp_
-#define _ChessObjDetection_hpp_
+#ifndef _HoughLine_hpp_
+#define _HoughLine_hpp_
 
+#include "SystemDependency.hpp"
 #include "CVESDependent.hpp"
-#include "CheckInChessboard.hpp"
 
 using namespace std;
 
-class ChessObjDetection {
+class HoughLineBased {
 private:
-	CheckInChessboard *_CheckChessboard;
-
-	int _Canny_LowThreshold, _Canny_HighThreshold;	// Canny Edge Detection에 사용되는 Threshold
-
-	IplImage *_H_Plane;	// HSV에 H 평면
-	IplImage *_S_Plane; // HSV에 S 평면
-
-	void ConvertHplane(IplImage *src);	// src - RGB, RGB 색상계에서 HSV 색상계의  H평면 분리
-	void ConvertSplane(IplImage *src);  // src - RGB, RGB 색상계에서 HSV 색상계의  S평면 분리
-
-	void add_CannyImg(IplImage *H_canny, IplImage *S_Canny, IplImage *dst); // 두 가지 CannyEdge Detection OR 연산 이미지 생성
-	void Delete_ChessLine(IplImage *edge, vector<_ChessPoint> _cross_point); // 디텍션된 엣지 영상에서 교점들을 사용하여 엣지들을 최소화함
-
+	static bool DescSortOfFirstValue(pair<float, float> Ta, pair<float, float> Tb); //벡터 정렬 규칙
 public:
-	ChessObjDetection(void);
-	~ChessObjDetection(void);
+	vector<std::pair<float, float> > _Vector_LineX, _Vector_LineY; // 라인 : <rho, theta>
 
-	void SetCannyThreshold(int Low, int High); // Canny Edge Detection Threshold 재설정
-	void DetectObj(IplImage *src, vector<_ChessPoint> _cross_point, bool *board[]); // RGB영상과 좌표를 출력을 이용하여 오브젝트의 좌표를 디텍션
+	void NonMaximumSuppression(IplImage* Image1, IplImage* Image2, int Kernel);
+	void CastSequence(CvSeq *linesX, CvSeq *linesY); // 벡터로 변환
+	void MergeLine(vector<std::pair<float, float> > *Lines); // Hough Line Trasform 결과를 체스판에 맞추어 병합.
+	// 라인 return.
+	//void Get_Line(vector<pair<float, float> > *XLines, vector<pair<float, float> > *YLines);
+	// 라인 그리기.
+	void DrawLines(vector<pair<float, float> > Lines, IplImage* TargetImage);
+	// 교차점 구하기.
+	void FindIntersections(vector<pair<float, float> > XLines, vector<pair<float, float> > YLines, vector<ChessPoint> *Point);
 };
 
 #endif

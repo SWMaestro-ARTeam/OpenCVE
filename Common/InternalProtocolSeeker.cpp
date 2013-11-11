@@ -25,6 +25,7 @@
 
 #include "InternalProtocolSeeker.hpp"
 
+// 여기 있는 Protocol의 모든 명세는 InternalProtocol.hpp에 있음.
 int InternalProtocolSeeker::InternalProtocolString_Seeker(const char *Str) {
 	int _SeekedNumber = 0;
 

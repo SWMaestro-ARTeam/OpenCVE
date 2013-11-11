@@ -24,41 +24,43 @@ CONFIG	+= static staticlib
 TEMPLATE = app
 
 SOURCES += main.cpp \
-		../Common/Time.cpp \
-		../Common/Telepathy.cpp \
-		../Common/StringTokenizer.cpp \
-		../Common/InternalProtocolSeeker.cpp \
-		../Common/Debug.cpp \
-		../Common/CodeConverter.cpp \
-		../Common/StringTools.cpp \
     HandRecognition.cpp \
     EngineS.cpp \
     ChessRecognition.cpp \
     ChessGame.cpp \
     BlobLabeling.cpp \
+    ../Common/Time.cpp \
+    ../Common/Telepathy.cpp \
+    ../Common/StringTokenizer.cpp \
+    ../Common/InternalProtocolSeeker.cpp \
+    ../Common/Debug.cpp \
+    ../Common/CodeConverter.cpp \
+    ChessLineSearchAlg.cpp \
+    ../Common/StringTools.cpp \
     CheckInChessboard.cpp \
     LineSearchBased.cpp \
     HoughLineBased.cpp \
     ChessObjectDetection.cpp
 
 HEADERS += \
-		../Common/Time.hpp \
-		../Common/Telepathy.hpp \
-		../Common/SystemDependency.hpp \
-		../Common/StringTokenizer.hpp \
-		../Common/InternalProtocolSeeker.hpp \
-		../Common/InternalProtocol.hpp \
-		../Common/GlobalVariables.hpp \
-		../Common/ExtendedBlackBox.hpp \
-		../Common/Debug.hpp \
-		../Common/Common.hpp \
-		../Common/StringTools.hpp \
     HandRecognition.hpp \
     EngineS.hpp \
     ChessRecognition.hpp \
     ChessGame.hpp \
     BlobLabeling.hpp \
+    ../Common/Time.hpp \
+    ../Common/Telepathy.hpp \
+    ../Common/SystemDependency.hpp \
+    ../Common/StringTokenizer.hpp \
+    ../Common/InternalProtocolSeeker.hpp \
+    ../Common/InternalProtocol.hpp \
+    ../Common/GlobalVariables.hpp \
+    ../Common/ExtendedBlackBox.hpp \
+    ../Common/Debug.hpp \
+    ../Common/Common.hpp \
     CVESDependent.hpp \
+    ChessLineSearchAlg.hpp \
+    ../Common/StringTools.hpp \
     CheckInChessboard.hpp \
     LineSearchBased.hpp \
     HoughLineBased.hpp \
@@ -134,10 +136,10 @@ win32:CONFIG(debug, debug|release): \
 	-lopencv_videostab246d
 # Import Library for Release
 win32:CONFIG(release, debug|release): \
-#	LIBS += -L$$QT_MINGW_PATH/lib \
-#	-lQt5Core \
-#	-lQt5Gui \
-#	-lQt5Widgets \
+	LIBS += -L$$QT_MINGW_PATH/lib \
+	-lQt5Core \
+	-lQt5Gui \
+	-lQt5Widgets \
 
 	LIBS += -L$$OPENCV_MSVC12_PATH/lib/Release \
 	-lopencv_calib3d246 \

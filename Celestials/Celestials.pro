@@ -40,10 +40,12 @@ SOURCES += main.cpp\
     ../CVES/ChessRecognition.cpp \
     ../CVES/ChessGame.cpp \
     ../CVES/BlobLabeling.cpp \
-    ../CVES/ChessLineSearchAlg.cpp \
     ../Common/StringTools.cpp \
     ApplicationsMain.cpp \
-    ../CVES/CheckInChessboard.cpp
+    ../CVES/CheckInChessboard.cpp \
+    ../CVES/LineSearchBased.cpp \
+    ../CVES/HoughLineBased.cpp \
+    ../CVES/ChessObjectDetection.cpp
 
 HEADERS  += Celestials.h \
     ../Common/Time.hpp \
@@ -70,10 +72,12 @@ HEADERS  += Celestials.h \
     ../CVES/BlobLabeling.hpp \
     ../CVEC/CVECDependent.hpp \
     ../CVES/CVESDependent.hpp \
-    ../CVES/ChessLineSearchAlg.hpp \
     ../Common/StringTools.hpp \
     ApplicationsMain.h \
-    ../CVES/CheckInChessboard.hpp
+    ../CVES/CheckInChessboard.hpp \
+    ../CVES/LineSearchBased.hpp \
+    ../CVES/HoughLineBased.hpp \
+    ../CVES/ChessObjectDetection.hpp
 
 FORMS    += Celestials.ui
 

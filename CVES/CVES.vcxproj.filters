@@ -19,9 +19,6 @@
     <ClCompile Include="ChessGame.cpp">
       <Filter>CVES_System\ChessGame\Source</Filter>
     </ClCompile>
-    <ClCompile Include="ChessLineSearchAlg.cpp">
-      <Filter>CVES_System\Algorithm\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\Common\File.cpp">
       <Filter>Common\File\Source</Filter>
     </ClCompile>
@@ -52,8 +49,14 @@
     <ClCompile Include="..\Common\StringTools.cpp">
       <Filter>Common\StringTools\Source</Filter>
     </ClCompile>
-    <ClCompile Include="ChessObjDetection.cpp">
+    <ClCompile Include="ChessObjectDetection.cpp">
       <Filter>CVES_System\Recognitions\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="LineSearchBased.cpp">
+      <Filter>CVES_System\Algorithm\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="HoughLineBased.cpp">
+      <Filter>CVES_System\Algorithm\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -71,9 +74,6 @@
     </ClInclude>
     <ClInclude Include="ChessGame.hpp">
       <Filter>CVES_System\ChessGame\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="ChessLineSearchAlg.hpp">
-      <Filter>CVES_System\Algorithm\Header</Filter>
     </ClInclude>
     <ClInclude Include="CVESDependent.hpp">
       <Filter>CVES_System\CVES_Dependent</Filter>
@@ -123,8 +123,14 @@
     <ClInclude Include="..\Common\StringTools.hpp">
       <Filter>Common\StringTools\Header</Filter>
     </ClInclude>
-    <ClInclude Include="ChessObjDetection.hpp">
+    <ClInclude Include="ChessObjectDetection.hpp">
       <Filter>CVES_System\Recognitions\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="LineSearchBased.hpp">
+      <Filter>CVES_System\Algorithm\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="HoughLineBased.hpp">
+      <Filter>CVES_System\Algorithm\Header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -265,6 +271,9 @@
     </Filter>
     <Filter Include="Common\StringTools\Source">
       <UniqueIdentifier>{89fa566b-af7d-48ad-88d1-88f00e6baddb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVES_System\DrawView">
+      <UniqueIdentifier>{cec2b7ac-8e47-4f3a-8153-49e9e4e8d0a2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -60,7 +60,7 @@
 // Chessboard 면적 계산 및 체스보드 인접 체크
 #include "CheckInChessboard.hpp"
 // 캐니 엣지를 사용한 Obj Detection
-#include "ChessObjDetection.h"
+#include "ChessObjectDetection.hpp"
 
 #if WINDOWS_SYS
 // It's for windows dependent Functions.
@@ -80,18 +80,30 @@ typedef struct _ServerGetInformation {
 
 class EngineS {
 private:
+	// Recognition Modules.
+	BlobLabeling _BlobLabeling;
+
 	HandRecognition _HandRecognition;
 	ChessRecognition _ChessRecognition;
-	BlobLabeling _BlobLabeling;
 	ChessGame _ChessGame;
-	CheckInChessboard *_CheckInChess;
-	ChessObjDetection _ChessObjDetect;
+	CheckInChessboard _CheckInChessboard;
+	ChessObjectDetection _ChessObjectDetection;
 
+	// Common Modules.
 	Telepathy::Server *_TelepathyServer;
 	InternalProtocolSeeker _InternalProtocolSeeker;
+	CodeConverter _CodeConverter;
 	StringTools _StringTools;
 
-	int _ImageProcessMode;				//모드 설정
+	int _Resolution_Width;
+	int _Resolution_Heigth;
+	int _ROI_Width;
+	int _ROI_Heigth;
+	int _ROI_Thickness;
+
+	int _Camera_Number;
+
+	int _ImageProcessMode; //모드 설정/
 	bool _SubCheck;
 	bool _InHandCheck;
 	bool _BeforeHandFirst;
@@ -99,6 +111,13 @@ private:
 	bool _IsTrun;
 
 	CvCapture *_Cam; // 캠.
+	// 공유 자원 문제를 피하기 위해, 약 3가지의 Part에서 쓰는 Image를 Queue를 줌.
+	// 자원은 무조건 Class 내에서만 할당 되어야 하며, 처리의 결과만 Class 내에서 처리되어
+	// Return 되게 하여야 한다.
+
+	queue<IplImage *> _OriginToChessBoardDetection; // Chess Board Detection.
+	queue<IplImage *> _OriginToHandDetection; // Hand Detection.
+
 	IplImage *_CamOriginalImage; // 원본 이미지.
 	IplImage *_ImageChess; // 처리할 관심영역 속 RGB 이미지.
 	IplImage *_ImageSkin; // 차영상 결과 이미지.
@@ -109,8 +128,17 @@ private:
 	IplImage *_OtherBinaryImage; // 손을 제외한 나머지 이진 영상.
 	IplImage *_PureImage;	//원본 ROI 셋팅 영상을 저장하기 위한 이미지.
 	IplImage *_CamHSV;
+
+	
+	CvSize _Resolution; // 전체 해상도.
+	CvSize _ROI_Resolution; // ROI상의 해상도.
+
+	// CVES에서의 ROI 영역이 가지는 요구사항.
+	// 1. 해상도 설정값에 따라 항상 변화할 수 있어야 한다.
+	// 2. ROI 영역은 구정이 아니라 유동적이어야 한다.
 	CvRect _ROIRect; // 관심영역 크기.
-	CvScalar _RGB; // 관심영역을 그릴 RGB color 저장변수
+	CvScalar _ROIRectColour; // 관심영역을 그릴 RGB color 저장변수.
+	CvScalar _FontColour;
 
 	vector<ChessPoint> _CrossPoint;
 	vector<int> _PieceIndex;
@@ -118,6 +146,9 @@ private:
 	//mutex _QueueProtectMutex;
 	//mutex _VarProtectMutex;
 
+private:
+	bool Initialize_Camera();
+	void Deinitialize_Camera();
 	// image process 초기화.
 	void Initialize_ImageProcessing();
 	// 이미지 프로세스를 종료함.
@@ -132,7 +163,7 @@ private:
 	bool Start_Server();
 	void Stop_Server();
 
-	void Set_ClientData(SOCKET Socket, int Type);
+	//void Set_ClientData(SOCKET Socket, int Type);
 	void Process_Info(CommandString *IPCS, SOCKET Socket);
 
 	bool Check_Exit();
@@ -140,12 +171,11 @@ private:
 	// 매 루프에서 호출되는 image process 함수.
 	void Go_ImageProcessing();
 	// chess UI 만들기
-	void DrawWindowS(IplImage *src, float fps, CvScalar RGB);
-
+	void DrawROI(IplImage *Source, float FramePerSecond, CvScalar RGB);
 	// 연산에 필요한 이미지 할당.
 	void Inter_imageCraete(int roi_width, int roi_height);
 	// 차영상 진행.
-	void Sub_image(IplImage *src1, IplImage *src2, IplImage *dst);
+	void Sub_image(IplImage *Source1, IplImage *Source2, IplImage *Destination);
 	// 차영상 결과 이미지에 RGB 색 씌우기.
 	void Compose_diffImage(IplImage *rgb, IplImage *bin, CvScalar RGB);
 	//입력 영상으로 내부 모드에 따라 이미지 연산. (case문 대체)

@@ -23,48 +23,34 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _HandRecognition_hpp_
-#define _HandRecognition_hpp_
-
-#include "Common.hpp"
+#ifndef _ChessObjectDetection_hpp_
+#define _ChessObjectDetection_hpp_
 
 #include "CVESDependent.hpp"
+#include "CheckInChessboard.hpp"
 
-#if WINDOWS_SYS
-#include <Windows.h>
-#elif POSIX_SYS
-#endif
+using namespace std;
 
-#include <iostream>
-
-class HandRecognition {
+class ChessObjectDetection {
 private:
-	int _Image_Width, _Image_Height;
+	CheckInChessboard _CheckChessboard;
 
-	unsigned char _Plane_B_Value, _Plane_G_Value, _Plane_R_Value;
-	unsigned char _Plane_Y_Value, _Plane_Cr_Value, _Plane_Cb_Value;
-	unsigned char _Plane_H_Value, _Plane_S_Value, _Plane_V_Value;
+	int _Canny_LowThreshold, _Canny_HighThreshold;	// Canny Edge Detection에 사용되는 Threshold
 
-	IplImage *_Image_YCrCb, *_Image_HSV; // YCrCb, HSV 색상계.
-	IplImage *_Image_Previous, *_Image_Now; // 이전 영상, 현재 영상. 차영상을 통해 차이를 구할 예정.
+	IplImage *_H_Plane;	// HSV에 H 평면
+	IplImage *_S_Plane; // HSV에 S 평면
 
-	bool RangeDetectionOfRGBSkinColour(int Value_R, int Value_G, int Value_B);
-	bool RangeDetectionOfYCrCbSkinColour(float Value_Y, float Value_Cr, float Value_Cb);
-	bool RangeDetectionOfHSVSkinColour(float Value_H, float Value_S, float Value_V);
+	void ConvertHplane(IplImage *Source);	// src - RGB, RGB 색상계에서 HSV 색상계의  H평면 분리
+	void ConvertSplane(IplImage *Source);  // src - RGB, RGB 색상계에서 HSV 색상계의  S평면 분리
+
+	void Add_CannyImage(IplImage *H_Canny, IplImage *S_Canny, IplImage *Destination); // 두 가지 CannyEdge Detection OR 연산 이미지 생성
+	void Delete_ChessLine(IplImage *Edge, vector<ChessPoint> CrossPoint); // 디텍션된 엣지 영상에서 교점들을 사용하여 엣지들을 최소화함
 
 public:
-	HandRecognition();
-	~HandRecognition();
+	ChessObjectDetection();
+	~ChessObjectDetection();
 
-	// 초기화.
-	void Initialize_HandRecognition(int Width, int Height);
-	// 차영상 초기화.
-	void Initialize_Differential_Image();
-	// 피부색 Detection.
-	void Detect_SkinColour(IplImage *Source, IplImage *Destination);
-	// 손검출 판단 - 면적 기반.
-	bool IsHand(IplImage *Source);
-	// 이전 프레임과의 차영상.
-	void Sub_prevFrame(IplImage *Source, IplImage *Destination, bool first);
+	void SetCannyThreshold(int Low, int High); // Canny Edge Detection Threshold 재설정
+	void DetectObject(IplImage *Source, vector<ChessPoint> CrossPoint, bool *Board[]); // RGB영상과 좌표를 출력을 이용하여 오브젝트의 좌표를 디텍션
 };
 #endif

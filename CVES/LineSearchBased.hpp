@@ -23,8 +23,8 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ChessLineSearchAlg_hpp_
-#define _ChessLineSearchAlg_hpp_
+#ifndef _LineSearchAlg_hpp_
+#define _LineSearchAlg_hpp_
 
 #include "SystemDependency.hpp"
 #include "CVESDependent.hpp"
@@ -38,17 +38,17 @@
 
 using namespace std;
 
-class ChessLineSearchAlg {
+class LineSearchBased {
 private:
 	typedef struct _GraySideLinesPointStruct {
-		ChessLineSearchAlg *T_ChessLineSearchAlg;
+		LineSearchBased *T_ChessLineSearchAlg;
 		IplImage *chess_image;
 		vector<MyGrayPoint> *Lines;
 		vector<MyPoint> *InLinePoints;
 		MyLinePoint *LinePoint;
 		bool XYflag;
 
-		_GraySideLinesPointStruct(ChessLineSearchAlg *_ChessLineSearchAlg, IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool xyFlag) {
+		_GraySideLinesPointStruct(LineSearchBased *_ChessLineSearchAlg, IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool xyFlag) {
 			T_ChessLineSearchAlg = _ChessLineSearchAlg;
 			chess_image = image;
 			Lines = line;
@@ -57,9 +57,6 @@ private:
 			XYflag = xyFlag;
 		}
 	} GraySideLinesPointStruct;
-public:
-	ChessLineSearchAlg();
-	~ChessLineSearchAlg();
 
 	// 모든 체스판 라인이 검출되기 위한 위치는 찾는데 사용되는 변수.
 	int Linefindcount_x1, Linefindcount_x11, Linefindcount_y1, Linefindcount_y11, Linefindcount_x2, Linefindcount_x22, Linefindcount_y2, Linefindcount_y22;
@@ -96,7 +93,6 @@ public:
 	// 체스 코너를 결정할 라인 선택 함수
 	void GetTrueLines(vector<MyPoint> in_line_point1, vector<MyPoint> in_line_point2, vector<MyPoint> *Ture_in_line_point);
 
-
 	void MemoryClear();
 
 	MyGrayPoint setMyGrayPoint(int grayscale, int x, int y);
@@ -117,5 +113,11 @@ public:
 		void *
 #endif
 		Param);
+
+public:
+	LineSearchBased();
+	~LineSearchBased();
+
+	void ChessLineSearchProcess(IplImage *Source, vector<ChessPoint> *Point);
 };
 #endif

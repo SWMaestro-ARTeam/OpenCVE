@@ -29,6 +29,13 @@
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 
+#define CANNY_EDGE_THRESHOLD_LOW 240
+#define CANNY_EDGE_THRESHOLD_HIGH 250
+
+#define ROI_DEFAULT_WIDTH 440
+#define ROI_DEFAULT_HEIGHT 440
+#define ROI_FRAME_THICKNESS 4
+
 #define _V_MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define _V_MIN(a, b) (((a) < (b)) ? (a) : (b))
 #define _V_SWAP(x, y) { int t; t = x; x = y; y = t; }

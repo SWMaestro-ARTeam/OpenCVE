@@ -31,11 +31,27 @@ EngineS *G_EngineS;
 EngineS::EngineS() {
 	_IsRestorePossible = false;
 	
+	// Engine을 시작을 위한 Switch 설정.
 	EngineEnable = false;
 	IsStarted = false;
 	IsTictokEnable = false;
+
+	// Camera에 대한 해상도 및 ROI 변수 크기 설정.
+	_Resolution_Width = SERVER_VIEW_DEFAULT_WIDTH;
+	_Resolution_Heigth = SERVER_VIEW_DEFAULT_HEIGHT;
+	_ROI_Width = ROI_DEFAULT_WIDTH;
+	_ROI_Heigth = ROI_DEFAULT_HEIGHT;
+	_ROI_Thickness = ROI_FRAME_THICKNESS;
 	
+	_Resolution = cvSize(_Resolution_Width, _Resolution_Heigth);
+	_ROI_Resolution = cvSize(_ROI_Width, _ROI_Heigth);
+
+	_Camera_Number = CAM_DEFAULT_NUMBER;
+
+	// 정적 함수에서 불러 올 수 있도록 EngineS를 Global 변수에 할당.
 	G_EngineS = this;
+	
+	// Camera.
 	_Cam = NULL;
 
 	// 내부 연산에 사용되는 이미지 포인터 초기화
@@ -46,7 +62,8 @@ EngineS::EngineS() {
 	_PrevImage = NULL;
 	_ImageSub = NULL;
 
-	_CamHSV = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 3);
+	// ?
+	_CamHSV = cvCreateImage(_Resolution, IPL_DEPTH_8U, 3);
 }
 
 EngineS::~EngineS() {
@@ -63,6 +80,27 @@ EngineS::~EngineS() {
 #pragma endregion Constructor & Destructor
 
 #pragma region Initialize & Deinitialize Functions
+bool EngineS::Initialize_Camera() {
+	bool _TIsInitialize = false;
+	// Cam Initialize
+	// Engine의 Cam을 가져온다. 이제는 선택 할 수 있다.
+	_Cam = cvCaptureFromCAM(_Camera_Number);
+	if (_Cam != NULL) {
+		cvSetCaptureProperty(_Cam, CV_CAP_PROP_FRAME_WIDTH, _Resolution_Width);
+		cvSetCaptureProperty(_Cam, CV_CAP_PROP_FRAME_HEIGHT, _Resolution_Heigth);
+		_TIsInitialize = true;
+	}
+	else {
+		MessageBox(NULL, _CodeConverter.CharToWChar("Camera not Found."), _CodeConverter.CharToWChar("Error"), 0);
+	}
+
+	return _TIsInitialize;
+}
+
+void EngineS::Deinitialize_Camera() {
+	cvReleaseCapture(&_Cam);
+}
+
 bool EngineS::Initialize_TServer() {
 	_TelepathyServer = new Telepathy::Server();
 
@@ -78,18 +116,8 @@ void EngineS::Deinitialize_TServer() {
 }
 
 void EngineS::Initialize_ImageProcessing() {
-	//Cam init
-	// Engine의 Cam을 가져온다. 그것도 0번째.
-	_Cam = cvCaptureFromCAM(0);
-	if (_Cam != NULL) {
-		cvSetCaptureProperty(_Cam, CV_CAP_PROP_FRAME_WIDTH, SERVER_VIEW_DEFAULT_WIDTH);
-		cvSetCaptureProperty(_Cam, CV_CAP_PROP_FRAME_HEIGHT, SERVER_VIEW_DEFAULT_HEIGHT);
-	}
-	else {
-		CodeConverter _TCodeConverter;
-		MessageBox(NULL, _TCodeConverter.CharToWChar("Camera not Found."), _TCodeConverter.CharToWChar("Error"), 0);
+	if (Initialize_Camera() != true)
 		EngineEnable = false;
-	}
 
 	// 모드 초기화.
 	_ImageProcessMode = 0;
@@ -113,8 +141,7 @@ void EngineS::Deinitialize_ImageProcessing(){
 #if !USING_QT
 	cvDestroyAllWindows();
 #endif
-
-	cvReleaseCapture(&_Cam);
+	Deinitialize_Camera();
 
 	/*
 	if (temp_prev->imageData != NULL)
@@ -144,86 +171,6 @@ void EngineS::Engine_DeInitializing() {
 }
 #pragma endregion Initialize & Deinitialize Functions
 
-bool EngineS::Check_Exit() {
-	if (_ImageProcessMode == 3)
-		return true;
-	else
-		return false;
-}
-
-void EngineS::Go_ImageProcessing(){
-	// Cam으로부터의 영상입력.
-	_CamOriginalImage = cvQueryFrame(_Cam);
-	cvFlip(_CamOriginalImage, _CamOriginalImage, FLIP_MODE);
-	cvCvtColor(_CamOriginalImage, _CamHSV, CV_BGR2HSV);
-	//cvSmooth(_CamOriginalImage, _CamOriginalImage, CV_MEDIAN, 3);
-	// 모드에 따른 이미지 프로세스 수행.
-
-	imgproc_mode();
-}
-
-void EngineS::Inter_imageCraete(int roi_width, int roi_height){
-	// 내부 연산에 사용되는 이미지 할당.
-	_ImageSkin = cvCreateImage(cvSize(roi_width, roi_height), IPL_DEPTH_8U, 1);
-	_PrevImage = cvCreateImage(cvSize(roi_width, roi_height), IPL_DEPTH_8U, 3);
-	_ImageSub = cvCreateImage(cvSize(roi_width, roi_height), IPL_DEPTH_8U, 1);
-}
-
-void EngineS::Sub_image(IplImage *src1, IplImage *src2, IplImage *dst) {
-	// src1, src2에 차영상 연산하여 dst의 저장.
-	// dst zero이미지로 초기화.
-	cvZero(dst);
-
-	// 그림자 보정을 위한 Lab 색상계 변환.
-	IplImage *Lab_src1 = cvCreateImage(cvGetSize(src1), IPL_DEPTH_8U, 3);
-	IplImage *Lab_src2 = cvCreateImage(cvGetSize(src1), IPL_DEPTH_8U, 3);
-	/*cvCvtColor(src1, Lab_src1, CV_BGR2Lab);
-	cvCvtColor(src2, Lab_src2, CV_BGR2Lab);*/
-	cvCopy(src1, Lab_src1); // 기존 RGB로 테스트.
-	cvCopy(src2, Lab_src2);
-
-	// 차영상 연산. 각 R,G,B값에 SUB_THRESHOLD를 적용하여 binary image 생성.
-	for (register int i = 0; i < src1->width; i++) {
-		for (register int j = 0; j < src1->height; j++) {
-			//3채널에 대하여 각각 픽셀 값의 차이 절댓값을 연산
-			unsigned char SUB_L = abs((unsigned char)Lab_src1->imageData[(i * 3) + (j * Lab_src1->widthStep)] - (unsigned char)Lab_src2->imageData[(i * 3) + (j * Lab_src2->widthStep)]);
-			unsigned char SUB_a = abs((unsigned char)Lab_src1->imageData[(i * 3) + (j * Lab_src1->widthStep) + 1] - (unsigned char)Lab_src2->imageData[(i * 3) + (j * Lab_src2->widthStep) + 1]);
-			unsigned char SUB_b = abs((unsigned char)Lab_src1->imageData[(i * 3) + (j * Lab_src1->widthStep) + 2] - (unsigned char)Lab_src2->imageData[(i * 3) + (j * Lab_src2->widthStep) + 2]);
-
-			/*if ((SUB_L > SUB_THRESHOLD) && (SUB_a > SUB_THRESHOLD || SUB_b > SUB_THRESHOLD)) {
-				dst->imageData[i + (j * dst->widthStep)] = (unsigned char)255;
-			}*/
-			if (SUB_L > SUB_THRESHOLD || SUB_a > SUB_THRESHOLD || SUB_b > SUB_THRESHOLD) {
-				dst->imageData[i + (j * dst->widthStep)] = (unsigned char)255;
-			}
-		}
-	}
-
-	// 차영상 연산 결과에 median filter 적용 & 후추 소금 노이즈를 제거하기 위한 mopology 연산 적용.
-	cvErode(dst, dst, 0, 2);
-	cvDilate(dst, dst, 0, 2);
-
-	cvReleaseImage(&Lab_src1);
-	cvReleaseImage(&Lab_src2);
-}
-
-void EngineS::Compose_diffImage(IplImage *rgb, IplImage *bin, CvScalar RGB) {
-	// rgb 이미지에 bin이미지를 덫씌움. 디버깅을 위한 함수.
-	unsigned char _TBinValue;
-
-	// binary image에 255가 되는 값에 RGB 값으로 갱신.
-	for (register int i = 0; i < rgb->width; i++)
-		for (register int j = 0; j < rgb->height; j++) {
-			_TBinValue = (unsigned char)bin->imageData[i + j * bin->widthStep];
-
-			if (_TBinValue > 20) {
-				rgb->imageData[(i * 3) + (j * rgb->widthStep)] = RGB.val[0];
-				rgb->imageData[(i * 3) + (j * rgb->widthStep) + 1] = RGB.val[1];
-				rgb->imageData[(i * 3) + (j * rgb->widthStep) + 2] = RGB.val[2];
-			}
-		}
-}
-
 bool EngineS::Start_Server() {
 	bool _TIsStarted = false;
 
@@ -252,35 +199,213 @@ void EngineS::Stop_Server() {
 	_TelepathyServer->TServerReceivedCallback = NULL;
 }
 
-void EngineS::EngineS_Start() {
-	// 1. Engine이 Start 되면, 우선 Server 기동부터 한다.
-	Engine_Initializing();
-	// 2. CVEC에서 "ServerIsAlive"가 날아오면, 
-	Initialize_ImageProcessing();
-	Start_Server();
+void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
+	bool _TIsInfoGo = false;
+	bool _TIsBlackTime = false;
+	bool _TIsWhiteTime = false;
+	bool _TIsTurn = false;
+	bool _TIsInfoPosition = false;
+	bool _TIsInfoEnemyMove = false;
+	bool _TIsInfoType = false;
+	//bool _TIsInfoGo = false;
 
-	while (EngineEnable) {
-		// Image Processing Engine이 시작되지 않았다면 대기한다.
-		// 전체적인 구문에 영향을 줄 수 있으므로 다른 구문을 강구해보는 것도 괜찮은 생각이다.
-		if (IsStarted != true) {
-			// Image 처리 중이었다면, 모든 처리를 중단하고 화면에 Stop을 넣고 중단시킨다.
-			// cvPutText(img_Cam, "Stop", cvPoint(30, 30), &cvFont(1.0), cvScalar(0, 100, 100));
-			// while (!IsStarted) ;
+	// Fetch the next at while.
+	while (IPCS->NextCharArrayIter()) {
+		int _NSeek_GUIToEngine = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*IPCS->CharArrayListIter);
+		switch (_NSeek_GUIToEngine) {
+			// Go 뒤로 부터 오는 것들.
+			// e.g> "Info Go BlackTime(WhiteTime) xxxxx Turn xxxx"
+		case VALUE_I_INFO_GO :
+			// "Info Go"
+			_TIsInfoGo = true;
+			break;
+		case VALUE_I_INFO_BLACKTIME :
+			// "Info Go BlackTime xxxxx"
+			// 현재 들어오는 Socket이외의 다른 Client(상대편)의 표시창에 현재 멈춤 시각을 알려준다.
+			// 여기에 오면, 상대편(Black)의 시각이 들어오는 것이다.
+			_TIsBlackTime = true;
+			break;
+		case VALUE_I_INFO_WHITETIME :
+			// "Info Go White Time xxxxx"
+			// 현재 들어오는 Socket이외의 다른 Client(상대편)의 표시창에 현재 멈춤 시각을 알려준다.
+			// 여기에 오면, 상대편(White)의 시각이 들어오는 것이다.
+			_TIsWhiteTime = true;
+			break;
+		case VALUE_I_INFO_TURN :
+			// "Info Go Turn xxxx"
+			// 여기에 현재 자신의 Turn 수가 적힌다.
+			_TIsTurn = true;
+			break;
+
+			// Position 뒤로부터 오는 것들.
+			// e.g> "Info Position MoveNULL"
+			// "Info Position EnemyMove xxxx"
+		case VALUE_I_INFO_POSITION :
+			// "Info Position"
+			_TIsInfoPosition = true;
+			break;
+		case VALUE_I_INFO_ENEMYMOVE :
+			// "Info Position EnemyMove xxxx"
+			// 적의 Move이므로.
+			// 틀리면 비교한다.
+			_TIsInfoEnemyMove = true;
+			break;
+			// "MoveNULL"이 있다면 불필요한 존재?!
+			// 추후 없에기로 한다.
+		case VALUE_I_INFO_MOVENULL :
+			// "Info Position NoveNULL"
+			// 이걸 게임의 시작으로 간주 해야 할 것 같다.
+			// Socket을 넘겨 해당하는 Client List에 White 라는 식별을 한다.
+			// 그외의 나머지(해봤자 1개 뿐..) Client는 Black으로 처리한다.
+
+			break;
+		case VALUE_I_INFO_WHITE :
+			for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
+				if (_TVal->ClientSocket == Socket && strcmp(_TVal->ClientType, "Client") == 0) {
+					// White.
+					_TVal->ClientName = _StringTools.ConstCharToChar("White");
+				}
+			}
+			break;
+		case VALUE_I_INFO_BLACK :
+			for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
+				if (_TVal->ClientSocket == Socket && strcmp(_TVal->ClientType, "Client") == 0) {
+					// Null Move가 오면 일단 White.
+					_TVal->ClientName = _StringTools.ConstCharToChar("Black");
+				}
+			}
+			break;
+
+			// Type 뒤로부터 오는 것들.
+			// e.g> "Info Type Client(Observer)"
+		case VALUE_I_INFO_TYPE :
+			// "Info Type"
+			_TIsInfoType = true;
+			break;
+		case VALUE_I_INFO_TYPE_CLIENT :
+			// "Info Type Client"
+			if (_TIsInfoType == true) {
+				for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
+					if (_TVal->ClientSocket == Socket) {
+						_TVal->ClientType = _StringTools.ConstCharToChar(STR_I_INFO_TYPE_CLIENT);
+						break;
+					}
+				}
+			}
+			break;			
+		case VALUE_I_INFO_TYPE_OBSERVER :
+			// "Info Type Observer"
+			if (_TIsInfoType == true) {
+				for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
+					if (_TVal->ClientSocket == Socket) {
+						_TVal->ClientType = _StringTools.ConstCharToChar(STR_I_INFO_TYPE_OBSERVER);
+						break;
+					}
+				}
+			}
+			break;
+
+		case VALUE_I_ANYVALUES :
+			if (_TIsInfoGo) {
+				if (_TIsBlackTime) {
+					_TIsBlackTime = false;
+					// Black Time을 처리할 구문.
+					// Chess Game에 넘길 Data.
+				}
+				else if (_TIsWhiteTime) {
+					_TIsWhiteTime = false;
+					// White Time을 처리할 구문.
+					// Chess Game에 넘길 Data.
+				}
+				else if (_TIsTurn) {
+					_TIsTurn = false;
+					// Turn을 처리할 구문.
+					// Chess Game에 넘길 Data.
+				}
+			}
+			else if (_TIsInfoPosition) {
+				if (_TIsInfoEnemyMove) {
+
+				}
+				else if (_TIsInfoEnemyMove) {
+
+				}
+			}
+			break;
 		}
-
-		// Chess Recognition 및 Hand Recognition을 처리하는 단계가 포함된 함수.
-		Go_ImageProcessing();
-
-		// 이 구분은 나중에 삭제 해야할 것 같다.
-		// 회의 뒤 삭제.
-		if (Check_Exit() == true)
-			EngineEnable = false;
 	}
-
-	Deinitialize_ImageProcessing();
 }
 
-void EngineS::DrawWindowS(IplImage *src, float fps, CvScalar RGB){
+bool EngineS::Check_Exit() {
+	if (_ImageProcessMode == 3)
+		return true;
+	else
+		return false;
+}
+
+void EngineS::Inter_imageCraete(int roi_width, int roi_height){
+	// 내부 연산에 사용되는 이미지 할당.
+	_ImageSkin = cvCreateImage(cvSize(roi_width, roi_height), IPL_DEPTH_8U, 1);
+	_PrevImage = cvCreateImage(cvSize(roi_width, roi_height), IPL_DEPTH_8U, 3);
+	_ImageSub = cvCreateImage(cvSize(roi_width, roi_height), IPL_DEPTH_8U, 1);
+}
+
+void EngineS::Sub_image(IplImage *Source1, IplImage *Source2, IplImage *Destination) {
+	// src1, src2에 차영상 연산하여 dst의 저장.
+	// dst zero이미지로 초기화.
+	cvZero(Destination);
+
+	// 그림자 보정을 위한 Lab 색상계 변환.
+	IplImage *Lab_src1 = cvCreateImage(cvGetSize(Source1), IPL_DEPTH_8U, 3);
+	IplImage *Lab_src2 = cvCreateImage(cvGetSize(Source1), IPL_DEPTH_8U, 3);
+	/*cvCvtColor(src1, Lab_src1, CV_BGR2Lab);
+	cvCvtColor(src2, Lab_src2, CV_BGR2Lab);*/
+	cvCopy(Source1, Lab_src1); // 기존 RGB로 테스트.
+	cvCopy(Source2, Lab_src2);
+
+	// 차영상 연산. 각 R,G,B값에 SUB_THRESHOLD를 적용하여 binary image 생성.
+	for (register int i = 0; i < Source1->width; i++) {
+		for (register int j = 0; j < Source1->height; j++) {
+			//3채널에 대하여 각각 픽셀 값의 차이 절댓값을 연산
+			unsigned char SUB_L = abs((unsigned char)Lab_src1->imageData[(i * 3) + (j * Lab_src1->widthStep)] - (unsigned char)Lab_src2->imageData[(i * 3) + (j * Lab_src2->widthStep)]);
+			unsigned char SUB_a = abs((unsigned char)Lab_src1->imageData[(i * 3) + (j * Lab_src1->widthStep) + 1] - (unsigned char)Lab_src2->imageData[(i * 3) + (j * Lab_src2->widthStep) + 1]);
+			unsigned char SUB_b = abs((unsigned char)Lab_src1->imageData[(i * 3) + (j * Lab_src1->widthStep) + 2] - (unsigned char)Lab_src2->imageData[(i * 3) + (j * Lab_src2->widthStep) + 2]);
+
+			/*if ((SUB_L > SUB_THRESHOLD) && (SUB_a > SUB_THRESHOLD || SUB_b > SUB_THRESHOLD)) {
+				dst->imageData[i + (j * dst->widthStep)] = (unsigned char)255;
+			}*/
+			if (SUB_L > SUB_THRESHOLD || SUB_a > SUB_THRESHOLD || SUB_b > SUB_THRESHOLD) {
+				Destination->imageData[i + (j * Destination->widthStep)] = (unsigned char)255;
+			}
+		}
+	}
+
+	// 차영상 연산 결과에 median filter 적용 & 후추 소금 노이즈를 제거하기 위한 mopology 연산 적용.
+	cvErode(Destination, Destination, 0, 2);
+	cvDilate(Destination, Destination, 0, 2);
+
+	cvReleaseImage(&Lab_src1);
+	cvReleaseImage(&Lab_src2);
+}
+
+void EngineS::Compose_diffImage(IplImage *rgb, IplImage *bin, CvScalar RGB) {
+	// rgb 이미지에 bin이미지를 덫씌움. 디버깅을 위한 함수.
+	unsigned char _TBinValue;
+
+	// binary image에 255가 되는 값에 RGB 값으로 갱신.
+	for (register int i = 0; i < rgb->width; i++)
+		for (register int j = 0; j < rgb->height; j++) {
+			_TBinValue = (unsigned char)bin->imageData[i + j * bin->widthStep];
+
+			if (_TBinValue > 20) {
+				rgb->imageData[(i * 3) + (j * rgb->widthStep)] = RGB.val[0];
+				rgb->imageData[(i * 3) + (j * rgb->widthStep) + 1] = RGB.val[1];
+				rgb->imageData[(i * 3) + (j * rgb->widthStep) + 2] = RGB.val[2];
+			}
+		}
+}
+
+void EngineS::DrawROI(IplImage *Source, float FramePerSecond, CvScalar RGB) {
 	// CVES 메인 윈도우에 이미지 UI 구성 및 Frame Per Second 표기
 	const int _TLineLength = 30;	// 관심영역을 그릴 라인.
 	const int _TROI_Length = 440; // 정사각형 관심영역 크기.
@@ -288,38 +413,38 @@ void EngineS::DrawWindowS(IplImage *src, float fps, CvScalar RGB){
 
 	//CvPoint window_center = cvPoint(SERVER_VIEW_DEFAULT_WIDTH/2, SERVER_VIEW_DEFAULT_HEIGHT/2);
 
-	CvPoint ROI_Lefttop = cvPoint(_ROIRect.x, _ROIRect.y);
-	//
-	CvPoint ROI_LeftBot = cvPoint(_ROIRect.x, _ROIRect.y + _ROIRect.width);
-	//
-	CvPoint ROI_Righttop = cvPoint(_ROIRect.x + _ROIRect.width, _ROIRect.y);
-	CvPoint ROI_RightBot = cvPoint(_ROIRect.x + _ROIRect.width, _ROIRect.y + _ROIRect.width);
+	CvPoint _TROI_LeftTop = cvPoint(_ROIRect.x, _ROIRect.y); // 왼쪽 위.
+	CvPoint _TROI_LeftBottom = cvPoint(_ROIRect.x, _ROIRect.y + _ROIRect.width); // 왼쪽 아래.
+	CvPoint _TROI_RightTop = cvPoint(_ROIRect.x + _ROIRect.width, _ROIRect.y); // 오른쪽 위.
+	CvPoint _TROI_RightBottom = cvPoint(_ROIRect.x + _ROIRect.width, _ROIRect.y + _ROIRect.width); // 오른쪽 아래.
 
 	// 관심영역 격자를 그림.
-	cvDrawLine(src, cvPoint(ROI_Lefttop.x + _TLineLength, ROI_Lefttop.y), ROI_Lefttop, RGB, 4);
-	cvDrawLine(src, cvPoint(ROI_Lefttop.x, ROI_Lefttop.y + _TLineLength), ROI_Lefttop, RGB, 4);
-
-	cvDrawLine(src, cvPoint(ROI_RightBot.x - _TLineLength, ROI_RightBot.y), ROI_RightBot, RGB, 4);
-	cvDrawLine(src, cvPoint(ROI_RightBot.x, ROI_RightBot.y - _TLineLength), ROI_RightBot, RGB, 4);
-
-	// 추가.
-	cvDrawLine(src, cvPoint(ROI_LeftBot.x + _TLineLength, ROI_LeftBot.y), ROI_LeftBot, RGB, 4);
-	cvDrawLine(src, cvPoint(ROI_LeftBot.x, ROI_LeftBot.y - _TLineLength), ROI_LeftBot, RGB, 4);
-
-	cvDrawLine(src, cvPoint(ROI_Righttop.x - _TLineLength, ROI_Righttop.y), ROI_Righttop, RGB, 4);
-	cvDrawLine(src, cvPoint(ROI_Righttop.x, ROI_Righttop.y + _TLineLength), ROI_Righttop, RGB, 4);
+	// 왼쪽 위. 오른쪽 아래.
+	cvDrawLine(Source, cvPoint(_TROI_LeftTop.x + _TLineLength, _TROI_LeftTop.y), _TROI_LeftTop, RGB, _ROI_Thickness);
+	cvDrawLine(Source, cvPoint(_TROI_LeftTop.x, _TROI_LeftTop.y + _TLineLength), _TROI_LeftTop, RGB, _ROI_Thickness);
+	cvDrawLine(Source, cvPoint(_TROI_RightBottom.x - _TLineLength, _TROI_RightBottom.y), _TROI_RightBottom, RGB, _ROI_Thickness);
+	cvDrawLine(Source, cvPoint(_TROI_RightBottom.x, _TROI_RightBottom.y - _TLineLength), _TROI_RightBottom, RGB, _ROI_Thickness);
+	// 오른쪽 위, 왼쪽 아래.
+	cvDrawLine(Source, cvPoint(_TROI_LeftBottom.x + _TLineLength, _TROI_LeftBottom.y), _TROI_LeftBottom, RGB, _ROI_Thickness);
+	cvDrawLine(Source, cvPoint(_TROI_LeftBottom.x, _TROI_LeftBottom.y - _TLineLength), _TROI_LeftBottom, RGB, _ROI_Thickness);
+	cvDrawLine(Source, cvPoint(_TROI_RightTop.x - _TLineLength, _TROI_RightTop.y), _TROI_RightTop, RGB, _ROI_Thickness);
+	cvDrawLine(Source, cvPoint(_TROI_RightTop.x, _TROI_RightTop.y + _TLineLength), _TROI_RightTop, RGB, _ROI_Thickness);
 
 	// Write Frame Per Sec.
-	sprintf(_TBuffer, "%3.2f fps", fps);
+	sprintf(_TBuffer, "%4.1f fps", FramePerSecond);
 	CvFont _TCvFont = cvFont(1.0);
-	cvPutText(src, _TBuffer, cvPoint(30, 30), &_TCvFont, cvScalar(0, 0, 255));
+	cvPutText(Source, _TBuffer, cvPoint(30, 30), &_TCvFont, cvScalar(0, 0, 255));
 }
 
+// 제거 대상 0순위.
 void EngineS::imgproc_mode(){
 	// 각 모드에 맞추어 image processing을 실행
 	// mode 0 : 카메라 설정, UI Color 설정, 관심영역 크기 설정
 	// mode 1 : Chessboard Recognition 확인부, 2초동안 프레임을 받아서 Chessboard recognition 수행
 	// mode 2 : 체스말의 움직임 Detection & Chess UI draw, ChessGame 부분 구동
+
+	// 내가 너희들을 다 갈아마셔 버리겠다.
+	
 	static bool _TImageCreateCheck = false;
 	static time_t _TTempSec; // mode 1에서 시간을 체크할 변수
 
@@ -333,11 +458,18 @@ void EngineS::imgproc_mode(){
 		cvShowImage("CVES", _CamOriginalImage);
 #endif
 		_ImageProcessMode++;
-		_RGB = cvScalar(0, 0, 255);
+		// 순서대로 B, G, R
+		_ROIRectColour = cvScalar(0, 0, 255);
 		_TTempSec = time(NULL);
 
 		// 관심영역 크기 고정.
-		_ROIRect = cvRect(100, 20, 440, 440);
+		// 640 * 480이므로, x: 0, y : 0 라고 한다면, 시작 영역은..
+		// 관심영역 x크키 : 440 , 관심영역 y의 크기 : 440.
+		// if, (x resolution > ROI) x and (y resolution > ROI y)
+		// 해상도로부터의 관심영역 영역 Point :
+		// x 축 : ((x축 해상도) / 2) - ((관심영역 크키 x) / 2), 줄여서 (x축 해상도 - 관심영역 크키 x) / 2
+		// y 축 : ((y축 해상도) / 2) - ((관심영역 크키 y) / 2), 줄여서 (y축 해상도 - 관심영역 크키 y) / 2
+		_ROIRect = cvRect((SERVER_VIEW_DEFAULT_WIDTH - ROI_DEFAULT_WIDTH) / 2, (SERVER_VIEW_DEFAULT_HEIGHT - ROI_DEFAULT_HEIGHT) / 2, ROI_DEFAULT_WIDTH, ROI_DEFAULT_HEIGHT);
 	}
 	else if (_ImageProcessMode == 1/* && IsStarted == true*/) {
 		// 관심영역 재설정 선택 OR 체스보드 인식 확인부.
@@ -352,7 +484,7 @@ void EngineS::imgproc_mode(){
 			_OtherBinaryImage = cvCreateImage(cvSize(_ROIRect.width, _ROIRect.height), IPL_DEPTH_8U, 1);
 			_TImageCreateCheck = true;
 			_ChessRecognition.Initialize_ChessRecognition(_ROIRect.width, _ROIRect.height, RECOGNITION_MODE);
-			_HandRecognition.Init(_ROIRect.width, _ROIRect.height);
+			_HandRecognition.Initialize_HandRecognition(_ROIRect.width, _ROIRect.height);
 			
 			// 연산에 필요한 이미지 할당.
 			Inter_imageCraete(_ROIRect.width, _ROIRect.height);
@@ -363,7 +495,7 @@ void EngineS::imgproc_mode(){
 		
 		// Chessboard recognition.
 		_ChessRecognition.Copy_Img(_ImageChess);
-		_ChessRecognition.Chess_recog_wrapper(_CamOriginalImage, &_CrossPoint);
+		_ChessRecognition.Find_ChessPoint(_CamOriginalImage, &_CrossPoint);
 		cvResetImageROI(_CamOriginalImage);
 
 		// 체스보드 인식이 확실하면 시간 카운트 시작, 교차점이 81개 이하면 다음 단계로 넘어가지 못함.
@@ -372,8 +504,8 @@ void EngineS::imgproc_mode(){
 
 		// mode 1에서 2초 이상 지났을 경우 다음 모드로 진행
 		if (time(NULL) - _TTempSec > 2) {
-			_ImageProcessMode++;
-			_RGB = cvScalar(0, 255);
+			//_ImageProcessMode++;
+			_ROIRectColour = cvScalar(0, 255);
 		}
 
 		// fps 계산.
@@ -386,7 +518,7 @@ void EngineS::imgproc_mode(){
 		cvShowImage("CVES", _CamOriginalImage);
 #endif
 	}
-	else if (_ImageProcessMode == 2/* && IsStarted == true*/) {
+	else if (_ImageProcessMode == 2 && IsStarted == true) {
 		// 실제 이미지 처리 실행부.
 		int _TTick = GetTickCount();
 
@@ -400,7 +532,7 @@ void EngineS::imgproc_mode(){
 			if (_SubCheck == false) {
 				// Chessboard recognition.
 				_ChessRecognition.Copy_Img(_ImageChess);
-				_ChessRecognition.Chess_recog_wrapper(_CamOriginalImage, &_CrossPoint);
+				_ChessRecognition.Find_ChessPoint(_CamOriginalImage, &_CrossPoint);
 
 				// 손이 들어오기 직전 영상을 촬영.
 				_HandRecognition.Sub_prevFrame(_ImageChess, _ImageSkin, _BeforeHandFirst); // 턴별 차영상
@@ -409,7 +541,7 @@ void EngineS::imgproc_mode(){
 				if (_BeforeHandFirst)
 					_BeforeHandFirst = false;
 
-				if (_CheckInChess->Check_InChessboard(_ImageSkin, _CrossPoint)) {
+				if (_CheckInChessboard.Check_InChessboard(_ImageSkin, _CrossPoint)) {
 					// 물체가 체스보드 위로 들어옴.
 					cvCopy(_TempPrev2, _PrevImage);
 #if !USING_QT
@@ -428,9 +560,9 @@ void EngineS::imgproc_mode(){
 				cvShowImage("유레카1", _ImageChess);
 #endif
 #endif
-				// 오브젝트 디텍션에 사용되는 차영상 연산 수행
+				// 오브젝트 디텍션에 사용되는 차영상 연산 수행.
 				Sub_image(_PrevImage, _ImageChess, _ImageSkin);
-				// 차영상 결과를 이미지 처리에 사용되는 이미지로 색 부여
+				// 차영상 결과를 이미지 처리에 사용되는 이미지로 색 부여.
 				Compose_diffImage(_ImageChess, _ImageSkin, cvScalar(0, 255, 255));
 
 				// BlobLabeling
@@ -445,14 +577,14 @@ void EngineS::imgproc_mode(){
 				Compose_diffImage(_ImageChess, _ImageSkin, cvScalar(100, 100, 255)); // 손만 남은 이진 영상으로 원본 영상에 색을 부여
 
 				// 이미지 처리에 사용되는 이미지에 Chessboard recognition 결과로 연산된 좌표를 표기
-				_ChessRecognition.drawPoint(_ImageChess, _CrossPoint);
+				//_ChessRecognition.drawPoint(_ImageChess, _CrossPoint);
 				cvDilate(_ImageSkin, _ImageSkin, 0, 5);
 #if !USING_QT
 				cvShowImage("skin", _ImageSkin);
 #endif
 
 				// 체스보드 안으로 손이 들어왔는지를 확인
-				if (_CheckInChess->Check_InChessboard(_ImageSkin, _CrossPoint)) {
+				if (_CheckInChessboard.Check_InChessboard(_ImageSkin, _CrossPoint)) {
 					// img_Skin은 손 추정물체만 남긴 이미지.
 					_InHandCheck = true;
 				}
@@ -461,7 +593,7 @@ void EngineS::imgproc_mode(){
 					CvPoint out[4];
 					out[0] = out[1] = out[2] = out[3] = cvPoint(-1, -1);
 					// 체스말의 움직임을 계산.
-					_CheckInChess->Calculate_Movement(_OtherBinaryImage, _CrossPoint, out);
+					_CheckInChessboard.Calculate_Movement(_OtherBinaryImage, _CrossPoint, out);
 
 					// 디텍션 된 결과가 두개 이상 존재한다면 실행
 					if (out[0].x != -1 && out[1].x != -1) {
@@ -530,17 +662,37 @@ void EngineS::imgproc_mode(){
 		_TTick = GetTickCount() - _TTick;
 		float _fps = 1000.f/ (float)_TTick;
 
-		//Chessboard Main UI Drawing
-		DrawWindowS(_CamOriginalImage, _fps, _RGB);
+		// Chessboard Main UI Drawing
+		DrawROI(_CamOriginalImage, _fps, _ROIRectColour);
 #if !USING_QT
 		cvShowImage("CVES", _CamOriginalImage);
 #endif
 	}
-
+	
 	if (cvWaitKey(33) == 27)
 		_ImageProcessMode = 3;
 }
 
+void EngineS::Go_ImageProcessing() {
+	// Cam으로부터의 영상입력.
+	_CamOriginalImage = cvQueryFrame(_Cam);
+	cvFlip(_CamOriginalImage, _CamOriginalImage, FLIP_MODE);
+	cvCvtColor(_CamOriginalImage, _CamHSV, CV_BGR2HSV);
+
+	// ** Note
+	// Thread를 돌리려면, 하나의 Queue를 돌려서 그 자원을 공유하는 것 보다는,
+	// 차라리 하나의 Image를 Copy하여 여러 Queue에 주는 것이 공유자원 문제를 피하는 가장 현명한 방법인 듯 하다.
+	// Memory를 포기하는 것이 이 문제에서의 가장 현실적인 대안인 듯 하다.
+
+	//cvSmooth(_CamOriginalImage, _CamOriginalImage, CV_MEDIAN, 3);
+	// 모드에 따른 이미지 프로세스 수행.
+
+	imgproc_mode();
+	cvShowImage("CVES", _CamOriginalImage);
+	//cvShowImage("HSV", _CamHSV);
+}
+
+#pragma region Callbacks
 void EngineS::ServerReceivedCallback(char *Buffer, SOCKET ClientSocket) {
 	//Sleep(100);
 	// using mutex.
@@ -560,6 +712,7 @@ void EngineS::AnyConnentionNotifier(SOCKET ClientSocket) {
 	// 초기 접속시에 Type을 물어보기 위한 용도로 쓰인다.
 	G_EngineS->_TelepathyServer->SendDataToOne((char *)G_EngineS->_StringTools.StringToConstCharPointer(STR_I_PTYPE), ClientSocket);
 }
+#pragma endregion Callbacks
 
 #if WINDOWS_SYS
 UINT WINAPI
@@ -680,145 +833,39 @@ void *
 	return 0;
 }
 
-void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
-	bool _TIsInfoGo = false;
-	bool _TIsBlackTime = false;
-	bool _TIsWhiteTime = false;
-	bool _TIsTurn = false;
-	bool _TIsInfoPosition = false;
-	bool _TIsInfoEnemyMove = false;
-	bool _TIsInfoType = false;
-	//bool _TIsInfoGo = false;
-	
-	// Fetch the next at while.
-	while (IPCS->NextCharArrayIter()) {
-		int _NSeek_GUIToEngine = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*IPCS->CharArrayListIter);
-		switch (_NSeek_GUIToEngine) {
-			// Go 뒤로 부터 오는 것들.
-			// e.g> "Info Go BlackTime(WhiteTime) xxxxx Turn xxxx"
-			case VALUE_I_INFO_GO :
-				// "Info Go"
-				_TIsInfoGo = true;
-				break;
-			case VALUE_I_INFO_BLACKTIME :
-				// "Info Go BlackTime xxxxx"
-				// 현재 들어오는 Socket이외의 다른 Client(상대편)의 표시창에 현재 멈춤 시각을 알려준다.
-				// 여기에 오면, 상대편(Black)의 시각이 들어오는 것이다.
-				_TIsBlackTime = true;
-				break;
-			case VALUE_I_INFO_WHITETIME :
-				// "Info Go White Time xxxxx"
-				// 현재 들어오는 Socket이외의 다른 Client(상대편)의 표시창에 현재 멈춤 시각을 알려준다.
-				// 여기에 오면, 상대편(White)의 시각이 들어오는 것이다.
-				_TIsWhiteTime = true;
-				break;
-			case VALUE_I_INFO_TURN :
-				// "Info Go Turn xxxx"
-				// 여기에 현재 자신의 Turn 수가 적힌다.
-				_TIsTurn = true;
-				break;
+void EngineS::EngineS_Start() {
+	// Initialize 순서.
+	// 1. Telepathy Server.
+	// 2. Camera Initialize.
+	// 1. Engine이 Start 되면, 우선 Server 기동부터 한다.
+	Engine_Initializing();
+	// 2. 
+	Initialize_ImageProcessing();
+	Start_Server();
 
-			// Position 뒤로부터 오는 것들.
-			// e.g> "Info Position MoveNULL"
-			// "Info Position EnemyMove xxxx"
-			case VALUE_I_INFO_POSITION :
-				// "Info Position"
-				_TIsInfoPosition = true;
-				break;
-			case VALUE_I_INFO_ENEMYMOVE :
-				// "Info Position EnemyMove xxxx"
-				// 적의 Move이므로.
-				// 틀리면 비교한다.
-				_TIsInfoEnemyMove = true;
-				break;
-			// "MoveNULL"이 있다면 불필요한 존재?!
-			// 추후 없에기로 한다.
-			case VALUE_I_INFO_MOVENULL :
-				// "Info Position NoveNULL"
-				// 이걸 게임의 시작으로 간주 해야 할 것 같다.
-				// Socket을 넘겨 해당하는 Client List에 White 라는 식별을 한다.
-				// 그외의 나머지(해봤자 1개 뿐..) Client는 Black으로 처리한다.
-				
-				break;
-			case VALUE_I_INFO_WHITE :
-				for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
-					if (_TVal->ClientSocket == Socket && strcmp(_TVal->ClientType, "Client") == 0) {
-						// White.
-						_TVal->ClientName = _StringTools.ConstCharToChar("White");
-					}
-				}
-				break;
-			case VALUE_I_INFO_BLACK :
-				for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
-					if (_TVal->ClientSocket == Socket && strcmp(_TVal->ClientType, "Client") == 0) {
-						// Null Move가 오면 일단 White.
-						_TVal->ClientName = _StringTools.ConstCharToChar("Black");
-					}
-				}
-				break;
-
-			// Type 뒤로부터 오는 것들.
-			// e.g> "Info Type Client(Observer)"
-			case VALUE_I_INFO_TYPE :
-				// "Info Type"
-				_TIsInfoType = true;
-				break;
-			case VALUE_I_INFO_TYPE_CLIENT :
-				// "Info Type Client"
-				if (_TIsInfoType == true) {
-					for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
-						if (_TVal->ClientSocket == Socket) {
-							_TVal->ClientType = _StringTools.ConstCharToChar(STR_I_INFO_TYPE_CLIENT);
-							break;
-						}
-					}
-				}
-				break;			
-			case VALUE_I_INFO_TYPE_OBSERVER :
-				// "Info Type Observer"
-				if (_TIsInfoType == true) {
-					for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
-						if (_TVal->ClientSocket == Socket) {
-							_TVal->ClientType = _StringTools.ConstCharToChar(STR_I_INFO_TYPE_OBSERVER);
-							break;
-						}
-					}
-				}
-				break;
-
-			case VALUE_I_ANYVALUES :
-				if (_TIsInfoGo) {
-					if (_TIsBlackTime) {
-						_TIsBlackTime = false;
-						// Black Time을 처리할 구문.
-						// Chess Game에 넘길 Data.
-					}
-					else if (_TIsWhiteTime) {
-						_TIsWhiteTime = false;
-						// White Time을 처리할 구문.
-						// Chess Game에 넘길 Data.
-					}
-					else if (_TIsTurn) {
-						_TIsTurn = false;
-						// Turn을 처리할 구문.
-						// Chess Game에 넘길 Data.
-					}
-				}
-				else if (_TIsInfoPosition) {
-					if (_TIsInfoEnemyMove) {
-					
-					}
-					else if (_TIsInfoEnemyMove) {
-					
-					}
-				}
-				break;
-			
+	// 마치, 차의 시동키 같은 역할.
+	while (EngineEnable) {
+		// Image Processing Engine이 시작되지 않았다면 대기한다.
+		// 전체적인 구문에 영향을 줄 수 있으므로 다른 구문을 강구해보는 것도 괜찮은 생각이다.
+		if (IsStarted != true) {
+			// Image 처리 중이었다면, 모든 처리를 중단하고 화면에 Stop을 넣고 중단시킨다.
+			// cvPutText(img_Cam, "Stop", cvPoint(30, 30), &cvFont(1.0), cvScalar(0, 100, 100));
+			// while (!IsStarted) ;
 		}
+
+		// Chess Recognition 및 Hand Recognition을 처리하는 단계가 포함된 함수.
+		Go_ImageProcessing();
+
+		// 이 구분은 나중에 삭제 해야할 것 같다.
+		// 회의 뒤 삭제.
+		if (Check_Exit() == true)
+			EngineEnable = false;
 	}
+
+	Deinitialize_ImageProcessing();
 }
 
-void EngineS::Set_ClientData( SOCKET Socket, int Type )
-{
-
+/*
+void EngineS::Set_ClientData(SOCKET Socket, int Type) {
 }
+*/

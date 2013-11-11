@@ -63,8 +63,10 @@
 class EngineC {
 private:
 	Option *_Option;
-	Telepathy::Client *_TelepathyClient;
+	Telepathy::Server *_TelepathyServer; // AI Adapter 용.
+	Telepathy::Client *_TelepathyClient; // CVES 통신용.
 	Process *_ProcessConfirm;
+
 	UCICommandSeeker _UCICommandSeeker;
 	StringTools _StringTools;
 	File _File;
