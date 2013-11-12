@@ -368,13 +368,13 @@ void EngineS::imgproc_mode(){
 			_TTempSec = time(NULL);
 
 		// mode 1에서 2초 이상 지났을 경우 다음 모드로 진행
-		if (time(NULL) - _TTempSec > 2) {
+		if (time(NULL) - _TTempSec > 1) {
 			_ImageProcessMode++;
 			_RGB = cvScalar(0, 255);
 		}
 
-		/*float temp_score[8][8];
-		_ChessObjDetect.DetectScore(_PureImage, _CrossPoint, temp_score);*/
+		//float temp_score[8][8];
+		//_ChessObjDetect.Detect_SobelCannyScore(_PureImage, _CrossPoint, temp_score);
 
 		// fps 계산.
 		_TTick = GetTickCount() - _TTick;
@@ -479,7 +479,7 @@ void EngineS::imgproc_mode(){
 						for(int i = 0; i < 4; i++){
 							if(out[i].x != -1){
 								out_count++;
-								printf("(%d, %d)\n", out[i].x, out[i].y);
+								//printf("(%d, %d)\n", out[i].x, out[i].y);
 							}
 						}
 						predicted_mode = (out_count < predicted_mode ? out_count : predicted_mode);

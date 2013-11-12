@@ -228,7 +228,13 @@ void ChessObjDetection::DetectMovement( float score_before[][8], float score_aft
 	//4개에 할당
 	for (register int i = 0; i < 4; i++){
 		out[i] = p_max[i];
+#ifdef DEBUG_MODE
+		printf("(%d, %d) - %f\n", p_max[i].x, p_max[i].y, temp_max[i]);
+#endif
 	}
+#ifdef DEBUG_MODE
+	printf("\n");
+#endif
 }
 
 void ChessObjDetection::SetSubThreshold( int threshold )
@@ -241,10 +247,50 @@ void ChessObjDetection::Get_Movement( IplImage *before, IplImage *after, vector<
 	float before_score[8][8], after_score[8][8];
 
 	//이전 영상과 이후 영상의 스코어를 계산
-	DetectScore(before, _cross_point, before_score);
-	DetectScore(after, _cross_point, after_score);
+	/*DetectScore(before, _cross_point, before_score);
+	DetectScore(after, _cross_point, after_score);*/
+	Detect_SobelCannyScore(before, _cross_point, before_score);
+	Detect_SobelCannyScore(after, _cross_point, after_score);
 
 	//움직임 계산
 	DetectMovement(before_score, after_score, out);
+}
+
+void ChessObjDetection::Detect_SobelCannyScore( IplImage *src, vector<_ChessPoint> _cross_point, float score_out[][8] )
+{
+	if(_cross_point.size() != 0){
+		IplImage *gray = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 1);
+		IplImage *sobel = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 1);
+		IplImage *Add_Canny = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 1);
+
+		cvCvtColor(src, gray, CV_BGR2GRAY);
+		//sobel->canny
+		cvSobel(gray, sobel, 1, 1, 5);
+		cvCanny(sobel, Add_Canny, 100, 150);
+
+		// 체스보드의 라인영향을 최소화시킴
+		Delete_ChessLine(Add_Canny, _cross_point);
+
+		// 오브젝트 유무를 확인하기 위해서
+		// 각 체스보드 그리드 안에 엣지가 존재하는 면적비를 연산
+		float score_board[8][8]; // 엣지 / 체스그리드 면적 => 스코어
+		_CheckChessboard->Cal_BoardScore(Add_Canny, _cross_point, score_board);
+
+		// 스코어 thresholding
+		Thresholding_score(score_board, _score_threshold);
+
+		// 출력으로 복사
+		for(int i = 0; i < 8; i++)
+			for(int j = 0; j < 8; j++)
+				score_out[i][j] = score_board[i][j];
+
+#ifdef DEBUG_MODE
+		cvShowImage("Add_Canny", Add_Canny);
+#endif
+
+		cvReleaseImage(&gray);
+		cvReleaseImage(&sobel);
+		cvReleaseImage(&Add_Canny);
+	}
 }
 

@@ -56,8 +56,10 @@ public:
 	void SetThickness(int thickness);						// 체스보드의 격자를 지워낼 두께 셋팅
 	void SetSubThreshold(int threshold);			// 움직임 Detection시 사용되는 threshold.
 	void SetScoreThreshold(int threshold);	// Score에 Thresholding
+
 	void DetectScore(IplImage *src, vector<_ChessPoint> _cross_point, float score_out[][8]); // RGB영상과 좌표를 출력을 이용하여 오브젝트의 좌표를 디텍션
 	void DetectMovement(float score_before[][8], float score_after[][8], CvPoint out[]);	// 스코어의 차이를 보고 좌표를 반환함.
-	void Get_Movement(IplImage *before, IplImage *after, vector<_ChessPoint> _cross_point, CvPoint out[]);
+	void Get_Movement(IplImage *before, IplImage *after, vector<_ChessPoint> _cross_point, CvPoint out[]); // 이전 영상과 이후 영상으로 좌표의 차이를 구함
+	void Detect_SobelCannyScore(IplImage *src, vector<_ChessPoint> _cross_point, float score_out[][8]); // RGB영상과 좌표를 출력을 이용하여 오브젝트의 좌표를 디텍션
 };
 
