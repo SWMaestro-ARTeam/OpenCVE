@@ -30,7 +30,7 @@
 #include <time.h>
 
 #include <queue>
-#include <mutex>
+//#include <mutex>
 
 // 공통 상수 정의
 #include "Common.hpp"
@@ -59,6 +59,8 @@
 #include "ChessGame.hpp"
 // Chessboard 면적 계산 및 체스보드 인접 체크
 #include "CheckInChessboard.hpp"
+// 캐니 엣지를 사용한 Obj Detection
+#include "ChessObjDetection.h"
 
 #if WINDOWS_SYS
 // It's for windows dependent Functions.
@@ -83,14 +85,18 @@ private:
 	BlobLabeling _BlobLabeling;
 	ChessGame _ChessGame;
 	CheckInChessboard *_CheckInChess;
+	ChessObjDetection _ChessObjDetect;
 
 	Telepathy::Server *_TelepathyServer;
 	InternalProtocolSeeker _InternalProtocolSeeker;
+	StringTools _StringTools;
 
 	int _ImageProcessMode;				//모드 설정
 	bool _SubCheck;
 	bool _InHandCheck;
 	bool _BeforeHandFirst;
+	bool _IsRestorePossible;
+	bool _IsTrun;
 
 	CvCapture *_Cam; // 캠.
 	IplImage *_CamOriginalImage; // 원본 이미지.
@@ -102,14 +108,15 @@ private:
 	IplImage *_TempPrev2; // 임시 이전 영상 저장 이미지.
 	IplImage *_OtherBinaryImage; // 손을 제외한 나머지 이진 영상.
 	IplImage *_PureImage;	//원본 ROI 셋팅 영상을 저장하기 위한 이미지.
+	IplImage *_CamHSV;
 	CvRect _ROIRect; // 관심영역 크기.
 	CvScalar _RGB; // 관심영역을 그릴 RGB color 저장변수
 
 	vector<ChessPoint> _CrossPoint;
 	vector<int> _PieceIndex;
 
-	mutex _QueueProtectMutex;
-	mutex _VarProtectMutex;
+	//mutex _QueueProtectMutex;
+	//mutex _VarProtectMutex;
 
 	// image process 초기화.
 	void Initialize_ImageProcessing();
@@ -127,8 +134,6 @@ private:
 
 	void Set_ClientData(SOCKET Socket, int Type);
 	void Process_Info(CommandString *IPCS, SOCKET Socket);
-	/*void Process_Info_Go(CommandString *IPCS);
-	void Process_Info_Position(CommandString *IPCS);*/
 
 	bool Check_Exit();
 
@@ -175,8 +180,6 @@ public:
 	bool IsTictokEnable;
 
 	queue<ServerGetInformation *> *CommandQueue;
-
-	/*Telepathy::Server *Get_Telepathy_Server();*/
 
 	void EngineS_Start();
 };

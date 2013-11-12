@@ -28,9 +28,12 @@
 EngineS *G_EngineS;
 
 EngineS::EngineS() {
+	_IsRestorePossible = false;
+	
 	EngineEnable = false;
 	IsStarted = false;
 	IsTictokEnable = false;
+	
 	G_EngineS = this;
 	_Cam = NULL;
 
@@ -41,13 +44,20 @@ EngineS::EngineS() {
 	_ImageSkin = NULL;
 	_PrevImage = NULL;
 	_ImageSub = NULL;
+
+	_CamHSV = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 3);
 }
 
 EngineS::~EngineS() {
+	_IsRestorePossible = false;
+	
 	EngineEnable = false;
 	IsStarted = false;
 	IsTictokEnable = false;
+	
 	G_EngineS = NULL;
+
+	cvReleaseImage(&_CamHSV);
 }
 
 bool EngineS::Initialize_TServer() {
@@ -67,7 +77,7 @@ void EngineS::Deinitialize_TServer() {
 void EngineS::Initialize_ImageProcessing() {
 	//Cam init
 	// Engine의 Cam을 가져온다. 그것도 0번째.
-	_Cam = cvCaptureFromCAM(0);
+	_Cam = cvCaptureFromCAM(1);
 	if (_Cam != NULL) {
 		cvSetCaptureProperty(_Cam, CV_CAP_PROP_FRAME_WIDTH, SERVER_VIEW_DEFAULT_WIDTH);
 		cvSetCaptureProperty(_Cam, CV_CAP_PROP_FRAME_HEIGHT, SERVER_VIEW_DEFAULT_HEIGHT);
@@ -82,8 +92,9 @@ void EngineS::Initialize_ImageProcessing() {
 	_ImageProcessMode = 0;
 
 	// window 생성 & 마우스 콜백 붙이기.
+#if !USING_QT
 	cvNamedWindow("CVES");
-
+#endif
 	// 관심영역 설정 사각형 좌표, 크기 초기화
 	_ROIRect = cvRect(0, 0, 0, 0);
 
@@ -96,7 +107,9 @@ void EngineS::Deinitialize_ImageProcessing(){
 	//이미지 처리를 보여주기 위한 모든 window 삭제
 	//연결된 Cam Disconnect
 	//연산에 사용된 모든 이미지 할당해제
+#if !USING_QT
 	cvDestroyAllWindows();
+#endif
 
 	cvReleaseCapture(&_Cam);
 
@@ -138,6 +151,7 @@ void EngineS::Go_ImageProcessing(){
 	// Cam으로부터의 영상입력.
 	_CamOriginalImage = cvQueryFrame(_Cam);
 	cvFlip(_CamOriginalImage, _CamOriginalImage, FLIP_MODE);
+	cvCvtColor(_CamOriginalImage, _CamHSV, CV_BGR2HSV);
 	//cvSmooth(_CamOriginalImage, _CamOriginalImage, CV_MEDIAN, 3);
 	// 모드에 따른 이미지 프로세스 수행.
 
@@ -172,7 +186,7 @@ void EngineS::Sub_image(IplImage *src1, IplImage *src2, IplImage *dst) {
 			unsigned char SUB_a = abs((unsigned char)Lab_src1->imageData[(i * 3) + (j * Lab_src1->widthStep) + 1] - (unsigned char)Lab_src2->imageData[(i * 3) + (j * Lab_src2->widthStep) + 1]);
 			unsigned char SUB_b = abs((unsigned char)Lab_src1->imageData[(i * 3) + (j * Lab_src1->widthStep) + 2] - (unsigned char)Lab_src2->imageData[(i * 3) + (j * Lab_src2->widthStep) + 2]);
 
-			/*if ((SUB_L > SUB_THRESHOLD) && (SUB_a > SUB_THRESHOLD || SUB_b > SUB_THRESHOLD)) {
+			/*if ((SUB_L > SUB_LabTHRESHOLD*5) && (SUB_a > SUB_LabTHRESHOLD || SUB_b > SUB_LabTHRESHOLD)) {
 				dst->imageData[i + (j * dst->widthStep)] = (unsigned char)255;
 			}*/
 			if (SUB_L > SUB_THRESHOLD || SUB_a > SUB_THRESHOLD || SUB_b > SUB_THRESHOLD) {
@@ -234,10 +248,6 @@ void EngineS::Stop_Server() {
 	_TelepathyServer->TServerReceivedCallback = NULL;
 }
 
-//Telepathy::Server *EngineS::Get_Telepathy_Server() {
-//	return _TelepathyServer;
-//}
-
 void EngineS::EngineS_Start() {
 	// 1. Engine이 Start 되면, 우선 Server 기동부터 한다.
 	Engine_Initializing();
@@ -268,8 +278,8 @@ void EngineS::EngineS_Start() {
 
 void EngineS::DrawWindowS(IplImage *src, float fps, CvScalar RGB){
 	// CVES 메인 윈도우에 이미지 UI 구성 및 Frame Per Second 표기
-	const int LineLength = 30;	// 관심영역을 그릴 라인.
-	const int ROI_Length = 440; // 정사각형 관심영역 크기.
+	const int _TLineLength = 30;	// 관심영역을 그릴 라인.
+	const int _TROI_Length = 440; // 정사각형 관심영역 크기.
 	char _TBuffer[32];
 
 	//CvPoint window_center = cvPoint(SERVER_VIEW_DEFAULT_WIDTH/2, SERVER_VIEW_DEFAULT_HEIGHT/2);
@@ -282,18 +292,18 @@ void EngineS::DrawWindowS(IplImage *src, float fps, CvScalar RGB){
 	CvPoint ROI_RightBot = cvPoint(_ROIRect.x + _ROIRect.width, _ROIRect.y + _ROIRect.width);
 
 	// 관심영역 격자를 그림.
-	cvDrawLine(src, cvPoint(ROI_Lefttop.x + LineLength, ROI_Lefttop.y), ROI_Lefttop, RGB, 4);
-	cvDrawLine(src, cvPoint(ROI_Lefttop.x, ROI_Lefttop.y + LineLength), ROI_Lefttop, RGB, 4);
+	cvDrawLine(src, cvPoint(ROI_Lefttop.x + _TLineLength, ROI_Lefttop.y), ROI_Lefttop, RGB, 4);
+	cvDrawLine(src, cvPoint(ROI_Lefttop.x, ROI_Lefttop.y + _TLineLength), ROI_Lefttop, RGB, 4);
 
-	cvDrawLine(src, cvPoint(ROI_RightBot.x - LineLength, ROI_RightBot.y), ROI_RightBot, RGB, 4);
-	cvDrawLine(src, cvPoint(ROI_RightBot.x, ROI_RightBot.y - LineLength), ROI_RightBot, RGB, 4);
+	cvDrawLine(src, cvPoint(ROI_RightBot.x - _TLineLength, ROI_RightBot.y), ROI_RightBot, RGB, 4);
+	cvDrawLine(src, cvPoint(ROI_RightBot.x, ROI_RightBot.y - _TLineLength), ROI_RightBot, RGB, 4);
 
 	// 추가.
-	cvDrawLine(src, cvPoint(ROI_LeftBot.x + LineLength, ROI_LeftBot.y), ROI_LeftBot, RGB, 4);
-	cvDrawLine(src, cvPoint(ROI_LeftBot.x, ROI_LeftBot.y - LineLength), ROI_LeftBot, RGB, 4);
+	cvDrawLine(src, cvPoint(ROI_LeftBot.x + _TLineLength, ROI_LeftBot.y), ROI_LeftBot, RGB, 4);
+	cvDrawLine(src, cvPoint(ROI_LeftBot.x, ROI_LeftBot.y - _TLineLength), ROI_LeftBot, RGB, 4);
 
-	cvDrawLine(src, cvPoint(ROI_Righttop.x - LineLength, ROI_Righttop.y), ROI_Righttop, RGB, 4);
-	cvDrawLine(src, cvPoint(ROI_Righttop.x, ROI_Righttop.y + LineLength), ROI_Righttop, RGB, 4);
+	cvDrawLine(src, cvPoint(ROI_Righttop.x - _TLineLength, ROI_Righttop.y), ROI_Righttop, RGB, 4);
+	cvDrawLine(src, cvPoint(ROI_Righttop.x, ROI_Righttop.y + _TLineLength), ROI_Righttop, RGB, 4);
 
 	// Write Frame Per Sec.
 	sprintf(_TBuffer, "%3.2f fps", fps);
@@ -307,7 +317,7 @@ void EngineS::imgproc_mode(){
 	// mode 1 : Chessboard Recognition 확인부, 2초동안 프레임을 받아서 Chessboard recognition 수행
 	// mode 2 : 체스말의 움직임 Detection & Chess UI draw, ChessGame 부분 구동
 	static bool _TImageCreateCheck = false;
-	static time_t _tempsec; // mode 1에서 시간을 체크할 변수
+	static time_t _TTempSec; // mode 1에서 시간을 체크할 변수
 
 	if (_ImageProcessMode == 0) {
 		// 관심영역 설정부.
@@ -315,20 +325,22 @@ void EngineS::imgproc_mode(){
 			cvReleaseImage(&_ImageChess);
 			_TImageCreateCheck = false;
 		}
+#if !USING_QT
 		cvShowImage("CVES", _CamOriginalImage);
+#endif
 		_ImageProcessMode++;
 		_RGB = cvScalar(0, 0, 255);
-		_tempsec = time(NULL);
+		_TTempSec = time(NULL);
 
-		//관심영역 크기 고정
+		// 관심영역 크기 고정.
 		_ROIRect = cvRect(100, 20, 440, 440);
 	}
-	else if (_ImageProcessMode == 1 /*&& IsStarted == true*/) {
+	else if (_ImageProcessMode == 1/* && IsStarted == true*/) {
 		// 관심영역 재설정 선택 OR 체스보드 인식 확인부.
 		int _TTick = GetTickCount();
 
 		if (_TImageCreateCheck == false) {
-			// 내부 연산에 사용되는 이미지 할당
+			// 내부 연산에 사용되는 이미지 할당.
 			_ImageChess = cvCreateImage(cvSize(_ROIRect.width, _ROIRect.height), IPL_DEPTH_8U, 3);
 			_TempPrev = cvCreateImage(cvSize(_ROIRect.width, _ROIRect.height), IPL_DEPTH_8U, 3);
 			_TempPrev2 = cvCreateImage(cvSize(_ROIRect.width, _ROIRect.height), IPL_DEPTH_8U, 3);
@@ -342,6 +354,7 @@ void EngineS::imgproc_mode(){
 			Inter_imageCraete(_ROIRect.width, _ROIRect.height);
 		}
 		cvSetImageROI(_CamOriginalImage, _ROIRect);
+		cvSmooth(_CamOriginalImage, _CamOriginalImage, CV_MEDIAN);
 		cvCopy(_CamOriginalImage, _ImageChess);
 		cvCopy(_CamOriginalImage, _PureImage);
 		
@@ -352,13 +365,16 @@ void EngineS::imgproc_mode(){
 
 		// 체스보드 인식이 확실하면 시간 카운트 시작, 교차점이 81개 이하면 다음 단계로 넘어가지 못함.
 		if (_CrossPoint.size() < 81)
-			_tempsec = time(NULL);
+			_TTempSec = time(NULL);
 
 		// mode 1에서 2초 이상 지났을 경우 다음 모드로 진행
-		if (time(NULL) - _tempsec > 2) {
+		if (time(NULL) - _TTempSec > 1) {
 			_ImageProcessMode++;
 			_RGB = cvScalar(0, 255);
 		}
+
+		//float temp_score[8][8];
+		//_ChessObjDetect.Detect_SobelCannyScore(_PureImage, _CrossPoint, temp_score);
 
 		// fps 계산.
 		_TTick = GetTickCount() - _TTick;
@@ -366,14 +382,17 @@ void EngineS::imgproc_mode(){
 		
 		// CVES main Window에 UI 구성
 		DrawWindowS(_CamOriginalImage, _fps, _RGB);
+#if !USING_QT
 		cvShowImage("CVES", _CamOriginalImage);
+#endif
 	}
-	else if (_ImageProcessMode == 2 /*&& IsStarted == true*/) {
+	else if (_ImageProcessMode == 2/* && IsStarted == true*/) {
 		// 실제 이미지 처리 실행부.
 		int _TTick = GetTickCount();
 
 		// 관심 영역 설정
 		cvSetImageROI(_CamOriginalImage, _ROIRect);
+		cvSmooth(_CamOriginalImage, _CamOriginalImage, CV_MEDIAN);
 		cvCopy(_CamOriginalImage, _ImageChess); // 이미지 처리에 사용될 이미지 복사 - 관심영역 크기의 이미지
 		cvCopy(_CamOriginalImage, _PureImage); // 원본 이미지 - 관심영역 크기의 이미지
 
@@ -394,8 +413,10 @@ void EngineS::imgproc_mode(){
 				if (_CheckInChess->Check_InChessboard(_ImageSkin, _CrossPoint)) {
 					// 물체가 체스보드 위로 들어옴.
 					cvCopy(_TempPrev2, _PrevImage);
+#if !USING_QT
 #ifdef DEBUG_MODE
 					cvShowImage("PREV", _PrevImage);
+#endif
 #endif
 					_SubCheck = true;
 				}
@@ -403,13 +424,15 @@ void EngineS::imgproc_mode(){
 			else {
 				// 추후 해야할 작업 : 빠질때 어떻게 작업할 것인가.
 				// 손이 들어옴 판정 이후 작업.
+#if !USING_QT
 #ifdef DEBUG_MODE
 				cvShowImage("유레카1", _ImageChess);
+#endif
 #endif
 				// 오브젝트 디텍션에 사용되는 차영상 연산 수행
 				Sub_image(_PrevImage, _ImageChess, _ImageSkin);
 				// 차영상 결과를 이미지 처리에 사용되는 이미지로 색 부여
-				Compose_diffImage(_ImageChess, _ImageSkin, cvScalar(0, 255, 255));
+				/*Compose_diffImage(_ImageChess, _ImageSkin, cvScalar(0, 255, 255));*/
 
 				// BlobLabeling
 				_BlobLabeling.SetParam(_ImageSkin, 1);
@@ -425,7 +448,9 @@ void EngineS::imgproc_mode(){
 				// 이미지 처리에 사용되는 이미지에 Chessboard recognition 결과로 연산된 좌표를 표기
 				_ChessRecognition.drawPoint(_ImageChess, _CrossPoint);
 				cvDilate(_ImageSkin, _ImageSkin, 0, 5);
+#if !USING_QT
 				cvShowImage("skin", _ImageSkin);
+#endif
 
 				// 체스보드 안으로 손이 들어왔는지를 확인
 				if (_CheckInChess->Check_InChessboard(_ImageSkin, _CrossPoint)) {
@@ -437,7 +462,8 @@ void EngineS::imgproc_mode(){
 					CvPoint out[4];
 					out[0] = out[1] = out[2] = out[3] = cvPoint(-1, -1);
 					// 체스말의 움직임을 계산.
-					_CheckInChess->Calculate_Movement(_OtherBinaryImage, _CrossPoint, out);
+					//_CheckInChess->Calculate_Movement(_OtherBinaryImage, _CrossPoint, out);
+					_ChessObjDetect.Get_Movement(_PrevImage, _PureImage, _CrossPoint, out);
 
 					// 디텍션 된 결과가 두개 이상 존재한다면 실행
 					if (out[0].x != -1 && out[1].x != -1) {
@@ -448,21 +474,35 @@ void EngineS::imgproc_mode(){
 
 						// 이전 보드의 상태를 보고 예측함
 						int predicted_mode = _ChessGame.Mode_read();
-						printf("%d\n", predicted_mode);
 						// 예측값과 현재 디텍션된 값을 비교하여 실측값을 넘겨줌
 						int out_count = 0;
 						for(int i = 0; i < 4; i++){
-							if(out[i].x != -1)	out_count++;
+							if(out[i].x != -1){
+								out_count++;
+								//printf("(%d, %d)\n", out[i].x, out[i].y);
+							}
 						}
-						predicted_mode = (out_count > predicted_mode ? out_count : predicted_mode);
+						predicted_mode = (out_count < predicted_mode ? out_count : predicted_mode);
 
 						// chessgame 이동부.
-						_ChessGame.Chess_process(out, /*predicted_mode*/2);
+						//printf("predict: %d, out_count : %d\n", predicted_mode, out_count);
+						_IsTrun = _ChessGame.Chess_process(out, predicted_mode);
 
-						//텔레파시 콜백 호출
-						char buf[32];
-						_ChessGame.Get_RecentMove(buf);
-						//_TelepathyServer->SendDataToOne(buf, );
+						// .
+
+						string _TString = string("Move ").append(string(_ChessGame.Get_RecentMove()));
+						for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
+							if (_IsTrun == true && strcmp("White", _TVal->ClientName) == 0) {
+								// White Turn일 때.
+								char *_TCharArr = (char *)_StringTools.StringToConstCharPointer(_TString.c_str());
+								_TelepathyServer->SendDataToOne(_TCharArr, _TVal->ClientSocket);
+							}
+							else if (_IsTrun != true && strcmp("Black", _TVal->ClientName) == 0) {
+								// Black Turn일 때.
+								char *_TCharArr = (char *)_StringTools.StringToConstCharPointer(_TString.c_str());
+								_TelepathyServer->SendDataToOne(_TCharArr, _TVal->ClientSocket);
+							}
+						}
 #ifdef DEBUG_MODE
 						// uci에 맞춰 return하는 부분 현재 printf로 출력
 						//printf("%s\n", buf);
@@ -473,8 +513,10 @@ void EngineS::imgproc_mode(){
 					//CVES process가 죽었을 경우를 대비하여 현재 경로들을 txt파일로 저장 & voting을 통하여 현재 말의 이동경로를 확정.
 					//구현 예정.
 				}
+#if !USING_QT
 #ifdef DEBUG_MODE
 				cvShowImage("compose_diff", _ImageChess);
+#endif
 #endif
 			}
 		}
@@ -492,8 +534,9 @@ void EngineS::imgproc_mode(){
 
 		//Chessboard Main UI Drawing
 		DrawWindowS(_CamOriginalImage, _fps, _RGB);
-
+#if !USING_QT
 		cvShowImage("CVES", _CamOriginalImage);
+#endif
 	}
 
 	if (cvWaitKey(33) == 27)
@@ -501,8 +544,9 @@ void EngineS::imgproc_mode(){
 }
 
 void EngineS::ServerReceivedCallback(char *Buffer, SOCKET ClientSocket) {
+	//Sleep(100);
 	// using mutex.
-	G_EngineS->_QueueProtectMutex.lock();
+	//G_EngineS->_QueueProtectMutex.lock();
 	ServerGetInformation *_TServerGetInformation = new ServerGetInformation;
 	char _TBuffer[BUFFER_MAX_32767];
 	memset(_TBuffer, NULL, sizeof(_TBuffer));
@@ -510,12 +554,13 @@ void EngineS::ServerReceivedCallback(char *Buffer, SOCKET ClientSocket) {
 	_TServerGetInformation->Infomations = _TBuffer;
 	_TServerGetInformation->AnySocket = ClientSocket;
 	G_EngineS->CommandQueue->push(_TServerGetInformation);
-	G_EngineS->_QueueProtectMutex.unlock();
+	//G_EngineS->_QueueProtectMutex.unlock();
 }
 
 void EngineS::AnyConnentionNotifier(SOCKET ClientSocket) {
+	Sleep(100);
 	// 초기 접속시에 Type을 물어보기 위한 용도로 쓰인다.
-	G_EngineS->_TelepathyServer->SendDataToOne(STR_I_PTYPE, ClientSocket);
+	G_EngineS->_TelepathyServer->SendDataToOne((char *)G_EngineS->_StringTools.StringToConstCharPointer(STR_I_PTYPE), ClientSocket);
 }
 
 #if WINDOWS_SYS
@@ -536,9 +581,8 @@ void *
 	EngineS *_TEngine_S = (EngineS *)Param;
 
 	while (_TEngine_S->_TelepathyServer->IsServerStarted) {
-		Sleep(10);
 		if (_TEngine_S->CommandQueue->empty() != true) {
-			_TEngine_S->_QueueProtectMutex.lock();
+			//_TEngine_S->_QueueProtectMutex.lock();
 			char _TStrBuffer[BUFFER_MAX_32767];
 			ServerGetInformation *_TServerGetInformation;
 			_TServerGetInformation =_TEngine_S->CommandQueue->front();
@@ -546,7 +590,7 @@ void *
 			memset(_TStrBuffer, NULL, sizeof(_TStrBuffer));
 			strcpy(_TStrBuffer, _TServerGetInformation->Infomations);
 			_TEngine_S->CommandQueue->pop();
-			_TEngine_S->_QueueProtectMutex.unlock();
+			//_TEngine_S->_QueueProtectMutex.unlock();
 
 			// 내부 Protocol 송신(CVES -> CVEC, CVES -> Observer).
 			StringTokenizer *_TStringTokenizer = new StringTokenizer();
@@ -571,17 +615,7 @@ void *
 					// CVEC가 Server가 살아있냐는 질문에 2가지 응답으로 답해야 한다.
 					// 그런데 실제로, Server가 'Busy' 한다는건 '살아있냐'라는 질의에 대한 응답으로 좀 맞지 않으므로,
 					// 'Alive'만 날려준다.
-					_TEngine_S->_TelepathyServer->SendDataToOne(STR_I_ALIVE, _TServerGetInformation->AnySocket);
-					break;
-				case VALUE_I_IMWHITE :
-					// Server에 Socket 중, White에 Naming을 할 Socket이 필요.
-					// 어떤 Socket인지 검색하여 찾아 Naming 한다.
-					for_IterToEnd(list, ClientsList, _TEngine_S->_TelepathyServer->ClientList) {
-						if (_TVal->ClientSocket == _TServerGetInformation->AnySocket) {
-							_TVal->ClientName = "White";
-						}
-					}
-					
+					_TEngine_S->_TelepathyServer->SendDataToOne((char *)_TEngine_S->_StringTools.StringToConstCharPointer(STR_I_ALIVE), _TServerGetInformation->AnySocket);
 					break;
 				case VALUE_I_STOP :
 					// Stop the Server Image Processing.
@@ -597,12 +631,19 @@ void *
 					// 정보가 있는지 없는지를 검사해야 한다.
 					// 만약 Data가 없거나, Data의 Checksum이 맞지 않아 복원에 실패하였다면, 'No'.
 					// 그게 아니라면 'Yes'를 날려준다.
+					
+					// 게임 중간 저장 파일의 유무 여부 판단. 
+					//if (_TEngine_S->_IsRestorePossible == true) 
+						_TEngine_S->_TelepathyServer->SendDataToOne((char *)_TEngine_S->_StringTools.StringToConstCharPointer(STR_I_RESTOREOK), _TServerGetInformation->AnySocket);
+					//else
+					//	_TEngine_S->_TelepathyServer->SendDataToOne((char *)_TEngine_S->_StringTools.StringToConstCharPointer(STR_I_RESTORENOT), _TServerGetInformation->AnySocket);
+
 					break;
 				case VALUE_I_ISSERVERREADY :
 					// IsServerReady 질문을 하면 해야 할 것은 다음과 같다.
 					// 1. 
 					// Server(CVES)가 모든 준비 되었을 때, ServerisReady를 보낸다.
-					_TEngine_S->_TelepathyServer->SendDataToOne("ServerisReady", _TServerGetInformation->AnySocket);
+					_TEngine_S->_TelepathyServer->SendDataToOne((char *)_TEngine_S->_StringTools.StringToConstCharPointer(STR_I_SERVERISREADY), _TServerGetInformation->AnySocket);
 					break;
 				
 				// Any(CVEC, CVEO) -> CVES
@@ -617,22 +658,27 @@ void *
 				// Observer -> CVES
 				case VALUE_I_STATUSNOW :
 					// Status를 요청했으므로, 정보를 날려준다.
-					_TEngine_S->IsStarted = false;
+					
 					break;
 				case VALUE_I_TICTOKON :
 					// Tictok is On.
 					_TEngine_S->IsTictokEnable = true;
+					_TEngine_S->_TelepathyServer->SendDataToOne((char *)_TEngine_S->_StringTools.StringToConstCharPointer(STR_I_TICTOKISON), _TServerGetInformation->AnySocket);
 					break;
 				case VALUE_I_TICTOKOFF :
 					// Tictok is Off.
 					_TEngine_S->IsTictokEnable = false;
+					_TEngine_S->_TelepathyServer->SendDataToOne((char *)_TEngine_S->_StringTools.StringToConstCharPointer(STR_I_TICTOKISOFF), _TServerGetInformation->AnySocket);
 					break;
 			}
 
 			delete _TInternalProtocolCS;
 			delete _TStringTokenizer;
 		}
+		//Sleep(10);
 	}
+
+	//_endthread();
 	return 0;
 }
 
@@ -648,7 +694,6 @@ void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
 	
 	// Fetch the next at while.
 	while (IPCS->NextCharArrayIter()) {
-		StringTools _TStringTools;
 		int _NSeek_GUIToEngine = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*IPCS->CharArrayListIter);
 		switch (_NSeek_GUIToEngine) {
 			// Go 뒤로 부터 오는 것들.
@@ -695,14 +740,21 @@ void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
 				// 이걸 게임의 시작으로 간주 해야 할 것 같다.
 				// Socket을 넘겨 해당하는 Client List에 White 라는 식별을 한다.
 				// 그외의 나머지(해봤자 1개 뿐..) Client는 Black으로 처리한다.
+				
+				break;
+			case VALUE_I_INFO_WHITE :
 				for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
-					if (_TVal->ClientSocket == Socket) {
-						char _TCharArr[10] = "White";
-						_TVal->ClientName = _TCharArr;
+					if (_TVal->ClientSocket == Socket && strcmp(_TVal->ClientType, "Client") == 0) {
+						// White.
+						_TVal->ClientName = _StringTools.ConstCharToChar("White");
 					}
-					else if (strcmp(_TVal->ClientType, "Client") == 0) {
-						char _TCharArr[10] = "Black";
-						_TVal->ClientName = _TCharArr;
+				}
+				break;
+			case VALUE_I_INFO_BLACK :
+				for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
+					if (_TVal->ClientSocket == Socket && strcmp(_TVal->ClientType, "Client") == 0) {
+						// Null Move가 오면 일단 White.
+						_TVal->ClientName = _StringTools.ConstCharToChar("Black");
 					}
 				}
 				break;
@@ -718,7 +770,7 @@ void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
 				if (_TIsInfoType == true) {
 					for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
 						if (_TVal->ClientSocket == Socket) {
-							_TVal->ClientType = _TStringTools.ConstCharToChar(STR_I_INFO_TYPE_CLIENT);
+							_TVal->ClientType = _StringTools.ConstCharToChar(STR_I_INFO_TYPE_CLIENT);
 							break;
 						}
 					}
@@ -729,7 +781,7 @@ void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
 				if (_TIsInfoType == true) {
 					for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
 						if (_TVal->ClientSocket == Socket) {
-							_TVal->ClientType = _TStringTools.ConstCharToChar(STR_I_INFO_TYPE_OBSERVER);
+							_TVal->ClientType = _StringTools.ConstCharToChar(STR_I_INFO_TYPE_OBSERVER);
 							break;
 						}
 					}
@@ -741,14 +793,17 @@ void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
 					if (_TIsBlackTime) {
 						_TIsBlackTime = false;
 						// Black Time을 처리할 구문.
+						// Chess Game에 넘길 Data.
 					}
 					else if (_TIsWhiteTime) {
 						_TIsWhiteTime = false;
 						// White Time을 처리할 구문.
+						// Chess Game에 넘길 Data.
 					}
 					else if (_TIsTurn) {
 						_TIsTurn = false;
 						// Turn을 처리할 구문.
+						// Chess Game에 넘길 Data.
 					}
 				}
 				else if (_TIsInfoPosition) {
@@ -764,36 +819,6 @@ void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
 		}
 	}
 }
-
-//void EngineS::Process_Info_Go(CommandString *IPCS) {
-//	while(IPCS->NextCharArrayIter()) {
-//		int _NSeek_GUIToEngine = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*IPCS->CharArrayListIter);
-//
-//		switch (_NSeek_GUIToEngine) {
-//			case VALUE_I_INFO_GO :
-//				Process_Info_Go(IPCS);
-//				break;
-//			case VALUE_I_INFO_POSITION :
-//				Process_Info_Position(IPCS);
-//				break;
-//		}
-//	}
-//}
-//
-//void EngineS::Process_Info_Position(CommandString *IPCS) {
-//	while(IPCS->NextCharArrayIter()) {
-//		int _NSeek_GUIToEngine = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*IPCS->CharArrayListIter);
-//
-//		switch (_NSeek_GUIToEngine) {
-//			case VALUE_I_INFO_GO :
-//				Process_Info_Go(IPCS);
-//				break;
-//			case VALUE_I_INFO_POSITION :
-//				Process_Info_Position(IPCS);
-//				break;
-//		}
-//	}
-//}
 
 void EngineS::Set_ClientData( SOCKET Socket, int Type )
 {

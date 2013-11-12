@@ -30,15 +30,15 @@ ChessRecognition::ChessRecognition() {
 }
 
 ChessRecognition::~ChessRecognition() {
-	exit();
+	//exit();
 }
 
 void ChessRecognition::exit() {
 	thread_exit = true;
 
 	CloseHandle(hThread);
-	DeleteCriticalSection(&cs);
-	DeleteCriticalSection(&vec_cs);
+	/*DeleteCriticalSection(&cs);
+	DeleteCriticalSection(&vec_cs);*/
 	cvReleaseImage(&img_process);
 }
 
@@ -51,8 +51,8 @@ void ChessRecognition::Initialize_ChessRecognition(int width, int height, int mo
 	//init이 처음 호출되었을 경우 thread 동기화를 위한 critical section 초기화
 	if (first_check == false) {
 		first_check = true;
-		InitializeCriticalSection(&cs);
-		InitializeCriticalSection(&vec_cs);
+		/*InitializeCriticalSection(&cs);
+		InitializeCriticalSection(&vec_cs);*/
 	}
 	else
 		cvReleaseImage(&img_process);
@@ -149,10 +149,12 @@ void ChessRecognition::Get_Line(vector<pair<float, float> > *linesX, vector<pair
 	linesY->clear();
 
 	//critical section을 통하여 thread 동기를 맞춤
-	EnterCriticalSection(&vec_cs);
+	_Vec_CSProtectionMutex.lock();
+	//EnterCriticalSection(&vec_cs);
 	copy(vec_LineX.begin(), vec_LineX.end(), back_inserter(*linesX));
 	copy(vec_LineY.begin(), vec_LineY.end(), back_inserter(*linesY));
-	LeaveCriticalSection(&vec_cs);
+	//LeaveCriticalSection(&vec_cs);
+	_Vec_CSProtectionMutex.unlock();
 
 	//thread로 부터 가져온 라인을 9개로 merge.
 	mergeLine(linesX);
@@ -256,7 +258,7 @@ void ChessRecognition::mergeLine(vector<std::pair<float, float> > *Lines) {
 		for (register int i = 0; i < (int)Lines->size() - 9; i++) {
 			SUB_MIN = 9999;		
 			for (register int j = 1; j < temp.size(); j++) {
-				float SUB = temp.at(j).first - temp.at(j-1).first;
+				float SUB = temp.at(j).first - temp.at(j - 1).first;
 
 				if (SUB < SUB_MIN) {
 					SUB_MIN = SUB;
@@ -293,7 +295,8 @@ UINT WINAPI ChessRecognition::thread_hough(void *arg) {
 	IplImage *iplTemp = cvCreateImage(cvSize(_TChessRecognition->_Width, _TChessRecognition->_Height), IPL_DEPTH_32F, 1);                   
 	IplImage *iplDoGx = cvCreateImage(cvGetSize(iplTemp), IPL_DEPTH_32F, 1);  
 	IplImage *iplDoGy = cvCreateImage(cvGetSize(iplTemp), IPL_DEPTH_32F, 1);  
-	IplImage *iplDoGyClone = cvCloneImage(iplDoGy), *iplDoGxClone = cvCloneImage(iplDoGx);
+	IplImage *iplDoGyClone = cvCloneImage(iplDoGy);
+	IplImage *iplDoGxClone = cvCloneImage(iplDoGx);
 	IplImage *iplEdgeX = cvCreateImage(cvGetSize(iplTemp), 8, 1);
 	IplImage *iplEdgeY = cvCreateImage(cvGetSize(iplTemp), 8, 1);
 
@@ -301,9 +304,11 @@ UINT WINAPI ChessRecognition::thread_hough(void *arg) {
 
 	while (1) {
 		// 이미지를 받아옴. main루프와 동기를 맞추기 위해서 critical section 사용.
-		EnterCriticalSection(&(_TChessRecognition->cs));
+		_TChessRecognition->_CSProtectionMutex.lock();
+		//EnterCriticalSection(&(_TChessRecognition->cs));
 		cvConvert(_TChessRecognition->img_process, iplTemp);
-		LeaveCriticalSection(&_TChessRecognition->cs);
+		//LeaveCriticalSection(&_TChessRecognition->cs);
+		_TChessRecognition->_CSProtectionMutex.unlock();
 
 		// 각 X축 Y축 라인을 검출해 내기 위해서 filter 적용.
 		cvFilter2D(iplTemp, iplDoGx, &DoGx); // 라인만 축출해내고.
@@ -341,11 +346,13 @@ UINT WINAPI ChessRecognition::thread_hough(void *arg) {
 		LineY = cvHoughLines2(iplEdgeY, storageY, CV_HOUGH_STANDARD, 1.0 * rho, CV_PI / 180 * theta, threshold, 0, 0);
 
 		// cvSeq를 vector로 바꾸기 위한 연산.
-		EnterCriticalSection(&_TChessRecognition->vec_cs);
+		_TChessRecognition->_Vec_CSProtectionMutex.lock();
+		//EnterCriticalSection(&_TChessRecognition->vec_cs);
 		_TChessRecognition->cast_seq(LineX, LineY);
-		LeaveCriticalSection(&_TChessRecognition->vec_cs);
+		//LeaveCriticalSection(&_TChessRecognition->vec_cs);
+		_TChessRecognition->_Vec_CSProtectionMutex.unlock();
 
-		Sleep(10);
+		Sleep(2);
 
 		if (_TChessRecognition->thread_exit == true)
 			break;
@@ -380,22 +387,26 @@ UINT WINAPI ChessRecognition::thread_ChessLineSearchAlg(void *arg) {
 
 	while (1) {
 		// 연산에 필요한 이미지를 main으로부터 복사해 옴.
-		EnterCriticalSection(&(_TChessRecognition->cs));
+		_TChessRecognition->_CSProtectionMutex.lock();
+		//EnterCriticalSection(&(_TChessRecognition->cs));
 		
 		if (_TChessRecognition->img_process->nChannels != 1)
 			cvConvert(_TChessRecognition->img_process, _TGray);
 		else
 			cvCopy(_TChessRecognition->img_process, _TGray);
 
-		LeaveCriticalSection(&_TChessRecognition->cs);
+		//LeaveCriticalSection(&_TChessRecognition->cs);
+		_TChessRecognition->_CSProtectionMutex.unlock();
 
 		// 복사한 이미지를 실제 연산에 사용.
-		EnterCriticalSection(&_TChessRecognition->vec_cs);
+		_TChessRecognition->_CSProtectionMutex.lock();
+		//EnterCriticalSection(&_TChessRecognition->vec_cs);
 		_TChessRecognition->Chess_recognition_process(_TGray, &_TChessRecognition->_CP);
-		LeaveCriticalSection(&_TChessRecognition->vec_cs);
+		//LeaveCriticalSection(&_TChessRecognition->vec_cs);
+		_TChessRecognition->_CSProtectionMutex.unlock();
 
 		// Sleep 10은 왜?
-		Sleep(10);
+		Sleep(2);
 
 		if (_TChessRecognition->thread_exit == true)
 			break;
@@ -405,22 +416,23 @@ UINT WINAPI ChessRecognition::thread_ChessLineSearchAlg(void *arg) {
 
 	// 이미지 할당 해제.
 	cvReleaseImage(&_TGray);
-
+	//cvReleaseImage(&img_process);
 	return 0;
 }
 
 void ChessRecognition::Copy_Img(IplImage *src){
 	// main의 cam으로부터 받아온 이미지를 thread의 연산에 사용하기 위해서 복사해오는 함수.
 	// 연산에 사용되는 이미지는 Grayscale이기 때문에 색상 변환 연산 진행.
-
-	EnterCriticalSection(&cs);
+	_CSProtectionMutex.lock();
+	//EnterCriticalSection(&cs);
 	if (src->nChannels == 1) {
 		cvCopy(src, img_process);
 	}
 	else {
 		cvCvtColor(src, img_process, CV_BGR2GRAY);
 	}
-	LeaveCriticalSection(&cs);
+	//LeaveCriticalSection(&cs);
+	_CSProtectionMutex.unlock();
 }
 
 void ChessRecognition::Refine_CrossPoint(vector<ChessPoint> *point){
@@ -481,9 +493,11 @@ void ChessRecognition::Chess_recog_wrapper(IplImage *src, vector<ChessPoint> *po
 		drawPoint(src, *point);
 	}
 	else if (_MODE == 2) {
-		EnterCriticalSection(&vec_cs);
+		_Vec_CSProtectionMutex.lock();
+		//EnterCriticalSection(&vec_cs);
 		copy(_CP.begin(), _CP.end(), back_inserter(*point));
-		LeaveCriticalSection(&vec_cs);
+		//LeaveCriticalSection(&vec_cs);
+		_Vec_CSProtectionMutex.unlock();
 		//Chess_recognition_process(point);
 		Refine_CrossPoint(point);
 		drawPoint(src, *point);
@@ -506,12 +520,6 @@ void ChessRecognition::Chess_recognition_process(IplImage *src, vector<ChessPoin
 
 	// 체스판의 경계를 구하여 in_line_point 변수들에 저장.
 	_CLSA->GetgraySidelinesPoint(src);
-	
-	while (1) {
-		cvShowImage("findCrossPoint", src);
-		if (cvWaitKey(33))
-			break;
-	}
 
 	// 해당 라인에서 9곳의 체스판 경계를 찾지 못 하였으면,
 	// 탐색라인을 이동시켜 적절한 탐색라인을 찾는다.

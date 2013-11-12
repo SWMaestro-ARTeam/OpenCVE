@@ -30,7 +30,7 @@
 #include <cstdlib>
 
 #include <list>
-#include <mutex>
+//#include <mutex>
 #include <queue>
 
 #include <stdio.h>
@@ -66,6 +66,7 @@ private:
 	Telepathy::Client *_TelepathyClient;
 	Process *_ProcessConfirm;
 	UCICommandSeeker _UCICommandSeeker;
+	StringTools _StringTools;
 	File _File;
 
 	// Variables
@@ -75,11 +76,12 @@ private:
 
 	DWORD _ServerPID;
 
-	mutex _QueueProtectMutex;
-	mutex _VarProtectMutex;
+	//mutex _QueueProtectMutex;
+	//mutex _VarProtectMutex;
 
 	char *_Command;
-	// 내가 흑색인지 백색인지 구분.
+	// Client가 흑색인지 백색인지 구분.
+	// 0 : 배정 받지 못함, 1 : White, 2 : Black
 	bool _IsWhite;
 	bool _IsInAI;
 
@@ -134,20 +136,20 @@ private:
 	static void ClientDisconnectedCallback();
 
 	// CVEC_CVESCheckingThread
-	static
-#if WINDOWS_SYS
-		UINT WINAPI
-		//DWORD WINAPI
-#elif POSIX_SYS
-		void *
-#endif
-		CVEC_CVESCheckingThread(
-#if WINDOWS_SYS
-		LPVOID
-#elif POSIX_SYS
-		void *
-#endif
-		Param);
+//	static
+//#if WINDOWS_SYS
+//		UINT WINAPI
+//		//DWORD WINAPI
+//#elif POSIX_SYS
+//		void *
+//#endif
+//		CVEC_CVESCheckingThread(
+//#if WINDOWS_SYS
+//		LPVOID
+//#elif POSIX_SYS
+//		void *
+//#endif
+//		Param);
 
 	// ClientCommandQueueProcessingThread
 	static
@@ -176,6 +178,7 @@ public:
 
 	queue<char *> *CommandQueue;
 
+	void StartUp_Check();
 	void EngineC_Start();
 };
 #endif

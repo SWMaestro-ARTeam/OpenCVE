@@ -48,7 +48,9 @@ public:
 	// img가 픽셀값을 아무것도 가지지 않는지 체크.
 	bool Check_imgZero(IplImage *img);
 	// 차영상의 결과로 나온 이진 이미지를 계산하여 체스말의 좌표이동을 반환.
-	void Calculate_Movement(IplImage *bin, vector<ChessPoint> cross_point, CvPoint out[]);
+	void Calculate_Movement(IplImage *bin, vector<ChessPoint> cross_point, CvPoint out[], float score_threshold = 0.1);
+	// binary 이미지를 이용하여 보드의 각 칸에 스코어를 연산함
+	void Cal_BoardScore(IplImage *bin, vector<ChessPoint> cross_point, float score_box[][8]);
 };
 
 #endif

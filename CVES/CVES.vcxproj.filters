@@ -52,6 +52,9 @@
     <ClCompile Include="..\Common\StringTools.cpp">
       <Filter>Common\StringTools\Source</Filter>
     </ClCompile>
+    <ClCompile Include="ChessObjDetection.cpp">
+      <Filter>CVES_System\Recognitions\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BlobLabeling.hpp">
@@ -119,6 +122,9 @@
     </ClInclude>
     <ClInclude Include="..\Common\StringTools.hpp">
       <Filter>Common\StringTools\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="ChessObjDetection.h">
+      <Filter>CVES_System\Recognitions\Header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

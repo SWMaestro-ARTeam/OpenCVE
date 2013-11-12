@@ -31,14 +31,28 @@
 	#if defined(__MINGW32__)
 	// using MinGW(for windows).
 	#define MINGW_USING 1
+		// Qt mingw g++ mkspecs using Always.
+		#if defined(__GNUC__) && defined(WIN32)
+		#define QT_WIN_USING 1
+		#endif
 	#endif
 #else
 // using Linux, FreeBSD, Mac OSX.
 #define POSIX_SYS 1
+	// 추후 수정
+	#if defined(__GNUC__) && (defined(Q_OS_LINUX) || defined(Q_OS_FREEBSD) || defined(Q_OS_MAC) || defined(Q_OS_UNIX) \
+			|| defined(Q_OS_CYGWIN) || defined(Q_OS_DARWIN))
+	#define QT_POSIX_USING 1
+	#endif
+#endif
+
+// QT 판별.
+#if QT_WIN_USING || QT_POSIX_USING
+#define USING_QT 1
 #endif
 
 // If defined Debug mode by compiler(M$ Visual Studio & Qt Creator).
-#if defined(_DEBUG) || !defined(QT_NO_DEBUG)
+#if defined(_DEBUG) || defined(QT_NO_DEBUG)
 #define DEBUG_MODE
 #endif
 

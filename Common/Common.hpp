@@ -30,23 +30,30 @@
 
 // File 처리를 위한 값.
 #if WINDOWS_SYS
-#define SERVER_ENGINE_EXEC_FILENAME "CVES.exe"
-#define CLIENT_ENGINE_EXEC_FILENAME "CVEC.exe"
-#define CELESTIALS_EXEC_FILENAME "Celestials.exe"
+	#if USING_QT
+	#define CELESTIALS_EXEC_FILENAME "Celestials.exe"
+	#else
+	#define SERVER_ENGINE_EXEC_FILENAME "CVES.exe"
+	#define CLIENT_ENGINE_EXEC_FILENAME "CVEC.exe"
+	#endif
 #elif POSIX_SYS
+	#if USING_QT
+	#define CELESTIALS_EXEC_FILENAME "Celestials"
+	#endif
 #define SERVER_ENGINE_EXEC_FILENAME "CVES"
 #define CLIENT_ENGINE_EXEC_FILENAME "CVEC"
-#define CELESTIALS_EXEC_FILENAME "Celestials"
 #endif
 
+#if USING_QT
 #define SERVER_MODE "/Server"
 #define CLIENT_MODE "/Client"
 #define OBSERVER_MODE "/Observer"
+#endif
 
 #define ENGINE_EXEC_VER "1.0.0"
 
 // 통신을 위한 값
-#define CVE_PORT 10080
+#define CVE_PORT 10081
 #define LISTEN_QUEUE 10
 #define IP_ADDR_LOCAL "127.0.0.1"
 
@@ -56,13 +63,14 @@
 #define FLIP_MODE -1
 
 // Algorithm 값.
-#define RECOGNITION_MODE 1 // 1 : hough Line, 2 : 규홍 recognition
+#define RECOGNITION_MODE 2 // 1 : hough Line, 2 : 규홍 recognition
 
 #define MAX_CORNER 5000
 
 #define MOP_NUM 2
 #define T_SKIN_NUM 10
 #define SUB_THRESHOLD 10
+#define SUB_LabTHRESHOLD 2
 
 #define _DEF_MAX_BLOBS 10000
 #define _DEF_MAX_LABEL 100

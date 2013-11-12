@@ -23,22 +23,32 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
+#include "Common.hpp"
 #include "StringTools.hpp"
+
 /*
 template<typename T>
 string StringTools::ToString(const T& Any) {
 	return dynamic_cast<std::ostringstream &>((std::ostringstream() << std::dec << Any)).str();
 }
 */
-const char *StringTools::StirngToConstCharPointer(string Str) {
-	return Str.c_str();
+const char *StringTools::StringToConstCharPointer(string Str) {
+	//const char *_TConstStr = new const char[BUFFER_MAX_32767];
+	//memset((char *)_TConstStr, NULL, sizeof(_TConstStr));
+	//_TConstStr = Str.c_str();
+	//return _TConstStr;
+	const char *_TConstStr = Str.c_str();
+	char *_TStr = new char[BUFFER_MAX_32767];
+	memset(_TStr, NULL, sizeof(_TStr));
+	strcpy(_TStr, _TConstStr);
+	return ConstCharToChar(_TStr);
 }
 
 char *StringTools::ConstCharToChar(const char *Str) {
-	return const_cast<char *>(Str);
+	char *_TStr = const_cast<char *>(Str);
+	return _TStr;
 }
 
 char *StringTools::StringToChar(string Str) {
-	return ConstCharToChar(StirngToConstCharPointer(Str));
+	return ConstCharToChar(StringToConstCharPointer(Str));
 }
-

@@ -32,17 +32,27 @@
 #include "EngineC.hpp"
 
 #include "Celestials.h"
-#if MINGW_USING
-#include <QApplication>
-#include <QtGui>
-#include <QThread>
-#endif
 
+//#if USING_QT
+
+#	include <QApplication>
+#	include <QtGui>
+#	include <QThread>
+
+//#endif
+
+//#if USING_QT
 class ServerInitThread : public QThread {
 	Q_OBJECT
+//#else
+//class ServerInitThread {
+//#endif
+
 private:
 protected:
+//#if USING_QT
 	void run();
+//#endif
 public:
 	ServerInitThread();
 };
@@ -50,7 +60,7 @@ public:
 class ApplicationsMain {
 private:
 	ServerInitThread _ServerInitThread;
-
+	EngineS *_EngineS;
 public:
 	ApplicationsMain();
 

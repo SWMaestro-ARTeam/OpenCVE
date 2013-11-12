@@ -65,7 +65,7 @@ int ApplicationsMain::GoCVEC() {
 int ApplicationsMain::GoCVES(int argc, char *argv[]) {
 	int _TApplicationReturnValue = 0;
 	// 1. CVES Engine 생성.
-	EngineS *_EngineS = new EngineS();
+	_EngineS = new EngineS();
 	G_Celestials->_EngineS = _EngineS;
 	G_Celestials->show();
 	QApplication a(argc, argv);

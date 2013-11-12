@@ -30,6 +30,8 @@
 // CVESDependent into ChessLineSearchAlg.
 #include "ChessLineSearchAlg.hpp"
 
+#include <mutex>
+
 #if WINDOWS_SYS
 #include <Windows.h>
 #include <process.h>
@@ -59,7 +61,10 @@ private:
 	// Thread 함수에 대해서는 나중에 수정 하기로 함.
 	static UINT WINAPI thread_hough(void *arg); // 쓰레드 함수.
 	static UINT WINAPI thread_ChessLineSearchAlg(void *arg);
-	CRITICAL_SECTION cs, vec_cs; // thread 동기화를 위한 cs
+	//CRITICAL_SECTION cs, vec_cs; // thread 동기화를 위한 cs
+	mutex _CSProtectionMutex;
+	mutex _Vec_CSProtectionMutex;
+
 	bool thread_exit;
 
 	ChessLineSearchAlg *_CLSA;

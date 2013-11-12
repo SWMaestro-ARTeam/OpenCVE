@@ -97,14 +97,17 @@ INCLUDEPATH += . \
 LIBS +=	\
 	-lws2_32 \
 	-lpsapi \
-	-lAdvAPI32
+	-lAdvAPI32 \
+	-lrpcrt4
 
 win32 {
 # Import Library for Debug
 win32:CONFIG(debug, debug|release): \
-#	LIBS += -lQt5Cored \
+#	LIBS +=	-L$$QT_MINGW_PATH/lib \
+#	-lQt5Cored \
 #	-lQt5Guid \
 #	-lQt5Widgetsd \
+
 	LIBS += -L$$OPENCV_MSVC12_PATH/lib/Debug \
 	-lopencv_calib3d246d \
 	-lopencv_contrib246d \
@@ -126,10 +129,12 @@ win32:CONFIG(debug, debug|release): \
 	-lopencv_video246d \
 	-lopencv_videostab246d
 # Import Library for Release
-else:win32:CONFIG(release, debug|release): \
-#	LIBS += -lQt5Core \
-#	-lQt5Gui \
-#	-lQt5Widgets \
+win32:CONFIG(release, debug|release): \
+	LIBS += -L$$QT_MINGW_PATH/lib \
+	-lQt5Core \
+	-lQt5Gui \
+	-lQt5Widgets \
+
 	LIBS += -L$$OPENCV_MSVC12_PATH/lib/Release \
 	-lopencv_calib3d246 \
 	-lopencv_contrib246 \

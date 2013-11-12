@@ -44,12 +44,12 @@ Telepathy::Server::~Server() {
 
 #pragma region Server Threads
 #if WINDOWS_SYS
-// UINT 
-DWORD WINAPI
+UINT WINAPI
+//DWORD WINAPI
 #elif POSIX_SYS
 void *
 #endif
-	Server_ConnectionThread(
+	Telepathy::Server::Server_ConnectionThread(
 #if WINDOWS_SYS
 	LPVOID
 #elif POSIX_SYS
@@ -59,16 +59,17 @@ void *
 	while (1) 
 		G_TelepathyServer->ServerListentoClient();
 
+	_endthread();
 	return 0;
 }
 
 #if WINDOWS_SYS
-//UINT 
-DWORD WINAPI
+UINT WINAPI
+//DWORD WINAPI
 #elif POSIX_SYS
 void *
 #endif
-	Server_ReceivingThread(
+	Telepathy::Server::Server_ReceivingThread(
 #if WINDOWS_SYS
 	LPVOID
 #elif POSIX_SYS
@@ -83,6 +84,7 @@ void *
 			break;
 	}
 
+	_endthread();
 	return 0;
 }
 #pragma endregion Server Threads
@@ -106,6 +108,9 @@ bool Telepathy::Server::ServerInitialize() {
 
 	// Socket Create.
 	_ServerSocket = socket(AF_INET, SOCK_STREAM, 0);
+	int _TOptionValue = 1;
+	// TCP No Delay Option.
+	setsockopt(_ServerSocket, IPPROTO_TCP, TCP_NODELAY, (const char *)&_TOptionValue, sizeof(_TOptionValue));
 
 	// Socket이 잘못 되었다면..
 	if (_ServerSocket == INVALID_SOCKET)
@@ -142,8 +147,9 @@ bool Telepathy::Server::ServerStart() {
 #if WINDOWS_SYS
 //	#ifdef _AFXDLL
 		//AfxBeginThread(Server_ConnectionThread, 0);
-		DWORD _TThreadID = 0;
-		CreateThread(NULL, 0, Server_ConnectionThread, 0, 0, &_TThreadID);
+		/*DWORD _TThreadID = 0;
+		CreateThread(NULL, 0, Server_ConnectionThread, 0, 0, &_TThreadID);*/
+		HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, Server_ConnectionThread, NULL, 0, NULL);
 //	#endif
 #elif POSIX_SYS
 #endif
@@ -173,6 +179,10 @@ void Telepathy::Server::ServerListentoClient() {
 	// Accept를 하여 Socket을 연결한다.
 	_TSocket = accept(_ServerSocket, (struct sockaddr *)&_TClientAddress, &_TClientLength);
 
+	int _TOptionValue = 1;
+	// TCP No Delay Option.
+	setsockopt(_TSocket, IPPROTO_TCP, TCP_NODELAY, (const char *)&_TOptionValue, sizeof(_TOptionValue));
+
 	// Client Sockets를 넣어준다.
 	if (_TSocket != INVALID_SOCKET) {
 		ClientsList _TClientList;
@@ -199,8 +209,9 @@ void Telepathy::Server::ServerListentoClient() {
 	// windows용.
 //	#ifdef _AFXDLL
 	//AfxBeginThread(Server_ReceivingThread, (void *)_M_HClientSocket);
-	DWORD _TThreadID = 0;
-	CreateThread(NULL, 0, Server_ReceivingThread, (LPVOID)_TSocket, 0, &_TThreadID);
+	/*DWORD _TThreadID = 0;
+	CreateThread(NULL, 0, Server_ReceivingThread, (LPVOID)_TSocket, 0, &_TThreadID);*/
+	HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, Server_ReceivingThread, (LPVOID)_TSocket, 0, NULL);
 //	#endif // _AFXDLL
 #elif POSIX_SYS
 	pthread_t _TThread;
@@ -356,6 +367,8 @@ Telepathy::Client *G_TelepathyClient;
 Telepathy::Client::Client(){
 	IsInitializeClient = false;
 	IsConnectedClient = false;
+
+	G_TelepathyClient = this;
 }
 
 // deconstructor
@@ -363,16 +376,17 @@ Telepathy::Client::~Client(){
 	if (IsConnectedClient == true)
 		ClientClose();
 	IsInitializeClient = false;
+	G_TelepathyClient = NULL;
 }
 
 #pragma region Client Threads
 #if WINDOWS_SYS
-//UINT 
-DWORD WINAPI
+UINT WINAPI
+//DWORD WINAPI
 #elif POSIX_SYS
 void *
 #endif
-	Client_ReceivingThread(
+	Telepathy::Client::Client_ReceivingThread(
 #if WINDOWS_SYS
 	LPVOID
 #elif POSIX_SYS
@@ -386,6 +400,7 @@ void *
 		}
 	}
 
+	_endthread();
 	return 0;
 }
 #pragma endregion Client Threads
@@ -404,7 +419,9 @@ bool Telepathy::Client::ClientInitialize() {
 	if (_ClientSocket == INVALID_SOCKET)
 		return false;
 
-	
+	int _TOptionValue = 1;
+	// TCP No Delay Option.
+	setsockopt(_ClientSocket, IPPROTO_TCP, TCP_NODELAY, (const char *)&_TOptionValue, sizeof(_TOptionValue));
 	//if (setsockopt(_ClientSocket, SOL_SOCKET, SO_REUSEADDR, (const char *)&_TOptVal, sizeof(int)) == -1)
 	//	return false;
 	// Local IP Address.
@@ -438,8 +455,9 @@ void Telepathy::Client::ClientReceiveStart() {
 #if WINDOWS_SYS
 //	#ifdef _AFXDLL
 		//AfxBeginThread(Client_ReceivingThread, 0);
-		DWORD _TThreadID = 0;
-		CreateThread(NULL, 0, Client_ReceivingThread, 0, 0, &_TThreadID);
+		/*DWORD _TThreadID = 0;
+		CreateThread(NULL, 0, Client_ReceivingThread, 0, 0, &_TThreadID);*/
+		HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, Client_ReceivingThread, NULL, 0, NULL);
 //	#endif
 #elif POSIX_SYS
 		pthread_t _TThread;
@@ -461,7 +479,6 @@ void Telepathy::Client::ClientClose() {
 		shutdown(_ClientSocket, 0x02); // BOTH.
 		closesocket(_ClientSocket);
 	}
-	G_TelepathyClient = NULL;
 	IsConnectedClient = false;
 }
 
@@ -497,7 +514,6 @@ bool Telepathy::Client::ClientConnect() {
 	}
 
 	// 외부 Receive 함수용.
-	G_TelepathyClient = this;
 	IsConnectedClient = true;
 
 	return true;

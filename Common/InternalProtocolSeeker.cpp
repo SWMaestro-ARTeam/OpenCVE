@@ -46,9 +46,6 @@ int InternalProtocolSeeker::InternalProtocolString_Seeker(const char *Str) {
 		CASE(STR_I_SERVERISALIVE)
 			_SeekedNumber = VALUE_I_SERVERISALIVE;
 			break;
-		CASE(STR_I_IMWHITE)
-			_SeekedNumber = VALUE_I_IMWHITE;
-			break;
 		CASE(STR_I_STOP)
 			_SeekedNumber = VALUE_I_STOP;
 			break;
@@ -71,13 +68,13 @@ int InternalProtocolSeeker::InternalProtocolString_Seeker(const char *Str) {
 			break;
 		CASE(STR_I_INFO_BLACKTIME)
 			_SeekedNumber = VALUE_I_INFO_BLACKTIME;
-		break;
+			break;
 		CASE(STR_I_INFO_WHITETIME)
 			_SeekedNumber = VALUE_I_INFO_WHITETIME;
-		break;
+			break;
 		CASE(STR_I_INFO_TURN)
 			_SeekedNumber = VALUE_I_INFO_TURN;
-		break;
+			break;
 
 		CASE(STR_I_INFO_POSITION)
 			_SeekedNumber = VALUE_I_INFO_POSITION;
@@ -87,6 +84,12 @@ int InternalProtocolSeeker::InternalProtocolString_Seeker(const char *Str) {
 			break;
 		CASE(STR_I_INFO_MOVENULL)
 			_SeekedNumber = VALUE_I_INFO_MOVENULL;
+			break;
+		CASE(STR_I_INFO_WHITE)
+			_SeekedNumber = VALUE_I_INFO_WHITE;
+			break;
+		CASE(STR_I_INFO_BLACK)
+			_SeekedNumber = VALUE_I_INFO_BLACK;
 			break;
 
 		CASE(STR_I_ALIVE)
@@ -108,16 +111,6 @@ int InternalProtocolSeeker::InternalProtocolString_Seeker(const char *Str) {
 			_SeekedNumber = VALUE_I_SERVERISREADY;
 			break;
 
-		CASE(STR_I_STATUSNOW)
-			_SeekedNumber = VALUE_I_STATUSNOW;
-			break;
-		CASE(STR_I_TICTOKON)
-			_SeekedNumber = VALUE_I_TICTOKON;
-			break;
-		CASE(STR_I_TICTOKOFF)
-			_SeekedNumber = VALUE_I_TICTOKOFF;
-			break;
-
 		CASE(STR_I_TICTOK)
 			_SeekedNumber = VALUE_I_TICTOK;
 			break;
@@ -126,6 +119,16 @@ int InternalProtocolSeeker::InternalProtocolString_Seeker(const char *Str) {
 			break;
 		CASE(STR_I_TICTOKISOFF)
 			_SeekedNumber = VALUE_I_TICTOKISOFF;
+			break;
+
+		CASE(STR_I_STATUSNOW)
+			_SeekedNumber = VALUE_I_STATUSNOW;
+			break;
+		CASE(STR_I_TICTOKON)
+			_SeekedNumber = VALUE_I_TICTOKON;
+			break;
+		CASE(STR_I_TICTOKOFF)
+			_SeekedNumber = VALUE_I_TICTOKOFF;
 			break;
 
 		CASE(STR_I_INFO_TYPE_OBSERVER)
