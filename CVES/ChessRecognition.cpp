@@ -453,16 +453,16 @@ void ChessRecognition::Refine_CrossPoint(vector<ChessPoint> *point){
 			}
 		}
 		// cross point가 81개라면 이전 좌표를 통한 보정 연산 진행.
-		else {
-			for (register int i = 0; i < 81; i++) {
-				// (alpha * 이전 좌표) - ((1 - alpha) * 현재 좌표)
-				// 0 <= alpha <= 1.0
-				point->at(i).Cordinate.x = cvRound((Refine_const * (float)prev_point.at(i).x) + ((1.0 - Refine_const) * (float)point->at(i).Cordinate.x));
-				point->at(i).Cordinate.y = cvRound((Refine_const * (float)prev_point.at(i).y) + ((1.0 - Refine_const) * (float)point->at(i).Cordinate.y));
-
-				prev_point.at(i) = cvPoint(point->at(i).Cordinate.x, point->at(i).Cordinate.y);
-			}
-		}
+// 		else {
+// 			for (register int i = 0; i < 81; i++) {
+// 				// (alpha * 이전 좌표) - ((1 - alpha) * 현재 좌표)
+// 				// 0 <= alpha <= 1.0
+// 				point->at(i).Cordinate.x = cvRound((Refine_const * (float)prev_point.at(i).x) + ((1.0 - Refine_const) * (float)point->at(i).Cordinate.x));
+// 				point->at(i).Cordinate.y = cvRound((Refine_const * (float)prev_point.at(i).y) + ((1.0 - Refine_const) * (float)point->at(i).Cordinate.y));
+// 
+// 				prev_point.at(i) = cvPoint(point->at(i).Cordinate.x, point->at(i).Cordinate.y);
+// 			}
+// 		}
 	}
 }
 
@@ -491,6 +491,13 @@ void ChessRecognition::Chess_recog_wrapper(IplImage *src, vector<ChessPoint> *po
 }
 
 void ChessRecognition::Chess_recognition_process(IplImage *src, vector<ChessPoint> *point) {
+	if(_CLSA->refine == true && (_CLSA->Linefindcount_x1 != 9 || _CLSA->Linefindcount_y1 != 9 || _CLSA->Linefindcount_x2 != 9 || _CLSA->Linefindcount_y2 != 9 ||
+	_CLSA->Linefindcount_x11 != 9 || _CLSA->Linefindcount_y11 != 9 || _CLSA->Linefindcount_x22 != 9 || _CLSA->Linefindcount_y22 != 9)){
+		_CLSA->Linefindcount_x1 = 0, _CLSA->Linefindcount_y1 = 0, _CLSA->Linefindcount_x2 = 0, _CLSA->Linefindcount_y2 = 0;
+		_CLSA->Linefindcount_x11 = 0, _CLSA->Linefindcount_y11 = 0, _CLSA->Linefindcount_x22 = 0, _CLSA->Linefindcount_y22 = 0;
+		_CLSA->refine = false;
+	}
+	
 	// 영상 이진화.
 	_CLSA->GrayImageBinarization(src);
 
@@ -574,6 +581,8 @@ void ChessRecognition::Chess_recognition_process(IplImage *src, vector<ChessPoin
 	if (_CLSA->true_line_point_x1.size() == 9 && _CLSA->true_line_point_x2.size() ==  9 && _CLSA->true_line_point_y1.size() == 9 && _CLSA->true_line_point_y2.size() == 9) {
 		// 각 찾은 경계점들의 수직이 되는 점 모두의 교차점을 찾는다.
 		_CLSA->GetInCrossPoint(src, point);
+
+		_CLSA->refine = true;
 	}
 	else /*if (_CLSA->in_line_point_x1.size() != 9 || _CLSA->in_line_point_x2.size() != 9 || _CLSA->in_line_point_x1.size() != 9 || _CLSA->in_line_point_x2.size() != 9) */{
 

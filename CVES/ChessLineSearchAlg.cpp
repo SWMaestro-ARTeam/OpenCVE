@@ -28,6 +28,8 @@
 ChessLineSearchAlg::ChessLineSearchAlg() {
 	Linefindcount_x1 = 0, Linefindcount_y1 = 0, Linefindcount_x2 = 0, Linefindcount_y2 = 0;
 	Linefindcount_x11 = 0, Linefindcount_y11 = 0, Linefindcount_x22 = 0, Linefindcount_y22 = 0;
+
+	refine == false;
 }
 
 ChessLineSearchAlg::~ChessLineSearchAlg() {
@@ -225,11 +227,12 @@ void ChessLineSearchAlg::GetInCrossPoint(IplImage *chess_image, vector<ChessPoin
 	// 찾은 모든 경계점들을 수직이 되는 라인의 경계점들과의 모든 교차점을 찾는다.
 	// 9 * 9 = 81
 	// 그후 모든 교차점을 point 변수에 넣는다.
-	MyLinePoint t_in_line_point_x, t_in_line_point_y;
-	MyPoint t_in_point;
 
 	for (register int i = 0; i < true_line_point_x1.size(); i++) {
 		for (register int j = 0; j < true_line_point_x1.size(); j++) {
+
+			MyLinePoint t_in_line_point_x, t_in_line_point_y;
+			MyPoint t_in_point;
 
 			// 같은 축의 라인의 양끝을 이은 직선을 구해 수직이 되는 라인과의 교차점을 찾아
 			// 반환해 주는 point에 push한다
@@ -397,7 +400,7 @@ void ChessLineSearchAlg::GrayImageBinarization(IplImage *gray_image) {
 			int index = i + (j * gray_image->widthStep);
 
 			// 해당 위치의 grayscale을 T값을 기준으로 이진화를 결정한다 
-			gray_image->imageData[index] = Getgrayscale(gray_image, i, j) > T ? 255 : 0;
+			gray_image->imageData[index] = Getgrayscale(gray_image, i, j) > T - 20 ? 255 : 0;
 		}
 	}
 }
@@ -565,12 +568,12 @@ void ChessLineSearchAlg::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *
 
 			// _TT는 각 라인의 중심에서 양쪽으로 뻗어나가며 찾은 경계점들이 순차적으로 push가 되어있으므로 자신과 그 이후에 탐색된 점과 비교를 한다
 
-			if (abs(_TT_in1[i].x - _TT_in1[i + 1].x) < 30 || abs(_TT_in1[i].x - _TT_in1[i + 1].x) > 60) {
+			if (abs(_TT_in1[i].x - _TT_in1[i + 1].x) < 30 || abs(_TT_in1[i].x - _TT_in1[i + 1].x) > 50) {
 				SumFlag = false;
 			}
 		}
 		for (register int i = 0; i < _TT_in2.size() - 1; i++) {
-			if (abs(_TT_in2[i].x - _TT_in2[i + 1].x) < 30 || abs(_TT_in2[i].x - _TT_in2[i + 1].x) > 60) {
+			if (abs(_TT_in2[i].x - _TT_in2[i + 1].x) < 30 || abs(_TT_in2[i].x - _TT_in2[i + 1].x) > 50) {
 				SumFlag = false;
 			}
 		}
@@ -580,12 +583,12 @@ void ChessLineSearchAlg::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *
 	}
 	else if (!XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)) {
 		for (register int i = 0; i < _TT_in1.size() - 1; i++) {
-			if (abs(_TT_in1[i].y - _TT_in1[i + 1].y) < 30 || abs(_TT_in1[i].y - _TT_in1[i + 1].y) > 60) {
+			if (abs(_TT_in1[i].y - _TT_in1[i + 1].y) < 30 || abs(_TT_in1[i].y - _TT_in1[i + 1].y) > 50) {
 				SumFlag = false;
 			}
 		}
 		for (register int i = 0; i <_TT_in2.size() - 1; i++) {
-			if (abs(_TT_in2[i].y - _TT_in2[i + 1].y) < 30 || abs(_TT_in2[i].y - _TT_in2[i + 1].y) > 60) {
+			if (abs(_TT_in2[i].y - _TT_in2[i + 1].y) < 30 || abs(_TT_in2[i].y - _TT_in2[i + 1].y) > 50) {
 				SumFlag = false;
 			}
 		}
@@ -596,55 +599,61 @@ void ChessLineSearchAlg::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *
 
 	//
 
+	int _TT_in1_dist = 0, _TT_in2_dist = 0;
+
 	if (XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)) {
 		for (register int i = 0; i < _TT_in1.size() - 1; i++) {
 
-			if(_TT_in1_avg != 0 && abs(_TT_in1_avg - abs(_TT_in1[i].x - _TT_in1[i + 1].x)) > 3){
+			if(_TT_in1_avg != 0 && abs(_TT_in1_avg - abs(_TT_in1[i].x - _TT_in1[i + 1].x)) > 5){
 				_TT_in1[i + 1].x = _TT_in1[i].x + _TT_in1_avg;
 			}
 			else if(_TT_in1_avg == 0){
 				_TT_in1_avg += abs(_TT_in1[i].x - _TT_in1[i + 1].x);
 			}
 			else if(_TT_in1_avg != 0){
-				_TT_in1_avg = (_TT_in1_avg + abs(_TT_in1[i].x - _TT_in1[i + 1].x))/2;
+				_TT_in1_avg = abs(_TT_in1[i].x - _TT_in1[i + 1].x);
+				
 			}
 		}
 		for (register int i = 0; i < _TT_in2.size() - 1; i++) {
 
-			if(_TT_in2_avg != 0 && abs(_TT_in2_avg - abs(_TT_in2[i].x - _TT_in2[i + 1].x)) > 3){
+			if(_TT_in2_avg != 0 && abs(_TT_in2_avg - abs(_TT_in2[i].x - _TT_in2[i + 1].x)) > 5){
 				_TT_in2[i + 1].x = _TT_in2[i].x + _TT_in2_avg;
 			}
 			else if(_TT_in2_avg == 0){
 				_TT_in2_avg -= abs(_TT_in2[i].x - _TT_in2[i + 1].x);
 			}
 			else if(_TT_in2_avg != 0){
-				_TT_in2_avg = (_TT_in2_avg + abs(_TT_in2[i].x - _TT_in2[i + 1].x))/2;
+				_TT_in2_avg = abs(_TT_in2[i].x - _TT_in2[i + 1].x);
+				
 			}
 		}
 	}
 	else if (!XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)) {
 		for (register int i = 0; i < _TT_in1.size() - 1; i++) {
 
-			if(_TT_in1_avg != 0 && abs(_TT_in1_avg - abs(_TT_in1[i].y - _TT_in1[i + 1].y)) > 3){
+			if(_TT_in1_avg != 0 && abs(_TT_in1_avg - abs(_TT_in1[i].y - _TT_in1[i + 1].y)) > 10){
 				_TT_in1[i + 1].y = _TT_in1[i].y + _TT_in1_avg;
 			}
 			else if(_TT_in1_avg == 0){
 				_TT_in1_avg += abs(_TT_in1[i].y - _TT_in1[i + 1].y);
 			}
 			else if(_TT_in1_avg != 0){
-				_TT_in1_avg = (_TT_in1_avg + abs(_TT_in1[i].y - _TT_in1[i + 1].y))/2;
+				_TT_in1_avg = abs(_TT_in1[i].y - _TT_in1[i + 1].y) - abs(_TT_in1_avg - abs(_TT_in1[i].y - _TT_in1[i + 1].y));
+				
 			}
 		}
 		for (register int i = 0; i <_TT_in2.size() - 1; i++) {
 
-			if(_TT_in2_avg != 0 && abs(_TT_in2_avg - abs(_TT_in2[i].y - _TT_in2[i + 1].y)) > 3){
+			if(_TT_in2_avg != 0 && abs(_TT_in2_avg - abs(_TT_in2[i].y - _TT_in2[i + 1].y)) > 10){
 				_TT_in2[i + 1].y = _TT_in2[i].y + _TT_in2_avg;
 			}
 			else if(_TT_in2_avg == 0){
 				_TT_in2_avg -= abs(_TT_in2[i].y - _TT_in2[i + 1].y);
 			}
 			else if(_TT_in2_avg != 0){
-				_TT_in2_avg = (_TT_in2_avg + abs(_TT_in2[i].y - _TT_in2[i + 1].y))/2;
+				_TT_in2_avg = abs(_TT_in2[i].y - _TT_in2[i + 1].y) + abs(_TT_in2_avg - abs(_TT_in2[i].y - _TT_in2[i + 1].y));
+				
 			}
 		}
 	}
@@ -672,7 +681,6 @@ void ChessLineSearchAlg::MemoryClear() {
 	in_line_point_x1.clear(), in_line_point_x2.clear(), in_line_point_y1.clear(), in_line_point_y2.clear(), in_line_point_x11.clear(), in_line_point_x22.clear(), in_line_point_y11.clear(), in_line_point_y22.clear();
 
 	true_line_point_x1.clear(), true_line_point_x2.clear(), true_line_point_y1.clear(), true_line_point_y2.clear();
-
 }
 
 
