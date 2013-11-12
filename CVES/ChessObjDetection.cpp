@@ -12,6 +12,7 @@ ChessObjDetection::ChessObjDetection(void)
 	_thickness = 20;
 
 	_score_threshold = 0.01;
+	_sub_threshold = 0.01;
 }
 
 
@@ -25,29 +26,7 @@ void ChessObjDetection::SetCannyThreshold( int Low, int High )
 	_Canny_HighThreshold = High;
 }
 
-void ChessObjDetection::ConvertHplane( IplImage *src )
-{
-	IplImage *temp_src = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 3);
-
-	cvCvtColor(src, temp_src, CV_BGR2HSV);
-	cvSetImageCOI(temp_src, 1);
-	cvCopy(temp_src, _H_Plane);
-
-	cvReleaseImage(&temp_src);
-}
-
-void ChessObjDetection::ConvertSplane( IplImage *src )
-{
-	IplImage *temp_src = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 3);
-
-	cvCvtColor(src, temp_src, CV_BGR2HSV);
-	cvSetImageCOI(temp_src, 2);
-	cvCopy(temp_src, _S_Plane);
-
-	cvReleaseImage(&temp_src);
-}
-
-void ChessObjDetection::DetectObj( IplImage *src, vector<_ChessPoint> _cross_point )
+void ChessObjDetection::DetectScore( IplImage *src, vector<_ChessPoint> _cross_point, float score_out[][8] )
 {
 	if(_cross_point.size() != 0){
 		IplImage *brightHigh_Canny = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 1);
@@ -75,6 +54,11 @@ void ChessObjDetection::DetectObj( IplImage *src, vector<_ChessPoint> _cross_poi
 
 		// 스코어 thresholding
 		Thresholding_score(score_board, _score_threshold);
+
+		// 출력으로 복사
+		for(int i = 0; i < 8; i++)
+			for(int j = 0; j < 8; j++)
+				score_out[i][j] = score_board[i][j];
 
 #ifdef DEBUG_MODE
 		cvShowImage("Add_Canny", Add_Canny);
@@ -179,3 +163,88 @@ void ChessObjDetection::SetScoreThreshold( int threshold )
 {
 	_score_threshold = threshold;
 }
+
+void ChessObjDetection::DetectMovement( float score_before[][8], float score_after[][8], CvPoint out[] )
+{
+	float sub_score[8][8];
+
+	// 스코어를 면적으로 나눠줘서 비율을 구함.
+	// 가장 비율이 큰 두 좌표를 리턴. -> num 개의 좌표를 리턴
+	float temp_max[4];
+	CvPoint p_max[4];
+
+	// 초기화
+	for (register int i = 0; i < 4; i++){
+		p_max[i] = cvPoint(-1,-1);
+		temp_max[i] = -1.0;
+	}
+
+	// 스코어 차이값 연산부
+	for(int i = 0; i < 8; i++)
+		for(int j = 0; j < 8; j++)
+			sub_score[i][j] = fabs(score_before[i][j] - score_after[i][j]);
+
+	//0번지부터 큰순으로 연산한 결과 저장
+	for (register int i = 0 ; i < 8; i++) {
+		for (register int j = 0; j < 8; j++) {
+
+			if(_sub_threshold <= sub_score[i][j]){
+				if(temp_max[0] <= sub_score[i][j]){
+					temp_max[3] = temp_max[2];
+					temp_max[2] = temp_max[1];
+					temp_max[1] = temp_max[0];
+					temp_max[0] = sub_score[i][j];
+
+					p_max[3] = p_max[2];
+					p_max[2] = p_max[1];
+					p_max[1] = p_max[0];
+					p_max[0] = cvPoint(i,j);
+				}
+				else if(temp_max[0] > sub_score[i][j] && sub_score[i][j] >= temp_max[1]) {
+					temp_max[3] = temp_max[2];
+					temp_max[2] = temp_max[1];
+					temp_max[1] = sub_score[i][j];
+
+					p_max[3] = p_max[2];
+					p_max[2] = p_max[1];
+					p_max[1] = cvPoint(i,j);
+				}
+				else if(temp_max[1] > sub_score[i][j] && sub_score[i][j] >= temp_max[2]) {
+					temp_max[3] = temp_max[2];
+					temp_max[2] = sub_score[i][j];
+
+					p_max[3] = p_max[2];
+					p_max[2] = cvPoint(i,j);
+				}
+				else if(temp_max[2] > sub_score[i][j] && sub_score[i][j] >= temp_max[3]) {
+					temp_max[3] = sub_score[i][j];
+
+					p_max[3] = cvPoint(i,j);
+				}
+			}
+		}
+	}
+
+	//4개에 할당
+	for (register int i = 0; i < 4; i++){
+		out[i] = p_max[i];
+	}
+}
+
+void ChessObjDetection::SetSubThreshold( int threshold )
+{
+	_sub_threshold = threshold;
+}
+
+void ChessObjDetection::Get_Movement( IplImage *before, IplImage *after, vector<_ChessPoint> _cross_point, CvPoint out[] )
+{
+	float before_score[8][8], after_score[8][8];
+
+	//이전 영상과 이후 영상의 스코어를 계산
+	DetectScore(before, _cross_point, before_score);
+	DetectScore(after, _cross_point, after_score);
+
+	//움직임 계산
+	DetectMovement(before_score, after_score, out);
+}
+

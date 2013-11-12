@@ -186,7 +186,7 @@ void EngineS::Sub_image(IplImage *src1, IplImage *src2, IplImage *dst) {
 			unsigned char SUB_a = abs((unsigned char)Lab_src1->imageData[(i * 3) + (j * Lab_src1->widthStep) + 1] - (unsigned char)Lab_src2->imageData[(i * 3) + (j * Lab_src2->widthStep) + 1]);
 			unsigned char SUB_b = abs((unsigned char)Lab_src1->imageData[(i * 3) + (j * Lab_src1->widthStep) + 2] - (unsigned char)Lab_src2->imageData[(i * 3) + (j * Lab_src2->widthStep) + 2]);
 
-			/*if ((SUB_L > SUB_THRESHOLD) && (SUB_a > SUB_THRESHOLD || SUB_b > SUB_THRESHOLD)) {
+			/*if ((SUB_L > SUB_LabTHRESHOLD*5) && (SUB_a > SUB_LabTHRESHOLD || SUB_b > SUB_LabTHRESHOLD)) {
 				dst->imageData[i + (j * dst->widthStep)] = (unsigned char)255;
 			}*/
 			if (SUB_L > SUB_THRESHOLD || SUB_a > SUB_THRESHOLD || SUB_b > SUB_THRESHOLD) {
@@ -354,6 +354,7 @@ void EngineS::imgproc_mode(){
 			Inter_imageCraete(_ROIRect.width, _ROIRect.height);
 		}
 		cvSetImageROI(_CamOriginalImage, _ROIRect);
+		cvSmooth(_CamOriginalImage, _CamOriginalImage, CV_MEDIAN);
 		cvCopy(_CamOriginalImage, _ImageChess);
 		cvCopy(_CamOriginalImage, _PureImage);
 		
@@ -368,12 +369,12 @@ void EngineS::imgproc_mode(){
 
 		// mode 1에서 2초 이상 지났을 경우 다음 모드로 진행
 		if (time(NULL) - _TTempSec > 2) {
-			//_ImageProcessMode++;
+			_ImageProcessMode++;
 			_RGB = cvScalar(0, 255);
 		}
 
-		cvSmooth(_PureImage,_PureImage, CV_MEDIAN);
-		_ChessObjDetect.DetectObj(_PureImage, _CrossPoint);
+		/*float temp_score[8][8];
+		_ChessObjDetect.DetectScore(_PureImage, _CrossPoint, temp_score);*/
 
 		// fps 계산.
 		_TTick = GetTickCount() - _TTick;
@@ -391,6 +392,7 @@ void EngineS::imgproc_mode(){
 
 		// 관심 영역 설정
 		cvSetImageROI(_CamOriginalImage, _ROIRect);
+		cvSmooth(_CamOriginalImage, _CamOriginalImage, CV_MEDIAN);
 		cvCopy(_CamOriginalImage, _ImageChess); // 이미지 처리에 사용될 이미지 복사 - 관심영역 크기의 이미지
 		cvCopy(_CamOriginalImage, _PureImage); // 원본 이미지 - 관심영역 크기의 이미지
 
@@ -430,7 +432,7 @@ void EngineS::imgproc_mode(){
 				// 오브젝트 디텍션에 사용되는 차영상 연산 수행
 				Sub_image(_PrevImage, _ImageChess, _ImageSkin);
 				// 차영상 결과를 이미지 처리에 사용되는 이미지로 색 부여
-				Compose_diffImage(_ImageChess, _ImageSkin, cvScalar(0, 255, 255));
+				/*Compose_diffImage(_ImageChess, _ImageSkin, cvScalar(0, 255, 255));*/
 
 				// BlobLabeling
 				_BlobLabeling.SetParam(_ImageSkin, 1);
@@ -460,7 +462,8 @@ void EngineS::imgproc_mode(){
 					CvPoint out[4];
 					out[0] = out[1] = out[2] = out[3] = cvPoint(-1, -1);
 					// 체스말의 움직임을 계산.
-					_CheckInChess->Calculate_Movement(_OtherBinaryImage, _CrossPoint, out);
+					//_CheckInChess->Calculate_Movement(_OtherBinaryImage, _CrossPoint, out);
+					_ChessObjDetect.Get_Movement(_PrevImage, _PureImage, _CrossPoint, out);
 
 					// 디텍션 된 결과가 두개 이상 존재한다면 실행
 					if (out[0].x != -1 && out[1].x != -1) {
@@ -476,7 +479,7 @@ void EngineS::imgproc_mode(){
 						for(int i = 0; i < 4; i++){
 							if(out[i].x != -1){
 								out_count++;
-								//printf("(%d, %d)\n", out[i].x, out[i].y);
+								printf("(%d, %d)\n", out[i].x, out[i].y);
 							}
 						}
 						predicted_mode = (out_count < predicted_mode ? out_count : predicted_mode);
