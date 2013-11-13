@@ -33,11 +33,11 @@
 
 #include <mutex>
 
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 #include <Windows.h>
 #include <process.h>
 //#include <thread>
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 
 #endif
 
@@ -55,9 +55,9 @@ private:
 	vector<ChessPoint> _CP; // 교점
 	//vector<std::pair<float, float> > vec_LineX, vec_LineY; // 라인 : <rho, theta>
 	IplImage *img_process; // 체스보드 인식에 사용되는 내부 연산 이미지.
-	HANDLE hThread;
+	//HANDLE hThread;
 	mutex _CSProtectionMutex;
-	mutex _Vec_CSProtectionMutex;
+	mutex _Vec_ProtectionMutex;
 
 	// 점 그리기.
 	void DrawPoints(IplImage *Source, vector<ChessPoint> Point);
@@ -67,8 +67,37 @@ private:
 	void Refine_CrossPoint(vector<ChessPoint> *point);
 
 	// Thread 함수에 대해서는 나중에 수정 하기로 함.
-	static UINT WINAPI thread_hough(void *arg); // 쓰레드 함수.
-	static UINT WINAPI thread_ChessLineSearchAlg(void *arg);
+	static
+#if defined(WINDOWS_SYS)
+		UINT WINAPI
+		//DWORD WINAPI
+#elif defined(POSIX_SYS)
+		// using pthread
+		void *
+#endif
+		thread_hough(
+#if defined(WINDOWS_SYS)
+		LPVOID
+#elif defined(POSIX_SYS)
+		void *
+#endif
+		arg); // 쓰레드 함수.
+	
+	static
+#if defined(WINDOWS_SYS)
+		UINT WINAPI
+		//DWORD WINAPI
+#elif defined(POSIX_SYS)
+		// using pthread
+		void *
+#endif
+		thread_ChessLineSearchAlg(
+#if defined(WINDOWS_SYS)
+		LPVOID
+#elif defined(POSIX_SYS)
+		void *
+#endif
+		arg);
 	//CRITICAL_SECTION cs, vec_cs; // thread 동기화를 위한 cs
 public:
 	ChessRecognition();

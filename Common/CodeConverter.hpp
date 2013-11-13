@@ -28,7 +28,7 @@
 
 #include "SystemDependency.hpp"
 
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 //	#ifdef _AFXDLL
 //#include <afxwin.h>
 //	#else

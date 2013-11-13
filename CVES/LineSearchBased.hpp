@@ -29,10 +29,10 @@
 #include "SystemDependency.hpp"
 #include "CVESDependent.hpp"
 
-#ifdef WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 #include <windows.h>
 #include <process.h>
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 
 #endif
 
@@ -99,17 +99,17 @@ private:
 	MyPoint setMyPoint(int x, int y);
 
 	static
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 		UINT WINAPI
 		//DWORD WINAPI
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 		// using pthread
 		void *
 #endif
 		GraySideLinesPointThread(
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 		LPVOID
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 		void *
 #endif
 		Param);

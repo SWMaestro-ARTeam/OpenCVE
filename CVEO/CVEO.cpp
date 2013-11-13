@@ -2,7 +2,7 @@
 //	The OpenCVE Project.
 //
 //	The MIT License (MIT)
-//	Copyright ⓒ 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
+//	Copyright © 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
 //	{invi.dh.kim, munsp9103, aiaipming} at gmail.com
 //
 //	Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -23,31 +23,17 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef CELESTIALS_H
-#define CELESTIALS_H
+#include "CVEO.hpp"
+#include "ui_CVEO.h"
 
-#include "EngineS.hpp"
-#include "EngineC.hpp"
-
-#include <QMainWindow>
-
-#include <qglobal.h>
-namespace Ui {
-	class Celestials;
+CVEO::CVEO(QWidget *parent) :
+QMainWindow(parent),
+ui(new Ui::CVEO)
+{
+	ui->setupUi(this);
 }
 
-class Celestials : public QMainWindow
+CVEO::~CVEO()
 {
-	Q_OBJECT
-
-private:
-	Ui::Celestials *ui;
-
-public:
-	explicit Celestials(QWidget *parent = 0);
-	~Celestials();
-
-	EngineS *_EngineS;
-};
-
-#endif // CELESTIALS_H
+	delete ui;
+}

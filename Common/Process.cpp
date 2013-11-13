@@ -29,7 +29,7 @@
 #define STRSAFE_LIB
 #include <strsafe.h>
 
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 #pragma region Windows Process Module
 HMODULE WindowsProcess::NtDLLOpen() {
 	CodeConverter _TCodeConverter;
@@ -322,7 +322,7 @@ void WindowsProcess::TerminateProcess(HANDLE ProcessPID) {
 
 
 #pragma endregion Windows Process Module
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 #pragma region POSIX Process Module
 bool POSIXProcess::GetProcessInformations() {
 
@@ -334,39 +334,40 @@ bool POSIXProcess::GetProcessInformations() {
 Process *G_Process;
 
 Process::Process() {
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	_ProcessHandle = NULL;
 	_ModuleHandle = NULL;
 	_PBI = NULL;
 	_Size = 0;
 	_Status = 0;
 	//_PE32 = {0};
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 #endif
 	G_Process = this;
 }
 
 Process::~Process() {
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	_ProcessHandle = NULL;
 	_ModuleHandle = NULL;
 	_PBI = NULL;
 	_Size = 0;
 	_Status = 0;
 	//_PE32 = {0};
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
+
 #endif
 	G_Process = NULL;
 }
 
 bool Process::FindProcess(
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	DWORD
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 	unsigned long
 #endif
 	PID, char *ProcessName) {
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 		HANDLE _TModuleSnap = NULL; 
 		MODULEENTRY32 _TME32 = {0};
 
@@ -388,25 +389,25 @@ bool Process::FindProcess(
 		}
 
 		CloseHandle(_TModuleSnap);
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 
 #endif
 		return false;
 }
 
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 HANDLE
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 unsigned long
 #endif
 	Process::FindHandleGetOneProcess(
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	DWORD
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 	unsigned long
 #endif
 	PID) {
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 		HANDLE _TModuleSnap = NULL; 
 		MODULEENTRY32 _TME32 = {0};
 
@@ -430,14 +431,14 @@ unsigned long
 		}
 
 		CloseHandle(_TModuleSnap);
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 
 #endif
 		return false;
 }
 
 bool Process::CheckProcessExistByFileName(char *ProcessName){
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	_ProcessHandle = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 	_ProcessEntry32.dwSize = sizeof(PROCESSENTRY32);
 
@@ -455,7 +456,7 @@ bool Process::CheckProcessExistByFileName(char *ProcessName){
 	}
 
 	CloseHandle(_ProcessHandle);
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 
 #endif
 	return false;
@@ -463,7 +464,7 @@ bool Process::CheckProcessExistByFileName(char *ProcessName){
 
 int Process::CheckProcessExistByNumberOfExists(char *ProcessName) {
 	int _TProcessNumber = 0;
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	_ProcessHandle = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 	_ProcessEntry32.dwSize = sizeof(PROCESSENTRY32);
 
@@ -481,29 +482,29 @@ int Process::CheckProcessExistByNumberOfExists(char *ProcessName) {
 	}
 
 	CloseHandle(_ProcessHandle);
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 
 #endif
 	return _TProcessNumber;
 }
 
 list<
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	SProcessInformations
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 
 #endif
 > Process::GetProcessInformations() {
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	WindowsProcess 
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 	POSIXProcess
 #endif
 		_TProcess;
 	list<
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 		SProcessInformations
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 
 #endif
 	> _TSProcessInformationsList;
@@ -532,17 +533,17 @@ list<
 
 #pragma region Exec Process thread
 // Exec Process thread
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 UINT WINAPI
 	//DWORD WINAPI
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 // using pthread
 void *
 #endif
 	Process::ExecProcessLoopThread(
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	LPVOID
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 	void *
 #endif
 	Param) {
@@ -550,22 +551,22 @@ void *
 		CodeConverter _TCodeConverter;
 
 		//while (1) {
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 		STARTUPINFO _TStartUpInfo;
 		PROCESS_INFORMATION _TProcessInfo;
 
 		ZeroMemory(&_TStartUpInfo, sizeof(_TStartUpInfo));
 		_TStartUpInfo.cb = sizeof(_TStartUpInfo);
 		ZeroMemory(&_TProcessInfo, sizeof(_TProcessInfo));
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 
 #endif
 		// Start the child process. 
 		if (
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 			!CreateProcess(
 			NULL, // No module name (use command line).
-#if UNICODE
+#if defined(UNICODE) || defined(_UNICODE)
 			(LPWSTR)_TCodeConverter.CharToWChar(_TStr), // Command line.
 #else
 			(LPCSTR)_TStr
@@ -579,7 +580,7 @@ void *
 			&_TStartUpInfo, // Pointer to STARTUPINFO structure.
 			&_TProcessInfo // Pointer to PROCESS_INFORMATION structure.
 			)
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 
 #endif
 			) {
@@ -591,18 +592,18 @@ void *
 
 		// Wait until child process exits.
 		// 무한정 기다리다가 프로세스가 죽으면 이 이후로 통과할 것이다.
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 		// Process가 죽을때까지 기다린다.
 		WaitForSingleObject(_TProcessInfo.hProcess, INFINITE);
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 		// pthread_join(_Thread, NULL);
 #endif
 
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 		// Close process and thread handles. 
 		CloseHandle(_TProcessInfo.hProcess);
 		CloseHandle(_TProcessInfo.hThread);
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 		// No handle in POSIX Thread.
 #endif
 		//}
@@ -613,13 +614,13 @@ void *
 #pragma endregion Exec Process thread
 
 void Process::CreateProcessOnThread(char *ProcessName) {
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	//#ifdef _AFXDLL
 	//DWORD _TThreadID = 0;
 	//CreateThread(NULL, 0, ExecProcessLoopThread, (LPVOID)ProcessName, 0, &_TThreadID);
 	HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, ExecProcessLoopThread, (LPVOID)ProcessName, 0, NULL);
 	//#endif
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 	pthread_t _TThread;
 	pthread_attr_t _TThreadAttr;
 	// pthread attribute initialize.
@@ -633,21 +634,21 @@ void Process::CreateProcessOnThread(char *ProcessName) {
 #endif
 }
 
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 DWORD
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 unsigned long
 #endif
 	Process::GetProcessStatus(
-#if	WINDOWS_SYS 
+#if	defined(WINDOWS_SYS)
 	HANDLE
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 
 #endif
 	ProcessHandle) {
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 		WindowsProcess 
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 		POSIXProcess
 #endif
 			_TProcess;
@@ -655,15 +656,15 @@ unsigned long
 }
 
 void Process::TerminateProcess(
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	HANDLE
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 
 #endif
 	ProcessHandle) {
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 		WindowsProcess 
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 		POSIXProcess
 #endif
 			_TProcess;

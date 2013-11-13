@@ -23,142 +23,57 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-//#include <EngineC.hpp>
-//#include <EngineS.hpp>
+#include "SystemDependency.hpp"
+
+//#if MAKE_CELESTIALS == 1
+#include "AdapterC.hpp"
+#include "AdapterS.hpp"
+#include "AdapterO.hpp"
+//#include "AdapterA.hpp"
 
 #include <string.h>
 #include <string>
 
-//#include "ExtendedBlackBox.hpp"
-
-#include "Celestials.h"
-#include <QApplication>
-
-int GoCVEC() {
-	int _TApplicationReturnValue = 0;
-	// 1. CVEC Engine 생성.
-	EngineC *_EngineC = new EngineC();
-	// 2. Engine Enable.
-	_EngineC->EngineEnable = true;
-	// 3. Engine Start.
-	_EngineC->EngineC_Start();
-
-	// 4. Delete pointer.
-	delete _EngineC;
-	return _TApplicationReturnValue;
-}
-
-int GoCVES(int argc, char *argv[]) {
-	int _TApplicationReturnValue = 0;
-	QApplication a(argc, argv);
-	Celestials w;
-	// 1. CVES Engine 생성.
-	EngineS *_EngineS = new EngineS();
-	w._EngineS = _EngineS;
-	// CVES View 보여주기.
-	w.show();
-
-	// 2. Engine Enable.
-	w._EngineS->EngineEnable = true;
-	// 3. Engine Start.
-	w._EngineS->EngineS_Start();
-	_TApplicationReturnValue = a.exec();
-
-	// 4. Delete pointer.
-	delete _EngineS;
-	return _TApplicationReturnValue;
-}
-
-int GoCVEO() {
-	int _TApplicationReturnValue = 0;
-	// 아직 미구현.
-
-	return _TApplicationReturnValue;
+void Celestials_Manual() {
+	// 여기에 Manual을 만들어야 한다.
+	fprintf(stdout, "Hello~!\n");
 }
 
 // 통합 Engine 구현(CVEC, CVES, CVEO).
 int main(int argc, char *argv[]) {
 	int _TApplicationReturnValue = 0;
 
-	/*
-	static std::map<string, int> _TMap;
-	static bool _TInit = false;
-	bool _TLoop = true;
-	while (_TLoop)
-	{
-		int _TNumberOfStr = -1;
-		if (_TInit) {
-			_TNumberOfStr = _TMap[string((char *)argv[1])];
-			_TLoop = false;
-		}
-
-		switch (_TNumberOfStr)
-		{
-			case -1: {
-
-			}
-			// Server
-			case __LINE__:
-				if (!_TInit)
-					_TMap["/Server"] = __LINE__;
-				else {
-
-				}
-			// Client
-			case __LINE__:
-				if (!_TInit)
-					_TMap["/Client"] = __LINE__;
-				else {
-
-				}
-			// Observer
-			case __LINE__:
-				if (!_TInit)
-					_TMap["/Observer"] = __LINE__;
-				else {
-
-				}
-			// Default
-			case 0:
-			default:
-				if (_TInit) {
-
-				}
-		}
-		if (!_TInit)
-			_TInit = true;
-	}
-	*/
-	/*
-	char _TCharBuff[20];
-	memset(_TCharBuff, ZERO_, sizeof(_TCharBuff));
-	if (argv[1] == NULL)
-		return 0;
-	else
-		sprintf(_TCharBuff, "%s", argv[1]);
-	string _TStr = string((char *)argv[1]);
-	if (_TStr.empty())
-		return 0;
-
-	printf("On");
-	*/
-	if (argc > 1) {
-		STRING_SWITCH_BEGIN(string((char *)argv[1]))
+	if (argc > 0/*1*/) {
+		//STRING_SWITCH_BEGIN(string((char *)argv[1]))
+		STRING_SWITCH_BEGIN(string("/Client"))
 		{
 			CASE("/Server")
-				_TApplicationReturnValue = GoCVES(argc, argv);
+				AdapterS _TAdapterS;
+				_TApplicationReturnValue = _TAdapterS.Go_EngineS(argc, argv);
 				break;
 			CASE("/Client")
-				_TApplicationReturnValue = GoCVEC();
+				AdapterC _TAdapterC;
+				_TApplicationReturnValue = _TAdapterC.Go_EngineC();
 				break;
 			CASE("/Observer")
-				_TApplicationReturnValue = GoCVEO();
+				AdapterO _TAdapterO;
+				_TApplicationReturnValue = _TAdapterO.Go_EngineO(argc, argv);
 				break;
-			//DEFAULT()
-			//	fprintf(stdout, "Invaild Command.");
+			CASE("/AIAdapter")
+//				AdapterA _TAdapterA;
+//				_TApplicationReturnValue = _TAdapterA.Go_EngineA();
+				break;
+			CASE("--help")
+				Celestials_Manual();
+				break;
+			DEFAULT()
+				fprintf(stdout, "Invaild Command.\n");
 		}
 		STRING_SWITCH_END()
 	}
-
+	else {
+		fprintf(stdout, "Using *Celestials --help*\n");
+	}
 	return _TApplicationReturnValue;
 }
+//#endif

@@ -2,7 +2,7 @@
 //	The OpenCVE Project.
 //
 //	The MIT License (MIT)
-//	Copyright ⓒ 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
+//	Copyright © 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
 //	{invi.dh.kim, munsp9103, aiaipming} at gmail.com
 //
 //	Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -23,69 +23,26 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#include "ApplicationsMain.h"
+#include "AdapterC.hpp"
 
-Celestials *G_Celestials;
+int AdapterC::Go_EngineC() {
+	EngineC *_EngineC;
 
-ServerInitThread::ServerInitThread() {
-}
-
-void ServerInitThread::run() {
-	//Celestials w;
-	// 1. CVES Engine 생성.
-	//EngineS *_EngineS = new EngineS();
-	//G_Celestials._EngineS = _EngineS;
-	// CVES View 보여주기.
-
-	// 2. Engine Enable.
-	G_Celestials->_EngineS->EngineEnable = true;
-	// 3. Engine Start.
-	G_Celestials->_EngineS->EngineS_Start();
-	delete G_Celestials->_EngineS;
-}
-
-ApplicationsMain::ApplicationsMain() {
-	G_Celestials = new Celestials();
-}
-
-int ApplicationsMain::GoCVEC() {
-	int _TApplicationReturnValue = 0;
 	// 1. CVEC Engine 생성.
-	EngineC *_EngineC = new EngineC();
+	_EngineC = new EngineC();
 	// 2. Engine Enable.
 	_EngineC->EngineEnable = true;
 	// 3. Engine Start.
 	_EngineC->EngineC_Start();
 
+	// Thread 처리 할 경우 Main Application이 Thread보다 먼저 죽어버리는 경우가 발생하므로,
+	// 이를 방지하기 위해 Engine이 Enable일 때까지 계속 멈춰 있게 하여야 한다.
+	// Main Thread가 Worker보다 빨리 떨어지는걸 방지하기 위해 Sleep 10을 줌.
+	while (_EngineC->EngineEnable)
+		Sleep(10);
+
 	// 4. Delete pointer.
 	delete _EngineC;
-	return _TApplicationReturnValue;
-}
 
-int ApplicationsMain::GoCVES(int argc, char *argv[]) {
-	int _TApplicationReturnValue = 0;
-	// 1. CVES Engine 생성.
-	_EngineS = new EngineS();
-	G_Celestials->_EngineS = _EngineS;
-	G_Celestials->show();
-	QApplication a(argc, argv);
-
-	_ServerInitThread.start();
-
-	// 2. Engine Enable.
-	//_Celestials._EngineS->EngineEnable = true;
-	// 3. Engine Start.
-	//w._EngineS->EngineS_Start();
-	_TApplicationReturnValue = a.exec();
-
-	// 4. Delete pointer.
-//	delete _EngineS;
-	return _TApplicationReturnValue;
-}
-
-int ApplicationsMain::GoCVEO() {
-	int _TApplicationReturnValue = 0;
-	// 아직 미구현.
-
-	return _TApplicationReturnValue;
+	return 0;
 }

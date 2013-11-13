@@ -29,24 +29,26 @@
 #include "SystemDependency.hpp"
 
 // File 처리를 위한 값.
-#if WINDOWS_SYS
-	#if USING_QT
+#if defined(WINDOWS_SYS)
+	#if defined(USING_QT)
 	#define CELESTIALS_EXEC_FILENAME "Celestials.exe"
 	#else
 #define SERVER_ENGINE_EXEC_FILENAME "CVES.exe"
 #define CLIENT_ENGINE_EXEC_FILENAME "CVEC.exe"
 #define OBSERVER_ENGINE_EXEC_FILENAME "CVEO.exe"
+#define AIADAPTER_ENGINE_EXEC_FILENAME "CVEA.exe"
 	#endif
-#elif POSIX_SYS
-	#if USING_QT
+#elif defined(POSIX_SYS)
+	#if defined(USING_QT)
 	#define CELESTIALS_EXEC_FILENAME "Celestials"
 	#endif
 #define SERVER_ENGINE_EXEC_FILENAME "CVES"
 #define CLIENT_ENGINE_EXEC_FILENAME "CVEC"
 #define OBSERVER_ENGINE_EXEC_FILENAME "CVEO"
+#define AIADAPTER_ENGINE_EXEC_FILENAME "CVEA"
 #endif
 
-#if USING_QT
+#if defined(USING_QT)
 #define SERVER_MODE "/Server"
 #define CLIENT_MODE "/Client"
 #define OBSERVER_MODE "/Observer"

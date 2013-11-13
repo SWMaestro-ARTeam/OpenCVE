@@ -23,16 +23,44 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-// main.cpp
-// OpenCVE CVEC main 진입점.
-
-// Modules
 #include "SystemDependency.hpp"
-//#if (defined(MAKE_CELESTIALS) && (MAKE_CELESTIALS == 0)) || !defined(USING_QT)
-#include "AdapterC.hpp"
+#include "AdapterO.hpp"
 
-int main(int argc, char* argv[]) {
-	AdapterC _TAdapterC;
-	return _TAdapterC.Go_EngineC();
+#if defined USING_QT
+#include "CVEO.hpp"
+#include <QApplication>
+#endif
+
+int AdapterO::Go_EngineO(int argc, char* argv[]) {
+	int _TApplicationReturnValue = 0;
+	EngineO *_EngineO;
+
+	// 1. CVEO Engine 생성.
+	_EngineO = new EngineO();
+#if defined USING_QT
+	QApplication a(argc, argv);
+	CVEO w;
+
+	w._EngineO = _EngineO;
+#endif
+
+	// 2. Engine Enable.
+	_EngineO->EngineEnable = true;
+	// 3. Engine Start.
+	_EngineO->EngineO_Start();
+
+#ifdef USING_QT
+	w.show();
+	_TApplicationReturnValue = a.exec();
+#else
+	// Thread 처리 할 경우 Main Application이 Thread보다 먼저 죽어버리는 경우가 발생하므로,
+	// 이를 방지하기 위해 Engine이 Enable일 때까지 계속 멈춰 있게 하여야 한다.
+	// Main Thread가 Worker보다 빨리 떨어지는걸 방지하기 위해 Sleep 10을 줌.
+	while (_EngineO->EngineEnable)
+		Sleep(10);
+#endif
+	// 4. Delete pointer.
+	delete _EngineO;
+
+	return _TApplicationReturnValue;
 }
-//#endif

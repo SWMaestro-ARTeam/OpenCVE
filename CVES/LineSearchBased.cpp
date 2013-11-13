@@ -99,6 +99,7 @@ void LineSearchBased::GetgraySidelinesPoint(IplImage *chess_image) {
 	// GetLinegrayScale에서 얻은 4개의 라인에서 경계점을 탐색한다
 
 	// 각 grayscale이 저장되어 있는 vector 배열에서 해당 라인의 교차점을 구한다.
+#if defined(WINDOWS_SYS)
 	HANDLE _THandleArr[8];
 	_THandleArr[0] = (HANDLE)_beginthreadex(NULL, 0, 
 		GraySideLinesPointThread, 
@@ -132,10 +133,41 @@ void LineSearchBased::GetgraySidelinesPoint(IplImage *chess_image) {
 		GraySideLinesPointThread,
 		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_y22, &line_point_y22, &in_line_point_y22, false),
 		0, NULL);
+#elif defined(POSIX_SYS)
+	pthread_t _TThread[8];
+	pthread_attr_t _TThreadAttr[8];
+	
+	for (register int i = 0; i < 8; i++) {
+		// pthread attribute initialize.
+		pthread_attr_init(&_TThreadAttr[i]);
+		// Detached thread.
+		pthread_attr_setdetachstate(&_TThreadAttr[i], PTHREAD_CREATE_DETACHED);
+		// User space thread.
+		pthread_attr_setscope(&_TThreadAttr[i], PTHREAD_SCOPE_SYSTEM);
+	}
+	
+	// Create thread.
+	pthread_create(&_TThread, NULL, GraySideLinesPointThread, (void *)&GraySideLinesPointStruct(this, chess_image, &line_x1, &line_point_x1, &in_line_point_x1, true));
+	pthread_create(&_TThread, NULL, GraySideLinesPointThread, (void *)&GraySideLinesPointStruct(this, chess_image, &line_x2, &line_point_x2, &in_line_point_x2, true));
+	pthread_create(&_TThread, NULL, GraySideLinesPointThread, (void *)&GraySideLinesPointStruct(this, chess_image, &line_y1, &line_point_y1, &in_line_point_y1, false));
+	pthread_create(&_TThread, NULL, GraySideLinesPointThread, (void *)&GraySideLinesPointStruct(this, chess_image, &line_y2, &line_point_y2, &in_line_point_y2, false));
+	pthread_create(&_TThread, NULL, GraySideLinesPointThread, (void *)&GraySideLinesPointStruct(this, chess_image, &line_x11, &line_point_x11, &in_line_point_x11, true));
+	pthread_create(&_TThread, NULL, GraySideLinesPointThread, (void *)&GraySideLinesPointStruct(this, chess_image, &line_x22, &line_point_x22, &in_line_point_x22, true));
+	pthread_create(&_TThread, NULL, GraySideLinesPointThread, (void *)&GraySideLinesPointStruct(this, chess_image, &line_y11, &line_point_y11, &in_line_point_y11, false));
+	pthread_create(&_TThread, NULL, GraySideLinesPointThread, (void *)&GraySideLinesPointStruct(this, chess_image, &line_y22, &line_point_y22, &in_line_point_y22, false));
+#endif
 
-	// 이 함수 4개를 스레드로
+#if defined(WINDOWS_SYS)
+	// 8개의 Thread를 기다림.
 	WaitForMultipleObjects(8, _THandleArr, TRUE, INFINITE);
+#elif defined(POSIX_SYS)
+	// WaitForMultipleObjects는 pthread에서의 동치가 없음.
+	// 따라서 만들어줘야 함.
+	// 후속버젼에서 만들 예정.
 
+#endif
+
+#if defined(WINDOWS_SYS)
 	CloseHandle(_THandleArr[0]);
 	CloseHandle(_THandleArr[1]);
 	CloseHandle(_THandleArr[2]);
@@ -144,7 +176,9 @@ void LineSearchBased::GetgraySidelinesPoint(IplImage *chess_image) {
 	CloseHandle(_THandleArr[5]);
 	CloseHandle(_THandleArr[6]);
 	CloseHandle(_THandleArr[7]);
+#elif defined(POSIX_SYS)
 
+#endif
 // 	GetgraySidelines(chess_image, &line_x1, &line_point_x1, &in_line_point_x1, true);
 // 	GetgraySidelines(chess_image, &line_x2, &line_point_x2, &in_line_point_x2, true);
 // 	GetgraySidelines(chess_image, &line_y1, &line_point_y1, &in_line_point_y1, false);
@@ -167,10 +201,8 @@ void LineSearchBased::GetInCrossPoint(IplImage *chess_image, vector<ChessPoint> 
 	// 찾은 경계점들을 x또는 y를 중심으로 재정렬한다.
 	for (register int i = 0; i < true_line_point_x1.size(); i++) {
 		for (register int j = i + 1; j < true_line_point_x1.size(); j++) {
-
-			// in_line_point 4개의 vector를 간단한 버블 정렬로 정렬을 한다
-			// 각 축의 탐색 방향과 대비되는 x 또는 y를 기준으로 삼는다
-
+			// in_line_point 4개의 vector를 정렬을 한다.
+			// 각 축의 탐색 방향과 대비되는 x 또는 y를 기준으로 삼는다.
 			if (true_line_point_x1[i].x > true_line_point_x1[j].x) {
 				MyPoint t_point = true_line_point_x1[i];
 
@@ -630,26 +662,25 @@ MyPoint LineSearchBased::setMyPoint(int x, int y) {
 }
 
 #pragma region Thread
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 UINT WINAPI
 	//DWORD WINAPI
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 // using pthread
 void *
 #endif
 	LineSearchBased::GraySideLinesPointThread(
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	LPVOID
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 	void *
 #endif
 	Param) {
+	GraySideLinesPointStruct *_TGraySideLinesPointStruct = (GraySideLinesPointStruct *)Param;
+	_TGraySideLinesPointStruct->T_ChessLineSearchAlg->GetgraySidelines(_TGraySideLinesPointStruct->chess_image, _TGraySideLinesPointStruct->Lines, _TGraySideLinesPointStruct->LinePoint, _TGraySideLinesPointStruct->InLinePoints, _TGraySideLinesPointStruct->XYflag);
 
-		GraySideLinesPointStruct *_TGraySideLinesPointStruct = (GraySideLinesPointStruct *)Param;
-		_TGraySideLinesPointStruct->T_ChessLineSearchAlg->GetgraySidelines(_TGraySideLinesPointStruct->chess_image, _TGraySideLinesPointStruct->Lines, _TGraySideLinesPointStruct->LinePoint, _TGraySideLinesPointStruct->InLinePoints, _TGraySideLinesPointStruct->XYflag);
-
-		_endthread();
-		return 0;
+	_endthread();
+	return 0;
 }
 #pragma endregion Thread
 #pragma endregion Private Functions

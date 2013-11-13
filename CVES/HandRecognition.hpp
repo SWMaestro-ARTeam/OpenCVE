@@ -30,9 +30,9 @@
 
 #include "CVESDependent.hpp"
 
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 #include <Windows.h>
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 #endif
 
 #include <iostream>

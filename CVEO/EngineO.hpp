@@ -23,8 +23,8 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _EngineC_hpp_
-#define _EngineC_hpp_
+#ifndef _EngineO_hpp_
+#define _EngineO_hpp_
 
 #include <cstdio>
 #include <cstdlib>
@@ -44,67 +44,27 @@
 #include "InternalProtocolSeeker.hpp"
 // Process Confirm Module
 #include "Process.hpp"
-// File Utility
-#include "File.hpp"
-// UCI Command Seeker
-#include "UCICommandSeeker.hpp"
 // String Tokenizer
 #include "StringTokenizer.hpp"
 // Telepathy Module
 #include "Telepathy.hpp"
-// Option Module
-#include "Option.hpp"
 // String Tools
 #include "StringTools.hpp"
 
 #include "Time.hpp"
 
-class EngineC {
+class EngineO {
 private:
-	Option *_Option;
-	Telepathy::Server *_TelepathyServer; // AI Adapter 용.
 	Telepathy::Client *_TelepathyClient; // CVES 통신용.
-	Process *_ProcessConfirm;
 
-	UCICommandSeeker _UCICommandSeeker;
 	InternalProtocolSeeker _InternalProtocolSeeker;
-	CodeConverter _CodeConverter;
 	StringTools _StringTools;
-	File _File;
-
-	// Variables
-	bool _IsGetCVESProcess;
-	bool _IsNoCVESProcess;
-	bool _IsCVESReady;
-
-	DWORD _ServerPID;
-
-	char *_Command;
-	// Client가 흑색인지 백색인지 구분.
-	// false : Black, true : White
-	bool _IsWhite;
-	bool _IsInAI;
-
-	// Functions
-	void Initialize_CommandStr();
-	void Deinitialize_CommandStr();
-
-	void Initialize_CVEOption();
-	void Deinitialize_CVEOption();
 
 	bool Initialize_TClient();
 	void Deinitialize_TClient();
 
-	void Initialize_ProcessConfirm();
-	void Deinitialize_ProcessConfirm();
-
-	void Put_Author();
-
 	void Engine_Initializing();
 	void Engine_DeInitializing();
-
-	void Get_Command_Str();
-	void Clear_Str();
 
 	void Clear_ClientSocket();
 
@@ -113,31 +73,10 @@ private:
 	void Disconnect_Server();
 	bool Reconnect_Server();
 
-	// Command Functions
-	void Command_UCI();
-	void Command_Debug();
-	void Command_Isready();
-	void Command_Setoption(CommandString *_UCICS); //
-	void Command_Ucinewgame();
-	void Command_Register();
-	void Command_Position(CommandString *_UCICS); //
-	void Command_Go(CommandString *_UCICS); //
-	void Command_Stop();
-	void Command_Ponderhit();
-	void Command_Quit();
-
-	void Parsing_Command();
-
-	void SendToGUI(const char *Str, ...);
-	bool CheckingCVESProcess();
-
-	void StartUp_Check();
-
 	// ClientReceivedCallback
-	static void ClientReceivedCallback(char *Buffer);
-	static void ClientDisconnectedCallback();
+	static void ObserverReceivedCallback(char *Buffer);
+	static void ObserverDisconnectedCallback();
 
-	// ClientCommandQueueProcessingThread
 	static
 #if defined(WINDOWS_SYS)
 		UINT WINAPI
@@ -146,7 +85,7 @@ private:
 		// using pthread
 		void *
 #endif
-		ClientCommandQueueProcessingThread(
+		ObserverCommandQueueProcessingThread(
 #if defined(WINDOWS_SYS)
 		LPVOID
 #elif defined(POSIX_SYS)
@@ -154,7 +93,6 @@ private:
 #endif
 		Param);
 
-	// CVECProcessingThread
 	static
 #if defined(WINDOWS_SYS)
 		UINT WINAPI
@@ -163,7 +101,7 @@ private:
 		// using pthread
 		void *
 #endif
-		CVECProcessingThread(
+		EngineO::CVEOProcessingThread(
 #if defined(WINDOWS_SYS)
 		LPVOID
 #elif defined(POSIX_SYS)
@@ -171,15 +109,16 @@ private:
 #endif
 		Param);
 
-	queue<char *> *CommandQueue;
 public:
 	// Constructor
-	EngineC();
-	~EngineC();
+	EngineO();
+	~EngineO();
 
 	bool EngineEnable;
-	bool EnginePause;
 
-	void EngineC_Start();
+	queue<char *> *CommandQueue;
+
+	void EngineO_Start();
 };
-#endif
+
+#endif // _EngineO_hpp_

@@ -39,7 +39,7 @@
 using namespace std;
 
 // Process Confirm용 Windows Library.
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 //#		ifdef _AFXDLL
 //#		include <afxwin.h>
 //#		else
@@ -62,13 +62,13 @@ using namespace std;
 #pragma comment(lib, "psapi.lib")
 
 #include <TlHelp32.h>
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 
 #include <pthread.h>
 #include <unistd.h>
 #endif
 
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 typedef ULONG PPS_PostProcessInitRoutine;
 // using PEB Structure.
 // Used in PEB struct
@@ -125,11 +125,11 @@ typedef struct _SProcessInformations {
 } SProcessInformations;
 
 static SProcessInformations __SProcessInformation[1024] = {0};
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 
 #endif
 
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 class WindowsProcess {
 private:
 
@@ -158,7 +158,7 @@ public:
 	DWORD GetProcessStatus(HANDLE ProcessPID);
 	void TerminateProcess(HANDLE ProcessPID);
 };
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 class POSIXProcess {
 private:
 public:
@@ -167,14 +167,14 @@ public:
 #endif
 
 class Process :
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	WindowsProcess
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 	POSIXProcess
 #endif
 {
 private:
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	// Windows에서의 Process를 위한 Handle, Process Entry.
 	HANDLE _ProcessHandle;
 	HMODULE _ModuleHandle;
@@ -182,45 +182,45 @@ private:
 	PROCESS_BASIC_INFORMATION *_PBI;
 	DWORD _Size;
 	NTSTATUS _Status;
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 
 #endif
 
 	//
 	bool FindProcess(
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 		DWORD 
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 		unsigned long
 #endif
 		PID, char *ProcessName);
 
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	HANDLE
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 	unsigned long
 #endif
 		FindHandleGetOneProcess(
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 		DWORD 
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 		unsigned long
 #endif
 		PID);
 
 	// ExecProcessLoopThread
 	static
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 		UINT WINAPI
 		//DWORD WINAPI
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 		// using pthread
 		void *
 #endif
 		ExecProcessLoopThread(
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 		LPVOID
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 		void *
 #endif
 		Param);
@@ -242,22 +242,24 @@ public:
 	void CreateProcessOnThread(char *ProcessName);
 	HANDLE FindProcessByPID(DWORD ProcessPID);
 
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	DWORD
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 	unsigned long
 #endif
 		GetProcessStatus(
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 		HANDLE
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
+
 #endif
 		ProcessHandle);
 
 	void TerminateProcess(
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 		HANDLE
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
+
 #endif
 		ProcessHandle);
 };

@@ -7,8 +7,11 @@
 QT	+= core gui
 QT	+= widgets
 
-QMAKE_CXXFLAGS -= -fno-keep-inline-dllexport
-QMAKE_CXXFLAGS += -std=c++0x -fpermissive
+#QMAKE_CXXFLAGS += -fno-keep-inline-dllexport
+#QMAKE_CXXFLAGS += -std=c++0x -fpermissive -fexceptions -g -I../Common/
+QMAKE_CXXFLAGS += -std=c++11 -fpermissive -fexceptions
+#-D USING_QT
+#-D../Common/SystemDependency.hpp
 
 QMAKE_LFLAGS += -static -static-libgcc
 #QMAKE_LFLAGS += -static -static-libgcc -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
@@ -18,12 +21,12 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = Celestials
 TEMPLATE = app
 
-CONFIG   += console
-#CONFIG	+= qt warn_on release static staticlib
+CONFIG   += console precompile_header
+PRECOMPILED_HEADER = ../Common/SystemDependency.hpp
+CONFIG	+= qt warn_on release static staticlib
 CONFIG	+= static staticlib
 
-SOURCES += main.cpp\
-        Celestials.cpp \
+SOURCES +=\
     ../Common/Time.cpp \
     ../Common/Telepathy.cpp \
     ../Common/StringTokenizer.cpp \
@@ -41,16 +44,22 @@ SOURCES += main.cpp\
     ../CVES/ChessGame.cpp \
     ../CVES/BlobLabeling.cpp \
     ../Common/StringTools.cpp \
-    ApplicationsMain.cpp \
     ../CVES/CheckInChessboard.cpp \
     ../CVES/LineSearchBased.cpp \
     ../CVES/HoughLineBased.cpp \
-    ../CVES/ChessObjectDetection.cpp
+    ../CVES/ChessObjectDetection.cpp \
+    ../CVEC/AdapterC.cpp \
+    ../CVES/AdapterS.cpp \
+    ../CVEO/EngineO.cpp \
+    ../CVEO/CVEO.cpp \
+    ../CVEO/AdapterO.cpp \
+    ../CVES/CVES.cpp \
+    main.cpp
 
-HEADERS  += Celestials.h \
+HEADERS  += \
+		../Common/SystemDependency.hpp \
     ../Common/Time.hpp \
     ../Common/Telepathy.hpp \
-    ../Common/SystemDependency.hpp \
     ../Common/StringTokenizer.hpp \
     ../Common/Process.hpp \
     ../Common/InternalProtocolSeeker.hpp \
@@ -73,13 +82,21 @@ HEADERS  += Celestials.h \
     ../CVEC/CVECDependent.hpp \
     ../CVES/CVESDependent.hpp \
     ../Common/StringTools.hpp \
-    ApplicationsMain.h \
     ../CVES/CheckInChessboard.hpp \
     ../CVES/LineSearchBased.hpp \
     ../CVES/HoughLineBased.hpp \
-    ../CVES/ChessObjectDetection.hpp
+    ../CVES/ChessObjectDetection.hpp \
+    ../CVEC/AdapterC.hpp \
+    ../CVES/AdapterS.hpp \
+    ../CVEO/EngineO.hpp \
+    ../CVEO/CVEO.hpp \
+    ../CVEO/AdapterO.hpp \
+    ../CVEO/main.cpp.autosave \
+    ../CVES/CVES.hpp
 
-FORMS    += Celestials.ui
+FORMS    += \
+    ../CVEO/CVEO.ui \
+    ../CVES/CVES.ui
 
 #QT_PATH = ${QTDIR}
 #PROJECT_PATH = ${INVI_PROJECT_ROOT}

@@ -23,50 +23,17 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _APPLICATIONSMAIN_H_
-#define _APPLICATIONSMAIN_H_
+#include "CVES.hpp"
+#include "ui_CVES.h"
 
-#include "SystemDependency.hpp"
+CVES::CVES(QWidget *parent) :
+QMainWindow(parent),
+ui(new Ui::CVES)
+{
+	ui->setupUi(this);
+}
 
-#include "EngineS.hpp"
-#include "EngineC.hpp"
-
-#include "Celestials.h"
-
-//#if USING_QT
-
-#	include <QApplication>
-#	include <QtGui>
-#	include <QThread>
-
-//#endif
-
-//#if USING_QT
-class ServerInitThread : public QThread {
-	Q_OBJECT
-//#else
-//class ServerInitThread {
-//#endif
-
-private:
-protected:
-//#if USING_QT
-	void run();
-//#endif
-public:
-	ServerInitThread();
-};
-
-class ApplicationsMain {
-private:
-	ServerInitThread _ServerInitThread;
-	EngineS *_EngineS;
-public:
-	ApplicationsMain();
-
-	int GoCVEC();
-	int GoCVES(int argc, char *argv[]);
-	int GoCVEO();
-};
-
-#endif // _APPLICATIONSMAIN_H_
+CVES::~CVES()
+{
+	delete ui;
+}

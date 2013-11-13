@@ -30,7 +30,7 @@
 #include <time.h>
 
 #include <queue>
-//#include <mutex>
+#include <mutex>
 
 // 공통 상수 정의
 #include "Common.hpp"
@@ -62,10 +62,10 @@
 // 캐니 엣지를 사용한 Obj Detection
 #include "ChessObjectDetection.hpp"
 
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 // It's for windows dependent Functions.
 #include <Windows.h>
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 
 #endif
 
@@ -81,13 +81,13 @@ typedef struct _ServerGetInformation {
 class EngineS {
 private:
 	// Recognition Modules.
-	BlobLabeling _BlobLabeling;
+	BlobLabeling *_BlobLabeling;
 
-	HandRecognition _HandRecognition;
-	ChessRecognition _ChessRecognition;
-	ChessGame _ChessGame;
-	CheckInChessboard _CheckInChessboard;
-	ChessObjectDetection _ChessObjectDetection;
+	HandRecognition *_HandRecognition;
+	ChessRecognition *_ChessRecognition;
+	ChessGame *_ChessGame;
+	CheckInChessboard *_CheckInChessboard;
+	ChessObjectDetection *_ChessObjectDetection;
 
 	// Common Modules.
 	Telepathy::Server *_TelepathyServer;
@@ -115,8 +115,8 @@ private:
 	// 자원은 무조건 Class 내에서만 할당 되어야 하며, 처리의 결과만 Class 내에서 처리되어
 	// Return 되게 하여야 한다.
 
-	queue<IplImage *> _OriginToChessBoardDetection; // Chess Board Detection.
-	queue<IplImage *> _OriginToHandDetection; // Hand Detection.
+	queue<IplImage *> *_OriginToChessBoardDetection; // Chess Board Detection.
+	queue<IplImage *> *_OriginToHandDetection; // Hand Detection.
 
 	IplImage *_CamOriginalImage; // 원본 이미지.
 	IplImage *_ImageChess; // 처리할 관심영역 속 RGB 이미지.
@@ -143,8 +143,10 @@ private:
 	vector<ChessPoint> _CrossPoint;
 	vector<int> _PieceIndex;
 
+	queue<ServerGetInformation *> *CommandQueue;
 	//mutex _QueueProtectMutex;
 	//mutex _VarProtectMutex;
+	mutex _CamImageProtectMutex;
 
 private:
 	bool Initialize_Camera();
@@ -163,13 +165,17 @@ private:
 	bool Start_Server();
 	void Stop_Server();
 
-	//void Set_ClientData(SOCKET Socket, int Type);
+	bool Start_ImageProcessing();
+	void Stop_ImageProcessing();
+
 	void Process_Info(CommandString *IPCS, SOCKET Socket);
 
 	bool Check_Exit();
 
 	// 매 루프에서 호출되는 image process 함수.
 	void Go_ImageProcessing();
+	CvRect Set_ROIRect(int ResolutionWidth, int ResolutionHeight, int ROIWidth, int ROIHeight);
+	void AllocCVESImages();
 	// chess UI 만들기
 	void DrawROI(IplImage *Source, float FramePerSecond, CvScalar RGB);
 	// 연산에 필요한 이미지 할당.
@@ -186,17 +192,65 @@ private:
 
 	// ClientCommandQueueProcessingThread
 	static
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 		UINT WINAPI
 		//DWORD WINAPI
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 		// using pthread
 		void *
 #endif
 		ServerCommandQueueProcessingThread(
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 		LPVOID
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
+		void *
+#endif
+		Param);
+
+	static
+#if defined(WINDOWS_SYS)
+		UINT WINAPI
+		//DWORD WINAPI
+#elif defined(POSIX_SYS)
+		// using pthread
+		void *
+#endif
+		ChessRecognitionProcessingThread(
+#if defined(WINDOWS_SYS)
+		LPVOID
+#elif defined(POSIX_SYS)
+		void *
+#endif
+		Param);
+
+	static
+#if defined(WINDOWS_SYS)
+		UINT WINAPI
+		//DWORD WINAPI
+#elif defined(POSIX_SYS)
+		// using pthread
+		void *
+#endif
+		 HandRecognitionProcessingThread(
+#if defined(WINDOWS_SYS)
+		LPVOID
+#elif defined(POSIX_SYS)
+		void *
+#endif
+		Param);
+
+	static
+#if defined(WINDOWS_SYS)
+		UINT WINAPI
+		//DWORD WINAPI
+#elif defined(POSIX_SYS)
+		// using pthread
+		void *
+#endif
+		CVESProcessingThread(
+#if defined(WINDOWS_SYS)
+		LPVOID
+#elif defined(POSIX_SYS)
 		void *
 #endif
 		Param);
@@ -208,8 +262,6 @@ public:
 	bool EngineEnable;
 	bool IsStarted;
 	bool IsTictokEnable;
-
-	queue<ServerGetInformation *> *CommandQueue;
 
 	void EngineS_Start();
 };

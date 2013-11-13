@@ -32,22 +32,22 @@
 
 #include <list>
 
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 //	#ifdef _AFXDLL
 //#include <afxwin.h>
 //	#else
-#if MINGW_USING
+	#if defined(MINGW_USING)
 #include <winsock.h>
 //#include <winsock2.h>
-#else
+	#else
 #include <windows.h>
 #include <process.h>
-#endif
+	#endif
 #include <tchar.h>
 //#endif
 // ws2_32.lib 링크
 #pragma comment(lib, "ws2_32.lib")
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/types.h> 
@@ -57,10 +57,10 @@
 using namespace std;
 
 typedef struct _ClientsList {
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	SOCKADDR_IN ClientAddress;
 	SOCKET ClientSocket;
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 
 #endif
 	int ClientNumber;
@@ -88,11 +88,11 @@ public:
 	// Server Class
 	class Server {
 	private:
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 		WSADATA _WSAData;
 		SOCKET _ServerSocket;
 		SOCKADDR_IN _ServerAddress;
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 
 #endif
 
@@ -124,33 +124,33 @@ public:
 		void SendDataToAll(char *Str);
 
 		static
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 		UINT WINAPI
 			//DWORD WINAPI
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 		// using pthread
 		void *
 #endif
 			Server_ConnectionThread(
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 			LPVOID
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 			void *
 #endif
 			Param);
 
 		static
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 			UINT WINAPI
 			//DWORD WINAPI
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 			// using pthread
 			void *
 #endif
 			Server_ReceivingThread(
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 			LPVOID
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 			void *
 #endif
 			Param);
@@ -160,12 +160,12 @@ public:
 	class Client {
 	private:
 		unsigned int _Address;
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 		HOSTENT *_HostEntry;
 		WSADATA _WSAData;
 		SOCKET _ClientSocket;
 		SOCKADDR_IN _ClientAddress;
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 
 #endif		
 	public:
@@ -195,17 +195,17 @@ public:
 		bool SendData(char *Str);
 
 		static 
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 		UINT WINAPI
 			//DWORD WINAPI
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 		// using pthread
 		void *
 #endif
 			Client_ReceivingThread(
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 			LPVOID
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 			void *
 #endif
 			Param);

@@ -35,10 +35,10 @@
 #include <cstring>
 #include <ctime>
 
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 #include <windows.h>
 #include <process.h>
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 #include <sys/resource.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -89,17 +89,17 @@ public:
 
 	// Thread.
 	static
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 		UINT WINAPI
 		//DWORD WINAPI
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 		// using pthread
 		void *
 #endif
 		TimerProcessingThread(
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 		LPVOID
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 		void *
 #endif
 		Param);

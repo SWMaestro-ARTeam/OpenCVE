@@ -79,6 +79,7 @@ EngineS::~EngineS() {
 }
 #pragma endregion Constructor & Destructor
 
+#pragma region Private Functions
 #pragma region Initialize & Deinitialize Functions
 bool EngineS::Initialize_Camera() {
 	bool _TIsInitialize = false;
@@ -119,11 +120,17 @@ void EngineS::Initialize_ImageProcessing() {
 	if (Initialize_Camera() != true)
 		EngineEnable = false;
 
+	_BlobLabeling = new BlobLabeling();
+	_HandRecognition = new HandRecognition();
+	_ChessRecognition = new ChessRecognition();
+	_ChessGame = new ChessGame();
+	_CheckInChessboard = new CheckInChessboard();
+	_ChessObjectDetection = new ChessObjectDetection();
 	// 모드 초기화.
 	_ImageProcessMode = 0;
 
 	// window 생성 & 마우스 콜백 붙이기.
-#if !USING_QT
+#if !defined(USING_QT)
 	cvNamedWindow("CVES");
 #endif
 	// 관심영역 설정 사각형 좌표, 크기 초기화
@@ -132,17 +139,45 @@ void EngineS::Initialize_ImageProcessing() {
 	_SubCheck	= false;
 	_InHandCheck = false;
 	_BeforeHandFirst = false;
+
+	_OriginToChessBoardDetection = new queue<IplImage *>();
+	_OriginToHandDetection = new queue<IplImage *>();
+	// ROI Rect Colour 설정.
+	_ROIRectColour = cvScalar(0, 0, 255);
+	// ROI Rect의 크기를 정함.
+	_ROIRect = Set_ROIRect(_Resolution_Width, _Resolution_Heigth, _ROI_Width, _ROI_Heigth);
+	//_ROIRect = cvRect((SERVER_VIEW_DEFAULT_WIDTH - ROI_DEFAULT_WIDTH) / 2, (SERVER_VIEW_DEFAULT_HEIGHT - ROI_DEFAULT_HEIGHT) / 2, ROI_DEFAULT_WIDTH, ROI_DEFAULT_HEIGHT);
+	AllocCVESImages();
+}
+
+void EngineS::AllocCVESImages() {
+	// 내부 연산에 사용되는 이미지 할당.
+	_ImageChess = cvCreateImage(cvSize(_ROIRect.width, _ROIRect.height), IPL_DEPTH_8U, 3);
+	_TempPrev = cvCreateImage(cvSize(_ROIRect.width, _ROIRect.height), IPL_DEPTH_8U, 3);
+	_TempPrev2 = cvCreateImage(cvSize(_ROIRect.width, _ROIRect.height), IPL_DEPTH_8U, 3);
+	_PureImage = cvCreateImage(cvSize(_ROIRect.width, _ROIRect.height), IPL_DEPTH_8U, 3);
+	_OtherBinaryImage = cvCreateImage(cvSize(_ROIRect.width, _ROIRect.height), IPL_DEPTH_8U, 1);
+
+	_ImageSkin = cvCreateImage(cvSize(_ROIRect.width, _ROIRect.height), IPL_DEPTH_8U, 1);
+	_PrevImage = cvCreateImage(cvSize(_ROIRect.width, _ROIRect.height), IPL_DEPTH_8U, 3);
+	_ImageSub = cvCreateImage(cvSize(_ROIRect.width, _ROIRect.height), IPL_DEPTH_8U, 1);
 }
 
 void EngineS::Deinitialize_ImageProcessing(){
 	//이미지 처리를 보여주기 위한 모든 window 삭제
 	//연결된 Cam Disconnect
 	//연산에 사용된 모든 이미지 할당해제
-#if !USING_QT
+#if !defined(USING_QT)
 	cvDestroyAllWindows();
 #endif
 	Deinitialize_Camera();
 
+	delete _BlobLabeling;
+	delete _HandRecognition;
+	delete _ChessRecognition;
+	delete _ChessGame;
+	delete _CheckInChessboard;
+	delete _ChessObjectDetection;
 	/*
 	if (temp_prev->imageData != NULL)
 		cvReleaseImage(&temp_prev);
@@ -181,8 +216,20 @@ bool EngineS::Start_Server() {
 			// Command Queue 생성.
 			CommandQueue = new queue<ServerGetInformation *>();
 			// Command 처리용 Thread를 생성.
+#if defined(WINDOWS_SYS)
 			HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, ServerCommandQueueProcessingThread, this, 0, NULL);
-
+#elif defined(POSIX_SYS)
+			pthread_t _TThread;
+			pthread_attr_t _TThreadAttr;
+			// pthread attribute initialize.
+			pthread_attr_init(&_TThreadAttr);
+			// Detached thread.
+			pthread_attr_setdetachstate(&_TThreadAttr, PTHREAD_CREATE_DETACHED);
+			// User space thread.
+			pthread_attr_setscope(&_TThreadAttr, PTHREAD_SCOPE_SYSTEM);
+			// Create thread.
+			pthread_create(&_TThread, NULL, ServerCommandQueueProcessingThread, (void *)this);
+#endif
 			_TIsStarted = true;
 		}
 		else {
@@ -197,6 +244,34 @@ void EngineS::Stop_Server() {
 	// 모든게 확실히 된 다음에 다시 재구현.
 	_TelepathyServer->TAnyConnentionNotifier = NULL;
 	_TelepathyServer->TServerReceivedCallback = NULL;
+}
+
+bool EngineS::Start_ImageProcessing() {
+#if defined(WINDOWS_SYS)
+	HANDLE _TThreadHandle[2];
+	_TThreadHandle[0] = (HANDLE)_beginthreadex(NULL, 0, ChessRecognitionProcessingThread, this, 0, NULL);
+	_TThreadHandle[1] = (HANDLE)_beginthreadex(NULL, 0, HandRecognitionProcessingThread, this, 0, NULL);
+#elif defined(POSIX_SYS)
+	pthread_t _TThread[2];
+	pthread_attr_t _TThreadAttr[2];
+	for (register int i = 0; i < 2; i++) {
+		// pthread attribute initialize.
+		pthread_attr_init(&_TThreadAttr[i]);
+		// Detached thread.
+		pthread_attr_setdetachstate(&_TThreadAttr[i], PTHREAD_CREATE_DETACHED);
+		// User space thread.
+		pthread_attr_setscope(&_TThreadAttr[i], PTHREAD_SCOPE_SYSTEM);
+	}
+	
+	// Create thread.
+	pthread_create(&_TThread[0], NULL, ChessRecognitionProcessingThread, (void *)this);
+	pthread_create(&_TThread[1], NULL, HandRecognitionProcessingThread, (void *)this);
+#endif
+	return true;
+}
+
+void EngineS::Stop_ImageProcessing() {
+
 }
 
 void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
@@ -446,7 +521,7 @@ void EngineS::imgproc_mode(){
 	// 내가 너희들을 다 갈아마셔 버리겠다.
 	
 	static bool _TImageCreateCheck = false;
-	static time_t _TTempSec; // mode 1에서 시간을 체크할 변수
+	//static time_t _TTempSec; // mode 1에서 시간을 체크할 변수
 
 	if (_ImageProcessMode == 0) {
 		// 관심영역 설정부.
@@ -454,13 +529,13 @@ void EngineS::imgproc_mode(){
 			cvReleaseImage(&_ImageChess);
 			_TImageCreateCheck = false;
 		}
-#if !USING_QT
+#if !defined(USING_QT)
 		cvShowImage("CVES", _CamOriginalImage);
 #endif
-		_ImageProcessMode++;
+		//_ImageProcessMode++;
 		// 순서대로 B, G, R
 		_ROIRectColour = cvScalar(0, 0, 255);
-		_TTempSec = time(NULL);
+		//_TTempSec = time(NULL);
 
 		// 관심영역 크기 고정.
 		// 640 * 480이므로, x: 0, y : 0 라고 한다면, 시작 영역은..
@@ -473,7 +548,7 @@ void EngineS::imgproc_mode(){
 	}
 	else if (_ImageProcessMode == 1/* && IsStarted == true*/) {
 		// 관심영역 재설정 선택 OR 체스보드 인식 확인부.
-		int _TTick = GetTickCount();
+		//int _TTick = GetTickCount();
 
 		if (_TImageCreateCheck == false) {
 			// 내부 연산에 사용되는 이미지 할당.
@@ -483,8 +558,8 @@ void EngineS::imgproc_mode(){
 			_PureImage = cvCreateImage(cvSize(_ROIRect.width, _ROIRect.height), IPL_DEPTH_8U, 3);
 			_OtherBinaryImage = cvCreateImage(cvSize(_ROIRect.width, _ROIRect.height), IPL_DEPTH_8U, 1);
 			_TImageCreateCheck = true;
-			_ChessRecognition.Initialize_ChessRecognition(_ROIRect.width, _ROIRect.height, RECOGNITION_MODE);
-			_HandRecognition.Initialize_HandRecognition(_ROIRect.width, _ROIRect.height);
+			_ChessRecognition->Initialize_ChessRecognition(_ROIRect.width, _ROIRect.height, RECOGNITION_MODE);
+			_HandRecognition->Initialize_HandRecognition(_ROIRect.width, _ROIRect.height);
 			
 			// 연산에 필요한 이미지 할당.
 			Inter_imageCraete(_ROIRect.width, _ROIRect.height);
@@ -494,33 +569,33 @@ void EngineS::imgproc_mode(){
 		cvCopy(_CamOriginalImage, _PureImage);
 		
 		// Chessboard recognition.
-		_ChessRecognition.Copy_Img(_ImageChess);
-		_ChessRecognition.Find_ChessPoint(_CamOriginalImage, &_CrossPoint);
+		_ChessRecognition->Copy_Img(_ImageChess);
+		_ChessRecognition->Find_ChessPoint(_CamOriginalImage, &_CrossPoint);
 		cvResetImageROI(_CamOriginalImage);
 
 		// 체스보드 인식이 확실하면 시간 카운트 시작, 교차점이 81개 이하면 다음 단계로 넘어가지 못함.
-		if (_CrossPoint.size() < 81)
-			_TTempSec = time(NULL);
+		//if (_CrossPoint.size() < 81)
+		//	_TTempSec = time(NULL);
 
-		// mode 1에서 2초 이상 지났을 경우 다음 모드로 진행
-		if (time(NULL) - _TTempSec > 2) {
-			//_ImageProcessMode++;
-			_ROIRectColour = cvScalar(0, 255);
-		}
+		//// mode 1에서 2초 이상 지났을 경우 다음 모드로 진행
+		//if (time(NULL) - _TTempSec > 2) {
+		//	//_ImageProcessMode++;
+		//	_ROIRectColour = cvScalar(0, 255);
+		//}
 
 		// fps 계산.
-		_TTick = GetTickCount() - _TTick;
-		float _fps = 1000.f/ (float)_TTick;
+		//_TTick = GetTickCount() - _TTick;
+		//float _fps = 1000.f/ (float)_TTick;
 		
 		// CVES main Window에 UI 구성
 		//DrawWindowS(_CamOriginalImage, _fps, _RGB);
-#if !USING_QT
+#if !defined(USING_QT)
 		cvShowImage("CVES", _CamOriginalImage);
 #endif
 	}
 	else if (_ImageProcessMode == 2 && IsStarted == true) {
 		// 실제 이미지 처리 실행부.
-		int _TTick = GetTickCount();
+		//int _TTick = GetTickCount();
 
 		// 관심 영역 설정
 		cvSetImageROI(_CamOriginalImage, _ROIRect);
@@ -531,23 +606,23 @@ void EngineS::imgproc_mode(){
 		if (_CrossPoint.size() == 81) {
 			if (_SubCheck == false) {
 				// Chessboard recognition.
-				_ChessRecognition.Copy_Img(_ImageChess);
-				_ChessRecognition.Find_ChessPoint(_CamOriginalImage, &_CrossPoint);
+				_ChessRecognition->Copy_Img(_ImageChess);
+				_ChessRecognition->Find_ChessPoint(_CamOriginalImage, &_CrossPoint);
 
 				// 손이 들어오기 직전 영상을 촬영.
-				_HandRecognition.Sub_prevFrame(_ImageChess, _ImageSkin, _BeforeHandFirst); // 턴별 차영상
+				_HandRecognition->Sub_prevFrame(_ImageChess, _ImageSkin, _BeforeHandFirst); // 턴별 차영상
 				
 				// 손 진입을 체크하는 bool 변수 초기화 - 이전에 손이 들어왔었다면 false로 수정
 				if (_BeforeHandFirst)
 					_BeforeHandFirst = false;
 
-				if (_CheckInChessboard.Check_InChessboard(_ImageSkin, _CrossPoint)) {
+				if (_CheckInChessboard->Check_InChessboard(_ImageSkin, _CrossPoint)) {
 					// 물체가 체스보드 위로 들어옴.
 					cvCopy(_TempPrev2, _PrevImage);
-#if !USING_QT
-#ifdef DEBUG_MODE
+#if !defined(USING_QT)
+	#if defined(DEBUG_MODE)
 					cvShowImage("PREV", _PrevImage);
-#endif
+	#endif
 #endif
 					_SubCheck = true;
 				}
@@ -555,10 +630,10 @@ void EngineS::imgproc_mode(){
 			else {
 				// 추후 해야할 작업 : 빠질때 어떻게 작업할 것인가.
 				// 손이 들어옴 판정 이후 작업.
-#if !USING_QT
-#ifdef DEBUG_MODE
+#if !defined(USING_QT)
+	#if defined(DEBUG_MODE)
 				cvShowImage("유레카1", _ImageChess);
-#endif
+	#endif
 #endif
 				// 오브젝트 디텍션에 사용되는 차영상 연산 수행.
 				Sub_image(_PrevImage, _ImageChess, _ImageSkin);
@@ -566,25 +641,27 @@ void EngineS::imgproc_mode(){
 				Compose_diffImage(_ImageChess, _ImageSkin, cvScalar(0, 255, 255));
 
 				// BlobLabeling
-				_BlobLabeling.SetParam(_ImageSkin, 1);
-				_BlobLabeling.DoLabeling();
-				_BlobLabeling.DrawLabel(_ImageChess, cvScalar(255,0,255));
+				_BlobLabeling->SetParam(_ImageSkin, 1);
+				_BlobLabeling->DoLabeling();
+				_BlobLabeling->DrawLabel(_ImageChess, cvScalar(255,0,255));
 
 				// 손판정
 				// 손 정의 - 차영상 결과 디텍션된 오브젝트.
 				//          오브젝트 중 window 경계에 있는 물체
-				_BlobLabeling.GetSideBlob(_ImageSkin, &_PieceIndex, _OtherBinaryImage); // 손이 아니라고 판정되는 오브젝트를 이진 영상에서 제거
+				_BlobLabeling->GetSideBlob(_ImageSkin, &_PieceIndex, _OtherBinaryImage); // 손이 아니라고 판정되는 오브젝트를 이진 영상에서 제거
 				Compose_diffImage(_ImageChess, _ImageSkin, cvScalar(100, 100, 255)); // 손만 남은 이진 영상으로 원본 영상에 색을 부여
 
 				// 이미지 처리에 사용되는 이미지에 Chessboard recognition 결과로 연산된 좌표를 표기
 				//_ChessRecognition.drawPoint(_ImageChess, _CrossPoint);
 				cvDilate(_ImageSkin, _ImageSkin, 0, 5);
-#if !USING_QT
+#if !defined(USING_QT)
+	#if defined(DEBUG_MODE)
 				cvShowImage("skin", _ImageSkin);
+	#endif
 #endif
 
 				// 체스보드 안으로 손이 들어왔는지를 확인
-				if (_CheckInChessboard.Check_InChessboard(_ImageSkin, _CrossPoint)) {
+				if (_CheckInChessboard->Check_InChessboard(_ImageSkin, _CrossPoint)) {
 					// img_Skin은 손 추정물체만 남긴 이미지.
 					_InHandCheck = true;
 				}
@@ -593,7 +670,7 @@ void EngineS::imgproc_mode(){
 					CvPoint out[4];
 					out[0] = out[1] = out[2] = out[3] = cvPoint(-1, -1);
 					// 체스말의 움직임을 계산.
-					_CheckInChessboard.Calculate_Movement(_OtherBinaryImage, _CrossPoint, out);
+					_CheckInChessboard->Calculate_Movement(_OtherBinaryImage, _CrossPoint, out);
 
 					// 디텍션 된 결과가 두개 이상 존재한다면 실행
 					if (out[0].x != -1 && out[1].x != -1) {
@@ -603,7 +680,7 @@ void EngineS::imgproc_mode(){
 						_BeforeHandFirst = true;
 
 						// 이전 보드의 상태를 보고 예측함
-						int predicted_mode = _ChessGame.Mode_read();
+						int predicted_mode = _ChessGame->Mode_read();
 						// 예측값과 현재 디텍션된 값을 비교하여 실측값을 넘겨줌
 						int out_count = 0;
 						for(int i = 0; i < 4; i++){
@@ -616,11 +693,11 @@ void EngineS::imgproc_mode(){
 
 						// chessgame 이동부.
 						//printf("predict: %d, out_count : %d\n", predicted_mode, out_count);
-						_IsTrun = _ChessGame.Chess_process(out, predicted_mode);
+						_IsTrun = _ChessGame->Chess_process(out, predicted_mode);
 
 						// .
 
-						string _TString = string("Move ").append(string(_ChessGame.Get_RecentMove()));
+						string _TString = string("Move ").append(string(_ChessGame->Get_RecentMove()));
 						for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
 							if (_IsTrun == true && strcmp("White", _TVal->ClientName) == 0) {
 								// White Turn일 때.
@@ -633,20 +710,20 @@ void EngineS::imgproc_mode(){
 								_TelepathyServer->SendDataToOne(_TCharArr, _TVal->ClientSocket);
 							}
 						}
-#ifdef DEBUG_MODE
+#if defined(DEBUG_MODE)
 						// uci에 맞춰 return하는 부분 현재 printf로 출력
 						//printf("%s\n", buf);
-						_ChessGame.Show_chessImage();
+						_ChessGame->Show_chessImage();
 #endif
 					}
 
-					//CVES process가 죽었을 경우를 대비하여 현재 경로들을 txt파일로 저장 & voting을 통하여 현재 말의 이동경로를 확정.
-					//구현 예정.
+					// CVES process가 죽었을 경우를 대비하여 현재 경로들을 txt파일로 저장 & voting을 통하여 현재 말의 이동경로를 확정.
+					// 구현 예정.
 				}
-#if !USING_QT
-#ifdef DEBUG_MODE
+#if !defined(USING_QT)
+	#if defined(DEBUG_MODE)
 				cvShowImage("compose_diff", _ImageChess);
-#endif
+	#endif
 #endif
 			}
 		}
@@ -659,12 +736,12 @@ void EngineS::imgproc_mode(){
 		//cvDrawRect(_CamOriginalImage, cvPoint(_ROIRect.x, _ROIRect.y), cvPoint(_ROIRect.x + _ROIRect.width, _ROIRect.y + _ROIRect.height), _RGB, 2);
 
 		// 초당 프레임수 계산.
-		_TTick = GetTickCount() - _TTick;
-		float _fps = 1000.f/ (float)_TTick;
+		//_TTick = GetTickCount() - _TTick;
+		//float _fps = 1000.f/ (float)_TTick;
 
 		// Chessboard Main UI Drawing
-		DrawROI(_CamOriginalImage, _fps, _ROIRectColour);
-#if !USING_QT
+		DrawROI(_CamOriginalImage, 0.0f, _ROIRectColour);
+#if !defined(USING_QT)
 		cvShowImage("CVES", _CamOriginalImage);
 #endif
 	}
@@ -674,11 +751,21 @@ void EngineS::imgproc_mode(){
 }
 
 void EngineS::Go_ImageProcessing() {
-	// Cam으로부터의 영상입력.
+	// Cam 으로부터의 영상입력.
+	//double _TFps = cvGetCaptureProperty(_Cam, CV_CAP_PROP_FPS);
+	IplImage *_TChessBoardDetection = cvCreateImage(cvSize(_ROIRect.width, _ROIRect.height), IPL_DEPTH_8U, 3);
+	IplImage *_THandDetection = cvCreateImage(cvSize(_ROIRect.width, _ROIRect.height), IPL_DEPTH_8U, 3);
+
 	_CamOriginalImage = cvQueryFrame(_Cam);
 	cvFlip(_CamOriginalImage, _CamOriginalImage, FLIP_MODE);
-	cvCvtColor(_CamOriginalImage, _CamHSV, CV_BGR2HSV);
+	//cvCvtColor(_CamOriginalImage, _CamHSV, CV_BGR2HSV);
 
+	//_CamImageProtectMutex.lock();
+	//cvSetImageROI(_CamOriginalImage, _ROIRect);
+	//cvCopy(_CamOriginalImage, _TChessBoardDetection);
+	//cvCopy(_CamOriginalImage, _THandDetection);
+	//cvResetImageROI(_CamOriginalImage);
+	//_CamImageProtectMutex.unlock();
 	// ** Note
 	// Thread를 돌리려면, 하나의 Queue를 돌려서 그 자원을 공유하는 것 보다는,
 	// 차라리 하나의 Image를 Copy하여 여러 Queue에 주는 것이 공유자원 문제를 피하는 가장 현명한 방법인 듯 하다.
@@ -687,9 +774,61 @@ void EngineS::Go_ImageProcessing() {
 	//cvSmooth(_CamOriginalImage, _CamOriginalImage, CV_MEDIAN, 3);
 	// 모드에 따른 이미지 프로세스 수행.
 
-	imgproc_mode();
-	cvShowImage("CVES", _CamOriginalImage);
+	//imgproc_mode();
+
+	if (_CamOriginalImage->width >= _Resolution_Width
+		&& _CamOriginalImage->height >= _Resolution_Heigth) {
+		if (_OriginToChessBoardDetection->size() < 5)
+			_OriginToChessBoardDetection->push(_TChessBoardDetection);
+		else
+			_OriginToChessBoardDetection->pop();
+
+		if (_OriginToHandDetection->size() < 5)
+			_OriginToHandDetection->push(_THandDetection);
+		else
+			_OriginToHandDetection->pop();
+	}
+	
+
+	/*if (_OriginToHandDetection->size() < 5)
+		_OriginToHandDetection->push(_THandDetection);
+	else
+	_OriginToHandDetection->pop();*/
+
+	if (cvWaitKey(33) == 27)
+		EngineEnable = false;
+
+	//cvReleaseImage(&_TChessBoardDetection);
+	//cvReleaseImage(&_THandDetection);
+	//cvShowImage("CVES", _CamOriginalImage);
 	//cvShowImage("HSV", _CamHSV);
+}
+
+
+CvRect EngineS::Set_ROIRect(int ResolutionWidth, int ResolutionHeight, int ROIWidth, int ROIHeight) {
+	int _TCalculateROIWidth;
+	int _TCalculateROIHeight;
+
+	// 관심영역 크기 고정.
+	// 640 * 480이므로, x: 0, y : 0 라고 한다면, 시작 영역은..
+	// 관심영역 x크키 : 440 , 관심영역 y의 크기 : 440.
+	// if, (x resolution > ROI) x and (y resolution > ROI y)
+	// 해상도로부터의 관심영역 영역 Point :
+	// x 축 : ((x축 해상도) / 2) - ((관심영역 크키 x) / 2), 줄여서 (x축 해상도 - 관심영역 크키 x) / 2
+	// y 축 : ((y축 해상도) / 2) - ((관심영역 크키 y) / 2), 줄여서 (y축 해상도 - 관심영역 크키 y) / 2
+
+	// 해상도보다 ROI Setting 값이 크면 해상도 값으로 강제 고정.
+	if (ResolutionWidth < ROIWidth)
+		_TCalculateROIWidth = ResolutionWidth;
+	else
+		_TCalculateROIWidth = ROIWidth;
+
+	if (ResolutionHeight < ROIHeight)
+		_TCalculateROIHeight = ResolutionHeight;
+	else
+		_TCalculateROIHeight = ROIHeight;
+
+	return cvRect((ResolutionWidth - _TCalculateROIWidth) / 2, (ResolutionHeight - _TCalculateROIHeight) / 2, _TCalculateROIWidth, _TCalculateROIHeight);
 }
 
 #pragma region Callbacks
@@ -714,25 +853,28 @@ void EngineS::AnyConnentionNotifier(SOCKET ClientSocket) {
 }
 #pragma endregion Callbacks
 
-#if WINDOWS_SYS
+#pragma region Threads
+#pragma region Server Command Queue Processing Thread
+// ServerCommandQueueProcessingThread
+#if defined(WINDOWS_SYS)
 UINT WINAPI
 	//DWORD WINAPI
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 // using pthread
 void *
 #endif
 	EngineS::ServerCommandQueueProcessingThread(
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	LPVOID
 	//void *
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 	void *
 #endif
 	Param) {
 	EngineS *_TEngine_S = (EngineS *)Param;
 
-	while (_TEngine_S->_TelepathyServer->IsServerStarted) {
-		if (_TEngine_S->CommandQueue->empty() != true) {
+	while (_TEngine_S->EngineEnable != false) {
+		if (_TEngine_S->CommandQueue->empty() != true  && _TEngine_S->_TelepathyServer->IsServerStarted) {
 			//_TEngine_S->_QueueProtectMutex.lock();
 			char _TStrBuffer[BUFFER_MAX_32767];
 			ServerGetInformation *_TServerGetInformation;
@@ -832,40 +974,291 @@ void *
 	//_endthread();
 	return 0;
 }
+#pragma endregion Server Command Queue Processing Thread
 
-void EngineS::EngineS_Start() {
+#pragma region Chess Recognition Processing Thread
+// ChessRecognitionProcessingThread
+#if defined(WINDOWS_SYS)
+UINT WINAPI
+//DWORD WINAPI
+#elif defined(POSIX_SYS)
+// using pthread
+void *
+#endif
+	EngineS::ChessRecognitionProcessingThread(
+#if defined(WINDOWS_SYS)
+	LPVOID
+#elif defined(POSIX_SYS)
+	void *
+#endif
+	Param) {
+	EngineS *_TEngine_S = (EngineS *)Param;
+
+	_TEngine_S->_ChessRecognition->Initialize_ChessRecognition(_TEngine_S->_ROIRect.width, _TEngine_S->_ROIRect.height, RECOGNITION_MODE);
+
+	while (_TEngine_S->EngineEnable != false) {
+		
+		if (/*_TEngine_S->IsStarted == true && */_TEngine_S->_OriginToChessBoardDetection->empty() != true) {
+			// 일단 Chess Image를 받음.
+			if (_TEngine_S->_CamOriginalImage != NULL) {
+				IplImage *_TChessBoardDetectionImage = _TEngine_S->_OriginToChessBoardDetection->front();// = cvCreateImage(cvSize(_TEngine_S->_ROIRect.width, _TEngine_S->_ROIRect.height), IPL_DEPTH_8U, 3);
+				_TEngine_S->_CamImageProtectMutex.lock();
+				_TEngine_S->_OriginToChessBoardDetection->pop();
+				
+				cvSetImageROI(_TEngine_S->_CamOriginalImage, _TEngine_S->_ROIRect);
+				
+				cvCopy(_TEngine_S->_CamOriginalImage, _TChessBoardDetectionImage);
+				_TEngine_S->_ChessRecognition->Copy_Img(_TChessBoardDetectionImage);
+				_TEngine_S->_ChessRecognition->Find_ChessPoint(_TEngine_S->_CamOriginalImage, &_TEngine_S->_CrossPoint);
+				
+				cvResetImageROI(_TEngine_S->_CamOriginalImage);
+				_TEngine_S->_CamImageProtectMutex.unlock();
+				cvReleaseImage(&_TChessBoardDetectionImage);
+			}
+		}
+		Sleep(33);
+	}
+
+	_endthread();
+	return 0;
+}
+#pragma endregion Chess Recognition Processing Thread
+
+#pragma region Hand Recognition Processing Thread
+// HandRecognitionProcessingThread
+#if defined(WINDOWS_SYS)
+UINT WINAPI
+//DWORD WINAPI
+#elif defined(POSIX_SYS)
+// using pthread
+void *
+#endif
+	EngineS::HandRecognitionProcessingThread(
+#if defined(WINDOWS_SYS)
+	LPVOID
+#elif defined(POSIX_SYS)
+	void *
+#endif
+	Param) {
+	EngineS *_TEngine_S = (EngineS *)Param;
+
+	_TEngine_S->_HandRecognition->Initialize_HandRecognition(_TEngine_S->_ROIRect.width, _TEngine_S->_ROIRect.height);
+
+	while (_TEngine_S->EngineEnable != false) {
+		if (/*_TEngine_S->IsStarted == true && */_TEngine_S->_OriginToChessBoardDetection->empty() != true) {
+			IplImage *_TChessBoardDetectionImage = _TEngine_S->_OriginToChessBoardDetection->front();// = cvCreateImage(cvSize(_TEngine_S->_ROIRect.width, _TEngine_S->_ROIRect.height), IPL_DEPTH_8U, 3);
+			_TEngine_S->_CamImageProtectMutex.lock();
+			_TEngine_S->_OriginToChessBoardDetection->pop();
+
+			cvSetImageROI(_TEngine_S->_CamOriginalImage, _TEngine_S->_ROIRect);
+
+			cvCopy(_TEngine_S->_CamOriginalImage, _TChessBoardDetectionImage);
+			// 차영상 및 조건판정 부분.
+			if (_TEngine_S->_CrossPoint.size() == 81) {
+				if (_TEngine_S->_SubCheck == false) {
+					// Chessboard recognition.
+					_TEngine_S->_ChessRecognition->Copy_Img(_TEngine_S->_ImageChess);
+					_TEngine_S->_ChessRecognition->Find_ChessPoint(_TEngine_S->_CamOriginalImage, &_TEngine_S->_CrossPoint);
+
+					// 손이 들어오기 직전 영상을 촬영.
+					_TEngine_S->_HandRecognition->Sub_prevFrame(_TEngine_S->_ImageChess, _TEngine_S->_ImageSkin, _TEngine_S->_BeforeHandFirst); // 턴별 차영상
+
+					// 손 진입을 체크하는 bool 변수 초기화 - 이전에 손이 들어왔었다면 false로 수정
+					if (_TEngine_S->_BeforeHandFirst)
+						_TEngine_S->_BeforeHandFirst = false;
+
+					if (_TEngine_S->_CheckInChessboard->Check_InChessboard(_TEngine_S->_ImageSkin, _TEngine_S->_CrossPoint)) {
+						// 물체가 체스보드 위로 들어옴.
+						cvCopy(_TEngine_S->_TempPrev2, _TEngine_S->_PrevImage);
+#if !defined(USING_QT)
+#if defined(DEBUG_MODE)
+						cvShowImage("PREV", _TEngine_S->_PrevImage);
+#endif
+#endif
+						_TEngine_S->_SubCheck = true;
+					}
+				}
+				else {
+					// 추후 해야할 작업 : 빠질때 어떻게 작업할 것인가.
+					// 손이 들어옴 판정 이후 작업.
+#if !defined(USING_QT)
+#if defined(DEBUG_MODE)
+					cvShowImage("유레카1", _TEngine_S->_ImageChess);
+#endif
+#endif
+					// 오브젝트 디텍션에 사용되는 차영상 연산 수행.
+					_TEngine_S->Sub_image(_TEngine_S->_PrevImage, _TEngine_S->_ImageChess, _TEngine_S->_ImageSkin);
+					// 차영상 결과를 이미지 처리에 사용되는 이미지로 색 부여.
+					_TEngine_S->Compose_diffImage(_TEngine_S->_ImageChess, _TEngine_S->_ImageSkin, cvScalar(0, 255, 255));
+
+					// BlobLabeling
+					_TEngine_S->_BlobLabeling->SetParam(_TEngine_S->_ImageSkin, 1);
+					_TEngine_S->_BlobLabeling->DoLabeling();
+					_TEngine_S->_BlobLabeling->DrawLabel(_TEngine_S->_ImageChess, cvScalar(255,0,255));
+
+					// 손판정
+					// 손 정의 - 차영상 결과 디텍션된 오브젝트.
+					//          오브젝트 중 window 경계에 있는 물체
+					_TEngine_S->_BlobLabeling->GetSideBlob(_TEngine_S->_ImageSkin, &_TEngine_S->_PieceIndex, _TEngine_S->_OtherBinaryImage); // 손이 아니라고 판정되는 오브젝트를 이진 영상에서 제거
+					_TEngine_S->Compose_diffImage(_TEngine_S->_ImageChess, _TEngine_S->_ImageSkin, cvScalar(100, 100, 255)); // 손만 남은 이진 영상으로 원본 영상에 색을 부여
+
+					// 이미지 처리에 사용되는 이미지에 Chessboard recognition 결과로 연산된 좌표를 표기
+					//_ChessRecognition.drawPoint(_ImageChess, _CrossPoint);
+					cvDilate(_TEngine_S->_ImageSkin, _TEngine_S->_ImageSkin, 0, 5);
+#if !defined(USING_QT)
+#if defined(DEBUG_MODE)
+					cvShowImage("skin", _TEngine_S->_ImageSkin);
+#endif
+#endif
+
+					// 체스보드 안으로 손이 들어왔는지를 확인
+					if (_TEngine_S->_CheckInChessboard->Check_InChessboard(_TEngine_S->_ImageSkin, _TEngine_S->_CrossPoint)) {
+						// img_Skin은 손 추정물체만 남긴 이미지.
+						_TEngine_S->_InHandCheck = true;
+					}
+					else if (_TEngine_S->_InHandCheck == true) {
+						// 차영상의 결과에 체스말의 이동경로 추적. 캐슬링, 앙파상 처리를 위하여 4개의 오브젝트를 디텍션
+						CvPoint out[4];
+						out[0] = out[1] = out[2] = out[3] = cvPoint(-1, -1);
+						// 체스말의 움직임을 계산.
+						_TEngine_S->_CheckInChessboard->Calculate_Movement(_TEngine_S->_OtherBinaryImage, _TEngine_S->_CrossPoint, out);
+
+						// 디텍션 된 결과가 두개 이상 존재한다면 실행
+						if (out[0].x != -1 && out[1].x != -1) {
+							// 이동 처리부.
+							_TEngine_S->_InHandCheck = false;
+							_TEngine_S->_SubCheck = false;
+							_TEngine_S->_BeforeHandFirst = true;
+
+							// 이전 보드의 상태를 보고 예측함
+							int predicted_mode = _TEngine_S->_ChessGame->Mode_read();
+							// 예측값과 현재 디텍션된 값을 비교하여 실측값을 넘겨줌
+							int out_count = 0;
+							for(register int i = 0; i < 4; i++){
+								if(out[i].x != -1){
+									out_count++;
+									//printf("(%d, %d)\n", out[i].x, out[i].y);
+								}
+							}
+							predicted_mode = (out_count < predicted_mode ? out_count : predicted_mode);
+
+							// chessgame 이동부.
+							//printf("predict: %d, out_count : %d\n", predicted_mode, out_count);
+							_TEngine_S->_IsTrun = _TEngine_S->_ChessGame->Chess_process(out, predicted_mode);
+
+							// .
+
+							string _TString = string("Move ").append(string(_TEngine_S->_ChessGame->Get_RecentMove()));
+							for_IterToEnd(list, ClientsList, _TEngine_S->_TelepathyServer->ClientList) {
+								if (_TEngine_S->_IsTrun == true && strcmp("White", _TVal->ClientName) == 0) {
+									// White Turn일 때.
+									char *_TCharArr = (char *)_TEngine_S->_StringTools.StringToConstCharPointer(_TString.c_str());
+									_TEngine_S->_TelepathyServer->SendDataToOne(_TCharArr, _TVal->ClientSocket);
+								}
+								else if (_TEngine_S->_IsTrun != true && strcmp("Black", _TVal->ClientName) == 0) {
+									// Black Turn일 때.
+									char *_TCharArr = (char *)_TEngine_S->_StringTools.StringToConstCharPointer(_TString.c_str());
+									_TEngine_S->_TelepathyServer->SendDataToOne(_TCharArr, _TVal->ClientSocket);
+								}
+							}
+#if defined(DEBUG_MODE)
+							// uci에 맞춰 return하는 부분 현재 printf로 출력
+							//printf("%s\n", buf);
+							_TEngine_S->_ChessGame->Show_chessImage();
+#endif
+						}
+
+						// CVES process가 죽었을 경우를 대비하여 현재 경로들을 txt파일로 저장 & voting을 통하여 현재 말의 이동경로를 확정.
+						// 구현 예정.
+					}
+#if !defined(USING_QT)
+#if defined(DEBUG_MODE)
+					cvShowImage("compose_diff", _TEngine_S->_ImageChess);
+#endif
+#endif
+				}
+			}
+
+			cvResetImageROI(_TEngine_S->_CamOriginalImage);
+			_TEngine_S->_CamImageProtectMutex.unlock();
+			cvReleaseImage(&_TChessBoardDetectionImage);
+		}
+	}
+
+	_endthread();
+	return 0;
+}
+#pragma endregion Hand Recognition Processing Thread
+
+#pragma region CVES Processing Thread
+#if defined(WINDOWS_SYS)
+UINT WINAPI
+	//DWORD WINAPI
+#elif defined(POSIX_SYS)
+// using pthread
+void *
+#endif
+	EngineS::CVESProcessingThread(
+#if defined(WINDOWS_SYS)
+	LPVOID
+#elif defined(POSIX_SYS)
+	void *
+#endif
+	Param) {
+	EngineS *_TEngine_S = (EngineS *)Param;
+
 	// Initialize 순서.
 	// 1. Telepathy Server.
 	// 2. Camera Initialize.
 	// 1. Engine이 Start 되면, 우선 Server 기동부터 한다.
-	Engine_Initializing();
+	_TEngine_S->Engine_Initializing();
 	// 2. 
-	Initialize_ImageProcessing();
-	Start_Server();
+	_TEngine_S->Initialize_ImageProcessing();
+	_TEngine_S->Start_Server();
+	_TEngine_S->Start_ImageProcessing();
 
 	// 마치, 차의 시동키 같은 역할.
-	while (EngineEnable) {
+	while (_TEngine_S->EngineEnable) {
 		// Image Processing Engine이 시작되지 않았다면 대기한다.
 		// 전체적인 구문에 영향을 줄 수 있으므로 다른 구문을 강구해보는 것도 괜찮은 생각이다.
-		if (IsStarted != true) {
+		if (_TEngine_S->IsStarted != true) {
 			// Image 처리 중이었다면, 모든 처리를 중단하고 화면에 Stop을 넣고 중단시킨다.
 			// cvPutText(img_Cam, "Stop", cvPoint(30, 30), &cvFont(1.0), cvScalar(0, 100, 100));
 			// while (!IsStarted) ;
 		}
 
 		// Chess Recognition 및 Hand Recognition을 처리하는 단계가 포함된 함수.
-		Go_ImageProcessing();
+		_TEngine_S->Go_ImageProcessing();
 
 		// 이 구분은 나중에 삭제 해야할 것 같다.
 		// 회의 뒤 삭제.
-		if (Check_Exit() == true)
-			EngineEnable = false;
+		/*if (_TEngine_S->Check_Exit() == true)
+		_TEngine_S->EngineEnable = false;*/
 	}
 
-	Deinitialize_ImageProcessing();
-}
+	_TEngine_S->Deinitialize_ImageProcessing();
 
-/*
-void EngineS::Set_ClientData(SOCKET Socket, int Type) {
+	return 0;
 }
-*/
+#pragma endregion CVEC Processing Thread
+#pragma endregion Threads
+#pragma endregion Private Functions
+
+#pragma region Public Functions
+void EngineS::EngineS_Start() {
+#if defined(WINDOWS_SYS)
+	HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, CVESProcessingThread, this, 0, NULL);
+#elif defined(POSIX_SYS)
+	pthread_t _TThread;
+	pthread_attr_t _TThreadAttr;
+	// pthread attribute initialize.
+	pthread_attr_init(&_TThreadAttr);
+	// Detached thread.
+	pthread_attr_setdetachstate(&_TThreadAttr, PTHREAD_CREATE_DETACHED);
+	// User space thread.
+	pthread_attr_setscope(&_TThreadAttr, PTHREAD_SCOPE_SYSTEM);
+	// Create thread.
+	pthread_create(&_TThread, NULL, CVESProcessingThread, (void *)this);
+#endif
+}
+#pragma endregion Public Functions

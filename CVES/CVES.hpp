@@ -2,7 +2,7 @@
 //	The OpenCVE Project.
 //
 //	The MIT License (MIT)
-//	Copyright © 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
+//	Copyright ⓒ 2013 {Doohoon Kim, Sungpil Moon, Kyuhong Choi} at AR Team of SW Maestro 4th
 //	{invi.dh.kim, munsp9103, aiaipming} at gmail.com
 //
 //	Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -23,16 +23,30 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-// main.cpp
-// OpenCVE CVEC main 진입점.
+#ifndef _CVES_hpp_
+#define _CVES_hpp_
 
-// Modules
-#include "SystemDependency.hpp"
-//#if (defined(MAKE_CELESTIALS) && (MAKE_CELESTIALS == 0)) || !defined(USING_QT)
-#include "AdapterC.hpp"
+#include "EngineS.hpp"
 
-int main(int argc, char* argv[]) {
-	AdapterC _TAdapterC;
-	return _TAdapterC.Go_EngineC();
+//#if defined(USING_QT)
+#include <QMainWindow>
+
+namespace Ui {
+	class CVES;
 }
+
+class CVES : public QMainWindow
+{
+	Q_OBJECT
+
+private:
+	Ui::CVES *ui;
+
+public:
+	explicit CVES(QWidget *parent = 0);
+	~CVES();
+
+	EngineS *_EngineS;
+};
 //#endif
+#endif // _CVES_hpp_

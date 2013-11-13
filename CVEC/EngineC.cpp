@@ -52,6 +52,7 @@ EngineC::~EngineC() {
 }
 #pragma endregion Constructor & Destructor
 
+#pragma region Private Functions
 #pragma region Initialize & Deinitialize Functions
 void EngineC::Initialize_CommandStr() {
 	// Command는 BUFFER_MAX값에 의해서 결정
@@ -166,6 +167,11 @@ void EngineC::Clear_Str() {
 	memset(_Command, NULL, sizeof(_Command));
 }
 
+void EngineC::Clear_ClientSocket() {
+	if (_TelepathyClient != NULL)
+		delete _TelepathyClient;
+}
+
 bool EngineC::Connect_Server() {
 	bool _TIsConnected = false;
 
@@ -184,8 +190,20 @@ bool EngineC::Connect_Server() {
 			_TelepathyClient->ClientReceiveStart();
 			
 			// Command 처리용 Thread를 생성.
+#if defined(WINDOWS_SYS)
 			HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, ClientCommandQueueProcessingThread, this, 0, NULL);
-			
+#elif defined(POSIX_SYS)
+			pthread_t _TThread;
+			pthread_attr_t _TThreadAttr;
+			// pthread attribute initialize.
+			pthread_attr_init(&_TThreadAttr);
+			// Detached thread.
+			pthread_attr_setdetachstate(&_TThreadAttr, PTHREAD_CREATE_DETACHED);
+			// User space thread.
+			pthread_attr_setscope(&_TThreadAttr, PTHREAD_SCOPE_SYSTEM);
+			// Create thread.
+			pthread_create(&_TThread, NULL, ClientCommandQueueProcessingThread, (void *)this);
+#endif
 			_TIsConnected = true;
 		}
 	}
@@ -209,22 +227,7 @@ bool EngineC::Reconnect_Server() {
 	return Connect_Server();
 }
 
-void EngineC::Clear_ClientSocket() {
-	if (_TelepathyClient != NULL)
-		delete _TelepathyClient;
-}
-
-void EngineC::SendToGUI(const char *Str, ...) {
-	va_list _TArgument_List;
-	char _Str[BUFFER_MAX_4096];
-
-	va_start(_TArgument_List, Str);
-	vsprintf(_Str, Str, _TArgument_List);
-	va_end(_TArgument_List);
-
-	fprintf(stdout, "%s\n", _Str);
-}
-
+#pragma region UCI Command Functions
 void EngineC::Command_UCI() {
 	// 1. 현재 Name, 저작자 보냄.
 	SendToGUI("id name OpenCVE " ENGINE_EXEC_VER);
@@ -406,7 +409,6 @@ void EngineC::Command_Position(CommandString *_UCICS) {
 	_TelepathyClient->SendData((char *)_StringTools.StringToConstCharPointer(_TString));
 }
 
-//
 void EngineC::Command_Go(CommandString *_UCICS) {
 	string _TString = string("");
 	
@@ -547,6 +549,7 @@ void EngineC::Command_Quit() {
 	// 3. 완전 종료(Loop 정상 종료).
 	EngineEnable = false;
 }
+#pragma endregion UCI Command Functions
 
 void EngineC::Parsing_Command() {
 	StringTokenizer *_TStringTokenizer = new StringTokenizer();
@@ -606,6 +609,17 @@ void EngineC::Parsing_Command() {
 	delete _TStringTokenizer;
 }
 
+void EngineC::SendToGUI(const char *Str, ...) {
+	va_list _TArgument_List;
+	char _Str[BUFFER_MAX_4096];
+
+	va_start(_TArgument_List, Str);
+	vsprintf(_Str, Str, _TArgument_List);
+	va_end(_TArgument_List);
+
+	fprintf(stdout, "%s\n", _Str);
+}
+
 bool EngineC::CheckingCVESProcess() {
 	/*
 		CheckingCVESProcess 주의 할 점 정리.
@@ -661,8 +675,7 @@ bool EngineC::CheckingCVESProcess() {
 		// CVEC 검사(나 이외의 다른 Process 검사).
 		for_IterToEnd(list, SProcessInformations, _TSProcessInformationsList) {
 			// Image Path 검사.
-			CodeConverter _TCodeConverter;
-			char *_TStr = _TCodeConverter.WCharToChar(_TVal->ImgPath);
+			char *_TStr = _CodeConverter.WCharToChar(_TVal->ImgPath);
 			char _TStrBuff[MAX_PATH];
 
 			// 들어오는 String이 Null인 경우는 다음으로 넘어간다.
@@ -678,11 +691,28 @@ bool EngineC::CheckingCVESProcess() {
 			//_VarProtectMutex.unlock();
 
 			// 이름은 같은데 다른 Client Process가 이미 존재하는 경우.
-			if (strcmp(_TStrBuff, CLIENT_ENGINE_EXEC_FILENAME) == 0 && _TVal->PID != _TMyPID)
+
+			string _TString = string("");
+#if !defined(USING_QT)
+			_TString.append(CLIENT_ENGINE_EXEC_FILENAME);
+#else
+			_TString.append(CELESTIALS_EXEC_FILENAME);
+			_TString.append(" ");
+			_TString.append(CLIENT_MODE);
+#endif
+			if (strcmp(_TStrBuff, _StringTools.StringToConstCharPointer(_TString)) == 0 && _TVal->PID != _TMyPID)
 				_TIsAnotherCVECProcessActive = true;
 
+			_TString.clear();
+#if !defined(USING_QT)
+			_TString.append(SERVER_ENGINE_EXEC_FILENAME);
+#else
+			_TString.append(CELESTIALS_EXEC_FILENAME);
+			_TString.append(" ");
+			_TString.append(SERVER_MODE);
+#endif
 			// Server Process가 존재하는 경우.
-			if (strcmp(_TStrBuff, SERVER_ENGINE_EXEC_FILENAME) == 0) {
+			if (strcmp(_TStrBuff, _StringTools.StringToConstCharPointer(_TString)) == 0) {
 				_TIsCVESProcessActive = true;
 				_ServerPID = _TVal->PID;
 			}
@@ -694,7 +724,13 @@ bool EngineC::CheckingCVESProcess() {
 			// Check File Exists.
 			// 파일이 없으면 실행을 할 수 없기 때문에 처리.
 			// 이외의 경우 2번에도 적용 가능.
-			if (!_File.CheckFileExist(SERVER_ENGINE_EXEC_FILENAME))
+			string _TString = string("");
+#if !defined(USING_QT)
+			_TString.append(SERVER_ENGINE_EXEC_FILENAME);
+#else
+			_TString.append(CELESTIALS_EXEC_FILENAME);
+#endif
+			if (!_File.CheckFileExist((char *)_StringTools.StringToConstCharPointer(_TString)))
 				return false;
 			
 			// Image Path 만들어 주기.
@@ -703,7 +739,15 @@ bool EngineC::CheckingCVESProcess() {
 			memset(_TCharArr, NULL, sizeof(_TCharArr));
 			strcpy(_TCharArr,_File.GetCurrentPath());
 			memset(_TImageCmd, NULL, sizeof(_TImageCmd));
-			sprintf(_TImageCmd, "%s%s", _TCharArr, SERVER_ENGINE_EXEC_FILENAME);
+			_TString.clear();
+#if !defined(USING_QT)
+			_TString.append(SERVER_ENGINE_EXEC_FILENAME);
+#else
+			_TString.append(CELESTIALS_EXEC_FILENAME);
+			_TString.append(" ");
+			_TString.append(SERVER_MODE);
+#endif
+			sprintf(_TImageCmd, "%s%s", _TCharArr, _StringTools.StringToConstCharPointer(_TString));
 			//_VarProtectMutex.unlock();
 			
 			// CVES(Server) 실행.
@@ -741,25 +785,7 @@ void EngineC::StartUp_Check() {
 	// 2. Process Enable 뒤 Server 접속.
 	Connect_Server();
 }
-
-void EngineC::EngineC_Start() {
-	// 1. EngineC 초기화.
-	Engine_Initializing();
-	
-	// 2. Check & Start-up CVES.
-	StartUp_Check();
-
-	// 3. EngineC go Parsing.
-	while (EngineEnable) {
-		// Parser Engine Pause.
-		//while (EnginePause) ;
-		Parsing_Command();
-	}
-
-	// 4. EngineC Deinitializing.
-	Engine_DeInitializing();
-}
-
+#pragma region Callbacks
 #pragma region Client Received Callback
 void EngineC::ClientReceivedCallback(char *Buffer) {
 	// using mutex.
@@ -793,9 +819,9 @@ void EngineC::ClientDisconnectedCallback() {
 				// Server가 Error가 나서 죽었는데 Process가 Active 된 경우에는 일단 해당 Server Process를 죽이고 들어간다.
 				HANDLE _TServerProcessHandle = G_EngineC->_ProcessConfirm->FindProcessByPID(G_EngineC->_ServerPID);
 				if (G_EngineC->_ProcessConfirm->GetProcessStatus(_TServerProcessHandle) ==
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 					STILL_ACTIVE
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 
 #endif
 					) {
@@ -836,27 +862,29 @@ void EngineC::ClientDisconnectedCallback() {
 	}
 }
 #pragma endregion Client Disconnented Callback
+#pragma endregion Callbacks
 
+#pragma region Threads
 #pragma region Command Queue Processing Thread
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 UINT WINAPI
 //DWORD WINAPI
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 // using pthread
 void *
 #endif
 	EngineC::ClientCommandQueueProcessingThread(
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	LPVOID
 	//void *
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 	void *
 #endif
 	Param) {
 	EngineC *_TEngine_C = (EngineC *)Param;
 	
-	while (_TEngine_C->_TelepathyClient->IsConnectedClient) {
-		if (_TEngine_C->CommandQueue->empty() != true) {
+	while (_TEngine_C->EngineEnable != false) {
+		if (_TEngine_C->CommandQueue->empty() != true  && _TEngine_C->_TelepathyClient->IsConnectedClient) {
 			//_TEngine_C->_QueueProtectMutex.lock();
 			char _TStrBuffer[BUFFER_MAX_32767];
 			memset(_TStrBuffer, NULL, sizeof(_TStrBuffer));
@@ -866,7 +894,6 @@ void *
 
 			// 내부 Protocol 송신(CVEC -> CVES).
 			StringTokenizer *_StringTokenizer = new StringTokenizer();
-			InternalProtocolSeeker _InternalProtocolSeeker;
 
 			_StringTokenizer->SetInputCharString((const char *)_TStrBuffer);
 			_StringTokenizer->SetSingleToken(" ");
@@ -875,7 +902,7 @@ void *
 
 			string _TString = string("");
 			CommandString *_InternalProtocolCS = new CommandString(_StringTokenizer->GetTokenedCharListArrays());
-			int _NSeek_CVESToCVEC = _InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*_InternalProtocolCS->CharArrayListIter);
+			int _NSeek_CVESToCVEC = _TEngine_C->_InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*_InternalProtocolCS->CharArrayListIter);
 
 			switch (_NSeek_CVESToCVEC) {
 				case VALUE_I_ALIVE :
@@ -936,3 +963,61 @@ void *
 }
 
 #pragma endregion Command Queue Processing Thread
+
+#pragma region CVEC Processing Thread
+#if defined(WINDOWS_SYS)
+UINT WINAPI
+	//DWORD WINAPI
+#elif defined(POSIX_SYS)
+// using pthread
+void *
+#endif
+	EngineC::CVECProcessingThread(
+#if defined(WINDOWS_SYS)
+	LPVOID
+#elif defined(POSIX_SYS)
+	void *
+#endif
+	Param) {
+	EngineC *_TEngine_C = (EngineC *)Param;
+
+	// 1. EngineC 초기화.
+	_TEngine_C->Engine_Initializing();
+
+	// 2. Check & Start-up CVES.
+	_TEngine_C->StartUp_Check();
+
+	// 3. EngineC go Parsing.
+	while (_TEngine_C->EngineEnable) {
+		// Parser Engine Pause.
+		//while (EnginePause) ;
+		_TEngine_C->Parsing_Command();
+	}
+
+	// 4. EngineC Deinitializing.
+	_TEngine_C->Engine_DeInitializing();
+
+	return 0;
+}
+#pragma endregion CVEC Processing Thread
+#pragma endregion Threads
+#pragma endregion Private Functions
+
+#pragma region Public Functions
+void EngineC::EngineC_Start() {
+#if defined(WINDOWS_SYS)
+	HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, CVECProcessingThread, this, 0, NULL);
+#elif defined(POSIX_SYS)
+	pthread_t _TThread;
+	pthread_attr_t _TThreadAttr;
+	// pthread attribute initialize.
+	pthread_attr_init(&_TThreadAttr);
+	// Detached thread.
+	pthread_attr_setdetachstate(&_TThreadAttr, PTHREAD_CREATE_DETACHED);
+	// User space thread.
+	pthread_attr_setscope(&_TThreadAttr, PTHREAD_SCOPE_SYSTEM);
+	// Create thread.
+	pthread_create(&_TThread, NULL, CVECProcessingThread, (void *)this);
+#endif
+}
+#pragma endregion Public Functions

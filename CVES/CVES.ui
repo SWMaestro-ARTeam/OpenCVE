@@ -1,6 +1,6 @@
 <ui version="4.0">
- <class>Celestials</class>
- <widget class="QMainWindow" name="Celestials" >
+ <class>CVES</class>
+ <widget class="QMainWindow" name="CVES" >
   <property name="geometry">
    <rect>
     <x>0</x>

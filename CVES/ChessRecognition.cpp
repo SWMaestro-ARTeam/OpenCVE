@@ -31,7 +31,7 @@ ChessRecognition::ChessRecognition() {
 }
 
 ChessRecognition::~ChessRecognition() {
-	//exit();
+	exit();
 }
 #pragma endregion Constructor & Destructor
 
@@ -55,11 +55,10 @@ void ChessRecognition::Get_Line(vector<pair<float, float> > *XLines, vector<pair
 	YLines->clear();
 
 	// Mutex를 통하여 thread 동기를 맞춤.
-	_Vec_CSProtectionMutex.lock();
+	_Vec_ProtectionMutex.lock();
 	copy(_HoughLineBased._Vector_LineX.begin(), _HoughLineBased._Vector_LineX.end(), back_inserter(*XLines));
 	copy(_HoughLineBased._Vector_LineY.begin(), _HoughLineBased._Vector_LineY.end(), back_inserter(*YLines));
-	_Vec_CSProtectionMutex.unlock();
-
+	_Vec_ProtectionMutex.unlock();
 	//thread로 부터 가져온 라인을 9개로 merge.
 	_HoughLineBased.MergeLine(XLines);
 	_HoughLineBased.MergeLine(YLines);
@@ -109,10 +108,23 @@ void ChessRecognition::Refine_CrossPoint(vector<ChessPoint> *point) {
 }
 
 #pragma region Threads
-UINT WINAPI ChessRecognition::thread_hough(void *arg) {
+#if defined(WINDOWS_SYS)
+UINT WINAPI
+//DWORD WINAPI
+#elif defined(POSIX_SYS)
+// using pthread
+void *
+#endif
+	ChessRecognition::thread_hough(
+#if defined(WINDOWS_SYS)
+	LPVOID
+#elif defined(POSIX_SYS)
+	void *
+#endif
+	Param) {
 	// 실제로 뒤에서 동작하는 windows용 thread함수.
 	// 함수 인자로 클래스를 받아옴.
-	ChessRecognition *_TChessRecognition = (ChessRecognition *)arg;
+	ChessRecognition *_TChessRecognition = (ChessRecognition *)Param;
 	CvSeq *LineX, *LineY;
 	double h[] = { -1, -7, -15, 0, 15, 7, 1 };
 
@@ -133,7 +145,7 @@ UINT WINAPI ChessRecognition::thread_hough(void *arg) {
 
 	CvMemStorage* storageX = cvCreateMemStorage(0), *storageY = cvCreateMemStorage(0);
 
-	while (1) {
+	while (_TChessRecognition->thread_exit != true) {
 		// 이미지를 받아옴. main루프와 동기를 맞추기 위해서 critical section 사용.
 		_TChessRecognition->_CSProtectionMutex.lock();
 		//EnterCriticalSection(&(_TChessRecognition->cs));
@@ -177,16 +189,13 @@ UINT WINAPI ChessRecognition::thread_hough(void *arg) {
 		LineY = cvHoughLines2(iplEdgeY, storageY, CV_HOUGH_STANDARD, 1.0 * rho, CV_PI / 180 * theta, threshold, 0, 0);
 
 		// cvSeq를 vector로 바꾸기 위한 연산.
-		_TChessRecognition->_Vec_CSProtectionMutex.lock();
+		_TChessRecognition->_Vec_ProtectionMutex.lock();
 		//EnterCriticalSection(&_TChessRecognition->vec_cs);
 		_TChessRecognition->_HoughLineBased.CastSequence(LineX, LineY);
 		//LeaveCriticalSection(&_TChessRecognition->vec_cs);
-		_TChessRecognition->_Vec_CSProtectionMutex.unlock();
+		_TChessRecognition->_Vec_ProtectionMutex.unlock();
 
-		Sleep(2);
-
-		if (_TChessRecognition->thread_exit == true)
-			break;
+		Sleep(10);
 	}
 
 	// mat 할당 해제.
@@ -210,12 +219,25 @@ UINT WINAPI ChessRecognition::thread_hough(void *arg) {
 	return 0;
 }
 
-UINT WINAPI ChessRecognition::thread_ChessLineSearchAlg(void *arg) {
+#if defined(WINDOWS_SYS)
+UINT WINAPI
+//DWORD WINAPI
+#elif defined(POSIX_SYS)
+// using pthread
+void *
+#endif
+	ChessRecognition::thread_ChessLineSearchAlg(
+#if defined(WINDOWS_SYS)
+	LPVOID
+#elif defined(POSIX_SYS)
+	void *
+#endif
+	Param) {
 	// mode 2를 통하여 chessboard recognition을 수행하기 위한 thread 함수.
-	ChessRecognition *_TChessRecognition = (ChessRecognition *)arg;
+	ChessRecognition *_TChessRecognition = (ChessRecognition *)Param;
 	IplImage *_TGray = cvCreateImage(cvSize(_TChessRecognition->_Width, _TChessRecognition->_Height), IPL_DEPTH_8U, 1);
 
-	while (1) {
+	while (_TChessRecognition->thread_exit != true) {
 		// 연산에 필요한 이미지를 main으로부터 복사해 옴.
 		_TChessRecognition->_CSProtectionMutex.lock();
 		//EnterCriticalSection(&(_TChessRecognition->cs));
@@ -236,10 +258,7 @@ UINT WINAPI ChessRecognition::thread_ChessLineSearchAlg(void *arg) {
 		_TChessRecognition->_CSProtectionMutex.unlock();
 
 		// Sleep 10은 왜?
-		Sleep(2);
-
-		if (_TChessRecognition->thread_exit == true)
-			break;
+		Sleep(10);
 	}
 
 	_endthread();
@@ -270,10 +289,36 @@ void ChessRecognition::Initialize_ChessRecognition(int Width, int Height, int Mo
 	// 1 - linefitting을 이용한 chessboard recognition.
 	// 2 - x, y 선형 탐색을 이용한 chessboard recognition.
 	if (Mode == 1) {
-		hThread = (HANDLE)_beginthreadex(NULL, 0, thread_hough, this, 0, NULL);
+#if defined(WINDOWS_SYS)
+		HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, thread_hough, this, 0, NULL);
+#elif defined(POSIX_SYS)
+		pthread_t _TThread;
+		pthread_attr_t _TThreadAttr;
+		// pthread attribute initialize.
+		pthread_attr_init(&_TThreadAttr);
+		// Detached thread.
+		pthread_attr_setdetachstate(&_TThreadAttr, PTHREAD_CREATE_DETACHED);
+		// User space thread.
+		pthread_attr_setscope(&_TThreadAttr, PTHREAD_SCOPE_SYSTEM);
+		// Create thread.
+		pthread_create(&_TThread, NULL, thread_hough, (void *)this);
+#endif
 	}
 	else if (Mode == 2) {
-		hThread = (HANDLE)_beginthreadex(NULL, 0, thread_ChessLineSearchAlg, this, 0, NULL);
+#if defined(WINDOWS_SYS)
+		HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, thread_ChessLineSearchAlg, this, 0, NULL);
+#elif defined(POSIX_SYS)
+		pthread_t _TThread;
+		pthread_attr_t _TThreadAttr;
+		// pthread attribute initialize.
+		pthread_attr_init(&_TThreadAttr);
+		// Detached thread.
+		pthread_attr_setdetachstate(&_TThreadAttr, PTHREAD_CREATE_DETACHED);
+		// User space thread.
+		pthread_attr_setscope(&_TThreadAttr, PTHREAD_SCOPE_SYSTEM);
+		// Create thread.
+		pthread_create(&_TThread, NULL, thread_ChessLineSearchAlg, (void *)this);
+#endif
 	}
 
 	//내부 연산에 사용되는 이미지
@@ -284,7 +329,6 @@ void ChessRecognition::Initialize_ChessRecognition(int Width, int Height, int Mo
 	_Width = Width;
 	_Height = Height;
 }
-
 
 void ChessRecognition::Copy_Img(IplImage *src) {
 	// main의 cam으로부터 받아온 이미지를 thread의 연산에 사용하기 위해서 복사해오는 함수.
@@ -304,7 +348,7 @@ void ChessRecognition::Copy_Img(IplImage *src) {
 void ChessRecognition::exit() {
 	thread_exit = true;
 
-	CloseHandle(hThread);
+	//CloseHandle(hThread);
 	cvReleaseImage(&img_process);
 }
 
@@ -316,18 +360,25 @@ void ChessRecognition::Find_ChessPoint(IplImage *Source, vector<ChessPoint> *Poi
 
 	if (_MODE == 1) {
 		Get_Line(&CH_LineX, &CH_LineY);
+#if !defined(USING_QT)
 		_HoughLineBased.DrawLines(CH_LineX, Source);
 		_HoughLineBased.DrawLines(CH_LineY, Source);
+#endif
 		_HoughLineBased.FindIntersections(CH_LineX, CH_LineY, Point);
 		Refine_CrossPoint(Point);
+#if !defined(USING_QT)
 		DrawPoints(Source, *Point);
+#endif
 	}
 	else if (_MODE == 2) {
-		_Vec_CSProtectionMutex.lock();
+		_Vec_ProtectionMutex.lock();
+		
 		copy(_CP.begin(), _CP.end(), back_inserter(*Point));
-		_Vec_CSProtectionMutex.unlock();
-		//Refine_CrossPoint(point);
+		_Vec_ProtectionMutex.unlock();
+		//Refine_CrossPoint(point); 
+#if !defined(USING_QT)
 		DrawPoints(Source, *Point);
+#endif
 	}
 }
 #pragma endregion Public Functions

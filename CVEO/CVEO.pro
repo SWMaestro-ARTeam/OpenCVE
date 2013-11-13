@@ -4,9 +4,9 @@
 #
 #-------------------------------------------------
 
-QT       += core
+QT       += core gui
 
-QT       -= gui
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 QMAKE_CXXFLAGS -= -fno-keep-inline-dllexport
 QMAKE_CXXFLAGS += -std=c++0x -fpermissive
@@ -15,15 +15,47 @@ QMAKE_LFLAGS += -static -static-libgcc
 #QMAKE_LFLAGS += -static -static-libgcc -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
 
 TARGET = CVEO
-CONFIG   += console
-CONFIG   -= app_bundle
+#CONFIG   += console
+#CONFIG   -= app_bundle
 
 #CONFIG	+= qt warn_on release static staticlib
 CONFIG	+= static staticlib
 
 TEMPLATE = app
 
-SOURCES += main.cpp
+SOURCES += main.cpp\
+				CVEO.cpp \
+    EngineO.cpp \
+    ../Common/Time.cpp \
+    ../Common/Telepathy.cpp \
+    ../Common/StringTools.cpp \
+    ../Common/StringTokenizer.cpp \
+    ../Common/Process.cpp \
+    ../Common/InternalProtocolSeeker.cpp \
+    ../Common/File.cpp \
+    ../Common/Debug.cpp \
+    ../Common/CodeConverter.cpp \
+    AdapterO.cpp
+
+HEADERS  += CVEO.hpp \
+    EngineO.hpp \
+    ../Common/Time.hpp \
+    ../Common/Telepathy.hpp \
+    ../Common/SystemDependency.hpp \
+    ../Common/StringTools.hpp \
+    ../Common/StringTokenizer.hpp \
+    ../Common/Process.hpp \
+    ../Common/InternalProtocolSeeker.hpp \
+    ../Common/InternalProtocol.hpp \
+    ../Common/GlobalVariables.hpp \
+    ../Common/File.hpp \
+    ../Common/ExtendedBlackBox.hpp \
+    ../Common/Debug.hpp \
+    ../Common/Common.hpp \
+    ../Common/CodeConverter.hpp \
+    AdapterO.hpp
+
+FORMS    += CVEO.ui
 
 MINGW_PATH = C:/System_Emulator/MinGW
 QT_PATH = C:/System_Development/Qt/5.1.1
@@ -42,7 +74,7 @@ QT_OPENGLES2_ROOT = $$QT_MSVC2012_32_PATH/include/QtANGLE
 
 OPENCVE_ROOT = $$PROJECT_PATH/OpenCVE
 
-## Include Path.
+## Include Path for OpenCVE.
 INCLUDEPATH += . \
 			# Qt Open GL ES2 Root
 #			+= $$QT_OPENGLES2_ROOT \

@@ -4,9 +4,9 @@
 #
 #-------------------------------------------------
 
-QT       += core
+QT       += core gui
 
-QT       -= gui
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 QMAKE_CXXFLAGS -= -fno-keep-inline-dllexport
 QMAKE_CXXFLAGS += -std=c++0x -fpermissive
@@ -15,8 +15,8 @@ QMAKE_LFLAGS += -static -static-libgcc
 #QMAKE_LFLAGS += -static -static-libgcc -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
 
 TARGET = CVES
-CONFIG   += console
-CONFIG   -= app_bundle
+#CONFIG   += console
+#CONFIG   -= app_bundle
 
 #CONFIG	+= qt warn_on release static staticlib
 CONFIG	+= static staticlib
@@ -39,7 +39,9 @@ SOURCES += main.cpp \
     CheckInChessboard.cpp \
     LineSearchBased.cpp \
     HoughLineBased.cpp \
-    ChessObjectDetection.cpp
+    ChessObjectDetection.cpp \
+    CVES.cpp \
+    AdapterS.cpp
 
 HEADERS += \
 		../Common/Time.hpp \
@@ -62,7 +64,11 @@ HEADERS += \
     CheckInChessboard.hpp \
     LineSearchBased.hpp \
     HoughLineBased.hpp \
-    ChessObjectDetection.hpp
+    ChessObjectDetection.hpp \
+    CVES.hpp \
+    AdapterS.hpp
+
+FORMS += CVES.ui
 
 #QT_PATH = ${QTDIR}
 #PROJECT_PATH = ${INVI_PROJECT_ROOT}

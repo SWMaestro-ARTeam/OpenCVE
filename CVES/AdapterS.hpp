@@ -23,16 +23,22 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-// main.cpp
-// OpenCVE CVEC main 진입점.
-
-// Modules
+#ifndef _AdapterS_hpp_
+#define _AdapterS_hpp_
 #include "SystemDependency.hpp"
-//#if (defined(MAKE_CELESTIALS) && (MAKE_CELESTIALS == 0)) || !defined(USING_QT)
-#include "AdapterC.hpp"
 
-int main(int argc, char* argv[]) {
-	AdapterC _TAdapterC;
-	return _TAdapterC.Go_EngineC();
-}
-//#endif
+#include "EngineS.hpp"
+
+#if defined(USING_QT)
+#include "CVES.hpp"
+#include <QApplication>
+#endif
+
+class AdapterS {
+private:
+public:
+	// 최초 진입점.
+	int Go_EngineS(int argc, char* argv[]);
+};
+
+#endif

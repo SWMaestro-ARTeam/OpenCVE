@@ -58,6 +58,9 @@
     <ClCompile Include="HoughLineBased.cpp">
       <Filter>CVES_System\Algorithm\Source</Filter>
     </ClCompile>
+    <ClCompile Include="AdapterS.cpp">
+      <Filter>CVES_System\AdapterS\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BlobLabeling.hpp">
@@ -131,6 +134,9 @@
     </ClInclude>
     <ClInclude Include="HoughLineBased.hpp">
       <Filter>CVES_System\Algorithm\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="AdapterS.hpp">
+      <Filter>CVES_System\AdapterS\Header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -274,6 +280,15 @@
     </Filter>
     <Filter Include="CVES_System\DrawView">
       <UniqueIdentifier>{cec2b7ac-8e47-4f3a-8153-49e9e4e8d0a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVES_System\AdapterS">
+      <UniqueIdentifier>{f4d822e8-4e50-4061-bb5b-0e70e806e192}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVES_System\AdapterS\Header">
+      <UniqueIdentifier>{ac029929-e431-4ad6-8f63-70c3f0c394c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVES_System\AdapterS\Source">
+      <UniqueIdentifier>{f5438f5a-f8b5-450b-adb3-7f6ec9ed659e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

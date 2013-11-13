@@ -53,9 +53,9 @@ char *Time::GetUTCTime() {
 // '초' 단위 실제 시간이 나온다(Sec).
 double Time::GetRealTime() {
 	double _TRealTime = 0.0f;
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	_TRealTime = GetTickCount() / 1000.0f;
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 	timeval _TTimeVal[1];
 	timezone _TTimeZone[1];
 
@@ -74,9 +74,9 @@ double Time::GetNowCPUTimeOfProcessStarted() {
 	// 유휴 상태(wait 함수, sleep 함수 등)에서는 clock을 쓰면 안된다는 점에 주의.
 	// 고로 GetNowCPUTimeOfProcessStarted 함수는, 유휴 상태에서는 쓸 수 없다는 점에 유의해라.
 	double _TNowClock = clock();
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	_TCPUTime = _TNowClock / double(CLOCKS_PER_SEC);
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 	rusage _TRusage[1];
 
 	if (getrusage(RUSAGE_SELF, _TRusage) != -1)
@@ -121,17 +121,17 @@ void Timer::End() {
 	_IsStart = false;
 }
 
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 UINT WINAPI
 	//DWORD WINAPI
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 // using pthread
 void *
 #endif
 	Timer::TimerProcessingThread(
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	LPVOID
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 	void * 
 #endif 
 	Param) {

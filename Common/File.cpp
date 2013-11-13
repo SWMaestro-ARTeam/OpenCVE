@@ -45,7 +45,7 @@ char *File::GetCurrentFullPath() {
 	//char *_TStr = new char[MAX_PATH];
 	//char _TStr[MAX_PATH];
 #if UNICODE
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	// for windows unicode.
 	LPWSTR _TStr = new WCHAR[MAX_PATH];
 #endif
@@ -53,7 +53,7 @@ char *File::GetCurrentFullPath() {
 	char *_TStr = new char[MAX_PATH];
 #endif
 	memset(_TStr, NULL, sizeof(_TStr));
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	GetModuleFileName(NULL,
 #if	UNICODE
 		// for windows unicode.
@@ -62,7 +62,7 @@ char *File::GetCurrentFullPath() {
 		(LPSTR)
 #endif
 		_TStr, MAX_PATH);
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 	// POSIX 표준.
 	getcwd(_TStr, _MAX_PATH);
 #endif
@@ -104,7 +104,7 @@ bool File::CheckFileExist(char *FileName) {
 	_TStrBuff[strlen(_TStrBuff)] = '\0';
 	//strncat(_TStr, FileName, _TLengthFileNameStr + 1); 
 
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	CodeConverter _TCodeConverter;
 #if	UNICODE
 	// for windows unicode.
@@ -129,7 +129,7 @@ bool File::CheckFileExist(char *FileName) {
 
 	if (_TDWORD == 0xFFFFFFFFL)
 		return false;
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 	DIR *_TDirPointer = NULL;
 
 	if ((_TDirPointer = opendir(_TStr)) == NULL)

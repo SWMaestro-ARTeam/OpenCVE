@@ -23,16 +23,30 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-// main.cpp
-// OpenCVE CVEC main 진입점.
+#ifndef _CVEO_hpp_
+#define _CVEO_hpp_
 
-// Modules
-#include "SystemDependency.hpp"
-//#if (defined(MAKE_CELESTIALS) && (MAKE_CELESTIALS == 0)) || !defined(USING_QT)
-#include "AdapterC.hpp"
+#include "EngineO.hpp"
 
-int main(int argc, char* argv[]) {
-	AdapterC _TAdapterC;
-	return _TAdapterC.Go_EngineC();
+//#if defined(USING_QT)
+#include <QMainWindow>
+
+namespace Ui {
+	class CVEO;
 }
+
+class CVEO : public QMainWindow
+{
+	Q_OBJECT
+
+private:
+	Ui::CVEO *ui;
+
+public:
+	explicit CVEO(QWidget *parent = 0);
+	~CVEO();
+
+	EngineO *_EngineO;
+};
 //#endif
+#endif // _CVEO_hpp_

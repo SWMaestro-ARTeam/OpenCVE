@@ -29,6 +29,7 @@
 // Telepathy Server Class Area.
 Telepathy::Server *G_TelepathyServer;
 
+#pragma region Constructor & Destructor
 // constructor
 Telepathy::Server::Server() {
 	IsInitializeServer = false;
@@ -41,18 +42,19 @@ Telepathy::Server::~Server() {
 		ServerClose();
 	}
 }
+#pragma endregion Constructor & Destructor
 
 #pragma region Server Threads
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 UINT WINAPI
 //DWORD WINAPI
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 void *
 #endif
 	Telepathy::Server::Server_ConnectionThread(
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	LPVOID
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 	void *
 #endif
 	Param) {
@@ -63,16 +65,16 @@ void *
 	return 0;
 }
 
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 UINT WINAPI
 //DWORD WINAPI
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 void *
 #endif
 	Telepathy::Server::Server_ReceivingThread(
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	LPVOID
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 	void *
 #endif
 	Param) {
@@ -144,14 +146,24 @@ bool Telepathy::Server::ServerStart() {
 	}
 	else {
 		// Client 관리 Thread 시작.
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 //	#ifdef _AFXDLL
 		//AfxBeginThread(Server_ConnectionThread, 0);
 		/*DWORD _TThreadID = 0;
 		CreateThread(NULL, 0, Server_ConnectionThread, 0, 0, &_TThreadID);*/
 		HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, Server_ConnectionThread, NULL, 0, NULL);
 //	#endif
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
+		pthread_t _TThread;
+		pthread_attr_t _TThreadAttr;
+		// pthread attribute initialize.
+		pthread_attr_init(&_TThreadAttr);
+		// Detached thread.
+		pthread_attr_setdetachstate(&_TThreadAttr, PTHREAD_CREATE_DETACHED);
+		// User space thread.
+		pthread_attr_setscope(&_TThreadAttr, PTHREAD_SCOPE_SYSTEM);
+		// Create thread.
+		pthread_create(&_TThread, NULL, Server_ConnectionThread, (void *)0);
 #endif
 		_TIsStarted = IsServerStarted = true;
 	}
@@ -205,7 +217,7 @@ void Telepathy::Server::ServerListentoClient() {
 		return ;
 
 	// Thread Begin.
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	// windows용.
 //	#ifdef _AFXDLL
 	//AfxBeginThread(Server_ReceivingThread, (void *)_M_HClientSocket);
@@ -213,7 +225,7 @@ void Telepathy::Server::ServerListentoClient() {
 	CreateThread(NULL, 0, Server_ReceivingThread, (LPVOID)_TSocket, 0, &_TThreadID);*/
 	HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, Server_ReceivingThread, (LPVOID)_TSocket, 0, NULL);
 //	#endif // _AFXDLL
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 	pthread_t _TThread;
 	pthread_attr_t _TThreadAttr;
 	// pthread attribute initialize.
@@ -235,9 +247,9 @@ bool Telepathy::Server::ServerReceiving(SOCKET ClientSocket) {
 	memset(_TBuffer, NULL, sizeof(_TBuffer));
 
 	_TReadBufferLength =
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 		recv(ClientSocket, _TBuffer, BUFFER_MAX_32767, 0);
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 
 #endif
 	
@@ -261,17 +273,12 @@ bool Telepathy::Server::ServerReceiving(SOCKET ClientSocket) {
 					break;
 				}
 			}
-			//ClientList.remove(*_TVal);
 		}
-		
-		// 만약 Length가 없다면, 해당 Client Socket 연결 삭제.
-		// ConnectorsSocketList.remove(ClientSocket);
 		return false;
 	}
 	else {
 		// 만약 있다면, 다른 곳의 외부 함수 호출.
 		// 정확히 말하면, Server를 쓰는 곳에서 호출.
-		
 		TServerReceivedCallback(_TBuffer, ClientSocket);
 	}
 	return true;
@@ -309,25 +316,6 @@ bool Telepathy::Server::SendDataToOne(char *Str, SOCKET ClientSocket) {
 			return true;
 		}
 	}
-	
-	/*
-	for (_TLIt = ClientList.begin();
-		_TLIt != ClientList.end(); _TLIt++) {
-		if (*_TLIt == ClientSocket)
-			_TSendStatus = send(*_TLIt, Str, strlen(Str)+1, 0);
-
-		// Send 했을 때, Client가 끊겨 있다면(곧, _SendStatus가 -1일 때).
-		// Socket List를 지워버린다.
-		if (_TSendStatus == -1)
-			ClientList.remove(*_TLIt);
-	}
-	*/
-	/*
-	if (_TSendStatus == -1)
-		return false;
-
-	return true;
-	*/
 	return true;
 }
 
@@ -363,6 +351,7 @@ void Telepathy::Server::SendDataToAll(char *Str) {
 // Telepathy Client Class Area.
 Telepathy::Client *G_TelepathyClient;
 
+#pragma region Constructor & Destructor
 // constructor
 Telepathy::Client::Client(){
 	IsInitializeClient = false;
@@ -378,18 +367,19 @@ Telepathy::Client::~Client(){
 	IsInitializeClient = false;
 	G_TelepathyClient = NULL;
 }
+#pragma endregion Constructor & Destructor
 
 #pragma region Client Threads
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 UINT WINAPI
 //DWORD WINAPI
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 void *
 #endif
 	Telepathy::Client::Client_ReceivingThread(
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 	LPVOID
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 	void *
 #endif
 	Param) {
@@ -452,14 +442,9 @@ void Telepathy::Client::ClientReceiveStart() {
 	}
 	else {
 		// Client 관리 Thread 시작.
-#if WINDOWS_SYS
-//	#ifdef _AFXDLL
-		//AfxBeginThread(Client_ReceivingThread, 0);
-		/*DWORD _TThreadID = 0;
-		CreateThread(NULL, 0, Client_ReceivingThread, 0, 0, &_TThreadID);*/
+#if defined(WINDOWS_SYS)
 		HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, Client_ReceivingThread, NULL, 0, NULL);
-//	#endif
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 		pthread_t _TThread;
 		pthread_attr_t _TThreadAttr;
 		// pthread attribute initialize.
@@ -489,9 +474,9 @@ bool Telepathy::Client::ClientReceiving() {
 	memset(_TBuffer, NULL, sizeof(_TBuffer));
 
 	_TReadBufferLength =
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 		recv(_ClientSocket, _TBuffer, BUFFER_MAX_32767, 0);
-#elif POSIX_SYS
+#elif defined(POSIX_SYS)
 
 #endif
 
@@ -524,12 +509,6 @@ void Telepathy::Client::ClientDisconnect() {
 	TClientDisconnectedCallback();
 	//IsConnectedClient = false;
 }
-
-//bool Telepathy::Client::ClientReConnect() {
-//	ClientInitialize();
-//	ClientConnect();
-//}
-
 
 bool Telepathy::Client::SendData(char *Str) {
 	int _TSendStatus = 0;

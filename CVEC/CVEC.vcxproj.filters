@@ -138,6 +138,15 @@
     <Filter Include="CVEC_System\Settings\Source">
       <UniqueIdentifier>{5aaf3882-aaba-4623-a486-bd4d6b87673d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="CVEC_System\AdapterC">
+      <UniqueIdentifier>{6f28cfd7-bb62-4d79-97b7-34ac3cd42051}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVEC_System\AdapterC\Header">
+      <UniqueIdentifier>{5fcd3ff5-cb61-4681-be24-25abae0212d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVEC_System\AdapterC\Source">
+      <UniqueIdentifier>{fb5b3e44-03b2-46ba-be85-86c9ea48be07}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UCICommandSesker.cpp">
@@ -181,6 +190,9 @@
     </ClCompile>
     <ClCompile Include="..\Common\StringTools.cpp">
       <Filter>Common\StringTools\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="AdapterC.cpp">
+      <Filter>CVEC_System\AdapterC\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -237,6 +249,9 @@
     </ClInclude>
     <ClInclude Include="..\Common\StringTools.hpp">
       <Filter>Common\StringTools\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="AdapterC.hpp">
+      <Filter>CVEC_System\AdapterC\Header</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

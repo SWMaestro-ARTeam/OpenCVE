@@ -25,41 +25,57 @@
 #ifndef _SystemDependency_hpp_
 #define _SystemDependency_hpp_
 
-#if defined(_WIN32) || defined(_WIN64)
+#if defined __cplusplus
+
+#if defined(_WIN32) || defined(_WIN64) || defined(WIN32)
 // using windows.
-#define WINDOWS_SYS 1
-	#if defined(__MINGW32__)
+#define WINDOWS_SYS
+	#ifdef __MINGW32__
 	// using MinGW(for windows).
-	#define MINGW_USING 1
-		// Qt mingw g++ mkspecs using Always.
-		#if defined(__GNUC__) && defined(WIN32)
-		#define QT_WIN_USING 1
+	#define MINGW_USING
+		#if defined(__GNUC__)
+		#define WIN_QT_USING
+		#define USING_QT
 		#endif
 	#endif
+
+	// Qt mingw g++ mkspecs using Always.
+
 #else
 // using Linux, FreeBSD, Mac OSX.
-#define POSIX_SYS 1
+#define POSIX_SYS
 	// 추후 수정
 	#if defined(__GNUC__) && (defined(Q_OS_LINUX) || defined(Q_OS_FREEBSD) || defined(Q_OS_MAC) || defined(Q_OS_UNIX) \
 			|| defined(Q_OS_CYGWIN) || defined(Q_OS_DARWIN))
-	#define QT_POSIX_USING 1
+	#define POSIX_QT_USING
+	#define USING_QT
 	#endif
 #endif
 
+
+
+/*
 // QT 판별.
-#if QT_WIN_USING || QT_POSIX_USING
-#define USING_QT 1
+#if defined(WIN_QT_USING)
+#define USING_QT
+#elif defined(POSIX_QT_USING)
+#define USING_QT
+#endif
+*/
+#if defined(USING_QT)
+// if Make Celestials, Written 1.
+#define MAKE_CELESTIALS 1
 #endif
 
 // If defined Debug mode by compiler(M$ Visual Studio & Qt Creator).
-#if defined(_DEBUG) || defined(QT_NO_DEBUG)
+#if defined(_DEBUG) || !defined(QT_NO_DEBUG)
 #define DEBUG_MODE
 #endif
 
 #define ZERO_ 0
 //#undef NULL
 //#define NULL ((void *)0)
-#if MINGW_USING
+#if defined(MINGW_USING)
 #define NULL 0
 #define VOIDNULL ((void *)0)
 #define NULL_ __null
@@ -77,7 +93,7 @@
 #define BUFFER_MAX_32767 ((BUFFER_MAX_1024 * 32) - 1)
 #define BUFFER_MAX_65535 ((BUFFER_MAX_1024 * 64) - 1)
  
-#if WINDOWS_SYS
+#if defined(WINDOWS_SYS)
 // using MFC.
 //#if !MINGW_USING
 //#define _AFXDLL
@@ -88,4 +104,5 @@
 #define PROCESS_MAX 32767
 #endif
 
+#endif
 #endif

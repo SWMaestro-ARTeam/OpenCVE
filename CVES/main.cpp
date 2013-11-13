@@ -23,19 +23,17 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#include "EngineS.hpp"
+// main.cpp
+// OpenCVE CVES main 진입점.
+
+// Modules
+#include "SystemDependency.hpp"
+//#if (defined(MAKE_CELESTIALS) && (MAKE_CELESTIALS == 0)) || !defined(USING_QT)
+//#if !defined(USING_QT)
+#include "AdapterS.hpp"
 
 int main(int argc, char* argv[]){
-	EngineS *_EngineS;
-
-	// 1. CVEC Engine 생성.
-	_EngineS = new EngineS();
-	// 2. Engine Enable.
-	_EngineS->EngineEnable = true;
-	// 3. Engine Start.
-	_EngineS->EngineS_Start();
-	// 4. Delete pointer.
-	delete _EngineS;
-	
-	return 0;
+	AdapterS _TAdapterS;
+	return _TAdapterS.Go_EngineS(argc, argv);
 }
+//#endif
