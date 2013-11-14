@@ -9,7 +9,7 @@ ChessObjDetection::ChessObjDetection(void)
 	_low_bright = 135;
 	_high_bright = 0;
 
-	_thickness = 20;
+	_thickness = 15;
 
 	_score_threshold = 0.01;
 	_sub_threshold = 0.01;

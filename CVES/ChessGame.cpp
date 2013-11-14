@@ -225,7 +225,7 @@ void ChessGame::enpassant_move(CvPoint move_input[]){
 
 		temp_move.turn_flag = WHITE_TURN;
 
-		if(_TValue1 == Ground && move_input[0].y - 1 == before_move_pawn.x){
+		if(_TValue1 == Ground && move_input[0].y - 1 == _before_move.position.y){
 			if(_TValue2 == W_Pawn){
 
 				// 1. 폰이 이동할 예정인 빈공간과 현재 이동한 폰의 위치를 스왑한다
@@ -247,7 +247,7 @@ void ChessGame::enpassant_move(CvPoint move_input[]){
 				_before_move.position = move_input[0];
 			}
 		}
-		else if (_TValue2 == Ground && move_input[1].y - 1 == before_move_pawn.x) {
+		else if (_TValue2 == Ground && move_input[1].y - 1 == _before_move.position.y) {
 			if (_TValue1 == W_Pawn) {
 				_V_SWAP(_Board[move_input[1].x][move_input[1].y],_Board[move_input[0].x][move_input[0].y]);
 				_Board[move_input[2].x][move_input[2].y] = Ground;
@@ -265,7 +265,7 @@ void ChessGame::enpassant_move(CvPoint move_input[]){
 				_before_move.position = move_input[1];
 			}
 		}
-		else if (_TValue3 == Ground && move_input[2].y - 1 == before_move_pawn.x) {
+		else if (_TValue3 == Ground && move_input[2].y - 1 == _before_move.position.y) {
 			if (_TValue1 == W_Pawn){
 				_V_SWAP(_Board[move_input[2].x][move_input[2].y],_Board[move_input[0].x][move_input[0].y]);
 				_Board[move_input[1].x][move_input[1].y] = Ground;
@@ -292,7 +292,7 @@ void ChessGame::enpassant_move(CvPoint move_input[]){
 
 		temp_move.turn_flag = BLACK_TURN;
 
-		if(_TValue1 == Ground && move_input[0].y + 1 == before_move_pawn.x){
+		if(_TValue1 == Ground && move_input[0].y + 1 == _before_move.position.x){
 			if(_TValue2 == B_Pawn){
 				_V_SWAP(_Board[move_input[0].x][move_input[0].y],_Board[move_input[1].x][move_input[1].y]);
 				_Board[move_input[2].x][move_input[2].y] = Ground;
@@ -384,8 +384,10 @@ void ChessGame::default_move(CvPoint move_input[]){
 				_before_move.piece = _TValue1;
 				_before_move.position = move_input[1];
 			}
-			else
-				return;	
+			else{
+				printf("error! return (%d, %d) -> (%d, %d)", move_input[1].x, move_input[1].y, move_input[0].x, move_input[0].y);
+				return;
+			}
 		}
 		else if (W_King <= _TValue2 && _TValue2 <= W_Pawn){
 			if(default_move_rule(move_input[1], move_input[0])){
@@ -399,8 +401,10 @@ void ChessGame::default_move(CvPoint move_input[]){
 				_before_move.piece = _TValue2;
 				_before_move.position = move_input[0];
 			}
-			else
+			else{
+				printf("error! return (%d, %d) -> (%d, %d)", move_input[0].x, move_input[0].y, move_input[1].x, move_input[1].y);
 				return;
+			}
 		}
 		else{
 			//자신의 턴이 아닐때 체스말을 움직임.
@@ -425,8 +429,10 @@ void ChessGame::default_move(CvPoint move_input[]){
 				_before_move.piece = _TValue1;
 				_before_move.position = move_input[1];
 			}
-			else
+			else{
+				printf("error! return (%d, %d) -> (%d, %d)", move_input[1].x, move_input[1].y, move_input[0].x, move_input[0].y);
 				return;
+			}
 		}
 		else if (B_King <= _TValue2 && _TValue2 <= B_Pawn) {
 			if(default_move_rule(move_input[1], move_input[0])){
@@ -440,8 +446,10 @@ void ChessGame::default_move(CvPoint move_input[]){
 				_before_move.piece = _TValue2;
 				_before_move.position = move_input[0];
 			}
-			else
+			else{
+				printf("error! return (%d, %d) -> (%d, %d)", move_input[0].x, move_input[0].y, move_input[1].x, move_input[1].y);
 				return;
+			}
 		}
 		else{
 			//자신의 턴이 아닐때 체스말을 움직임.

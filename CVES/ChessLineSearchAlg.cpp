@@ -88,6 +88,7 @@ void ChessLineSearchAlg::GetLinegrayScale(IplImage *gray_image, int linefindcoun
 	line_y22.push_back(setMyGrayPoint(Getgrayscale(gray_image, x22, image_y / 2), x22, image_y / 2));
 
 	for (register int y = 1; y <= image_y / 2; y++) {
+
 		line_y1.push_back(setMyGrayPoint(Getgrayscale(gray_image, x1, (image_y / 2) + y), x1, (image_y / 2) + y));
 		line_y1.push_back(setMyGrayPoint(Getgrayscale(gray_image, x1, (image_y / 2) - y), x1, (image_y / 2) - y));
 		line_y11.push_back(setMyGrayPoint(Getgrayscale(gray_image, x11, (image_y / 2) + y), x11, (image_y / 2) + y));
@@ -125,60 +126,60 @@ void ChessLineSearchAlg::GetgraySidelinesPoint(IplImage *chess_image) {
 	// GetLinegrayScale에서 얻은 4개의 라인에서 경계점을 탐색한다
 
 	// 각 grayscale이 저장되어 있는 vector 배열에서 해당 라인의 교차점을 구한다.
-	HANDLE _THandleArr[8];
-	_THandleArr[0] = (HANDLE)_beginthreadex(NULL, 0, 
-		GraySideLinesPointThread, 
-		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_x1, &line_point_x1, &in_line_point_x1, true), 
-		0, NULL);
-	_THandleArr[1] = (HANDLE)_beginthreadex(NULL, 0, 
-		GraySideLinesPointThread,
-		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_x2, &line_point_x2, &in_line_point_x2, true),
-		0, NULL);
-	_THandleArr[2] = (HANDLE)_beginthreadex(NULL, 0,
-		GraySideLinesPointThread,
-		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_y1, &line_point_y1, &in_line_point_y1, false),
-		0, NULL);
-	_THandleArr[3] = (HANDLE)_beginthreadex(NULL, 0,
-		GraySideLinesPointThread,
-		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_y2, &line_point_y2, &in_line_point_y2, false),
-		0, NULL);
-	_THandleArr[4] = (HANDLE)_beginthreadex(NULL, 0, 
-		GraySideLinesPointThread, 
-		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_x11, &line_point_x11, &in_line_point_x11, true), 
-		0, NULL);
-	_THandleArr[5] = (HANDLE)_beginthreadex(NULL, 0, 
-		GraySideLinesPointThread,
-		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_x22, &line_point_x22, &in_line_point_x22, true),
-		0, NULL);
-	_THandleArr[6] = (HANDLE)_beginthreadex(NULL, 0,
-		GraySideLinesPointThread,
-		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_y11, &line_point_y11, &in_line_point_y11, false),
-		0, NULL);
-	_THandleArr[7] = (HANDLE)_beginthreadex(NULL, 0,
-		GraySideLinesPointThread,
-		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_y22, &line_point_y22, &in_line_point_y22, false),
-		0, NULL);
+// 	HANDLE _THandleArr[8];
+// 	_THandleArr[0] = (HANDLE)_beginthreadex(NULL, 0, 
+// 		GraySideLinesPointThread, 
+// 		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_x1, &line_point_x1, &in_line_point_x1, true), 
+// 		0, NULL);
+// 	_THandleArr[1] = (HANDLE)_beginthreadex(NULL, 0, 
+// 		GraySideLinesPointThread,
+// 		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_x2, &line_point_x2, &in_line_point_x2, true),
+// 		0, NULL);
+// 	_THandleArr[2] = (HANDLE)_beginthreadex(NULL, 0,
+// 		GraySideLinesPointThread,
+// 		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_y1, &line_point_y1, &in_line_point_y1, false),
+// 		0, NULL);
+// 	_THandleArr[3] = (HANDLE)_beginthreadex(NULL, 0,
+// 		GraySideLinesPointThread,
+// 		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_y2, &line_point_y2, &in_line_point_y2, false),
+// 		0, NULL);
+// 	_THandleArr[4] = (HANDLE)_beginthreadex(NULL, 0, 
+// 		GraySideLinesPointThread, 
+// 		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_x11, &line_point_x11, &in_line_point_x11, true), 
+// 		0, NULL);
+// 	_THandleArr[5] = (HANDLE)_beginthreadex(NULL, 0, 
+// 		GraySideLinesPointThread,
+// 		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_x22, &line_point_x22, &in_line_point_x22, true),
+// 		0, NULL);
+// 	_THandleArr[6] = (HANDLE)_beginthreadex(NULL, 0,
+// 		GraySideLinesPointThread,
+// 		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_y11, &line_point_y11, &in_line_point_y11, false),
+// 		0, NULL);
+// 	_THandleArr[7] = (HANDLE)_beginthreadex(NULL, 0,
+// 		GraySideLinesPointThread,
+// 		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_y22, &line_point_y22, &in_line_point_y22, false),
+// 		0, NULL);
+// 
+// 	// 이 함수 4개를 스레드로
+// 	WaitForMultipleObjects(8, _THandleArr, TRUE, INFINITE);
+// 
+// 	CloseHandle(_THandleArr[0]);
+// 	CloseHandle(_THandleArr[1]);
+// 	CloseHandle(_THandleArr[2]);
+// 	CloseHandle(_THandleArr[3]);
+// 	CloseHandle(_THandleArr[4]);
+// 	CloseHandle(_THandleArr[5]);
+// 	CloseHandle(_THandleArr[6]);
+// 	CloseHandle(_THandleArr[7]);
 
-	// 이 함수 4개를 스레드로
-	WaitForMultipleObjects(8, _THandleArr, TRUE, INFINITE);
-
-	CloseHandle(_THandleArr[0]);
-	CloseHandle(_THandleArr[1]);
-	CloseHandle(_THandleArr[2]);
-	CloseHandle(_THandleArr[3]);
-	CloseHandle(_THandleArr[4]);
-	CloseHandle(_THandleArr[5]);
-	CloseHandle(_THandleArr[6]);
-	CloseHandle(_THandleArr[7]);
-
-// 	GetgraySidelines(chess_image, &line_x1, &line_point_x1, &in_line_point_x1, true);
-// 	GetgraySidelines(chess_image, &line_x2, &line_point_x2, &in_line_point_x2, true);
-// 	GetgraySidelines(chess_image, &line_y1, &line_point_y1, &in_line_point_y1, false);
-// 	GetgraySidelines(chess_image, &line_y2, &line_point_y2, &in_line_point_y2, false);
-// 	GetgraySidelines(chess_image, &line_x11, &line_point_x11, &in_line_point_x11, true);
-// 	GetgraySidelines(chess_image, &line_x22, &line_point_x22, &in_line_point_x22, true);
-// 	GetgraySidelines(chess_image, &line_y11, &line_point_y11, &in_line_point_y11, false);
-// 	GetgraySidelines(chess_image, &line_y22, &line_point_y22, &in_line_point_y22, false);
+	GetgraySidelines(chess_image, &line_x1, &line_point_x1, &in_line_point_x1, true);
+	GetgraySidelines(chess_image, &line_x2, &line_point_x2, &in_line_point_x2, true);
+	GetgraySidelines(chess_image, &line_y1, &line_point_y1, &in_line_point_y1, false);
+	GetgraySidelines(chess_image, &line_y2, &line_point_y2, &in_line_point_y2, false);
+	GetgraySidelines(chess_image, &line_x11, &line_point_x11, &in_line_point_x11, true);
+	GetgraySidelines(chess_image, &line_x22, &line_point_x22, &in_line_point_x22, true);
+	GetgraySidelines(chess_image, &line_y11, &line_point_y11, &in_line_point_y11, false);
+	GetgraySidelines(chess_image, &line_y22, &line_point_y22, &in_line_point_y22, false);
 
 	GetTrueLines(in_line_point_x1, in_line_point_x11, &true_line_point_x1);
 	GetTrueLines(in_line_point_x22, in_line_point_x2, &true_line_point_x2);
@@ -380,6 +381,8 @@ void ChessLineSearchAlg::GrayImageBinarization(IplImage *gray_image) {
 			b1 += temp[i];
 		}
 
+		if(a1 == 0 && b1 == 0) return;
+
 		u1 = a1 / b1;
 		a2 = b2 = 0;
 
@@ -387,6 +390,9 @@ void ChessLineSearchAlg::GrayImageBinarization(IplImage *gray_image) {
 			a2 += (i * temp[i]);
 			b2 += (temp[i]);
 		}
+
+		if(a2 == 0 && b2 == 0) return;
+
 		u2 = a2 / b2;
 
 		if (b1 == 0) b1 = 1.f;
@@ -479,6 +485,11 @@ void ChessLineSearchAlg::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *
 				// 해당 방향으로 뻗어있는 두 대각선 방향의 색을 비교하여 차이가나면 경계선으로 인식한다.
 				// 기준점에서 왼쪽과 오른쪽을 비교해야 하기 때문에 양 쪽으로 1픽셀씩 비교를 해주기 위해 +- 2를 비교한다
 
+				// vector 예외처리
+
+				if(_TT[i].x + 2 > image->width || _TT[i].x - 2 < 0 || _TT[i].y + 2 > image->height || _TT[i].y - 2 < 0)
+					return;
+
 				if (XYFlag) {
 					if (i % 2 == 1 && (Getgrayscale(image, _TT[i].x + 2, _TT[i].y - 2) != Getgrayscale(image, _TT[i].x + 2, _TT[i].y + 2)))
 						return;
@@ -520,15 +531,18 @@ void ChessLineSearchAlg::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *
 
 						// 왼쪽과 오른쪽을 구분하여 따로 저장해준다
 
-						if(i%2 == 1)
+						if(i%2 == 1){
 							_TT_in1.push_back(setMyPoint(_TT[i].x, _TT[i].y));
-						else
+							cvCircle(image, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(0, 0, 0));
+						}
+						else{
 							_TT_in2.push_back(setMyPoint(_TT[i].x, _TT[i].y));
-						
-						if(XYFlag)
-							cvCircle(image, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(0, 0, 0));
-						else
-							cvCircle(image, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(0, 0, 0));
+							cvCircle(image, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(255, 255, 255));
+						}
+// 						if(XYFlag)
+// 							cvCircle(image, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(0, 0, 0));
+// 						else
+// 							cvCircle(image, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(0, 0, 0));
 
 						line_count++;
 
@@ -597,11 +611,11 @@ void ChessLineSearchAlg::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *
 		}
 	}
 
-	//
-
-	int _TT_in1_dist = 0, _TT_in2_dist = 0;
-
 	if (XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)) {
+
+		_TT_in1_avg += abs(_TT_in1[0].x - _TT_in2[0].x);
+		_TT_in2_avg -= abs(_TT_in1[0].x - _TT_in2[0].x);
+
 		for (register int i = 0; i < _TT_in1.size() - 1; i++) {
 
 			if(_TT_in1_avg != 0 && abs(_TT_in1_avg - abs(_TT_in1[i].x - _TT_in1[i + 1].x)) > 5){
@@ -611,7 +625,7 @@ void ChessLineSearchAlg::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *
 				_TT_in1_avg += abs(_TT_in1[i].x - _TT_in1[i + 1].x);
 			}
 			else if(_TT_in1_avg != 0){
-				_TT_in1_avg = abs(_TT_in1[i].x - _TT_in1[i + 1].x);
+				_TT_in1_avg = abs(_TT_in1[i].x - _TT_in1[i + 1].x) + abs(_TT_in1_avg - abs(_TT_in1[i].x - _TT_in1[i + 1].x));
 				
 			}
 		}
@@ -624,15 +638,19 @@ void ChessLineSearchAlg::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *
 				_TT_in2_avg -= abs(_TT_in2[i].x - _TT_in2[i + 1].x);
 			}
 			else if(_TT_in2_avg != 0){
-				_TT_in2_avg = abs(_TT_in2[i].x - _TT_in2[i + 1].x);
+				_TT_in2_avg = abs(_TT_in2[i].x - _TT_in2[i + 1].x) - abs(_TT_in2_avg - abs(_TT_in2[i].x - _TT_in2[i + 1].x));
 				
 			}
 		}
 	}
 	else if (!XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)) {
+
+// 		_TT_in1_avg += abs(_TT_in1[0].y - _TT_in2[0].y);
+// 		_TT_in2_avg -= abs(_TT_in1[0].y - _TT_in2[0].y);
+
 		for (register int i = 0; i < _TT_in1.size() - 1; i++) {
 
-			if(_TT_in1_avg != 0 && abs(_TT_in1_avg - abs(_TT_in1[i].y - _TT_in1[i + 1].y)) > 10){
+			if(_TT_in1_avg != 0 && abs(_TT_in1_avg - abs(_TT_in1[i].y - _TT_in1[i + 1].y)) > 15){
 				_TT_in1[i + 1].y = _TT_in1[i].y + _TT_in1_avg;
 			}
 			else if(_TT_in1_avg == 0){
@@ -645,7 +663,7 @@ void ChessLineSearchAlg::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *
 		}
 		for (register int i = 0; i <_TT_in2.size() - 1; i++) {
 
-			if(_TT_in2_avg != 0 && abs(_TT_in2_avg - abs(_TT_in2[i].y - _TT_in2[i + 1].y)) > 10){
+			if(_TT_in2_avg != 0 && abs(_TT_in2_avg - abs(_TT_in2[i].y - _TT_in2[i + 1].y)) > 15){
 				_TT_in2[i + 1].y = _TT_in2[i].y + _TT_in2_avg;
 			}
 			else if(_TT_in2_avg == 0){
