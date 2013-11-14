@@ -126,60 +126,60 @@ void ChessLineSearchAlg::GetgraySidelinesPoint(IplImage *chess_image) {
 	// GetLinegrayScale에서 얻은 4개의 라인에서 경계점을 탐색한다
 
 	// 각 grayscale이 저장되어 있는 vector 배열에서 해당 라인의 교차점을 구한다.
-// 	HANDLE _THandleArr[8];
-// 	_THandleArr[0] = (HANDLE)_beginthreadex(NULL, 0, 
-// 		GraySideLinesPointThread, 
-// 		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_x1, &line_point_x1, &in_line_point_x1, true), 
-// 		0, NULL);
-// 	_THandleArr[1] = (HANDLE)_beginthreadex(NULL, 0, 
-// 		GraySideLinesPointThread,
-// 		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_x2, &line_point_x2, &in_line_point_x2, true),
-// 		0, NULL);
-// 	_THandleArr[2] = (HANDLE)_beginthreadex(NULL, 0,
-// 		GraySideLinesPointThread,
-// 		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_y1, &line_point_y1, &in_line_point_y1, false),
-// 		0, NULL);
-// 	_THandleArr[3] = (HANDLE)_beginthreadex(NULL, 0,
-// 		GraySideLinesPointThread,
-// 		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_y2, &line_point_y2, &in_line_point_y2, false),
-// 		0, NULL);
-// 	_THandleArr[4] = (HANDLE)_beginthreadex(NULL, 0, 
-// 		GraySideLinesPointThread, 
-// 		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_x11, &line_point_x11, &in_line_point_x11, true), 
-// 		0, NULL);
-// 	_THandleArr[5] = (HANDLE)_beginthreadex(NULL, 0, 
-// 		GraySideLinesPointThread,
-// 		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_x22, &line_point_x22, &in_line_point_x22, true),
-// 		0, NULL);
-// 	_THandleArr[6] = (HANDLE)_beginthreadex(NULL, 0,
-// 		GraySideLinesPointThread,
-// 		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_y11, &line_point_y11, &in_line_point_y11, false),
-// 		0, NULL);
-// 	_THandleArr[7] = (HANDLE)_beginthreadex(NULL, 0,
-// 		GraySideLinesPointThread,
-// 		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_y22, &line_point_y22, &in_line_point_y22, false),
-// 		0, NULL);
-// 
-// 	// 이 함수 4개를 스레드로
-// 	WaitForMultipleObjects(8, _THandleArr, TRUE, INFINITE);
-// 
-// 	CloseHandle(_THandleArr[0]);
-// 	CloseHandle(_THandleArr[1]);
-// 	CloseHandle(_THandleArr[2]);
-// 	CloseHandle(_THandleArr[3]);
-// 	CloseHandle(_THandleArr[4]);
-// 	CloseHandle(_THandleArr[5]);
-// 	CloseHandle(_THandleArr[6]);
-// 	CloseHandle(_THandleArr[7]);
+	HANDLE _THandleArr[8];
+	_THandleArr[0] = (HANDLE)_beginthreadex(NULL, 0, 
+		GraySideLinesPointThread, 
+		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_x1, &line_point_x1, &in_line_point_x1, true), 
+		0, NULL);
+	_THandleArr[1] = (HANDLE)_beginthreadex(NULL, 0, 
+		GraySideLinesPointThread,
+		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_x2, &line_point_x2, &in_line_point_x2, true),
+		0, NULL);
+	_THandleArr[2] = (HANDLE)_beginthreadex(NULL, 0,
+		GraySideLinesPointThread,
+		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_y1, &line_point_y1, &in_line_point_y1, false),
+		0, NULL);
+	_THandleArr[3] = (HANDLE)_beginthreadex(NULL, 0,
+		GraySideLinesPointThread,
+		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_y2, &line_point_y2, &in_line_point_y2, false),
+		0, NULL);
+	_THandleArr[4] = (HANDLE)_beginthreadex(NULL, 0, 
+		GraySideLinesPointThread, 
+		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_x11, &line_point_x11, &in_line_point_x11, true), 
+		0, NULL);
+	_THandleArr[5] = (HANDLE)_beginthreadex(NULL, 0, 
+		GraySideLinesPointThread,
+		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_x22, &line_point_x22, &in_line_point_x22, true),
+		0, NULL);
+	_THandleArr[6] = (HANDLE)_beginthreadex(NULL, 0,
+		GraySideLinesPointThread,
+		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_y11, &line_point_y11, &in_line_point_y11, false),
+		0, NULL);
+	_THandleArr[7] = (HANDLE)_beginthreadex(NULL, 0,
+		GraySideLinesPointThread,
+		(LPVOID)&GraySideLinesPointStruct(this, chess_image, &line_y22, &line_point_y22, &in_line_point_y22, false),
+		0, NULL);
 
-	GetgraySidelines(chess_image, &line_x1, &line_point_x1, &in_line_point_x1, true);
-	GetgraySidelines(chess_image, &line_x2, &line_point_x2, &in_line_point_x2, true);
-	GetgraySidelines(chess_image, &line_y1, &line_point_y1, &in_line_point_y1, false);
-	GetgraySidelines(chess_image, &line_y2, &line_point_y2, &in_line_point_y2, false);
-	GetgraySidelines(chess_image, &line_x11, &line_point_x11, &in_line_point_x11, true);
-	GetgraySidelines(chess_image, &line_x22, &line_point_x22, &in_line_point_x22, true);
-	GetgraySidelines(chess_image, &line_y11, &line_point_y11, &in_line_point_y11, false);
-	GetgraySidelines(chess_image, &line_y22, &line_point_y22, &in_line_point_y22, false);
+	// 이 함수 4개를 스레드로
+	WaitForMultipleObjects(8, _THandleArr, TRUE, INFINITE);
+
+	CloseHandle(_THandleArr[0]);
+	CloseHandle(_THandleArr[1]);
+	CloseHandle(_THandleArr[2]);
+	CloseHandle(_THandleArr[3]);
+	CloseHandle(_THandleArr[4]);
+	CloseHandle(_THandleArr[5]);
+	CloseHandle(_THandleArr[6]);
+	CloseHandle(_THandleArr[7]);
+
+// 	GetgraySidelines(chess_image, &line_x1, &line_point_x1, &in_line_point_x1, true);
+// 	GetgraySidelines(chess_image, &line_x2, &line_point_x2, &in_line_point_x2, true);
+// 	GetgraySidelines(chess_image, &line_y1, &line_point_y1, &in_line_point_y1, false);
+// 	GetgraySidelines(chess_image, &line_y2, &line_point_y2, &in_line_point_y2, false);
+// 	GetgraySidelines(chess_image, &line_x11, &line_point_x11, &in_line_point_x11, true);
+// 	GetgraySidelines(chess_image, &line_x22, &line_point_x22, &in_line_point_x22, true);
+// 	GetgraySidelines(chess_image, &line_y11, &line_point_y11, &in_line_point_y11, false);
+// 	GetgraySidelines(chess_image, &line_y22, &line_point_y22, &in_line_point_y22, false);
 
 	GetTrueLines(in_line_point_x1, in_line_point_x11, &true_line_point_x1);
 	GetTrueLines(in_line_point_x22, in_line_point_x2, &true_line_point_x2);
