@@ -71,7 +71,9 @@ private:
 	IplImage *chessboard_img;
 	IplImage *chess_piece;
 
-	FILE *_Movement_log; //체스 이동경로 Log를 남길 파일포인터.
+	bool W_Pawn_move[8], B_Pawn_move[8];
+
+	FILE *_Movement_log;		//체스 이동경로 Log를 남길 파일포인터.
 	std::queue<move_format> _chess_movement;
 
 	void MakeUCI(CvPoint before, CvPoint after);
@@ -83,6 +85,10 @@ private:
 	void castling_move(CvPoint move_input[]);
 	void enpassant_move(CvPoint move_input[]);
 	void default_move(CvPoint move_input[]);
+
+	// 기본 이동 체스룰
+
+	bool default_move_rule(CvPoint before, CvPoint after);
 
 public:
 	ChessGame();

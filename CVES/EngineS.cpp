@@ -117,7 +117,20 @@ void EngineS::Deinitialize_TServer() {
 }
 
 void EngineS::Initialize_ImageProcessing() {
+<<<<<<< HEAD
 	if (Initialize_Camera() != true)
+=======
+	//Cam init
+	// Engine의 Cam을 가져온다. 그것도 0번째.
+	_Cam = cvCaptureFromCAM(1);
+	if (_Cam != NULL) {
+		cvSetCaptureProperty(_Cam, CV_CAP_PROP_FRAME_WIDTH, SERVER_VIEW_DEFAULT_WIDTH);
+		cvSetCaptureProperty(_Cam, CV_CAP_PROP_FRAME_HEIGHT, SERVER_VIEW_DEFAULT_HEIGHT);
+	}
+	else {
+		CodeConverter _TCodeConverter;
+		MessageBox(NULL, _TCodeConverter.CharToWChar("Camera not Found."), _TCodeConverter.CharToWChar("Error"), 0);
+>>>>>>> origin/CVES_HandRecognition
 		EngineEnable = false;
 
 	_BlobLabeling = new BlobLabeling();
@@ -450,7 +463,7 @@ void EngineS::Sub_image(IplImage *Source1, IplImage *Source2, IplImage *Destinat
 			unsigned char SUB_a = abs((unsigned char)Lab_src1->imageData[(i * 3) + (j * Lab_src1->widthStep) + 1] - (unsigned char)Lab_src2->imageData[(i * 3) + (j * Lab_src2->widthStep) + 1]);
 			unsigned char SUB_b = abs((unsigned char)Lab_src1->imageData[(i * 3) + (j * Lab_src1->widthStep) + 2] - (unsigned char)Lab_src2->imageData[(i * 3) + (j * Lab_src2->widthStep) + 2]);
 
-			/*if ((SUB_L > SUB_THRESHOLD) && (SUB_a > SUB_THRESHOLD || SUB_b > SUB_THRESHOLD)) {
+			/*if ((SUB_L > SUB_LabTHRESHOLD*5) && (SUB_a > SUB_LabTHRESHOLD || SUB_b > SUB_LabTHRESHOLD)) {
 				dst->imageData[i + (j * dst->widthStep)] = (unsigned char)255;
 			}*/
 			if (SUB_L > SUB_THRESHOLD || SUB_a > SUB_THRESHOLD || SUB_b > SUB_THRESHOLD) {
@@ -572,9 +585,16 @@ void EngineS::imgproc_mode(){
 			// 연산에 필요한 이미지 할당.
 			Inter_imageCraete(_ROIRect.width, _ROIRect.height);
 		}
+<<<<<<< HEAD
 		cvSetImageROI(_CamOriginImage, _ROIRect);
 		cvCopy(_CamOriginImage, _ImageChess);
 		cvCopy(_CamOriginImage, _PureImage);
+=======
+		cvSetImageROI(_CamOriginalImage, _ROIRect);
+		cvSmooth(_CamOriginalImage, _CamOriginalImage, CV_MEDIAN);
+		cvCopy(_CamOriginalImage, _ImageChess);
+		cvCopy(_CamOriginalImage, _PureImage);
+>>>>>>> origin/CVES_HandRecognition
 		
 		// Chessboard recognition.
 		_ChessRecognition->Copy_Img(_ImageChess);
@@ -586,10 +606,13 @@ void EngineS::imgproc_mode(){
 			_TTempSec = time(NULL);
 
 		// mode 1에서 2초 이상 지났을 경우 다음 모드로 진행
-		if (time(NULL) - _TTempSec > 2) {
+		if (time(NULL) - _TTempSec > 1) {
 			_ImageProcessMode++;
 			_ROIRectColour = cvScalar(0, 255);
 		}
+
+		//float temp_score[8][8];
+		//_ChessObjDetect.Detect_SobelCannyScore(_PureImage, _CrossPoint, temp_score);
 
 		// fps 계산.
 		_TTick = GetTickCount() - _TTick;
@@ -606,9 +629,16 @@ void EngineS::imgproc_mode(){
 		int _TTick = GetTickCount();
 
 		// 관심 영역 설정
+<<<<<<< HEAD
 		cvSetImageROI(_CamOriginImage, _ROIRect);
 		cvCopy(_CamOriginImage, _ImageChess); // 이미지 처리에 사용될 이미지 복사 - 관심영역 크기의 이미지
 		cvCopy(_CamOriginImage, _PureImage); // 원본 이미지 - 관심영역 크기의 이미지
+=======
+		cvSetImageROI(_CamOriginalImage, _ROIRect);
+		cvSmooth(_CamOriginalImage, _CamOriginalImage, CV_MEDIAN);
+		cvCopy(_CamOriginalImage, _ImageChess); // 이미지 처리에 사용될 이미지 복사 - 관심영역 크기의 이미지
+		cvCopy(_CamOriginalImage, _PureImage); // 원본 이미지 - 관심영역 크기의 이미지
+>>>>>>> origin/CVES_HandRecognition
 
 		// 차영상 및 조건판정 부분.
 		if (_CrossPoint.size() == 81) {
@@ -645,8 +675,13 @@ void EngineS::imgproc_mode(){
 #endif
 				// 오브젝트 디텍션에 사용되는 차영상 연산 수행.
 				Sub_image(_PrevImage, _ImageChess, _ImageSkin);
+<<<<<<< HEAD
 				// 차영상 결과를 이미지 처리에 사용되는 이미지로 색 부여.
 				Compose_diffImage(_ImageChess, _ImageSkin, cvScalar(0, 255, 255));
+=======
+				// 차영상 결과를 이미지 처리에 사용되는 이미지로 색 부여
+				/*Compose_diffImage(_ImageChess, _ImageSkin, cvScalar(0, 255, 255));*/
+>>>>>>> origin/CVES_HandRecognition
 
 				// BlobLabeling
 				_BlobLabeling->SetParam(_ImageSkin, 1);
@@ -678,7 +713,12 @@ void EngineS::imgproc_mode(){
 					CvPoint out[4];
 					out[0] = out[1] = out[2] = out[3] = cvPoint(-1, -1);
 					// 체스말의 움직임을 계산.
+<<<<<<< HEAD
 					_CheckInChessboard->Calculate_Movement(_OtherBinaryImage, _CrossPoint, out);
+=======
+					//_CheckInChess->Calculate_Movement(_OtherBinaryImage, _CrossPoint, out);
+					_ChessObjDetect.Get_Movement(_PrevImage, _PureImage, _CrossPoint, out);
+>>>>>>> origin/CVES_HandRecognition
 
 					// 디텍션 된 결과가 두개 이상 존재한다면 실행
 					if (out[0].x != -1 && out[1].x != -1) {

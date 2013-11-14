@@ -64,6 +64,8 @@ private:
 	// Linefindcount 함수들의 증감을 결정하는 변수.
 	bool flag_x1, flag_y1, flag_x2, flag_y2, flag_x11, flag_y11, flag_x22, flag_y22;
 
+	bool refine;
+
 	vector<MyPoint> in_line_point_x1, in_line_point_x2, in_line_point_y1, in_line_point_y2, in_line_point_x11, in_line_point_x22, in_line_point_y11, in_line_point_y22;
 	vector<MyPoint> true_line_point_x1, true_line_point_x2, true_line_point_y1, true_line_point_y2;
 

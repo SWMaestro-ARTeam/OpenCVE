@@ -50,6 +50,12 @@ ChessGame::ChessGame() {
 
 	_before_move.piece = -1;
 	_before_move.position = cvPoint(-1,-1);
+
+	for(int i=0;i<8;i++){
+		W_Pawn_move[i] = false;
+		B_Pawn_move[i] = false;
+	}
+
 	temp_move.movement = new char[32];
 	memset(temp_move.movement, NULL, sizeof(temp_move.movement));
 }
@@ -216,8 +222,13 @@ void ChessGame::enpassant_move(CvPoint move_input[]){
 	if (_Turn == WHITE_TURN) {
 		temp_move.turn_flag = WHITE_TURN;
 
+<<<<<<< HEAD
 		if (_TValue1 == Ground && move_input[0].y - 1 == before_move_pawn.x) {
 			if (_TValue2 == W_Pawn) {
+=======
+		if(_TValue1 == Ground && move_input[0].y - 1 == _before_move.position.y){
+			if(_TValue2 == W_Pawn){
+>>>>>>> origin/CVES_HandRecognition
 
 				// 1. 폰이 이동할 예정인 빈공간과 현재 이동한 폰의 위치를 스왑한다
 				// 2. 나머지 하나는 다른 색 폰이므로 제거를 해주기 위해 Ground로 바꾸어준다
@@ -238,7 +249,7 @@ void ChessGame::enpassant_move(CvPoint move_input[]){
 				_before_move.position = move_input[0];
 			}
 		}
-		else if (_TValue2 == Ground && move_input[1].y - 1 == before_move_pawn.x) {
+		else if (_TValue2 == Ground && move_input[1].y - 1 == _before_move.position.y) {
 			if (_TValue1 == W_Pawn) {
 				_V_SWAP(_Board[move_input[1].x][move_input[1].y],_Board[move_input[0].x][move_input[0].y]);
 				_Board[move_input[2].x][move_input[2].y] = Ground;
@@ -256,7 +267,7 @@ void ChessGame::enpassant_move(CvPoint move_input[]){
 				_before_move.position = move_input[1];
 			}
 		}
-		else if (_TValue3 == Ground && move_input[2].y - 1 == before_move_pawn.x) {
+		else if (_TValue3 == Ground && move_input[2].y - 1 == _before_move.position.y) {
 			if (_TValue1 == W_Pawn){
 				_V_SWAP(_Board[move_input[2].x][move_input[2].y],_Board[move_input[0].x][move_input[0].y]);
 				_Board[move_input[1].x][move_input[1].y] = Ground;
@@ -282,7 +293,7 @@ void ChessGame::enpassant_move(CvPoint move_input[]){
 	else if (_Turn == BLACK_TURN) {
 		temp_move.turn_flag = BLACK_TURN;
 
-		if(_TValue1 == Ground && move_input[0].y + 1 == before_move_pawn.x){
+		if(_TValue1 == Ground && move_input[0].y + 1 == _before_move.position.x){
 			if(_TValue2 == B_Pawn){
 				_V_SWAP(_Board[move_input[0].x][move_input[0].y],_Board[move_input[1].x][move_input[1].y]);
 				_Board[move_input[2].x][move_input[2].y] = Ground;
@@ -361,6 +372,7 @@ void ChessGame::default_move(CvPoint move_input[]){
 		// 백색 차례일때
 		temp_move.turn_flag = WHITE_TURN;
 
+<<<<<<< HEAD
 		if (W_King <= _TValue1 && _TValue1 <= W_Pawn) {
 			_Board[move_input[1].x][move_input[1].y] = Ground;
 			_V_SWAP(_Board[move_input[0].x][move_input[0].y], _Board[move_input[1].x][move_input[1].y]);
@@ -382,9 +394,45 @@ void ChessGame::default_move(CvPoint move_input[]){
 			MakeUCI(move_input[1], move_input[0]);
 			_before_move.piece = _TValue2;
 			_before_move.position = move_input[0];
+=======
+		if (W_King <= _TValue1 && _TValue1 <= W_Pawn){
+
+			if(default_move_rule(move_input[0], move_input[1])){
+				_Board[move_input[1].x][move_input[1].y] = Ground;
+				_V_SWAP(_Board[move_input[0].x][move_input[0].y], _Board[move_input[1].x][move_input[1].y]);
+
+				if(_TValue1 == W_Pawn && move_input[1].y == 7)
+					_Board[move_input[1].x][move_input[1].y] = W_Queen;
+
+				MakeUCI(move_input[0], move_input[1]);
+				_before_move.piece = _TValue1;
+				_before_move.position = move_input[1];
+			}
+			else{
+				printf("error! return (%d, %d) -> (%d, %d)", move_input[1].x, move_input[1].y, move_input[0].x, move_input[0].y);
+				return;
+			}
 		}
-		else {
-			// 자신의 턴이 아닐때 체스말을 움직임.
+		else if (W_King <= _TValue2 && _TValue2 <= W_Pawn){
+			if(default_move_rule(move_input[1], move_input[0])){
+				_Board[move_input[0].x][move_input[0].y] = Ground;
+				_V_SWAP(_Board[move_input[0].x][move_input[0].y], _Board[move_input[1].x][move_input[1].y]);
+
+				if(_TValue2 == W_Pawn && move_input[0].y == 7)
+					_Board[move_input[0].x][move_input[0].y] = W_Queen;
+
+				MakeUCI(move_input[1], move_input[0]);
+				_before_move.piece = _TValue2;
+				_before_move.position = move_input[0];
+			}
+			else{
+				printf("error! return (%d, %d) -> (%d, %d)", move_input[0].x, move_input[0].y, move_input[1].x, move_input[1].y);
+				return;
+			}
+>>>>>>> origin/CVES_HandRecognition
+		}
+		else{
+			//자신의 턴이 아닐때 체스말을 움직임.
 			strcpy(temp_move.movement, "Invalid");
 			// 턴을 안옮기기 위해서 반전시킴
 			_Turn = !_Turn;
@@ -395,29 +443,41 @@ void ChessGame::default_move(CvPoint move_input[]){
 		temp_move.turn_flag = BLACK_TURN;
 
 		if (B_King <= _TValue1 && _TValue1 <= B_Pawn) {
-			_Board[move_input[1].x][move_input[1].y] = Ground;
-			_V_SWAP(_Board[move_input[0].x][move_input[0].y], _Board[move_input[1].x][move_input[1].y]);
+			if(default_move_rule(move_input[0], move_input[1])){
+				_Board[move_input[1].x][move_input[1].y] = Ground;
+				_V_SWAP(_Board[move_input[0].x][move_input[0].y], _Board[move_input[1].x][move_input[1].y]);
 
-			if (_TValue1 == B_Pawn && move_input[1].y == 0)
-				_Board[move_input[1].x][move_input[1].y] = B_Queen;
+				if(_TValue1 == B_Pawn && move_input[1].y == 0)
+					_Board[move_input[1].x][move_input[1].y] = B_Queen;
 
-			MakeUCI(move_input[0], move_input[1]);
-			_before_move.piece = _TValue1;
-			_before_move.position = move_input[1];
+				MakeUCI(move_input[0], move_input[1]);
+				_before_move.piece = _TValue1;
+				_before_move.position = move_input[1];
+			}
+			else{
+				printf("error! return (%d, %d) -> (%d, %d)", move_input[1].x, move_input[1].y, move_input[0].x, move_input[0].y);
+				return;
+			}
 		}
 		else if (B_King <= _TValue2 && _TValue2 <= B_Pawn) {
-			_Board[move_input[0].x][move_input[0].y] = Ground;
-			_V_SWAP(_Board[move_input[0].x][move_input[0].y], _Board[move_input[1].x][move_input[1].y]);
+			if(default_move_rule(move_input[1], move_input[0])){
+				_Board[move_input[0].x][move_input[0].y] = Ground;
+				_V_SWAP(_Board[move_input[0].x][move_input[0].y], _Board[move_input[1].x][move_input[1].y]);
 
-			if (_TValue2 == B_Pawn && move_input[0].y == 0)
-				_Board[move_input[0].x][move_input[0].y] = B_Queen;
+				if(_TValue2 == B_Pawn && move_input[0].y == 0)
+					_Board[move_input[0].x][move_input[0].y] = B_Queen;
 
-			MakeUCI(move_input[1], move_input[0]);
-			_before_move.piece = _TValue2;
-			_before_move.position = move_input[0];
+				MakeUCI(move_input[1], move_input[0]);
+				_before_move.piece = _TValue2;
+				_before_move.position = move_input[0];
+			}
+			else{
+				printf("error! return (%d, %d) -> (%d, %d)", move_input[0].x, move_input[0].y, move_input[1].x, move_input[1].y);
+				return;
+			}
 		}
-		else {
-			// 자신의 턴이 아닐때 체스말을 움직임.
+		else{
+			//자신의 턴이 아닐때 체스말을 움직임.
 			strcpy(temp_move.movement, "Invalid");
 			// 턴을 안옮기기 위해서 반전시킴
 			_Turn = !_Turn;
@@ -427,6 +487,83 @@ void ChessGame::default_move(CvPoint move_input[]){
 	//recent_move에 복사
 	strcpy(recent_move, temp_move.movement);
 	_chess_movement.push(temp_move);
+}
+
+bool ChessGame::default_move_rule(CvPoint before, CvPoint after){
+	if(_Board[before.x][before.y] == W_Pawn){
+		if(W_Pawn_move[before.x] == false){
+			
+			// 1. 맨 처음 1칸 또는 2칸 전진 그리고 해당 위치에 말이 없을 경우
+			// 2. 공격시 오늘쪽 위아래에 해당 말이 존재 할 경우
+
+			if((after.y == before.y + 1 && after.x == before.x && _Board[after.x][after.y] == Ground) || (after.y == before.y + 2 && after.x == before.x && _Board[after.x][after.y] == Ground) || 
+				(after.x == before.x - 1 && after.y == before.y + 1 && _Board[after.x][after.y] != Ground) || (after.x == before.x + 1 && after.y == before.y + 1 && _Board[after.x][after.y] != Ground)){
+				
+					W_Pawn_move[before.x] = true;
+					return true;
+			}
+		}
+		else{
+			if((after.y == before.y + 1 && after.x == before.x && _Board[after.x][after.y] == Ground) || 
+				(after.x == before.x - 1 && after.y == before.y + 1 && _Board[after.x][after.y] != Ground) || (after.x == before.x + 1 && after.y == before.y + 1 && _Board[after.x][after.y] != Ground))
+				return true;
+		}
+	}
+	else if(_Board[before.x][before.y] == B_Pawn){
+		if(B_Pawn_move[before.x] == false){
+
+			// 1. 맨 처음 1칸 또는 2칸 전진 그리고 해당 위치에 말이 없을 경우
+			// 2. 공격시 오늘쪽 위아래에 해당 말이 존재 할 경우
+
+			if((after.y == before.y - 1 && after.x == before.x && _Board[after.x][after.y] == Ground) || (after.y == before.y - 2 && after.x == before.x && _Board[after.x][after.y] == Ground) || 
+				(after.x == before.x - 1 && after.y == before.y - 1 && _Board[after.x][after.y] != Ground) || (after.x == before.x + 1 && after.y == before.y - 1 && _Board[after.x][after.y] != Ground)){
+
+					B_Pawn_move[before.x] = true;
+					return true;
+			}
+		}
+		else{
+			if((after.y == before.y - 1 && after.x == before.x && _Board[after.x][after.y] == Ground) || 
+				(after.x == before.x - 1 && after.y == before.y - 1 && _Board[after.x][after.y] != Ground) || (after.x == before.x + 1 && after.y == before.y - 1 && _Board[after.x][after.y] != Ground))
+				return true;
+		}
+	}
+	else if(_Board[before.x][before.y] == W_King || _Board[before.x][before.y] == B_King){
+
+		// 8방향 검사
+
+		if((after.x == before.x && after.y == before.y - 1) || (after.x == before.x - 1 && after.y == before.y - 1) || (after.x == before.x - 1 && after.y == before.y) || 
+			(after.x == before.x - 1 && after.y == before.y + 1) || (after.x == before.x && after.y == before.y + 1) || (after.x == before.x + 1 && after.y == before.y + 1) ||
+			(after.x == before.x + 1 && after.y == before.y) || (after.x == before.x + 1 && after.y == before.y - 1))
+				return true;
+	}
+	else if(_Board[before.x][before.y] == W_Queen || _Board[before.x][before.y] == B_Queen){
+
+		// 가로 세로 직선, 전과 현재의 이동 위치의 차이의 절대값이 같으면 대각선상에 위치한다 판별
+
+		if((after.x == before.x && after.y != before.y) || (after.x != before.x && after.y == before.y) || (abs(after.x - before.x) == abs(after.y - before.y)))
+			return true;
+	}
+	else if(_Board[before.x][before.y] == W_Rook || _Board[before.x][before.y] == B_Rook){
+		if((after.x == before.x && after.y != before.y) || (after.x != before.x && after.y == before.y))
+			return true;
+	}
+	else if(_Board[before.x][before.y] == W_Bishop || _Board[before.x][before.y] == B_Bishop){
+		if(abs(after.x - before.x) == abs(after.y - before.y))
+			return true;
+	}
+	else if(_Board[before.x][before.y] == W_Knight || _Board[before.x][before.y] == B_Knight){
+
+		// 각 나이트의 이동경로를 하드코딩 ^오^
+
+		if((after.x == before.x - 1 && after.y == before.y - 2) || (after.x == before.x + 1 && after.y == before.y - 2) ||
+			(after.x == before.x - 2 && after.y == before.y - 1) || (after.x == before.x - 2 && after.y == before.y + 1) ||
+			(after.x == before.x - 1 && after.y == before.y + 2) || (after.x == before.x + 1 && after.y == before.y + 2) || 
+			(after.x == before.x + 2 && after.y == before.y - 1) || (after.x == before.x + 2 && after.y == before.y + 1))
+				return true;
+	}
+
+	return false;
 }
 
 void ChessGame::Show_chess_board() {

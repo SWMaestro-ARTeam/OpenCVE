@@ -345,11 +345,55 @@ void ChessRecognition::Copy_Img(IplImage *src) {
 	_CSProtectionMutex.unlock();
 }
 
+<<<<<<< HEAD
 void ChessRecognition::exit() {
 	thread_exit = true;
 
 	//CloseHandle(hThread);
 	cvReleaseImage(&img_process);
+=======
+void ChessRecognition::Refine_CrossPoint(vector<ChessPoint> *point){
+	// chessboard recognition을 통하여 생성한 교점의 좌표를 보정하는 함수.
+	// (alpha * 이전 좌표) - ((1 - alpha) * 현재 좌표)
+	// 0 <= alpha <= 1.0
+
+	static bool first_check = false;
+	static vector<CvPoint> prev_point;
+	const float Refine_const = 0.9; // alpha값.
+
+	// 처음 chessboard recognition시 이전값이 존재하지 않으므로 초기화만 진행.
+	if (first_check == false && point->size() == 81) {
+		for (register int i = 0; i < 81; i++)
+			prev_point.push_back(point->at(i).Cordinate);
+
+		first_check = true;
+	}
+	// 처음이 아닐 경우 실제 좌표보정 연산 진행.
+	else if (first_check == true) {
+		// cross point가 81개가 되지 않으면 이전 81개를 반영.
+		if (point->size() < 81) {
+			point->clear();
+			for (register int i = 0; i < 81; i++) {
+				ChessPoint CP_temp;
+
+				CP_temp.Cordinate = cvPoint(prev_point.at(i).x, prev_point.at(i).y); 
+				CP_temp.index = cvPoint(i % 9, i / 9);
+				point->push_back(CP_temp);
+			}
+		}
+		// cross point가 81개라면 이전 좌표를 통한 보정 연산 진행.
+// 		else {
+// 			for (register int i = 0; i < 81; i++) {
+// 				// (alpha * 이전 좌표) - ((1 - alpha) * 현재 좌표)
+// 				// 0 <= alpha <= 1.0
+// 				point->at(i).Cordinate.x = cvRound((Refine_const * (float)prev_point.at(i).x) + ((1.0 - Refine_const) * (float)point->at(i).Cordinate.x));
+// 				point->at(i).Cordinate.y = cvRound((Refine_const * (float)prev_point.at(i).y) + ((1.0 - Refine_const) * (float)point->at(i).Cordinate.y));
+// 
+// 				prev_point.at(i) = cvPoint(point->at(i).Cordinate.x, point->at(i).Cordinate.y);
+// 			}
+// 		}
+	}
+>>>>>>> origin/CVES_HandRecognition
 }
 
 void ChessRecognition::Find_ChessPoint(IplImage *Source, vector<ChessPoint> *Point) {
@@ -371,6 +415,7 @@ void ChessRecognition::Find_ChessPoint(IplImage *Source, vector<ChessPoint> *Poi
 #endif
 	}
 	else if (_MODE == 2) {
+<<<<<<< HEAD
 		_Vec_ProtectionMutex.lock();
 		
 		copy(_CP.begin(), _CP.end(), back_inserter(*Point));
@@ -379,6 +424,151 @@ void ChessRecognition::Find_ChessPoint(IplImage *Source, vector<ChessPoint> *Poi
 #if !defined(USING_QT)
 		DrawPoints(Source, *Point);
 #endif
+=======
+		_Vec_CSProtectionMutex.lock();
+		//EnterCriticalSection(&vec_cs);
+		copy(_CP.begin(), _CP.end(), back_inserter(*point));
+		//LeaveCriticalSection(&vec_cs);
+		_Vec_CSProtectionMutex.unlock();
+		//Chess_recognition_process(point);
+		Refine_CrossPoint(point);
+		drawPoint(src, *point);
+	}
+}
+
+void ChessRecognition::Chess_recognition_process(IplImage *src, vector<ChessPoint> *point) {
+	if(_CLSA->refine == true && (_CLSA->Linefindcount_x1 != 9 || _CLSA->Linefindcount_y1 != 9 || _CLSA->Linefindcount_x2 != 9 || _CLSA->Linefindcount_y2 != 9 ||
+	_CLSA->Linefindcount_x11 != 9 || _CLSA->Linefindcount_y11 != 9 || _CLSA->Linefindcount_x22 != 9 || _CLSA->Linefindcount_y22 != 9)){
+		_CLSA->Linefindcount_x1 = 0, _CLSA->Linefindcount_y1 = 0, _CLSA->Linefindcount_x2 = 0, _CLSA->Linefindcount_y2 = 0;
+		_CLSA->Linefindcount_x11 = 0, _CLSA->Linefindcount_y11 = 0, _CLSA->Linefindcount_x22 = 0, _CLSA->Linefindcount_y22 = 0;
+		_CLSA->refine = false;
+	}
+	
+	// 영상 이진화.
+	_CLSA->GrayImageBinarization(src);
+
+	// 해당 영상에서의 좌표 x,y 와 grayscale을 추출하여 vector<MyGrayPoint> 형의 line에 저장.
+	_CLSA->GetLinegrayScale(src, _CLSA->Linefindcount_x1, _CLSA->Linefindcount_y1, _CLSA->Linefindcount_x2, _CLSA->Linefindcount_y2, _CLSA->Linefindcount_x11, _CLSA->Linefindcount_y11, _CLSA->Linefindcount_x22, _CLSA->Linefindcount_y22);
+
+	// 체스판의 경계를 구하여 in_line_point 변수들에 저장.
+	_CLSA->GetgraySidelinesPoint(src);
+
+	while(1){
+		cvShowImage ("src", src);
+		if(cvWaitKey(33))
+			break;
+	}
+
+	// 해당 라인에서 9곳의 체스판 경계를 찾지 못 하였으면,
+	// 탐색라인을 이동시켜 적절한 탐색라인을 찾는다.
+	// flag의 값에 따라 Linefindcount의 값을 변경한다.
+	// true  : +
+	// false : -
+	// 가로 기준으로는 너비를 5로 나눈 값으로 각각 2/5와 3/5 위치를 기준으로 탐색을 한다
+	// 세로 기준으로는 높이를 7로 나는 값으로 각각 3/7과 4/7 위치를 기죽으로 탐색을 한다
+
+	// 만약 9곳의 경계를 모두 찾게 되면 해당 라인으로 고정시킨다.
+
+	// x1 ~ y2의 flag여부에 따라 값을 증가시킬지 감소시킬지를 판단하는 요소로 사용한다
+	if (_CLSA->Linefindcount_x1 >= (src->width / 5))
+		_CLSA->flag_x1 = false;
+
+	if (_CLSA->Linefindcount_x11 >= (src->width / 5))
+		_CLSA->flag_x11 = false;
+
+	if (_CLSA->Linefindcount_x2 >= (src->width / 5))
+		_CLSA->flag_x2 = false;
+
+	if (_CLSA->Linefindcount_x22 >= (src->width / 5))
+		_CLSA->flag_x22 = false;
+
+	if (_CLSA->Linefindcount_y1 >= (src->height / 5))
+		_CLSA->flag_y1 = false;
+
+	if (_CLSA->Linefindcount_y11 >= (src->height / 5))
+		_CLSA->flag_y11 = false;
+
+	if (_CLSA->Linefindcount_y2 >= (src->height / 5))
+		_CLSA->flag_y2 = false;
+	
+	if (_CLSA->Linefindcount_y22 >= (src->height / 5))
+		_CLSA->flag_y22 = false;
+
+	if (_CLSA->Linefindcount_x1 <= 3)
+		_CLSA->flag_x1 = true;
+
+	if (_CLSA->Linefindcount_x11 <= 3)
+		_CLSA->flag_x11 = true;
+
+	if (_CLSA->Linefindcount_x2 <= 3)
+		_CLSA->flag_x2 = true;
+
+	if (_CLSA->Linefindcount_x22 <= 3)
+		_CLSA->flag_x22 = true;
+
+	if (_CLSA->Linefindcount_y1 <= 3)
+		_CLSA->flag_y1 = true;	
+
+	if (_CLSA->Linefindcount_y11 <= 3)
+		_CLSA->flag_y11 = true;	
+
+	if (_CLSA->Linefindcount_y2 <= 3)
+		_CLSA->flag_y2 = true;
+
+	if (_CLSA->Linefindcount_y22 <= 3)
+		_CLSA->flag_y22 = true;
+
+	// 각 라인이 모든 체스판의 경계를 찾았다면 다음 과정으로 넘어가고,
+	// 찾지 못하였으면 x축 또는 y축을 이동시켜 경계를 찾을 수 있는 라인을 찾는다.
+	// 만약 9개의 정점을 찾지 못하면 적합한 탐색라인이 아니라 판단하여 
+	// 라인 위치를 바꾼다
+	// count : 3
+	
+	if (_CLSA->true_line_point_x1.size() == 9 && _CLSA->true_line_point_x2.size() ==  9 && _CLSA->true_line_point_y1.size() == 9 && _CLSA->true_line_point_y2.size() == 9) {
+		// 각 찾은 경계점들의 수직이 되는 점 모두의 교차점을 찾는다.
+		_CLSA->GetInCrossPoint(src, point);
+
+		_CLSA->refine = true;
+	}
+	else /*if (_CLSA->in_line_point_x1.size() != 9 || _CLSA->in_line_point_x2.size() != 9 || _CLSA->in_line_point_x1.size() != 9 || _CLSA->in_line_point_x2.size() != 9) */{
+
+		// flag의 방향성과 모든경계를 찾지 못한 경우에는 해당되는 라인을 3씩 증감시켜준다
+
+		if (_CLSA->flag_x1 && (_CLSA->in_line_point_x1.size() != 9))
+			_CLSA->Linefindcount_x1 += 3;
+		else if (!_CLSA->flag_x1 && (_CLSA->in_line_point_x1.size() != 9))
+			_CLSA->Linefindcount_x1 -= 3;
+		if (_CLSA->flag_x11 && (_CLSA->in_line_point_x11.size() != 9))
+			_CLSA->Linefindcount_x11 += 3;
+		else if (!_CLSA->flag_x11 && (_CLSA->in_line_point_x11.size() != 9))
+			_CLSA->Linefindcount_x11 -= 3;
+		if (_CLSA->flag_x2 && (_CLSA->in_line_point_x2.size() != 9))
+			_CLSA->Linefindcount_x2 += 3;
+		else if (!_CLSA->flag_x2 && (_CLSA->in_line_point_x2.size() != 9))
+			_CLSA->Linefindcount_x2 -= 3;
+		if (_CLSA->flag_x22 && (_CLSA->in_line_point_x22.size() != 9))
+			_CLSA->Linefindcount_x22 += 3;
+		else if (!_CLSA->flag_x22 && (_CLSA->in_line_point_x22.size() != 9))
+			_CLSA->Linefindcount_x22 -= 3;
+// 	}
+// 	else if (_CLSA->in_line_point_y1.size() != 9 || _CLSA->in_line_point_y2.size() != 9 || _CLSA->in_line_point_y11.size() != 9 || _CLSA->in_line_point_y22.size() != 9) {
+		if (_CLSA->flag_y1 && (_CLSA->in_line_point_y1.size() != 9))
+			_CLSA->Linefindcount_y1 += 3;
+		else if (!_CLSA->flag_y1 && (_CLSA->in_line_point_y1.size() != 9))
+			_CLSA->Linefindcount_y1 -= 3;
+		if (_CLSA->flag_y11 && (_CLSA->in_line_point_y11.size() != 9))
+			_CLSA->Linefindcount_y11 += 3;
+		else if (!_CLSA->flag_y11 && (_CLSA->in_line_point_y11.size() != 9))
+			_CLSA->Linefindcount_y11 -= 3;
+		if (_CLSA->flag_y2 && (_CLSA->in_line_point_y2.size() != 9))
+			_CLSA->Linefindcount_y2 += 3;
+		else if (!_CLSA->flag_y2 && (_CLSA->in_line_point_y2.size() != 9))
+			_CLSA->Linefindcount_y2 -= 3;
+		if (_CLSA->flag_y22 && (_CLSA->in_line_point_y22.size() != 9))
+			_CLSA->Linefindcount_y22 += 3;
+		else if (!_CLSA->flag_y22 && (_CLSA->in_line_point_y22.size() != 9))
+			_CLSA->Linefindcount_y22 -= 3;
+>>>>>>> origin/CVES_HandRecognition
 	}
 }
 #pragma endregion Public Functions

@@ -29,6 +29,8 @@
 LineSearchBased::LineSearchBased() {
 	Linefindcount_x1 = 0, Linefindcount_y1 = 0, Linefindcount_x2 = 0, Linefindcount_y2 = 0;
 	Linefindcount_x11 = 0, Linefindcount_y11 = 0, Linefindcount_x22 = 0, Linefindcount_y22 = 0;
+
+	refine == false;
 }
 
 LineSearchBased::~LineSearchBased() {
@@ -83,6 +85,7 @@ void LineSearchBased::GetLinegrayScale(IplImage *gray_image, int linefindcount_x
 	line_y22.push_back(setMyGrayPoint(Getgrayscale(gray_image, x22, image_y / 2), x22, image_y / 2));
 
 	for (register int y = 1; y <= image_y / 2; y++) {
+
 		line_y1.push_back(setMyGrayPoint(Getgrayscale(gray_image, x1, (image_y / 2) + y), x1, (image_y / 2) + y));
 		line_y1.push_back(setMyGrayPoint(Getgrayscale(gray_image, x1, (image_y / 2) - y), x1, (image_y / 2) - y));
 		line_y11.push_back(setMyGrayPoint(Getgrayscale(gray_image, x11, (image_y / 2) + y), x11, (image_y / 2) + y));
@@ -233,11 +236,16 @@ void LineSearchBased::GetInCrossPoint(IplImage *chess_image, vector<ChessPoint> 
 	// 찾은 모든 경계점들을 수직이 되는 라인의 경계점들과의 모든 교차점을 찾는다.
 	// 9 * 9 = 81
 	// 그후 모든 교차점을 point 변수에 넣는다.
-	MyLinePoint t_in_line_point_x, t_in_line_point_y;
-	MyPoint t_in_point;
 
 	for (register int i = 0; i < true_line_point_x1.size(); i++) {
 		for (register int j = 0; j < true_line_point_x1.size(); j++) {
+<<<<<<< HEAD:CVES/LineSearchBased.cpp
+=======
+
+			MyLinePoint t_in_line_point_x, t_in_line_point_y;
+			MyPoint t_in_point;
+
+>>>>>>> origin/CVES_HandRecognition:CVES/ChessLineSearchAlg.cpp
 			// 같은 축의 라인의 양끝을 이은 직선을 구해 수직이 되는 라인과의 교차점을 찾아
 			// 반환해 주는 point에 push한다.
 			SetMyLinePoint(true_line_point_x1[i].x, true_line_point_x1[i].y, true_line_point_x2[i].x, true_line_point_x2[i].y, &t_in_line_point_x);
@@ -350,6 +358,8 @@ void LineSearchBased::GrayImageBinarization(IplImage *gray_image) {
 			b1 += temp[i];
 		}
 
+		if(a1 == 0 && b1 == 0) return;
+
 		u1 = a1 / b1;
 		a2 = b2 = 0;
 
@@ -357,6 +367,9 @@ void LineSearchBased::GrayImageBinarization(IplImage *gray_image) {
 			a2 += (i * temp[i]);
 			b2 += (temp[i]);
 		}
+
+		if(a2 == 0 && b2 == 0) return;
+
 		u2 = a2 / b2;
 
 		if (b1 == 0) b1 = 1.f;
@@ -368,8 +381,14 @@ void LineSearchBased::GrayImageBinarization(IplImage *gray_image) {
 	for (register int i = 0; i < gray_image->width; i++) {
 		for (register int j = 0; j < gray_image->height; j++) {
 			int index = i + (j * gray_image->widthStep);
+<<<<<<< HEAD:CVES/LineSearchBased.cpp
 			// 해당 위치의 grayscale을 T값을 기준으로 이진화를 결정한다.
 			gray_image->imageData[index] = Getgrayscale(gray_image, i, j) > T ? 255 : 0;
+=======
+
+			// 해당 위치의 grayscale을 T값을 기준으로 이진화를 결정한다 
+			gray_image->imageData[index] = Getgrayscale(gray_image, i, j) > T - 20 ? 255 : 0;
+>>>>>>> origin/CVES_HandRecognition:CVES/ChessLineSearchAlg.cpp
 		}
 	}
 }
@@ -441,6 +460,15 @@ void LineSearchBased::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *lin
 				// 이 부분에서 대각선 방향을 처리해 준다 XYFlag가 ture 면 x축, false이면 y축.
 				// 해당 방향으로 뻗어있는 두 대각선 방향의 색을 비교하여 차이가나면 경계선으로 인식한다.
 				// 기준점에서 왼쪽과 오른쪽을 비교해야 하기 때문에 양 쪽으로 1픽셀씩 비교를 해주기 위해 +- 2를 비교한다
+<<<<<<< HEAD:CVES/LineSearchBased.cpp
+=======
+
+				// vector 예외처리
+
+				if(_TT[i].x + 2 > image->width || _TT[i].x - 2 < 0 || _TT[i].y + 2 > image->height || _TT[i].y - 2 < 0)
+					return;
+
+>>>>>>> origin/CVES_HandRecognition:CVES/ChessLineSearchAlg.cpp
 				if (XYFlag) {
 					if (i % 2 == 1 && (Getgrayscale(image, _TT[i].x + 2, _TT[i].y - 2) != Getgrayscale(image, _TT[i].x + 2, _TT[i].y + 2)))
 						return;
@@ -480,15 +508,18 @@ void LineSearchBased::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *lin
 
 						// 왼쪽과 오른쪽을 구분하여 따로 저장해준다
 
-						if(i%2 == 1)
+						if(i%2 == 1){
 							_TT_in1.push_back(setMyPoint(_TT[i].x, _TT[i].y));
-						else
+							cvCircle(image, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(0, 0, 0));
+						}
+						else{
 							_TT_in2.push_back(setMyPoint(_TT[i].x, _TT[i].y));
-						
-						if(XYFlag)
-							cvCircle(image, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(0, 0, 0));
-						else
-							cvCircle(image, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(0, 0, 0));
+							cvCircle(image, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(255, 255, 255));
+						}
+// 						if(XYFlag)
+// 							cvCircle(image, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(0, 0, 0));
+// 						else
+// 							cvCircle(image, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(0, 0, 0));
 
 						line_count++;
 
@@ -524,13 +555,20 @@ void LineSearchBased::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *lin
 
 	if (XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)) {
 		for (register int i = 0; i < _TT_in1.size() - 1; i++) {
+<<<<<<< HEAD:CVES/LineSearchBased.cpp
 			// _TT는 각 라인의 중심에서 양쪽으로 뻗어나가며 찾은 경계점들이 순차적으로 push가 되어있으므로 자신과 그 이후에 탐색된 점과 비교를 한다.
 			if (abs(_TT_in1[i].x - _TT_in1[i + 1].x) < 30 || abs(_TT_in1[i].x - _TT_in1[i + 1].x) > 60) {
+=======
+
+			// _TT는 각 라인의 중심에서 양쪽으로 뻗어나가며 찾은 경계점들이 순차적으로 push가 되어있으므로 자신과 그 이후에 탐색된 점과 비교를 한다
+
+			if (abs(_TT_in1[i].x - _TT_in1[i + 1].x) < 30 || abs(_TT_in1[i].x - _TT_in1[i + 1].x) > 50) {
+>>>>>>> origin/CVES_HandRecognition:CVES/ChessLineSearchAlg.cpp
 				SumFlag = false;
 			}
 		}
 		for (register int i = 0; i < _TT_in2.size() - 1; i++) {
-			if (abs(_TT_in2[i].x - _TT_in2[i + 1].x) < 30 || abs(_TT_in2[i].x - _TT_in2[i + 1].x) > 60) {
+			if (abs(_TT_in2[i].x - _TT_in2[i + 1].x) < 30 || abs(_TT_in2[i].x - _TT_in2[i + 1].x) > 50) {
 				SumFlag = false;
 			}
 		}
@@ -540,12 +578,12 @@ void LineSearchBased::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *lin
 	}
 	else if (!XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)) {
 		for (register int i = 0; i < _TT_in1.size() - 1; i++) {
-			if (abs(_TT_in1[i].y - _TT_in1[i + 1].y) < 30 || abs(_TT_in1[i].y - _TT_in1[i + 1].y) > 60) {
+			if (abs(_TT_in1[i].y - _TT_in1[i + 1].y) < 30 || abs(_TT_in1[i].y - _TT_in1[i + 1].y) > 50) {
 				SumFlag = false;
 			}
 		}
 		for (register int i = 0; i <_TT_in2.size() - 1; i++) {
-			if (abs(_TT_in2[i].y - _TT_in2[i + 1].y) < 30 || abs(_TT_in2[i].y - _TT_in2[i + 1].y) > 60) {
+			if (abs(_TT_in2[i].y - _TT_in2[i + 1].y) < 30 || abs(_TT_in2[i].y - _TT_in2[i + 1].y) > 50) {
 				SumFlag = false;
 			}
 		}
@@ -554,54 +592,107 @@ void LineSearchBased::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *lin
 		}
 	}
 
+<<<<<<< HEAD:CVES/LineSearchBased.cpp
 	// 교점 기울기 강제값 제어 부분.
+=======
+>>>>>>> origin/CVES_HandRecognition:CVES/ChessLineSearchAlg.cpp
 	if (XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)) {
+
+		_TT_in1_avg += abs(_TT_in1[0].x - _TT_in2[0].x);
+		_TT_in2_avg -= abs(_TT_in1[0].x - _TT_in2[0].x);
+
 		for (register int i = 0; i < _TT_in1.size() - 1; i++) {
 
+<<<<<<< HEAD:CVES/LineSearchBased.cpp
 			if (_TT_in1_avg != 0 && abs(_TT_in1_avg - abs(_TT_in1[i].x - _TT_in1[i + 1].x)) > 3) {
+=======
+			if(_TT_in1_avg != 0 && abs(_TT_in1_avg - abs(_TT_in1[i].x - _TT_in1[i + 1].x)) > 5){
+>>>>>>> origin/CVES_HandRecognition:CVES/ChessLineSearchAlg.cpp
 				_TT_in1[i + 1].x = _TT_in1[i].x + _TT_in1_avg;
 			}
 			else if (_TT_in1_avg == 0) {
 				_TT_in1_avg += abs(_TT_in1[i].x - _TT_in1[i + 1].x);
 			}
+<<<<<<< HEAD:CVES/LineSearchBased.cpp
 			else if (_TT_in1_avg != 0) {
 				_TT_in1_avg = (_TT_in1_avg + abs(_TT_in1[i].x - _TT_in1[i + 1].x)) / 2;
 			}
 		}
 		for (register int i = 0; i < _TT_in2.size() - 1; i++) {
 			if (_TT_in2_avg != 0 && abs(_TT_in2_avg - abs(_TT_in2[i].x - _TT_in2[i + 1].x)) > 3) {
+=======
+			else if(_TT_in1_avg != 0){
+				_TT_in1_avg = abs(_TT_in1[i].x - _TT_in1[i + 1].x) + abs(_TT_in1_avg - abs(_TT_in1[i].x - _TT_in1[i + 1].x));
+				
+			}
+		}
+		for (register int i = 0; i < _TT_in2.size() - 1; i++) {
+
+			if(_TT_in2_avg != 0 && abs(_TT_in2_avg - abs(_TT_in2[i].x - _TT_in2[i + 1].x)) > 5){
+>>>>>>> origin/CVES_HandRecognition:CVES/ChessLineSearchAlg.cpp
 				_TT_in2[i + 1].x = _TT_in2[i].x + _TT_in2_avg;
 			}
 			else if (_TT_in2_avg == 0) {
 				_TT_in2_avg -= abs(_TT_in2[i].x - _TT_in2[i + 1].x);
 			}
+<<<<<<< HEAD:CVES/LineSearchBased.cpp
 			else if (_TT_in2_avg != 0) {
 				_TT_in2_avg = (_TT_in2_avg + abs(_TT_in2[i].x - _TT_in2[i + 1].x)) / 2;
+=======
+			else if(_TT_in2_avg != 0){
+				_TT_in2_avg = abs(_TT_in2[i].x - _TT_in2[i + 1].x) - abs(_TT_in2_avg - abs(_TT_in2[i].x - _TT_in2[i + 1].x));
+				
+>>>>>>> origin/CVES_HandRecognition:CVES/ChessLineSearchAlg.cpp
 			}
 		}
 	}
 	else if (!XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)) {
+
+// 		_TT_in1_avg += abs(_TT_in1[0].y - _TT_in2[0].y);
+// 		_TT_in2_avg -= abs(_TT_in1[0].y - _TT_in2[0].y);
+
 		for (register int i = 0; i < _TT_in1.size() - 1; i++) {
+<<<<<<< HEAD:CVES/LineSearchBased.cpp
 			if (_TT_in1_avg != 0 && abs(_TT_in1_avg - abs(_TT_in1[i].y - _TT_in1[i + 1].y)) > 3) {
+=======
+
+			if(_TT_in1_avg != 0 && abs(_TT_in1_avg - abs(_TT_in1[i].y - _TT_in1[i + 1].y)) > 15){
+>>>>>>> origin/CVES_HandRecognition:CVES/ChessLineSearchAlg.cpp
 				_TT_in1[i + 1].y = _TT_in1[i].y + _TT_in1_avg;
 			}
 			else if (_TT_in1_avg == 0) {
 				_TT_in1_avg += abs(_TT_in1[i].y - _TT_in1[i + 1].y);
 			}
+<<<<<<< HEAD:CVES/LineSearchBased.cpp
 			else if (_TT_in1_avg != 0) {
 				_TT_in1_avg = (_TT_in1_avg + abs(_TT_in1[i].y - _TT_in1[i + 1].y)) / 2;
+=======
+			else if(_TT_in1_avg != 0){
+				_TT_in1_avg = abs(_TT_in1[i].y - _TT_in1[i + 1].y) - abs(_TT_in1_avg - abs(_TT_in1[i].y - _TT_in1[i + 1].y));
+				
+>>>>>>> origin/CVES_HandRecognition:CVES/ChessLineSearchAlg.cpp
 			}
 		}
 		for (register int i = 0; i <_TT_in2.size() - 1; i++) {
 
+<<<<<<< HEAD:CVES/LineSearchBased.cpp
 			if (_TT_in2_avg != 0 && abs(_TT_in2_avg - abs(_TT_in2[i].y - _TT_in2[i + 1].y)) > 3) {
+=======
+			if(_TT_in2_avg != 0 && abs(_TT_in2_avg - abs(_TT_in2[i].y - _TT_in2[i + 1].y)) > 15){
+>>>>>>> origin/CVES_HandRecognition:CVES/ChessLineSearchAlg.cpp
 				_TT_in2[i + 1].y = _TT_in2[i].y + _TT_in2_avg;
 			}
 			else if (_TT_in2_avg == 0) {
 				_TT_in2_avg -= abs(_TT_in2[i].y - _TT_in2[i + 1].y);
 			}
+<<<<<<< HEAD:CVES/LineSearchBased.cpp
 			else if (_TT_in2_avg != 0) {
 				_TT_in2_avg = (_TT_in2_avg + abs(_TT_in2[i].y - _TT_in2[i + 1].y))/2;
+=======
+			else if(_TT_in2_avg != 0){
+				_TT_in2_avg = abs(_TT_in2[i].y - _TT_in2[i + 1].y) + abs(_TT_in2_avg - abs(_TT_in2[i].y - _TT_in2[i + 1].y));
+				
+>>>>>>> origin/CVES_HandRecognition:CVES/ChessLineSearchAlg.cpp
 			}
 		}
 	}
@@ -637,6 +728,7 @@ void LineSearchBased::MemoryClear() {
 	in_line_point_x1.clear(), in_line_point_x2.clear(), in_line_point_y1.clear(), in_line_point_y2.clear(), in_line_point_x11.clear(), in_line_point_x22.clear(), in_line_point_y11.clear(), in_line_point_y22.clear();
 
 	true_line_point_x1.clear(), true_line_point_x2.clear(), true_line_point_y1.clear(), true_line_point_y2.clear();
+<<<<<<< HEAD:CVES/LineSearchBased.cpp
 }
 
 MyGrayPoint LineSearchBased::setMyGrayPoint(int grayscale, int x, int y) {
@@ -649,6 +741,8 @@ MyGrayPoint LineSearchBased::setMyGrayPoint(int grayscale, int x, int y) {
 	t_graypoint.y = y;
 
 	return t_graypoint;
+=======
+>>>>>>> origin/CVES_HandRecognition:CVES/ChessLineSearchAlg.cpp
 }
 
 MyPoint LineSearchBased::setMyPoint(int x, int y) {
