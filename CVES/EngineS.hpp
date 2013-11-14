@@ -96,7 +96,7 @@ private:
 	StringTools _StringTools;
 
 	int _Resolution_Width;
-	int _Resolution_Heigth;
+	int _Resolution_Height;
 	int _ROI_Width;
 	int _ROI_Heigth;
 	int _ROI_Thickness;
@@ -115,10 +115,14 @@ private:
 	// 자원은 무조건 Class 내에서만 할당 되어야 하며, 처리의 결과만 Class 내에서 처리되어
 	// Return 되게 하여야 한다.
 
-	queue<IplImage *> *_OriginToChessBoardDetection; // Chess Board Detection.
-	queue<IplImage *> *_OriginToHandDetection; // Hand Detection.
+	queue<IplImage *> *_OriginForChessBoardDetection; // Chess Board Detection.
+	queue<IplImage *> *_OriginForHandDetection; // Hand Detection.
 
-	IplImage *_CamOriginalImage; // 원본 이미지.
+	IplImage *_CamOriginImage; // 원본 이미지.
+
+	// 김두훈 추가.
+	IplImage *_DetectionResultOnlyImage; // Detection 결과 전용 Image.
+
 	IplImage *_ImageChess; // 처리할 관심영역 속 RGB 이미지.
 	IplImage *_ImageSkin; // 차영상 결과 이미지.
 	IplImage *_PrevImage; // 차영상을 위해 필요한 이미지.
@@ -173,7 +177,9 @@ private:
 	bool Check_Exit();
 
 	// 매 루프에서 호출되는 image process 함수.
-	void Go_ImageProcessing();
+	void See();
+	void Judge();
+	void SeeAndJudge();
 	CvRect Set_ROIRect(int ResolutionWidth, int ResolutionHeight, int ROIWidth, int ROIHeight);
 	void AllocCVESImages();
 	// chess UI 만들기

@@ -321,7 +321,7 @@ void ChessRecognition::Initialize_ChessRecognition(int Width, int Height, int Mo
 #endif
 	}
 
-	//내부 연산에 사용되는 이미지
+	// 내부 연산에 사용되는 이미지.
 	img_process = cvCreateImage(cvSize(Width, Height), IPL_DEPTH_8U, 1);
 	cvZero(img_process);
 

@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
 
 	if (argc > 0/*1*/) {
 		//STRING_SWITCH_BEGIN(string((char *)argv[1]))
-		STRING_SWITCH_BEGIN(string("/Client"))
+		STRING_SWITCH_BEGIN(string("/Server"))
 		{
 			CASE("/Server")
 				AdapterS _TAdapterS;
