@@ -52,6 +52,11 @@ typedef struct before_move{
 	CvPoint position;
 } before_move;
 
+typedef struct error_move{
+	bool flag;
+	CvPoint before, after;
+};
+
 enum {			//체스말
 	Ground, 
 	W_King, W_Queen, W_Rook, W_Bishop, W_Knight, W_Pawn,
@@ -64,6 +69,8 @@ private:
 	int _Board[8][8];
 	bool _Turn;
 	char recent_move[6]; //가장 최근 움직임을 저장
+
+	error_move _error_move;
 	CvPoint _Before, _After;
 	CvPoint before_move_pawn;
 	before_move _before_move;
@@ -87,9 +94,10 @@ private:
 	void default_move(CvPoint move_input[]);
 
 	// 기본 이동 체스룰
-
 	bool default_move_rule(CvPoint before, CvPoint after);
 
+	// 
+	void check_return(CvPoint move_input[]);
 public:
 	ChessGame();
 	~ChessGame();
