@@ -41,7 +41,8 @@ SOURCES += main.cpp \
     HoughLineBased.cpp \
     ChessObjectDetection.cpp \
     CVES.cpp \
-    AdapterS.cpp
+    AdapterS.cpp \
+    ImageTransformForQT.cpp
 
 HEADERS += \
 		../Common/Time.hpp \
@@ -66,7 +67,8 @@ HEADERS += \
     HoughLineBased.hpp \
     ChessObjectDetection.hpp \
     CVES.hpp \
-    AdapterS.hpp
+    AdapterS.hpp \
+    ImageTransformForQT.hpp
 
 FORMS += CVES.ui
 

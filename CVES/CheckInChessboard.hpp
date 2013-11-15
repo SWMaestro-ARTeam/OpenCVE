@@ -27,11 +27,13 @@
 #define _CheckInChessboard_hpp_
 
 #include "CVESDependent.hpp"
+#include <mutex>
 
 using namespace std;
 
 class CheckInChessboard {
 private:
+	mutex _InChessBoardCalculateProtectMutex;
 	// p, q, r로 이루어진 삼각형의 넓이 return.
 	float Get_TriangleArea(CvPoint Value_P, CvPoint Value_Q, CvPoint Value_R);
 	// 말이 어느 체스판에 있는지를 체크.

@@ -38,7 +38,10 @@ int AdapterS::Go_EngineS(int argc, char* argv[]) {
 	QApplication a(argc, argv);
 	CVES w;
 
+	// Engine Pointer를 넘겨준다.
 	w._EngineS = _EngineS;
+	// 영상이 들어올 CallBack의 주소를 넘겨준다.
+	_EngineS->TEngineSFrameCallback = w.EngineSFrameCallback;
 #endif
 
 	// 2. Engine Enable.
@@ -46,9 +49,12 @@ int AdapterS::Go_EngineS(int argc, char* argv[]) {
 	// 3. Engine Start.
 	_EngineS->EngineS_Start();
 
-#ifdef USING_QT
+#if defined(USING_QT)
 	w.show();
 	_TApplicationReturnValue = a.exec();
+	w.EngineSFrameCallback = NULL;
+	//while (_EngineS->EngineEnable)
+	Sleep(100);
 #else
 	// Thread 처리 할 경우 Main Application이 Thread보다 먼저 죽어버리는 경우가 발생하므로,
 	// 이를 방지하기 위해 Engine이 Enable일 때까지 계속 멈춰 있게 하여야 한다.

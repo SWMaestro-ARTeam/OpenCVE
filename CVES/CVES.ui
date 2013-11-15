@@ -1,6 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>CVES</class>
- <widget class="QMainWindow" name="CVES" >
+ <widget class="QMainWindow" name="CVES">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -231,8 +232,7 @@
    </property>
   </action>
  </widget>
- <layoutDefault spacing="6" margin="11" />
- <pixmapfunction></pixmapfunction>
+ <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections/>
 </ui>

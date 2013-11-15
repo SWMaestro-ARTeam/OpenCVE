@@ -23,87 +23,26 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _Time_hpp_
-#define _Time_hpp_
+#ifndef _ImageTransformForQT_hpp_
+#define _ImageTransformForQT_hpp_
 
-#include "SystemDependency.hpp"
+#include "CVESDependent.hpp"
 
-#include <stdio.h>
-
-#include <cstdio>
-#include <cstdlib>
+#include <qimage.h>
+#include <iostream>
 #include <cstring>
-#include <ctime>
 
-#if defined(WINDOWS_SYS)
-#include <windows.h>
-#include <process.h>
-#elif defined(POSIX_SYS)
-#include <sys/resource.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <unistd.h>
-#endif
+using namespace std;
 
-#define DEFAULT_UTC_HOUR 0
-#define DEFAULT_MST_HOUR -7
-#define DEFAULT_CCT_HOUR 8 
-
-#define YEAR_DEFAULT_1900 1900
-
-class Time {
-private:
-	time_t _RawTime;
+class ImageTransformForQT {
 public:
-	tm *TimeInformation;
+	typedef unsigned short uint16_t;
 
-	char *GetASCTime();
-	char *GetCTime();
-	char *GetUTCTime();
-	char *GetUTCTime_Hour();
-	double GetNowCPUTimeOfProcessStarted();
-	double GetRealTime();
-	int GetTick();
+	//using std::string;
+	//using std::iostream;
+
+	QImage *IplImageToQImage(const IplImage* iplImage,/* uchar** data,*/ double mini=0.0, double maxi=0.0);
+	IplImage *QImageToIplImage(const QImage *qImage);
 };
 
-class SystemControlsOfTime : protected Time {
-private:
-public:
-	bool WaitSecondsUntilSwitch(int MilliSecones, bool &KillSwitch);
-};
-
-class Timer {
-private:
-	bool _IsStart;
-public:
-	void SetTimeSeconds(int Seconds);
-	void SetTimeMilliSeconds(int MilliSeconds);
-	void SetTimeMicroSeconds(int MicroSeconds);
-	
-	void Start();
-	void End();
-
-	// Callback.
-	typedef void (*_T_TIMERINVOKER)();
-
-	_T_TIMERINVOKER TTimerInvoker;
-
-	// Thread.
-	static
-#if defined(WINDOWS_SYS)
-		UINT WINAPI
-		//DWORD WINAPI
-#elif defined(POSIX_SYS)
-		// using pthread
-		void *
-#endif
-		TimerProcessingThread(
-#if defined(WINDOWS_SYS)
-		LPVOID
-#elif defined(POSIX_SYS)
-		void *
-#endif
-		Param);
-};
-
-#endif
+#endif // _ImageTransformForQT_hpp_

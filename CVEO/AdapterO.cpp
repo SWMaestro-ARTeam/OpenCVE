@@ -37,11 +37,12 @@ int AdapterO::Go_EngineO(int argc, char* argv[]) {
 
 	// 1. CVEO Engine 생성.
 	_EngineO = new EngineO();
-#if defined USING_QT
+#if defined(USING_QT)
 	QApplication a(argc, argv);
 	CVEO w;
 
 	w._EngineO = _EngineO;
+	_EngineO->TEngineODataReceivedCallback = w.EngineODataReceivedCallback;
 #endif
 
 	// 2. Engine Enable.
@@ -49,9 +50,10 @@ int AdapterO::Go_EngineO(int argc, char* argv[]) {
 	// 3. Engine Start.
 	_EngineO->EngineO_Start();
 
-#ifdef USING_QT
+#if defined(USING_QT)
 	w.show();
 	_TApplicationReturnValue = a.exec();
+	w.EngineODataReceivedCallback = NULL;
 #else
 	// Thread 처리 할 경우 Main Application이 Thread보다 먼저 죽어버리는 경우가 발생하므로,
 	// 이를 방지하기 위해 Engine이 Enable일 때까지 계속 멈춰 있게 하여야 한다.

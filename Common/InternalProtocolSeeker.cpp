@@ -122,6 +122,34 @@ int InternalProtocolSeeker::InternalProtocolString_Seeker(const char *Str) {
 			_SeekedNumber = VALUE_I_TICTOKISOFF;
 			break;
 
+		CASE(STR_I_DISP)
+			_SeekedNumber = VALUE_I_DISP;
+			break;
+
+		CASE(STR_I_DISP_MINX)
+			_SeekedNumber = VALUE_I_DISP_MINX;
+			break;
+		CASE(STR_I_DISP_MINY)
+			_SeekedNumber = VALUE_I_DISP_MINY;
+			break;
+		CASE(STR_I_DISP_MAXX)
+			_SeekedNumber = VALUE_I_DISP_MAXX;
+			break;
+		CASE(STR_I_DISP_MAXY)
+			_SeekedNumber = VALUE_I_DISP_MAXY;
+			break;
+
+		CASE(STR_I_OMOVE)
+			_SeekedNumber = VALUE_I_OMOVE;
+			break;
+
+		CASE(STR_I_OMOVE_BLACK)
+			_SeekedNumber = VALUE_I_OMOVE_BLACK;
+			break;
+		CASE(STR_I_OMOVE_WHITE)
+			_SeekedNumber = VALUE_I_OMOVE_WHITE;
+			break;
+
 		CASE(STR_I_STATUSNOW)
 			_SeekedNumber = VALUE_I_STATUSNOW;
 			break;

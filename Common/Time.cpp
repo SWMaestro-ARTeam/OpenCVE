@@ -85,6 +85,23 @@ double Time::GetNowCPUTimeOfProcessStarted() {
 	return _TCPUTime;
 }
 
+int Time::GetTick() {
+	int _TTick;
+#if defined(WINDOWS_SYS)
+	_TTick = GetTickCount();
+#elif defined(POSIX_SYS)
+	timeval _TTimeVal[1];
+	timezone _TTimeZone[1];
+
+	_TTimeZone->tz_minuteswest = 0;
+	_TTimeZone->tz_dsttime = 0;
+
+	if (gettimeofday(_TTimeVal, _TTimeZone) != -1)
+		_TTick = (_TTimeVal->tv_usec * 1E-6);
+#endif
+	return _TTick;
+}
+
 bool SystemControlsOfTime::WaitSecondsUntilSwitch(int Seconds, bool &KillSwitch) {
 	time_t _TNow = time(NULL);
 	time_t _TEnd = _TNow + Seconds;

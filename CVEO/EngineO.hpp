@@ -36,6 +36,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "CVECDependent.hpp"
+
 // 공통 상수 정의
 #include "Common.hpp"
 // 공용 변수 정의
@@ -117,6 +119,9 @@ public:
 	bool EngineEnable;
 
 	queue<char *> *CommandQueue;
+
+	typedef void (* _T_ENGINEODATARECEIVEDCALLBACK)(char *Buffer);
+	_T_ENGINEODATARECEIVEDCALLBACK TEngineODataReceivedCallback;
 
 	void EngineO_Start();
 };

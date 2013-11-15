@@ -94,6 +94,7 @@ private:
 	InternalProtocolSeeker _InternalProtocolSeeker;
 	CodeConverter _CodeConverter;
 	StringTools _StringTools;
+	Time _Time;
 
 	int _Resolution_Width;
 	int _Resolution_Height;
@@ -103,12 +104,18 @@ private:
 
 	int _Camera_Number;
 
+	float _ChessRecognitionProcessingFrames;
+	float _HandRecognitionProcessingFrames;
+	
 	int _ImageProcessMode; //모드 설정/
 	bool _SubCheck;
 	bool _InHandCheck;
 	bool _BeforeHandFirst;
 	bool _IsRestorePossible;
 	bool _IsTrun;
+
+	bool _ChessRecognitionProcessingPause;
+	bool _HandRecognitionProcessingPause;
 
 	CvCapture *_Cam; // 캠.
 	// 공유 자원 문제를 피하기 위해, 약 3가지의 Part에서 쓰는 Image를 Queue를 줌.
@@ -133,7 +140,6 @@ private:
 	IplImage *_PureImage;	//원본 ROI 셋팅 영상을 저장하기 위한 이미지.
 	IplImage *_CamHSV;
 
-	
 	CvSize _Resolution; // 전체 해상도.
 	CvSize _ROI_Resolution; // ROI상의 해상도.
 
@@ -150,7 +156,7 @@ private:
 	queue<ServerGetInformation *> *CommandQueue;
 	//mutex _QueueProtectMutex;
 	//mutex _VarProtectMutex;
-	mutex _CamImageProtectMutex;
+	mutex _DetectionResultOnlyImageProtectMutex;
 
 private:
 	bool Initialize_Camera();
@@ -177,20 +183,22 @@ private:
 	bool Check_Exit();
 
 	// 매 루프에서 호출되는 image process 함수.
-	void See();
-	void Judge();
-	void SeeAndJudge();
+	
 	CvRect Set_ROIRect(int ResolutionWidth, int ResolutionHeight, int ROIWidth, int ROIHeight);
-	void AllocCVESImages();
+	void Alloc_CVESImages();
 	// chess UI 만들기
-	void DrawROI(IplImage *Source, float FramePerSecond, CvScalar RGB);
+	void Draw_ROI(IplImage *Source, float FramePerSecond, CvScalar RGB);
 	// 연산에 필요한 이미지 할당.
-	void Inter_imageCraete(int roi_width, int roi_height);
+	void InternalImageCraete(int roi_width, int roi_height);
 	// 차영상 진행.
 	void Sub_image(IplImage *Source1, IplImage *Source2, IplImage *Destination);
 	// 차영상 결과 이미지에 RGB 색 씌우기.
 	void Compose_diffImage(IplImage *rgb, IplImage *bin, CvScalar RGB);
-	//입력 영상으로 내부 모드에 따라 이미지 연산. (case문 대체)
+	// 입력 영상으로 내부 모드에 따라 이미지 연산. (case문 대체)
+	void See();
+	void Evaluation();
+	void DisplayInfomation();
+	void Verdict();
 	void imgproc_mode();
 
 	static void ServerReceivedCallback(char *Buffer, SOCKET ClientSocket);
@@ -268,7 +276,18 @@ public:
 	bool EngineEnable;
 	bool IsStarted;
 	bool IsTictokEnable;
+	bool ChessRecognitionInitialize;
+	bool HandRecognitionInitialize;
+
+	typedef void (* _T_ENGINESFRAMECALLBACK)(IplImage *NowFrame);
+	_T_ENGINESFRAMECALLBACK TEngineSFrameCallback;
+
+	CvSize Get_Resolution();
+	IplImage *Get_FrameImage();
+	bool IsAllInitialize();
 
 	void EngineS_Start();
+
+	void EngineS_Destroy();
 };
 #endif

@@ -73,6 +73,17 @@
 #define STR_I_TICTOKISON "TicTokisOn" // +
 #define STR_I_TICTOKISOFF "TicTokisOff" // +
 
+#define STR_I_DISP "Disp"
+#define STR_I_OMOVE STR_I_MOVE
+
+#define STR_I_DISP_MINX "MinX"
+#define STR_I_DISP_MINY "MinY"
+#define STR_I_DISP_MAXX "MaxX"
+#define STR_I_DISP_MAXY "MaxY"
+
+#define STR_I_OMOVE_BLACK STR_I_INFO_BLACK
+#define STR_I_OMOVE_WHITE STR_I_INFO_WHITE
+
 // Observer -> CVES
 #define STR_I_STATUSNOW "StatusNow"
 #define STR_I_TICTOKON "TicTokOn"
@@ -127,6 +138,16 @@
 #define VALUE_I_TICTOK 3100
 #define VALUE_I_TICTOKISON 3200
 #define VALUE_I_TICTOKISOFF 3300
+#define VALUE_I_DISP 3400
+#define VALUE_I_OMOVE 3500
+
+#define VALUE_I_DISP_MINX 3410
+#define VALUE_I_DISP_MINY 3420
+#define VALUE_I_DISP_MAXX 3430
+#define VALUE_I_DISP_MAXY 3440
+
+#define VALUE_I_OMOVE_BLACK 3510
+#define VALUE_I_OMOVE_WHITE 3520
 
 // Observer -> CVES
 #define VALUE_I_STATUSNOW 4100

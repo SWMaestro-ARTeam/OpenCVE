@@ -45,7 +45,7 @@ CvPoint CheckInChessboard::Get_Chessidx(CvPoint Point, vector<ChessPoint> CrossP
 	for (register int i = 0; i < CrossPoint.size() - 10; i++) {
 		if (CrossPoint.at(i).Cordinate.x <= Point.x && CrossPoint.at(i).Cordinate.y <= Point.y) {
 			if (CrossPoint.at(i + 10).Cordinate.x > Point.x && CrossPoint.at(i + 10).Cordinate.y > Point.y)
-				return CrossPoint.at(i).index;
+				return CrossPoint.at(i).Index;
 		}
 	}
 
@@ -78,7 +78,7 @@ bool CheckInChessboard::Check_InChessboard(IplImage *Image, vector<ChessPoint> P
 	// 2) 차영상 결과 Detection된 픽셀의 좌표와 체스판 사각형의 끝점들로 이루어진 삼각형의 넓이를 각각 계산
 	// 3) 2번 과정에서 연산된 삼각형 네개의 합이 체스판 사각형의 크기와 차이가 적을 경우 픽셀의 좌표가 사각형 내부에 있음으로 판정
 	// 4) 사각형 내부의 픽셀 좌표가 있다는 판정이 되면 return true;
-
+	//_InChessBoardCalculateProtectMutex.lock();
 	CvPoint _T_LeftTop, _T_LeftBottom, _T_RightTop, _T_RightBottom; // 왼쪽 위, 왼쪽 아래, 오른쪽 위 오른쪽 아래.
 
 	// tArea : chessboard 전체 넓이, 나머지 : 삼각형 넓이.
@@ -113,7 +113,7 @@ bool CheckInChessboard::Check_InChessboard(IplImage *Image, vector<ChessPoint> P
 			}
 		}
 	}
-
+	//_InChessBoardCalculateProtectMutex.unlock();
 	// binary image의 픽셀이 chessboard 내부에 존재하지 않음.
 	return false;
 }

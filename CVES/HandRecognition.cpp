@@ -25,21 +25,14 @@
 
 #include "HandRecognition.hpp"
 
+// 무조건 순차적으로 처리한다.
+
 HandRecognition::HandRecognition() {
+	_IsInitialize = false;
 }
 
 HandRecognition::~HandRecognition() {
-	if (_Image_YCrCb != NULL)
-		cvReleaseImage(&_Image_YCrCb);
-
-	if (_Image_HSV != NULL)
-		cvReleaseImage(&_Image_HSV);
-
-	if (_Image_Previous != NULL)
-		cvReleaseImage(&_Image_Previous);
-
-	if (_Image_Now != NULL)
-		cvReleaseImage(&_Image_Now);
+	_IsInitialize = false;
 }
 
 void HandRecognition::Initialize_HandRecognition(int Width, int Height) {
@@ -54,12 +47,34 @@ void HandRecognition::Initialize_HandRecognition(int Width, int Height) {
 
 	_Image_Previous = NULL;
 	_Image_Now = NULL;
+	_IsInitialize = true;
+}
+
+void HandRecognition::Deinitialize_HandRecognition() {
+	if (_Image_YCrCb != NULL)
+		cvReleaseImage(&_Image_YCrCb);
+
+	if (_Image_HSV != NULL)
+		cvReleaseImage(&_Image_HSV);
+
+	if (_Image_Previous != NULL)
+		cvReleaseImage(&_Image_Previous);
+
+	if (_Image_Now != NULL)
+		cvReleaseImage(&_Image_Now);
+
+	_IsInitialize = false;
 }
 
 void HandRecognition::Initialize_Differential_Image() {
-	// 내부 차영상 연산에 사용되는 이미지 할당 해제.
-	cvReleaseImage(&_Image_Previous);
-	cvReleaseImage(&_Image_Now);
+	if (_IsInitialize != false) {
+		// 내부 차영상 연산에 사용되는 이미지 할당 해제.
+		cvReleaseImage(&_Image_Previous);
+		cvReleaseImage(&_Image_Now);
+	}
+	else {
+
+	}
 }
 
 bool HandRecognition::RangeDetectionOfRGBSkinColour(int Value_R, int Value_G, int Value_B) {
@@ -86,118 +101,131 @@ bool HandRecognition::RangeDetectionOfHSVSkinColour(float Value_H, float Value_S
 }
 
 void HandRecognition::Detect_SkinColour(IplImage *Source, IplImage *Destination) {
-	// skin color detection을 진행.
-	// RGB-H-CbCr Skin Colour Model for Human Face Detection 논문 참조.
-	// http://pesona.mmu.edu.my/~johnsee/research/papers/files/rgbhcbcr_m2usic06.pdf 
-	cvCvtColor(Source, _Image_YCrCb, CV_BGR2YCrCb);
-	cvCvtColor(Source, _Image_HSV, CV_BGR2HSV);
+	if (_IsInitialize != false) {
+		// skin color detection을 진행.
+		// RGB-H-CbCr Skin Colour Model for Human Face Detection 논문 참조.
+		// http://pesona.mmu.edu.my/~johnsee/research/papers/files/rgbhcbcr_m2usic06.pdf 
+		cvCvtColor(Source, _Image_YCrCb, CV_BGR2YCrCb);
+		cvCvtColor(Source, _Image_HSV, CV_BGR2HSV);
 
-	cvZero(Destination);
+		cvZero(Destination);
 
-	for (register int i = 0; i < Destination->height; i++) {
-		for (register int j = 0; j < Destination->width; j++) {
-			// RGB 색상계를 이용하여 skin이 아닌 픽셀들을 걸러냄.
-			_Plane_B_Value = (unsigned char)Source->imageData[(j * 3) + (i * Source->widthStep)];
-			_Plane_G_Value = (unsigned char)Source->imageData[(j * 3) + (i * Source->widthStep) + 1];
-			_Plane_R_Value = (unsigned char)Source->imageData[(j * 3) + (i * Source->widthStep) + 2];
+		for (register int i = 0; i < Destination->height; i++) {
+			for (register int j = 0; j < Destination->width; j++) {
+				// RGB 색상계를 이용하여 skin이 아닌 픽셀들을 걸러냄.
+				_Plane_B_Value = (unsigned char)Source->imageData[(j * 3) + (i * Source->widthStep)];
+				_Plane_G_Value = (unsigned char)Source->imageData[(j * 3) + (i * Source->widthStep) + 1];
+				_Plane_R_Value = (unsigned char)Source->imageData[(j * 3) + (i * Source->widthStep) + 2];
 
-			if (RangeDetectionOfRGBSkinColour(_Plane_R_Value, _Plane_G_Value, _Plane_B_Value)) {
-				// HSV 색상계에 H를 이용하여 피부 영역 검출
-				_Plane_H_Value = (unsigned char)_Image_HSV->imageData[(j * 3) + (i * _Image_HSV->widthStep)];
-				_Plane_S_Value = (unsigned char)_Image_HSV->imageData[(j * 3) + (i * _Image_HSV->widthStep) + 1];
-				_Plane_V_Value = (unsigned char)_Image_HSV->imageData[(j * 3) + (i * _Image_HSV->widthStep) + 2];
+				if (RangeDetectionOfRGBSkinColour(_Plane_R_Value, _Plane_G_Value, _Plane_B_Value)) {
+					// HSV 색상계에 H를 이용하여 피부 영역 검출
+					_Plane_H_Value = (unsigned char)_Image_HSV->imageData[(j * 3) + (i * _Image_HSV->widthStep)];
+					_Plane_S_Value = (unsigned char)_Image_HSV->imageData[(j * 3) + (i * _Image_HSV->widthStep) + 1];
+					_Plane_V_Value = (unsigned char)_Image_HSV->imageData[(j * 3) + (i * _Image_HSV->widthStep) + 2];
 
-				if (RangeDetectionOfHSVSkinColour(_Plane_H_Value, _Plane_S_Value, _Plane_V_Value)) {
-					// YCbCr 색상계를 사용하여 최종 피부색 판정.
-					_Plane_Y_Value = (unsigned char)_Image_YCrCb->imageData[(j * 3) + (i * _Image_YCrCb->widthStep)];
-					_Plane_Cr_Value = (unsigned char)_Image_YCrCb->imageData[(j * 3) + (i * _Image_YCrCb->widthStep) + 1];
-					_Plane_Cb_Value = (unsigned char)_Image_YCrCb->imageData[(j * 3) + (i * _Image_YCrCb->widthStep) + 2];
-					
-					if (RangeDetectionOfYCrCbSkinColour(_Plane_Y_Value, _Plane_Cr_Value, _Plane_Cb_Value)) {
-						Destination->imageData[j + (i * Destination->widthStep)] = (unsigned char) 255;
+					if (RangeDetectionOfHSVSkinColour(_Plane_H_Value, _Plane_S_Value, _Plane_V_Value)) {
+						// YCbCr 색상계를 사용하여 최종 피부색 판정.
+						_Plane_Y_Value = (unsigned char)_Image_YCrCb->imageData[(j * 3) + (i * _Image_YCrCb->widthStep)];
+						_Plane_Cr_Value = (unsigned char)_Image_YCrCb->imageData[(j * 3) + (i * _Image_YCrCb->widthStep) + 1];
+						_Plane_Cb_Value = (unsigned char)_Image_YCrCb->imageData[(j * 3) + (i * _Image_YCrCb->widthStep) + 2];
+
+						if (RangeDetectionOfYCrCbSkinColour(_Plane_Y_Value, _Plane_Cr_Value, _Plane_Cb_Value)) {
+							Destination->imageData[j + (i * Destination->widthStep)] = (unsigned char) 255;
+						}
 					}
 				}
 			}
 		}
-	}
 
-	// noise에 의한 영향을 줄이기 위해 모폴로지 연산 적용.
-	cvErode(Destination, Destination, 0, MOP_NUM);
-	cvDilate(Destination, Destination, 0, MOP_NUM);
+		// noise에 의한 영향을 줄이기 위해 모폴로지 연산 적용.
+		cvErode(Destination, Destination, 0, MOP_NUM);
+		cvDilate(Destination, Destination, 0, MOP_NUM);
+	}
+	else {
+
+	}
 }
 
 bool HandRecognition::IsHand(IplImage *Source) {
-	// binary image를 이용하여 피부색 영역 픽셀이 일정 갯수 이상이면 손이라고 판정.
-	int count = 0;
+	if (_IsInitialize != false) {
+		// binary image를 이용하여 피부색 영역 픽셀이 일정 갯수 이상이면 손이라고 판정.
+		int count = 0;
 
-	for (register int i = 0; i < Source->width; i++) {
-		for (register int j = 0; j < Source->height; j++) {
-			if ((unsigned char)Source->imageData[i + (j * Source->widthStep)] == 255)
-				count++;
-		}
-	}
-
-	if (count > T_SKIN_NUM)
-		return true;
-
-	return false;
-}
-
-// rebuild 대상.
-void HandRecognition::Sub_prevFrame(IplImage *Source, IplImage *Destination, bool first) {
-	// 손을 검출하기 위한 차영상 적용.
-	// RGB image src를 입력받아 binary image dst를 반환.
-	static int _TFrameCount = 0;
-
-	// Lab 색상계 실험
-	IplImage *Lab_src = cvCreateImage(cvGetSize(Source), IPL_DEPTH_8U, 3);
-	IplImage *Lab_prev = cvCreateImage(cvGetSize(Source), IPL_DEPTH_8U, 3);
-
-	// first가 true일 경우 이미지 초기화.
-	if (first) {
-		if (_Image_Previous != NULL) {
-			//Hand Recognition 내부 연산에 사용되는 이미지 할당해제 및 포인터 초기화.
-			cvReleaseImage(&_Image_Previous);
-			cvReleaseImage(&_Image_Now); 
-			_Image_Previous = NULL;
-			_Image_Now = NULL;
-		}
-	}
-
-	// 이전 프레임의 이미지가 존재하지 않을 때, 이전 이미지에 현재 입력받은 이미지를 입력.
-	if (_Image_Previous == NULL) {
-		_Image_Previous = cvCreateImage(cvGetSize(Source), IPL_DEPTH_8U, 3);
-		_Image_Now = cvCreateImage(cvGetSize(Source), IPL_DEPTH_8U, 3);
-		cvCopy(Source, _Image_Previous);
-	}
-
-	cvZero(Destination);
-
-	// 프로그램의 성능을 위해 몇 프레임마다 차영상을 적용할 것인가를 if문을 통하여 조절할 수 있음.
-	if (_TFrameCount == 1) {
-		cvCopy(Source, _Image_Now);
-
-		// image 내부의 모든 픽셀을 대상으로 rgb 차영상 적용.
 		for (register int i = 0; i < Source->width; i++) {
 			for (register int j = 0; j < Source->height; j++) {
-				unsigned char SUB_B = abs((unsigned char)Source->imageData[(i * 3) + (j * Source->widthStep)] - (unsigned char)_Image_Previous->imageData[(i * 3) + (j * _Image_Previous->widthStep)]);
-				unsigned char SUB_G = abs((unsigned char)Source->imageData[(i * 3) + (j * Source->widthStep) + 1] - (unsigned char)_Image_Previous->imageData[(i * 3) + (j * _Image_Previous->widthStep) + 1]);
-				unsigned char SUB_R = abs((unsigned char)Source->imageData[(i * 3) + (j * Source->widthStep) + 2] - (unsigned char)_Image_Previous->imageData[(i * 3) + (j * _Image_Previous->widthStep) + 2]);
-
-				if(SUB_B > SUB_THRESHOLD || SUB_G > SUB_THRESHOLD || SUB_R > SUB_THRESHOLD) {
-					Destination->imageData[i + (j * Destination->widthStep)] = (unsigned char)255;
-				}
+				if ((unsigned char)Source->imageData[i + (j * Source->widthStep)] == 255)
+					count++;
 			}
 		}
 
-		cvErode(Destination, Destination, 0, 2);
-		cvDilate(Destination, Destination, 0, 8);
+		if (count > T_SKIN_NUM)
+			return true;
 
-		_TFrameCount = 0;
+		return false;
 	}
+	else {
+	}
+}
 
-	_TFrameCount++;
+// rebuild 대상.
+void HandRecognition::Subtraction_PreviousFrame(IplImage *Source, IplImage *Destination, bool First) {
+	if (_IsInitialize != false) {
+		// 손을 검출하기 위한 차영상 적용.
+		// RGB image src를 입력받아 binary image dst를 반환.
+		static int _TFrameCount = 0;
 
-	cvReleaseImage(&Lab_prev);
-	cvReleaseImage(&Lab_src);
+		// Lab 색상계 실험
+		IplImage *Lab_src = cvCreateImage(cvGetSize(Source), IPL_DEPTH_8U, 3);
+		IplImage *Lab_prev = cvCreateImage(cvGetSize(Source), IPL_DEPTH_8U, 3);
+
+		// first가 true일 경우 이미지 초기화.
+		if (First) {
+			if (_Image_Previous != NULL) {
+				//Hand Recognition 내부 연산에 사용되는 이미지 할당해제 및 포인터 초기화.
+				cvReleaseImage(&_Image_Previous);
+				cvReleaseImage(&_Image_Now); 
+				_Image_Previous = NULL;
+				_Image_Now = NULL;
+			}
+		}
+
+		// 이전 프레임의 이미지가 존재하지 않을 때, 이전 이미지에 현재 입력받은 이미지를 입력.
+		if (_Image_Previous == NULL) {
+			_Image_Previous = cvCreateImage(cvGetSize(Source), IPL_DEPTH_8U, 3);
+			_Image_Now = cvCreateImage(cvGetSize(Source), IPL_DEPTH_8U, 3);
+			cvCopy(Source, _Image_Previous);
+		}
+
+		cvZero(Destination);
+
+		// 프로그램의 성능을 위해 몇 프레임마다 차영상을 적용할 것인가를 if문을 통하여 조절할 수 있음.
+		if (_TFrameCount == 1) {
+			cvCopy(Source, _Image_Now);
+
+			// image 내부의 모든 픽셀을 대상으로 rgb 차영상 적용.
+			for (register int i = 0; i < Source->width; i++) {
+				for (register int j = 0; j < Source->height; j++) {
+					unsigned char SUB_B = abs((unsigned char)Source->imageData[(i * 3) + (j * Source->widthStep)] - (unsigned char)_Image_Previous->imageData[(i * 3) + (j * _Image_Previous->widthStep)]);
+					unsigned char SUB_G = abs((unsigned char)Source->imageData[(i * 3) + (j * Source->widthStep) + 1] - (unsigned char)_Image_Previous->imageData[(i * 3) + (j * _Image_Previous->widthStep) + 1]);
+					unsigned char SUB_R = abs((unsigned char)Source->imageData[(i * 3) + (j * Source->widthStep) + 2] - (unsigned char)_Image_Previous->imageData[(i * 3) + (j * _Image_Previous->widthStep) + 2]);
+
+					if(SUB_B > SUB_THRESHOLD || SUB_G > SUB_THRESHOLD || SUB_R > SUB_THRESHOLD) {
+						Destination->imageData[i + (j * Destination->widthStep)] = (unsigned char)255;
+					}
+				}
+			}
+
+			cvErode(Destination, Destination, 0, 2);
+			cvDilate(Destination, Destination, 0, 8);
+
+			_TFrameCount = 0;
+		}
+
+		_TFrameCount++;
+
+		cvReleaseImage(&Lab_prev);
+		cvReleaseImage(&Lab_src);
+	}
+	else {
+	}
 }

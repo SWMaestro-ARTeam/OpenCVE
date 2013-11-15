@@ -13,7 +13,7 @@ QMAKE_CXXFLAGS += -std=c++11 -fpermissive -fexceptions
 #-D USING_QT
 #-D../Common/SystemDependency.hpp
 
-QMAKE_LFLAGS += -static -static-libgcc
+#QMAKE_LFLAGS += -static -static-libgcc
 #QMAKE_LFLAGS += -static -static-libgcc -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -23,7 +23,7 @@ TEMPLATE = app
 
 CONFIG   += console precompile_header
 PRECOMPILED_HEADER = ../Common/SystemDependency.hpp
-CONFIG	+= qt warn_on release static staticlib
+#CONFIG	+= qt warn_on release static staticlib
 CONFIG	+= static staticlib
 
 SOURCES +=\
@@ -54,7 +54,8 @@ SOURCES +=\
     ../CVEO/CVEO.cpp \
     ../CVEO/AdapterO.cpp \
     ../CVES/CVES.cpp \
-    main.cpp
+    main.cpp \
+    ../CVES/ImageTransformForQT.cpp
 
 HEADERS  += \
 		../Common/SystemDependency.hpp \
@@ -92,7 +93,8 @@ HEADERS  += \
     ../CVEO/CVEO.hpp \
     ../CVEO/AdapterO.hpp \
     ../CVEO/main.cpp.autosave \
-    ../CVES/CVES.hpp
+    ../CVES/CVES.hpp \
+    ../CVES/ImageTransformForQT.hpp
 
 FORMS    += \
     ../CVEO/CVEO.ui \

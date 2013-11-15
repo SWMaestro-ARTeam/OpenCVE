@@ -53,7 +53,8 @@ HEADERS  += CVEO.hpp \
     ../Common/Debug.hpp \
     ../Common/Common.hpp \
     ../Common/CodeConverter.hpp \
-    AdapterO.hpp
+    AdapterO.hpp \
+    CVEODependent.hpp
 
 FORMS    += CVEO.ui
 

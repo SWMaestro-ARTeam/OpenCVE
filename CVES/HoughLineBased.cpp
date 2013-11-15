@@ -193,7 +193,7 @@ void HoughLineBased::FindIntersections(vector<pair<float, float> > XLines, vecto
 
 			// save point.
 			_TTemp_CP.Cordinate = _Tc;
-			_TTemp_CP.index = cvPoint(j, i);
+			_TTemp_CP.Index = cvPoint(j, i);
 			Point->push_back(_TTemp_CP);
 		}
 	}

@@ -26,40 +26,30 @@
 #include "BlobLabeling.hpp"
 
 BlobLabeling::BlobLabeling() {
-	m_nThreshold = 0;
-	m_nBlobs = _DEF_MAX_BLOBS;
-	m_Image	= NULL;
-	m_recBlobs = NULL;
 }
 
 BlobLabeling::~BlobLabeling() {
-	if (m_Image != NULL)
-		cvReleaseImage(&m_Image);
-
-	if (m_recBlobs != NULL) {
-		delete m_recBlobs;
-		m_recBlobs = NULL;
-	}
+	
 }
 
 void BlobLabeling::SetParam(IplImage *image, int nThreshold) {
-	if (m_recBlobs != NULL) {
-		delete m_recBlobs;
+	if (_LabelingInfomation != NULL) {
+		delete _LabelingInfomation;
 
-		m_recBlobs = NULL;
-		m_nBlobs = _DEF_MAX_BLOBS;
+		_LabelingInfomation = NULL;
+		_LabelingQty = _DEF_MAX_BLOBS;
 	}
 
-	if (m_Image != NULL)
-		cvReleaseImage(&m_Image);
+	if (_LabelingImage != NULL)
+		cvReleaseImage(&_LabelingImage);
 
-	m_Image	= cvCloneImage(image);
+	_LabelingImage	= cvCloneImage(image);
 
-	m_nThreshold = nThreshold;
+	_LabelingThreshold = nThreshold;
 }
 
 void BlobLabeling::DoLabeling() {
-	m_nBlobs = Labeling(m_Image, m_nThreshold);
+	_LabelingQty = Labeling(_LabelingImage, _LabelingThreshold);
 }
 
 int BlobLabeling::Labeling(IplImage *image, int nThreshold) {
@@ -90,7 +80,7 @@ int BlobLabeling::Labeling(IplImage *image, int nThreshold) {
 	DeletevPoint();
 
 	if (_TNumber != _DEF_MAX_BLOBS)
-		m_recBlobs = new CvRect[_TNumber];
+		_LabelingInfomation = new CvRect[_TNumber];
 
 	if (_TNumber != 0)
 		DetectLabelingRegion(_TNumber, _TBuffer, _TWidth, _THeight);
@@ -175,28 +165,28 @@ void BlobLabeling::DetectLabelingRegion(int nLabelNumber, unsigned char *DataBuf
 			// Is this a new component?, 255 == Object
 			if (_TLabelIndex != 0) {
 				if (_TFirstFlag[_TLabelIndex] == false) {
-					m_recBlobs[_TLabelIndex - 1].x	= nX;
-					m_recBlobs[_TLabelIndex - 1].y	= nY;
-					m_recBlobs[_TLabelIndex - 1].width	= 0;
-					m_recBlobs[_TLabelIndex - 1].height = 0;
+					_LabelingInfomation[_TLabelIndex - 1].x	= nX;
+					_LabelingInfomation[_TLabelIndex - 1].y	= nY;
+					_LabelingInfomation[_TLabelIndex - 1].width	= 0;
+					_LabelingInfomation[_TLabelIndex - 1].height = 0;
 				
 					_TFirstFlag[_TLabelIndex] = true;
 				}
 				else {
-					int _TLeft = m_recBlobs[_TLabelIndex - 1].x;
-					int _TRight	= _TLeft + m_recBlobs[_TLabelIndex - 1].width;
-					int _TTop	= m_recBlobs[_TLabelIndex - 1].y;
-					int _TBottom = _TTop + m_recBlobs[_TLabelIndex - 1].height;
+					int _TLeft = _LabelingInfomation[_TLabelIndex - 1].x;
+					int _TRight	= _TLeft + _LabelingInfomation[_TLabelIndex - 1].width;
+					int _TTop	= _LabelingInfomation[_TLabelIndex - 1].y;
+					int _TBottom = _TTop + _LabelingInfomation[_TLabelIndex - 1].height;
 
 					if (_TLeft >= nX) _TLeft = nX;
 					if (_TRight <= nX) _TRight = nX;
 					if (_TTop >= nY) _TTop = nY;
 					if (_TBottom <= nY) _TBottom = nY;
 
-					m_recBlobs[_TLabelIndex - 1].x = _TLeft;
-					m_recBlobs[_TLabelIndex - 1].y	= _TTop;
-					m_recBlobs[_TLabelIndex - 1].width = _TRight - _TLeft;
-					m_recBlobs[_TLabelIndex - 1].height = _TBottom - _TTop;
+					_LabelingInfomation[_TLabelIndex - 1].x = _TLeft;
+					_LabelingInfomation[_TLabelIndex - 1].y	= _TTop;
+					_LabelingInfomation[_TLabelIndex - 1].width = _TRight - _TLeft;
+					_LabelingInfomation[_TLabelIndex - 1].height = _TBottom - _TTop;
 				}
 			}
 				
@@ -319,10 +309,10 @@ int BlobLabeling::__Area(unsigned char *DataBuf, int StartX, int StartY, int End
 
 void BlobLabeling::DrawLabel(IplImage *img, CvScalar RGB) {
 	//printf("n_blobs : %d\n", m_nBlobs);
-	for (register int i = 0; i < m_nBlobs; i++) {
+	for (register int i = 0; i < _LabelingQty; i++) {
 		//cvDrawCircle(img, cvPoint(m_recBlobs[i].x, m_recBlobs[i].y), 10, RGB);
-		cvDrawRect(img, cvPoint(m_recBlobs[i].x, m_recBlobs[i].y),
-			cvPoint(m_recBlobs[i].x + m_recBlobs[i].width, m_recBlobs[i].y + m_recBlobs[i].height), RGB);
+		cvDrawRect(img, cvPoint(_LabelingInfomation[i].x, _LabelingInfomation[i].y),
+			cvPoint(_LabelingInfomation[i].x + _LabelingInfomation[i].width, _LabelingInfomation[i].y + _LabelingInfomation[i].height), RGB);
 	}
 }
 
@@ -332,8 +322,8 @@ void BlobLabeling::GetSideBlob(IplImage *img, std::vector<int> *piece_idx, IplIm
 	piece_idx->clear();
 	cvZero(other);
 
-	for (register int i = 0; i < m_nBlobs; i++) {
-		CvRect temp = m_recBlobs[i];
+	for (register int i = 0; i < _LabelingQty; i++) {
+		CvRect temp = _LabelingInfomation[i];
 		temp.width++;
 		temp.height++;
 
@@ -373,10 +363,27 @@ void BlobLabeling::GetSideBlob(IplImage *img, std::vector<int> *piece_idx, IplIm
 
 	for (register int i = 0; i < img->width; i++)
 		for (register int j = 0; j < img->height; j++){
-			if (m_recBlobs[_TIndex].x <= i && m_recBlobs[_TIndex].x + m_recBlobs[_TIndex].width >= i && m_recBlobs[_TIndex].y <= j && m_recBlobs[_TIndex].y + m_recBlobs[_TIndex].height >= j)
+			if (_LabelingInfomation[_TIndex].x <= i && _LabelingInfomation[_TIndex].x + _LabelingInfomation[_TIndex].width >= i && _LabelingInfomation[_TIndex].y <= j && _LabelingInfomation[_TIndex].y + _LabelingInfomation[_TIndex].height >= j)
 				continue;
 			else {
 				img->imageData[i + (j * img->widthStep)];
 			}
 		}
+}
+
+void BlobLabeling::Initialize_BlobLabeling() {
+	_LabelingThreshold = 0;
+	_LabelingQty = _DEF_MAX_BLOBS;
+	_LabelingImage	= NULL;
+	_LabelingInfomation = NULL;
+}
+
+void BlobLabeling::Deinitialize_BlobLabeling() {
+	if (_LabelingImage != NULL)
+		cvReleaseImage(&_LabelingImage);
+
+	if (_LabelingInfomation != NULL) {
+		delete _LabelingInfomation;
+		_LabelingInfomation = NULL;
+	}
 }

@@ -45,18 +45,19 @@ using namespace std;
 
 class ChessRecognition {
 private:
-	LineSearchBased _LineSearchBased;
-	HoughLineBased _HoughLineBased;
-
+	HoughLineBased *_HoughLineBased;
+	LineSearchBased *_LineSearchBased;
+	
 	int _Width, _Height;
 	int _MODE;
-	bool thread_exit;
+	bool _EnableThread;
+	bool _IsInitialized;
 
 	vector<ChessPoint> _CP; // 교점
 	//vector<std::pair<float, float> > vec_LineX, vec_LineY; // 라인 : <rho, theta>
-	IplImage *img_process; // 체스보드 인식에 사용되는 내부 연산 이미지.
+	IplImage *_ChessBoardDetectionInternalImage; // 체스보드 인식에 사용되는 내부 연산 이미지.
 	//HANDLE hThread;
-	mutex _CSProtectionMutex;
+	mutex _ChessBoardDetectionInternalImageProtectMutex;
 	mutex _Vec_ProtectionMutex;
 
 	// 점 그리기.
@@ -64,7 +65,7 @@ private:
 	// 라인 return.
 	void Get_Line(vector<pair<float, float> > *XLines, vector<pair<float, float> > *YLines);
 	// 교차점 보정함수.
-	void Refine_CrossPoint(vector<ChessPoint> *point);
+	void Refine_CrossPoint(vector<ChessPoint> *CrossPoint);
 
 	// Thread 함수에 대해서는 나중에 수정 하기로 함.
 	static
@@ -103,16 +104,12 @@ public:
 	ChessRecognition();
 	~ChessRecognition();
 
-	//초기화
+	// 초기화.
 	void Initialize_ChessRecognition(int Width, int Height, int Mode);
-	// 자원반환
-	void exit();
+	void Deinitialize_ChessRecognition();
 
 	// 처리용 이미지 복사.
-	void Copy_Img(IplImage *src);
-	//wrapper method
-	void Find_ChessPoint(IplImage *src, vector<ChessPoint> *point);
-
-	//void ChessLineSearchProcess(IplImage *Source, vector<ChessPoint> *Point);
+	void Copy_Img(IplImage *Source);
+	void Find_ChessPoint(IplImage *Source, vector<ChessPoint> *Point);
 };
 #endif

@@ -30,23 +30,35 @@
 
 //#if defined(USING_QT)
 #include <QMainWindow>
+#include <QApplication>
+#include <QDesktopWidget>
 
 namespace Ui {
 	class CVEO;
 }
 
-class CVEO : public QMainWindow
-{
+class CVEO : public QMainWindow {
 	Q_OBJECT
 
 private:
 	Ui::CVEO *ui;
+
+	QDesktopWidget *desktop;
+
+	InternalProtocolSeeker _InternalProtocolSeeker;
+	StringTools _StringTools;
+
+	int _ChessGridMinX;
+	int _ChessGridMinY;
+	int _ChessGridMaxX;
+	int _ChessGridMaxY;
 
 public:
 	explicit CVEO(QWidget *parent = 0);
 	~CVEO();
 
 	EngineO *_EngineO;
+	static void EngineODataReceivedCallback(char *Buffer);
 };
 //#endif
 #endif // _CVEO_hpp_

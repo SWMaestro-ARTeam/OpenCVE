@@ -23,57 +23,10 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#include "SystemDependency.hpp"
+#ifndef _CVEODependent_hpp_
+#define _CVEODependent_hpp_
 
-//#if MAKE_CELESTIALS == 1
-#include "AdapterC.hpp"
-#include "AdapterS.hpp"
-#include "AdapterO.hpp"
-//#include "AdapterA.hpp"
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
 
-#include <string.h>
-#include <string>
-
-void Celestials_Manual() {
-	// 여기에 Manual을 만들어야 한다.
-	fprintf(stdout, "Hello~!\n");
-}
-
-// 통합 Engine 구현(CVEC, CVES, CVEO).
-int main(int argc, char *argv[]) {
-	int _TApplicationReturnValue = 0;
-
-	if (argc > 0/*1*/) {
-		//STRING_SWITCH_BEGIN(string((char *)argv[1]))
-		STRING_SWITCH_BEGIN(string("/Observer"))
-		{
-			CASE("/Server")
-				AdapterS _TAdapterS;
-				_TApplicationReturnValue = _TAdapterS.Go_EngineS(argc, argv);
-				break;
-			CASE("/Client")
-				AdapterC _TAdapterC;
-				_TApplicationReturnValue = _TAdapterC.Go_EngineC();
-				break;
-			CASE("/Observer")
-				AdapterO _TAdapterO;
-				_TApplicationReturnValue = _TAdapterO.Go_EngineO(argc, argv);
-				break;
-			CASE("/AIAdapter")
-//				AdapterA _TAdapterA;
-//				_TApplicationReturnValue = _TAdapterA.Go_EngineA();
-				break;
-			CASE("--help")
-				Celestials_Manual();
-				break;
-			DEFAULT()
-				fprintf(stdout, "Invaild Command.\n");
-		}
-		STRING_SWITCH_END()
-	}
-	else {
-		fprintf(stdout, "Using *Celestials --help*\n");
-	}
-	return _TApplicationReturnValue;
-}
-//#endif
+#endif // _CVEODependent_hpp_

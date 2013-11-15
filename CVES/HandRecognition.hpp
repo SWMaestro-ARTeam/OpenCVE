@@ -39,6 +39,7 @@
 
 class HandRecognition {
 private:
+	bool _IsInitialize;
 	int _Image_Width, _Image_Height;
 
 	unsigned char _Plane_B_Value, _Plane_G_Value, _Plane_R_Value;
@@ -58,6 +59,7 @@ public:
 
 	// 초기화.
 	void Initialize_HandRecognition(int Width, int Height);
+	void Deinitialize_HandRecognition();
 	// 차영상 초기화.
 	void Initialize_Differential_Image();
 	// 피부색 Detection.
@@ -65,6 +67,6 @@ public:
 	// 손검출 판단 - 면적 기반.
 	bool IsHand(IplImage *Source);
 	// 이전 프레임과의 차영상.
-	void Sub_prevFrame(IplImage *Source, IplImage *Destination, bool first);
+	void Subtraction_PreviousFrame(IplImage *Source, IplImage *Destination, bool first);
 };
 #endif

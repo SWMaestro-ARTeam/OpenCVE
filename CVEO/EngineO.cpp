@@ -181,11 +181,25 @@ UINT WINAPI
 			int _NSeek_CVESToCVEO = _TEngine_O->_InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*_InternalProtocolCS->CharArrayListIter);
 
 			switch (_NSeek_CVESToCVEO) {
-				case VALUE_I_TICTOK :
+				case VALUE_I_INFOO :
+					// 일단 InfoO가 오면 기본적으로 자기한테 맞는 것이 온것이므로, Switch만 올려놓고 무시한다.
 					break;
-				case VALUE_I_TICTOKISON :
+				case VALUE_I_DISP :
+					// 한꺼번에 처리가 가능하게 끔 CallBack으로 보내준다.
+					while (_InternalProtocolCS->NextCharArrayIter()) {
+						_TString.append(_InternalProtocolCS->CharArrayListIter);
+						if (_InternalProtocolCS->IsLastCharArrayIter() != ture)
+							_TString.append(" ");
+					}
+					_TEngine_O->TEngineODataReceivedCallback(_TEngine_O->_StringTools.StringToConstCharPointer(_TString));
 					break;
-				case VALUE_I_TICTOKISOFF :
+				case VALUE_I_OMOVE :
+					while (_InternalProtocolCS->NextCharArrayIter()) {
+						_TString.append(_InternalProtocolCS->CharArrayListIter);
+						if (_InternalProtocolCS->IsLastCharArrayIter() != ture)
+							_TString.append(" ");
+					}
+					_TEngine_O->TEngineODataReceivedCallback(_TEngine_O->_StringTools.StringToConstCharPointer(_TString));
 					break;
 			}
 

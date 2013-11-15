@@ -42,19 +42,19 @@ class LineSearchBased {
 private:
 	typedef struct _GraySideLinesPointStruct {
 		LineSearchBased *T_ChessLineSearchAlg;
-		IplImage *chess_image;
+		IplImage *ChessImage;
 		vector<MyGrayPoint> *Lines;
 		vector<MyPoint> *InLinePoints;
 		MyLinePoint *LinePoint;
 		bool XYflag;
 
-		_GraySideLinesPointStruct(LineSearchBased *_ChessLineSearchAlg, IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool xyFlag) {
+		_GraySideLinesPointStruct(LineSearchBased *_ChessLineSearchAlg, IplImage *_ChessImage, vector<MyGrayPoint> *_Line, MyLinePoint *_LinePoint, vector<MyPoint> *_InLinePoint, bool _XYFlag) {
 			T_ChessLineSearchAlg = _ChessLineSearchAlg;
-			chess_image = image;
-			Lines = line;
-			LinePoint = line_point;
-			InLinePoints = in_line_point;
-			XYflag = xyFlag;
+			ChessImage = _ChessImage;
+			Lines = _Line;
+			LinePoint = _LinePoint;
+			InLinePoints = _InLinePoint;
+			XYflag = _XYFlag;
 		}
 	} GraySideLinesPointStruct;
 
@@ -72,33 +72,32 @@ private:
 	vector<MyGrayPoint> line_x1, line_x2, line_y1, line_y2, line_x11, line_x22, line_y11, line_y22;
 
 	MyLinePoint line_point_x1, line_point_x2, line_point_y1, line_point_y2, line_point_x11, line_point_x22, line_point_y11, line_point_y22;
-
-	
 	// MySquarePoint main_square;
 
 	// 영상에서 해당 부분의 grayscale 추출.
-	void GetLinegrayScale(IplImage *gray_image, int linefindcount_x1, int linefindcount_y1, int linefindcount_x2, int linefindcount_y2, int linefindcount_x11, int linefindcount_y11, int linefindcount_x22, int linefindcount_y22);
+	void Get_LineAtGrayScale(IplImage *gray_image, int linefindcount_x1, int linefindcount_y1, int linefindcount_x2, int linefindcount_y2, int linefindcount_x11, int linefindcount_y11, int linefindcount_x22, int linefindcount_y22);
 	// 체스판에서 각 체스판의 경계를 추출
-	void GetgraySidelinesPoint(IplImage *chess_image);
+	void Get_SideLinesPointAtGrayScale(IplImage *chess_image);
 	// 추출된 모든 수직이 되는 모든 선들의 교차점을 구함.
-	void GetInCrossPoint(IplImage *chess_image, vector<ChessPoint> *point);
+	void Get_InCrossPoint(IplImage *chess_image, vector<ChessPoint> *point);
 	// 해당 위치의 grayscale을 반환.
-	int Getgrayscale(IplImage *gray_image, int x, int y);
+	int Get_GrayScale(IplImage *gray_image, int x, int y);
 	// 두 라인의 교차점을 반환.
-	bool GetCrossPoint(MyLinePoint line1, MyLinePoint line2, MyPoint *out);
+	bool Get_CrossPoint(MyLinePoint line1, MyLinePoint line2, MyPoint *out);
+	// 체스판 경계 탐색 함수.
+	void Get_SideLinesAtGrayScale(IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool XYFlag);
+	// 체스 코너를 결정할 라인 선택 함수
+	void Get_TrueLines(vector<MyPoint> in_line_point1, vector<MyPoint> in_line_point2, vector<MyPoint> *Ture_in_line_point);
 	// 정보들을 MyLinePoint 형식 반환.
-	void SetMyLinePoint(int x1, int y1, int x2, int y2, MyLinePoint *setLinePoint);
+	void Set_MyLinePoint(int x1, int y1, int x2, int y2, MyLinePoint *setLinePoint);
+	//
+	MyGrayPoint Set_MyPointAtGrayScale(int grayscale, int x, int y);
+	//
+	MyPoint Set_MyPoint(int x, int y);
 	// 영상 이진화 함수.
 	void GrayImageBinarization(IplImage *gray_image);
-	// 체스판 경계 탐색 함수.
-	void GetgraySidelines(IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool XYFlag);
-	// 체스 코너를 결정할 라인 선택 함수
-	void GetTrueLines(vector<MyPoint> in_line_point1, vector<MyPoint> in_line_point2, vector<MyPoint> *Ture_in_line_point);
 
 	void MemoryClear();
-
-	MyGrayPoint setMyGrayPoint(int grayscale, int x, int y);
-	MyPoint setMyPoint(int x, int y);
 
 	static
 #if defined(WINDOWS_SYS)

@@ -26,14 +26,60 @@
 #include "CVES.hpp"
 #include "ui_CVES.h"
 
+CVES *G_CVES;
+
 CVES::CVES(QWidget *parent) :
 QMainWindow(parent),
-ui(new Ui::CVES)
-{
+ui(new Ui::CVES) {
 	ui->setupUi(this);
+	G_CVES = this;
+	/*
+	_Timer = new QTimer(this);
+	connect(_Timer, SIGNAL(timeout()), this, SLOT(FrameUpdate()));
+	_Timer->start(33);
+	*/
+
 }
 
-CVES::~CVES()
-{
+CVES::~CVES() {
 	delete ui;
+}
+
+void CVES::EngineSFrameCallback(IplImage *NowFrame) {
+	if (G_CVES->_EngineS->IsAllInitialize() == true) {
+		//G_CVES->_FrameImageProtectQMutex.lock();
+		//IplImage *_TFrame = NowFrame;
+		//uchar *_TData;
+		QImage *_TFrameImage = G_CVES->_ImageTransformForQT.IplImageToQImage(NowFrame);
+		//QImage *_TFrameImage = G_CVES->_ImageTransformForQT.IplImageToQImage(NowFrame, &_TData);
+		//QImage _TFrameImage((uchar *)NowFrame->imageData, NowFrame->width, NowFrame->height, NowFrame->widthStep, QImage::Format_);
+		G_CVES->ui->ImageViewLabel->setPixmap(QPixmap::fromImage(*_TFrameImage));
+
+		delete _TFrameImage;
+		//delete _TData;
+		//cvReleaseImage(&_TFrame);
+		//G_CVES->_FrameImageProtectQMutex.unlock();
+	}
+}
+/*
+void CVES::FrameUpdate() {
+	if (_EngineS->IsAllInitialize() == true) {
+		IplImage *_TFrame = _EngineS->Get_FrameImage();
+		uchar *_TData;
+		QImage *_TFrameImage = _ImageTransformForQT.IplImageToQImage(_TFrame, &_TData);
+
+		ui->ImageViewLabel->setPixmap(QPixmap::fromImage(*_TFrameImage));
+
+		cvReleaseImage(&_TFrame);
+	}
+}
+*/
+
+//void CVES::show() {
+//	_EngineS->TEngineSFrameCallback = EngineSFrameCallback;
+//}
+
+void CVES::on_actionExit_triggered() {
+	_EngineS->EngineS_Destroy();
+	this->close();
 }

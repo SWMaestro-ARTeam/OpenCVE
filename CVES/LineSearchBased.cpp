@@ -38,7 +38,7 @@ LineSearchBased::~LineSearchBased() {
 #pragma endregion Constructor & Destructor
 
 #pragma region Private Functions
-void LineSearchBased::GetLinegrayScale(IplImage *gray_image, int linefindcount_x1, int linefindcount_y1, int linefindcount_x2, int linefindcount_y2, int linefindcount_x11, int linefindcount_y11, int linefindcount_x22, int linefindcount_y22) {
+void LineSearchBased::Get_LineAtGrayScale(IplImage *gray_image, int linefindcount_x1, int linefindcount_y1, int linefindcount_x2, int linefindcount_y2, int linefindcount_x11, int linefindcount_y11, int linefindcount_x22, int linefindcount_y22) {
 	int image_y = gray_image->height, image_x = gray_image->width;
 	int x1, x2, y1, y2, x11, x22, y11, y22;
 
@@ -52,23 +52,23 @@ void LineSearchBased::GetLinegrayScale(IplImage *gray_image, int linefindcount_x
 	// 그 이후에 짝수는 오른쪽, 홀수는 왼쪽의 수치를 넣어준다.
 
 	// line vector에 push하기 위해 해당 위치의 grayscale을 구해 x축과 y축의 값들을 MyGrayPoint형식으로 반환하여 push해준다.
-	line_x1.push_back(setMyGrayPoint(Getgrayscale(gray_image, image_x / 2, y1), image_x / 2, y1));
-	line_x11.push_back(setMyGrayPoint(Getgrayscale(gray_image, image_x / 2, y11), image_x / 2, y11));
-	line_x2.push_back(setMyGrayPoint(Getgrayscale(gray_image, image_x / 2, y2), image_x / 2, y2));
-	line_x22.push_back(setMyGrayPoint(Getgrayscale(gray_image, image_x / 2, y22), image_x / 2, y22));
+	line_x1.push_back(Set_MyPointAtGrayScale(Get_GrayScale(gray_image, image_x / 2, y1), image_x / 2, y1));
+	line_x11.push_back(Set_MyPointAtGrayScale(Get_GrayScale(gray_image, image_x / 2, y11), image_x / 2, y11));
+	line_x2.push_back(Set_MyPointAtGrayScale(Get_GrayScale(gray_image, image_x / 2, y2), image_x / 2, y2));
+	line_x22.push_back(Set_MyPointAtGrayScale(Get_GrayScale(gray_image, image_x / 2, y22), image_x / 2, y22));
 
 	for (register int x = 1; x <= image_x / 2; x++) {
 		// for문에서 도는 x값을 기준으로 +는 오른쪽 -는 왼쪽으로 뻗어 나가 영상의 끝까지 탐색을 해준다.
-		line_x1.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) + x, y1), (image_x / 2) + x, y1));
-		line_x1.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) - x, y1), (image_x / 2) - x, y1));
-		line_x11.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) + x, y11), (image_x / 2) + x, y11));
-		line_x11.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) - x, y11), (image_x / 2) - x, y11));
+		line_x1.push_back(Set_MyPointAtGrayScale(Get_GrayScale(gray_image, (image_x / 2) + x, y1), (image_x / 2) + x, y1));
+		line_x1.push_back(Set_MyPointAtGrayScale(Get_GrayScale(gray_image, (image_x / 2) - x, y1), (image_x / 2) - x, y1));
+		line_x11.push_back(Set_MyPointAtGrayScale(Get_GrayScale(gray_image, (image_x / 2) + x, y11), (image_x / 2) + x, y11));
+		line_x11.push_back(Set_MyPointAtGrayScale(Get_GrayScale(gray_image, (image_x / 2) - x, y11), (image_x / 2) - x, y11));
 
 		// 일부러 for문을 두개를 쓸 필요는 없으므로 한번에 양쪽과 같은 축을 가지는 라인을 함께 처리해준다.
-		line_x2.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) + x, y2) ,(image_x / 2) + x, y2));
-		line_x2.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) - x, y2) ,(image_x / 2) - x, y2));
-		line_x22.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) + x, y22) ,(image_x / 2) + x, y22));
-		line_x22.push_back(setMyGrayPoint(Getgrayscale(gray_image, (image_x / 2) - x, y22) ,(image_x / 2) - x, y22));
+		line_x2.push_back(Set_MyPointAtGrayScale(Get_GrayScale(gray_image, (image_x / 2) + x, y2) ,(image_x / 2) + x, y2));
+		line_x2.push_back(Set_MyPointAtGrayScale(Get_GrayScale(gray_image, (image_x / 2) - x, y2) ,(image_x / 2) - x, y2));
+		line_x22.push_back(Set_MyPointAtGrayScale(Get_GrayScale(gray_image, (image_x / 2) + x, y22) ,(image_x / 2) + x, y22));
+		line_x22.push_back(Set_MyPointAtGrayScale(Get_GrayScale(gray_image, (image_x / 2) - x, y22) ,(image_x / 2) - x, y22));
 	}
 
 	// y축의 grayscale을 얻기위해 x축의 탐색위치를 결정.
@@ -79,26 +79,26 @@ void LineSearchBased::GetLinegrayScale(IplImage *gray_image, int linefindcount_x
 
 	// 처음 vector 배열에 중심이 되는 값을 넣어주고, 
 	// 그 이후에 짝수는 아래쪽, 홀수는 위쪽의 수치를 넣어준다.
-	line_y1.push_back(setMyGrayPoint(Getgrayscale(gray_image, x1, image_y / 2), x1, image_y / 2));
-	line_y11.push_back(setMyGrayPoint(Getgrayscale(gray_image, x11, image_y / 2), x11, image_y / 2));
-	line_y2.push_back(setMyGrayPoint(Getgrayscale(gray_image, x2, image_y / 2), x2, image_y / 2));
-	line_y22.push_back(setMyGrayPoint(Getgrayscale(gray_image, x22, image_y / 2), x22, image_y / 2));
+	line_y1.push_back(Set_MyPointAtGrayScale(Get_GrayScale(gray_image, x1, image_y / 2), x1, image_y / 2));
+	line_y11.push_back(Set_MyPointAtGrayScale(Get_GrayScale(gray_image, x11, image_y / 2), x11, image_y / 2));
+	line_y2.push_back(Set_MyPointAtGrayScale(Get_GrayScale(gray_image, x2, image_y / 2), x2, image_y / 2));
+	line_y22.push_back(Set_MyPointAtGrayScale(Get_GrayScale(gray_image, x22, image_y / 2), x22, image_y / 2));
 
 	for (register int y = 1; y <= image_y / 2; y++) {
 
-		line_y1.push_back(setMyGrayPoint(Getgrayscale(gray_image, x1, (image_y / 2) + y), x1, (image_y / 2) + y));
-		line_y1.push_back(setMyGrayPoint(Getgrayscale(gray_image, x1, (image_y / 2) - y), x1, (image_y / 2) - y));
-		line_y11.push_back(setMyGrayPoint(Getgrayscale(gray_image, x11, (image_y / 2) + y), x11, (image_y / 2) + y));
-		line_y11.push_back(setMyGrayPoint(Getgrayscale(gray_image, x11, (image_y / 2) - y), x11, (image_y / 2) - y));
+		line_y1.push_back(Set_MyPointAtGrayScale(Get_GrayScale(gray_image, x1, (image_y / 2) + y), x1, (image_y / 2) + y));
+		line_y1.push_back(Set_MyPointAtGrayScale(Get_GrayScale(gray_image, x1, (image_y / 2) - y), x1, (image_y / 2) - y));
+		line_y11.push_back(Set_MyPointAtGrayScale(Get_GrayScale(gray_image, x11, (image_y / 2) + y), x11, (image_y / 2) + y));
+		line_y11.push_back(Set_MyPointAtGrayScale(Get_GrayScale(gray_image, x11, (image_y / 2) - y), x11, (image_y / 2) - y));
 
-		line_y2.push_back(setMyGrayPoint(Getgrayscale(gray_image, x2, (image_y / 2) + y), x2, (image_y / 2) + y));
-		line_y2.push_back(setMyGrayPoint(Getgrayscale(gray_image, x2, (image_y / 2) - y), x2, (image_y / 2) - y));
-		line_y22.push_back(setMyGrayPoint(Getgrayscale(gray_image, x22, (image_y / 2) + y), x22, (image_y / 2) + y));
-		line_y22.push_back(setMyGrayPoint(Getgrayscale(gray_image, x22, (image_y / 2) - y), x22, (image_y / 2) - y));
+		line_y2.push_back(Set_MyPointAtGrayScale(Get_GrayScale(gray_image, x2, (image_y / 2) + y), x2, (image_y / 2) + y));
+		line_y2.push_back(Set_MyPointAtGrayScale(Get_GrayScale(gray_image, x2, (image_y / 2) - y), x2, (image_y / 2) - y));
+		line_y22.push_back(Set_MyPointAtGrayScale(Get_GrayScale(gray_image, x22, (image_y / 2) + y), x22, (image_y / 2) + y));
+		line_y22.push_back(Set_MyPointAtGrayScale(Get_GrayScale(gray_image, x22, (image_y / 2) - y), x22, (image_y / 2) - y));
 	}
 }
 
-void LineSearchBased::GetgraySidelinesPoint(IplImage *chess_image) {
+void LineSearchBased::Get_SideLinesPointAtGrayScale(IplImage *chess_image) {
 	// GetLinegrayScale에서 얻은 4개의 라인에서 경계점을 탐색한다
 
 	// 각 grayscale이 저장되어 있는 vector 배열에서 해당 라인의 교차점을 구한다.
@@ -191,13 +191,13 @@ void LineSearchBased::GetgraySidelinesPoint(IplImage *chess_image) {
 // 	GetgraySidelines(chess_image, &line_y11, &line_point_y11, &in_line_point_y11, false);
 // 	GetgraySidelines(chess_image, &line_y22, &line_point_y22, &in_line_point_y22, false);
 
-	GetTrueLines(in_line_point_x1, in_line_point_x11, &true_line_point_x1);
-	GetTrueLines(in_line_point_x22, in_line_point_x2, &true_line_point_x2);
-	GetTrueLines(in_line_point_y1, in_line_point_y11, &true_line_point_y1);
-	GetTrueLines(in_line_point_y22, in_line_point_y2, &true_line_point_y2);
+	Get_TrueLines(in_line_point_x1, in_line_point_x11, &true_line_point_x1);
+	Get_TrueLines(in_line_point_x22, in_line_point_x2, &true_line_point_x2);
+	Get_TrueLines(in_line_point_y1, in_line_point_y11, &true_line_point_y1);
+	Get_TrueLines(in_line_point_y22, in_line_point_y2, &true_line_point_y2);
 }
 
-void LineSearchBased::GetInCrossPoint(IplImage *chess_image, vector<ChessPoint> *point) {
+void LineSearchBased::Get_InCrossPoint(IplImage *chess_image, vector<ChessPoint> *point) {
 	point->clear();
 
 	// in_line_point 오름차순 정렬.
@@ -239,182 +239,85 @@ void LineSearchBased::GetInCrossPoint(IplImage *chess_image, vector<ChessPoint> 
 
 	for (register int i = 0; i < true_line_point_x1.size(); i++) {
 		for (register int j = 0; j < true_line_point_x1.size(); j++) {
-<<<<<<< HEAD:CVES/LineSearchBased.cpp
-=======
+			MyLinePoint _TInLinePointX, _TInLinePointY;
+			MyPoint _TInPoint;
 
-			MyLinePoint t_in_line_point_x, t_in_line_point_y;
-			MyPoint t_in_point;
-
->>>>>>> origin/CVES_HandRecognition:CVES/ChessLineSearchAlg.cpp
 			// 같은 축의 라인의 양끝을 이은 직선을 구해 수직이 되는 라인과의 교차점을 찾아
 			// 반환해 주는 point에 push한다.
-			SetMyLinePoint(true_line_point_x1[i].x, true_line_point_x1[i].y, true_line_point_x2[i].x, true_line_point_x2[i].y, &t_in_line_point_x);
-			SetMyLinePoint(true_line_point_y1[j].x, true_line_point_y1[j].y, true_line_point_y2[j].x, true_line_point_y2[j].y, &t_in_line_point_y);
+			Set_MyLinePoint(true_line_point_x1[i].x, true_line_point_x1[i].y, true_line_point_x2[i].x, true_line_point_x2[i].y, &_TInLinePointX);
+			Set_MyLinePoint(true_line_point_y1[j].x, true_line_point_y1[j].y, true_line_point_y2[j].x, true_line_point_y2[j].y, &_TInLinePointY);
 
 			// in_line_point 4개의 변수 모두 9개의 경계점을 가지고 있으므로
 			// 각 수직이 되는 직선 9*9로 총 81개의 교차점이 생기게 된다.
 			// 그것이 체스판의 모든 정점의 위치로 인식을 하고 넘겨준다.
-			GetCrossPoint(t_in_line_point_x, t_in_line_point_y, &t_in_point);
+			Get_CrossPoint(_TInLinePointX, _TInLinePointY, &_TInPoint);
 
 			ChessPoint temp;
-			temp.Cordinate = cvPoint(t_in_point.x, t_in_point.y);
-			temp.index = cvPoint(i, j);
+			temp.Cordinate = cvPoint(_TInPoint.x, _TInPoint.y);
+			temp.Index = cvPoint(i, j);
 			point->push_back(temp);
 		}
 	}
 }
 
-int LineSearchBased::Getgrayscale(IplImage *gray_image, int x, int y) {
+int LineSearchBased::Get_GrayScale(IplImage *GrayImage, int XPoint, int YPoint) {
 	// 해당 grayscale의 위치를 반환해 주기위해 x,y 해당 위치를 영상에서 찾아 grayscale의 데이터를 받아 value에 저장해준다.
-	int index = x + y*gray_image->widthStep ;
-	unsigned char value = gray_image->imageData[index];
+	int _TIndex = XPoint + (YPoint * GrayImage->widthStep);
+	unsigned char _TValue = GrayImage->imageData[_TIndex];
 
 	// grayscale 정수형으로 이루어져 있으므로 int형으로 반환해준다
-	return (int)value;
+	return (int)_TValue;
 }
 
-bool LineSearchBased::GetCrossPoint(MyLinePoint line1, MyLinePoint line2, MyPoint *out) {
-	float x12 = line1.x1 - line1.x2;
-	float x34 = line2.x1 - line2.x2;
-	float y12 = line1.y1 - line1.y2;
-	float y34 = line2.y1 - line2.y2;
+bool LineSearchBased::Get_CrossPoint(MyLinePoint Line1, MyLinePoint Line2, MyPoint *Out) {
+	float _T_X12 = Line1.x1 - Line1.x2;
+	float _T_X34 = Line2.x1 - Line2.x2;
+	float _T_Y12 = Line1.y1 - Line1.y2;
+	float _T_Y34 = Line2.y1 - Line2.y2;
 
-	float c = (x12 * y34) - (y12 * x34);
+	float _T_C = (_T_X12 * _T_Y34) - (_T_Y12 * _T_X34);
 
-	if (fabs(c) < 0.01)	{
+	if (fabs(_T_C) < 0.01)	{
 		// No intersection
 		return false;
 	}
 	else {
 		// Intersection
-		float a = (line1.x1 * line1.y2) - (line1.y1 * line1.x2);
-		float b = (line2.x1 * line2.y2) - (line2.y1 * line2.x2);
+		float _T_A = (Line1.x1 * Line1.y2) - (Line1.y1 * Line1.x2);
+		float _T_B = (Line2.x1 * Line2.y2) - (Line2.y1 * Line2.x2);
 
-		float x = ((a * x34) - (b * x12)) / c;
-		float y = ((a * y34) - (b * y12)) / c;
+		float _T_X = ((_T_A * _T_X34) - (_T_B * _T_X12)) / _T_C;
+		float _T_Y = ((_T_A * _T_Y34) - (_T_B * _T_Y12)) / _T_C;
 
-		out->x = (int)x;
-		out->y = (int)y;
+		Out->x = (int)_T_X;
+		Out->y = (int)_T_Y;
 
 		return true;
 	}
 }
 
-void LineSearchBased::SetMyLinePoint(int x1, int y1, int x2, int y2, MyLinePoint *setLinePoint) {
-	// 2개의 x,y 쌍을 받아 setLinePoint에 반환해준다 .
-	setLinePoint->x1 = x1;
-	setLinePoint->x2 = x2;
-	setLinePoint->y1 = y1;
-	setLinePoint->y2 = y2;
-}
-
-void LineSearchBased::GrayImageBinarization(IplImage *gray_image) {
-	// 이미지의 grayscale을 저장할 변수.
-	float hist[256] = {0, };
-	int temp[256];
-
-	memset(temp, 0, sizeof(int) * 256);
-
-	bool flag = true;
-
-	// 영상의 grayscale을 저장한다.
-	for (register int i = 0; i < gray_image->width; i++) {
-		for (register int j = 0; j < gray_image->height; j++) {
-			temp[Getgrayscale(gray_image, i, j)]++;
-
-			// 맨 처음 영상이 단일색으로 나올 경우가 있기 때문에 예외 처리를 해준다.
-			if (Getgrayscale(gray_image, i, j) != 0)
-				flag = false;
-		}
-	}
-
-	if (flag)
-		return;
-
-	float area = (float)gray_image->width * gray_image->height;
-
-	// grayscale의 평균값.
-	for (register int i = 1; i < 256; i++)
-		hist[i] = temp[i] / area;
-
-	int T, Told;
-
-	float sum = 0.f;
-	for (register int i = 1; i < 256; i++)
-		sum += (i * hist[i]);
-
-	T = (int)sum;
-
-	// grayscale의 기준 T를 찾는 과정으로 
-	// 간단히 얻을 수있는 모든 grayscale의 평균을 구한다고 보면 된다.
-	do {
-		Told = T;
-		int a1, a2, b1, b2, u1, u2;
-
-		a1 = b1 = 0;
-
-		for (register int i = 0; i < Told; i++) {
-			a1 += (i * temp[i]);
-			b1 += temp[i];
-		}
-
-		if(a1 == 0 && b1 == 0) return;
-
-		u1 = a1 / b1;
-		a2 = b2 = 0;
-
-		for (register int i = Told + 1; i < 256; i++) {
-			a2 += (i * temp[i]);
-			b2 += (temp[i]);
-		}
-
-		if(a2 == 0 && b2 == 0) return;
-
-		u2 = a2 / b2;
-
-		if (b1 == 0) b1 = 1.f;
-		if (b2 == 0) b2 = 1.f;
-
-		T = (int)((u1 + u2) / 2);
-	} while (T != Told);
-
-	for (register int i = 0; i < gray_image->width; i++) {
-		for (register int j = 0; j < gray_image->height; j++) {
-			int index = i + (j * gray_image->widthStep);
-<<<<<<< HEAD:CVES/LineSearchBased.cpp
-			// 해당 위치의 grayscale을 T값을 기준으로 이진화를 결정한다.
-			gray_image->imageData[index] = Getgrayscale(gray_image, i, j) > T ? 255 : 0;
-=======
-
-			// 해당 위치의 grayscale을 T값을 기준으로 이진화를 결정한다 
-			gray_image->imageData[index] = Getgrayscale(gray_image, i, j) > T - 20 ? 255 : 0;
->>>>>>> origin/CVES_HandRecognition:CVES/ChessLineSearchAlg.cpp
-		}
-	}
-}
-
-void LineSearchBased::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *line, MyLinePoint *line_point, vector<MyPoint> *in_line_point, bool XYFlag) {
+void LineSearchBased::Get_SideLinesAtGrayScale(IplImage *GrayImage, vector<MyGrayPoint> *Line, MyLinePoint *LinePoint, vector<MyPoint> *InLinePoint, bool XYFlag) {
 	// 경계를 찾은 후 어느 정도의 경계에는 계산을 하지 않는다.
-	int line_count = 0, jump_count_p = 0, jump_count_m = 0, jump_count = 0;
+	int _TLineCount = 0, _TJumpCountP = 0, _TJumpCountM = 0, JumpCount = 0;
 
 	// 기본적으로 계산을 해줄 필요가 없는 최소 픽셀을 jump_count에 저장한다 
 	// line_point 에는 해당 축라인에서만 위치가 바뀌니 고정 값을 저장한다
 	if (XYFlag) {
-		jump_count = 30;/*image->width / 12;*/
-		line_point->x1 = image->width / 2;
+		JumpCount = 30;/*image->width / 12;*/
+		LinePoint->x1 = GrayImage->width / 2;
 	}
 	else {
-		jump_count = 30;/*image->height / 12;*/
-		line_point->y1 = image->height / 2;
+		JumpCount = 30;/*image->height / 12;*/
+		LinePoint->y1 = GrayImage->height / 2;
 	}
 
 	// 교차되는 체스판의 경계를 검출 할 때 체스 말이 판과 대비가 될 경우,
 	// 경계선으로 인식 되는 경우를 막는다.
-	bool change_flag_line_t, change_flag_line_t1, change_flag_line_t2;
+	bool _TChangeFlagLineT1, _TChangeFlagLineT2, _TChangeFlagLineT3;
 
 	// line vector함수 차수 변환.
-	vector<MyGrayPoint> _TT = *((vector<MyGrayPoint> *)line);
-	vector<MyPoint> _TT_in = *((vector<MyPoint> *)in_line_point);
+	vector<MyGrayPoint> _TT = *((vector<MyGrayPoint> *)Line);
+	vector<MyPoint> _TT_in = *((vector<MyPoint> *)InLinePoint);
 	vector<MyPoint> _TT_in1,_TT_in2;
 
 	// 처음 중심이 되는 위치를 저장해준다 짝수는 오른쪽 홀수는 왼쪽으로 나가는 기준점이다.
@@ -422,63 +325,55 @@ void LineSearchBased::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *lin
 	_TT[1].grayscale;
 
 	// grayscale의 교차를 탐색에 도움을 주기 위해 양쪽 방향의 기준 grayscale을 잡아준다.
-	change_flag_line_t1 = 255 >= _TT[0].grayscale ? true : false;
-	change_flag_line_t2 = 255 >= _TT[1].grayscale ? true : false;
+	_TChangeFlagLineT2 = 255 >= _TT[0].grayscale ? true : false;
+	_TChangeFlagLineT3 = 255 >= _TT[1].grayscale ? true : false;
 
 	// 여기선 추가로 탐색되지 말아야할 라인을 걸러준다.
 	// 홀수면 오른쪽 짝수면 왼쪽으로 판단하여 계산해준다
-	for (register int i = 0; i < line->size() - 10; i++) {
+	for (register int i = 0; i < Line->size() - 10; i++) {
 		// jump_count 가 유효할 경우 탐색을 하지 않아도 될 영역으로 판단 하여 넘긴다.
 		// 해당되는 jump_count를 건너 뛰며 홀수와 짝수로 판단하여 변수를 분리하였으므로 양쪽 탐색에 문제가 되지 않는다.
-
-		if ((i % 2 == 1) && (jump_count_p > 0)) {
-			jump_count_p--;
+		if ((i % 2 == 1) && (_TJumpCountP > 0)) {
+			_TJumpCountP--;
 		}
-		else if ((i % 2 == 0) && (jump_count_m > 0)) {
-			jump_count_m--;
+		else if ((i % 2 == 0) && (_TJumpCountM > 0)) {
+			_TJumpCountM--;
 		}
 		else {
 			bool change_flag_t;
 
 			// 기존에 저장되어있는 grayscale과 비교를 위해 해당 위치의 grayscale을 저장한다 
-
 			change_flag_t = 255 >= _TT[i].grayscale ? true : false;
 
 			// 전에 기준이 된 grayscale을 비교하기 위해 직접 비교를 하는 변수에 저장한다
-
 			if (i % 2 == 0)
-				change_flag_line_t = change_flag_line_t1;
+				_TChangeFlagLineT1 = _TChangeFlagLineT2;
 			else
-				change_flag_line_t = change_flag_line_t2;
+				_TChangeFlagLineT1 = _TChangeFlagLineT3;
 
 			// vector에 교차적으로 저장이 되었기 때문에 2씩 증가해 비교를한다
-
 			if (_TT[i].grayscale != _TT[i + 2].grayscale) {
-				int flag = true;
+				int _TFlag = true;
 
 				// 해당 위치에서 그다음 픽셀이 대비가 된다면 경계선으로 인식.
 				// 이 부분에서 대각선 방향을 처리해 준다 XYFlag가 ture 면 x축, false이면 y축.
 				// 해당 방향으로 뻗어있는 두 대각선 방향의 색을 비교하여 차이가나면 경계선으로 인식한다.
 				// 기준점에서 왼쪽과 오른쪽을 비교해야 하기 때문에 양 쪽으로 1픽셀씩 비교를 해주기 위해 +- 2를 비교한다
-<<<<<<< HEAD:CVES/LineSearchBased.cpp
-=======
-
+				
 				// vector 예외처리
-
-				if(_TT[i].x + 2 > image->width || _TT[i].x - 2 < 0 || _TT[i].y + 2 > image->height || _TT[i].y - 2 < 0)
+				if (_TT[i].x + 2 > GrayImage->width || _TT[i].x - 2 < 0 || _TT[i].y + 2 > GrayImage->height || _TT[i].y - 2 < 0)
 					return;
 
->>>>>>> origin/CVES_HandRecognition:CVES/ChessLineSearchAlg.cpp
 				if (XYFlag) {
-					if (i % 2 == 1 && (Getgrayscale(image, _TT[i].x + 2, _TT[i].y - 2) != Getgrayscale(image, _TT[i].x + 2, _TT[i].y + 2)))
+					if (i % 2 == 1 && (Get_GrayScale(GrayImage, _TT[i].x + 2, _TT[i].y - 2) != Get_GrayScale(GrayImage, _TT[i].x + 2, _TT[i].y + 2)))
 						return;
-					else if (i % 2 == 0 && (Getgrayscale(image, _TT[i].x - 2, _TT[i].y - 2) != Getgrayscale(image, _TT[i].x - 2, _TT[i].y + 2)))
+					else if (i % 2 == 0 && (Get_GrayScale(GrayImage, _TT[i].x - 2, _TT[i].y - 2) != Get_GrayScale(GrayImage, _TT[i].x - 2, _TT[i].y + 2)))
 						return;
 				}
 				else {
-					if (i % 2 == 1 && (Getgrayscale(image, _TT[i].x + 2, _TT[i].y + 2) != Getgrayscale(image, _TT[i].x - 2, _TT[i].y + 2))) 
+					if (i % 2 == 1 && (Get_GrayScale(GrayImage, _TT[i].x + 2, _TT[i].y + 2) != Get_GrayScale(GrayImage, _TT[i].x - 2, _TT[i].y + 2))) 
 						return;
-					else if (i % 2 == 0 && (Getgrayscale(image, _TT[i].x - 2, _TT[i].y - 2) != Getgrayscale(image, _TT[i].x + 2, _TT[i].y - 2)))
+					else if (i % 2 == 0 && (Get_GrayScale(GrayImage, _TT[i].x - 2, _TT[i].y - 2) != Get_GrayScale(GrayImage, _TT[i].x + 2, _TT[i].y - 2)))
 						return;
 				}
 
@@ -488,61 +383,61 @@ void LineSearchBased::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *lin
 						continue;
 
 					// 만약 기준이 된 grayscale에서 정확한 판단을 위한 검사에 grayscale이 같게 되면 가면 break를 해준다.
-					if (_TT[i].grayscale == _TT[i + (j * 2)].grayscale && change_flag_t == change_flag_line_t) {
-						flag = false;
+					if (_TT[i].grayscale == _TT[i + (j * 2)].grayscale && change_flag_t == _TChangeFlagLineT1) {
+						_TFlag = false;
 						break;
 					}
 				}
-				if (flag) {
+				if (_TFlag) {
 					// 체스판 경계에 필요한 경계는 9개 이므로 그 이상은 받지 않는다.
-					if (line_count < 9){
-						if (line_point->x1 > _TT[i].x) {
-							line_point->x1 = _TT[i].x;
-							line_point->y1 = _TT[i].y;
+					if (_TLineCount < 9){
+						if (LinePoint->x1 > _TT[i].x) {
+							LinePoint->x1 = _TT[i].x;
+							LinePoint->y1 = _TT[i].y;
 						}
 
-						if (line_point->x2 < _TT[i].x) {
-							line_point->x2 = _TT[i].x;
-							line_point->y2 = _TT[i].y;
+						if (LinePoint->x2 < _TT[i].x) {
+							LinePoint->x2 = _TT[i].x;
+							LinePoint->y2 = _TT[i].y;
 						}
 
 						// 왼쪽과 오른쪽을 구분하여 따로 저장해준다
 
 						if(i%2 == 1){
-							_TT_in1.push_back(setMyPoint(_TT[i].x, _TT[i].y));
-							cvCircle(image, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(0, 0, 0));
+							_TT_in1.push_back(Set_MyPoint(_TT[i].x, _TT[i].y));
+							cvCircle(GrayImage, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(0, 0, 0));
 						}
 						else{
-							_TT_in2.push_back(setMyPoint(_TT[i].x, _TT[i].y));
-							cvCircle(image, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(255, 255, 255));
+							_TT_in2.push_back(Set_MyPoint(_TT[i].x, _TT[i].y));
+							cvCircle(GrayImage, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(255, 255, 255));
 						}
 // 						if(XYFlag)
 // 							cvCircle(image, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(0, 0, 0));
 // 						else
 // 							cvCircle(image, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(0, 0, 0));
 
-						line_count++;
+						_TLineCount++;
 
 						// 위의 조건을 통과 하였으면 경계가 되는 면 다음의 grayscale을 적용해준다
 
 						if (i % 2 == 0)
-							change_flag_line_t1 = !change_flag_t;
+							_TChangeFlagLineT2 = !change_flag_t;
 						else
-							change_flag_line_t2 = !change_flag_t;
+							_TChangeFlagLineT3 = !change_flag_t;
 					}
 
 					// 경계점을 찾으면 최소한의 범위는 탐색할 필요가 없기 때문에 넘겨준다
 
 					if (i % 2 == 1)
-						jump_count_p = jump_count;
+						_TJumpCountP = JumpCount;
 					else
-						jump_count_m = jump_count;	
+						_TJumpCountM = JumpCount;	
 				}
 			}
 		}
 
 		// 경계선을 9개 다 찾으면 더 이상 찾을 필요가 없으므로 캔슬한다.
-		if (line_count == 9) {
+		if (_TLineCount == 9) {
 			break;
 		}
 	}
@@ -555,15 +450,8 @@ void LineSearchBased::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *lin
 
 	if (XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)) {
 		for (register int i = 0; i < _TT_in1.size() - 1; i++) {
-<<<<<<< HEAD:CVES/LineSearchBased.cpp
-			// _TT는 각 라인의 중심에서 양쪽으로 뻗어나가며 찾은 경계점들이 순차적으로 push가 되어있으므로 자신과 그 이후에 탐색된 점과 비교를 한다.
-			if (abs(_TT_in1[i].x - _TT_in1[i + 1].x) < 30 || abs(_TT_in1[i].x - _TT_in1[i + 1].x) > 60) {
-=======
-
 			// _TT는 각 라인의 중심에서 양쪽으로 뻗어나가며 찾은 경계점들이 순차적으로 push가 되어있으므로 자신과 그 이후에 탐색된 점과 비교를 한다
-
 			if (abs(_TT_in1[i].x - _TT_in1[i + 1].x) < 30 || abs(_TT_in1[i].x - _TT_in1[i + 1].x) > 50) {
->>>>>>> origin/CVES_HandRecognition:CVES/ChessLineSearchAlg.cpp
 				SumFlag = false;
 			}
 		}
@@ -592,107 +480,58 @@ void LineSearchBased::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *lin
 		}
 	}
 
-<<<<<<< HEAD:CVES/LineSearchBased.cpp
 	// 교점 기울기 강제값 제어 부분.
-=======
->>>>>>> origin/CVES_HandRecognition:CVES/ChessLineSearchAlg.cpp
 	if (XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)) {
-
 		_TT_in1_avg += abs(_TT_in1[0].x - _TT_in2[0].x);
 		_TT_in2_avg -= abs(_TT_in1[0].x - _TT_in2[0].x);
 
 		for (register int i = 0; i < _TT_in1.size() - 1; i++) {
-
-<<<<<<< HEAD:CVES/LineSearchBased.cpp
-			if (_TT_in1_avg != 0 && abs(_TT_in1_avg - abs(_TT_in1[i].x - _TT_in1[i + 1].x)) > 3) {
-=======
-			if(_TT_in1_avg != 0 && abs(_TT_in1_avg - abs(_TT_in1[i].x - _TT_in1[i + 1].x)) > 5){
->>>>>>> origin/CVES_HandRecognition:CVES/ChessLineSearchAlg.cpp
+			if (_TT_in1_avg != 0 && abs(_TT_in1_avg - abs(_TT_in1[i].x - _TT_in1[i + 1].x)) > 5) {
 				_TT_in1[i + 1].x = _TT_in1[i].x + _TT_in1_avg;
 			}
 			else if (_TT_in1_avg == 0) {
 				_TT_in1_avg += abs(_TT_in1[i].x - _TT_in1[i + 1].x);
 			}
-<<<<<<< HEAD:CVES/LineSearchBased.cpp
-			else if (_TT_in1_avg != 0) {
-				_TT_in1_avg = (_TT_in1_avg + abs(_TT_in1[i].x - _TT_in1[i + 1].x)) / 2;
+			else if(_TT_in1_avg != 0) {
+				_TT_in1_avg = abs(_TT_in1[i].x - _TT_in1[i + 1].x) + abs(_TT_in1_avg - abs(_TT_in1[i].x - _TT_in1[i + 1].x));				
 			}
 		}
 		for (register int i = 0; i < _TT_in2.size() - 1; i++) {
-			if (_TT_in2_avg != 0 && abs(_TT_in2_avg - abs(_TT_in2[i].x - _TT_in2[i + 1].x)) > 3) {
-=======
-			else if(_TT_in1_avg != 0){
-				_TT_in1_avg = abs(_TT_in1[i].x - _TT_in1[i + 1].x) + abs(_TT_in1_avg - abs(_TT_in1[i].x - _TT_in1[i + 1].x));
-				
-			}
-		}
-		for (register int i = 0; i < _TT_in2.size() - 1; i++) {
-
-			if(_TT_in2_avg != 0 && abs(_TT_in2_avg - abs(_TT_in2[i].x - _TT_in2[i + 1].x)) > 5){
->>>>>>> origin/CVES_HandRecognition:CVES/ChessLineSearchAlg.cpp
+			if (_TT_in2_avg != 0 && abs(_TT_in2_avg - abs(_TT_in2[i].x - _TT_in2[i + 1].x)) > 5) {
 				_TT_in2[i + 1].x = _TT_in2[i].x + _TT_in2_avg;
 			}
 			else if (_TT_in2_avg == 0) {
 				_TT_in2_avg -= abs(_TT_in2[i].x - _TT_in2[i + 1].x);
 			}
-<<<<<<< HEAD:CVES/LineSearchBased.cpp
-			else if (_TT_in2_avg != 0) {
-				_TT_in2_avg = (_TT_in2_avg + abs(_TT_in2[i].x - _TT_in2[i + 1].x)) / 2;
-=======
 			else if(_TT_in2_avg != 0){
 				_TT_in2_avg = abs(_TT_in2[i].x - _TT_in2[i + 1].x) - abs(_TT_in2_avg - abs(_TT_in2[i].x - _TT_in2[i + 1].x));
-				
->>>>>>> origin/CVES_HandRecognition:CVES/ChessLineSearchAlg.cpp
 			}
 		}
 	}
 	else if (!XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)) {
-
 // 		_TT_in1_avg += abs(_TT_in1[0].y - _TT_in2[0].y);
 // 		_TT_in2_avg -= abs(_TT_in1[0].y - _TT_in2[0].y);
-
 		for (register int i = 0; i < _TT_in1.size() - 1; i++) {
-<<<<<<< HEAD:CVES/LineSearchBased.cpp
-			if (_TT_in1_avg != 0 && abs(_TT_in1_avg - abs(_TT_in1[i].y - _TT_in1[i + 1].y)) > 3) {
-=======
-
-			if(_TT_in1_avg != 0 && abs(_TT_in1_avg - abs(_TT_in1[i].y - _TT_in1[i + 1].y)) > 15){
->>>>>>> origin/CVES_HandRecognition:CVES/ChessLineSearchAlg.cpp
+			if (_TT_in1_avg != 0 && abs(_TT_in1_avg - abs(_TT_in1[i].y - _TT_in1[i + 1].y)) > 15) {
 				_TT_in1[i + 1].y = _TT_in1[i].y + _TT_in1_avg;
 			}
 			else if (_TT_in1_avg == 0) {
 				_TT_in1_avg += abs(_TT_in1[i].y - _TT_in1[i + 1].y);
 			}
-<<<<<<< HEAD:CVES/LineSearchBased.cpp
 			else if (_TT_in1_avg != 0) {
-				_TT_in1_avg = (_TT_in1_avg + abs(_TT_in1[i].y - _TT_in1[i + 1].y)) / 2;
-=======
-			else if(_TT_in1_avg != 0){
 				_TT_in1_avg = abs(_TT_in1[i].y - _TT_in1[i + 1].y) - abs(_TT_in1_avg - abs(_TT_in1[i].y - _TT_in1[i + 1].y));
-				
->>>>>>> origin/CVES_HandRecognition:CVES/ChessLineSearchAlg.cpp
 			}
 		}
-		for (register int i = 0; i <_TT_in2.size() - 1; i++) {
 
-<<<<<<< HEAD:CVES/LineSearchBased.cpp
-			if (_TT_in2_avg != 0 && abs(_TT_in2_avg - abs(_TT_in2[i].y - _TT_in2[i + 1].y)) > 3) {
-=======
-			if(_TT_in2_avg != 0 && abs(_TT_in2_avg - abs(_TT_in2[i].y - _TT_in2[i + 1].y)) > 15){
->>>>>>> origin/CVES_HandRecognition:CVES/ChessLineSearchAlg.cpp
+		for (register int i = 0; i <_TT_in2.size() - 1; i++) {
+			if (_TT_in2_avg != 0 && abs(_TT_in2_avg - abs(_TT_in2[i].y - _TT_in2[i + 1].y)) > 15) {
 				_TT_in2[i + 1].y = _TT_in2[i].y + _TT_in2_avg;
 			}
 			else if (_TT_in2_avg == 0) {
 				_TT_in2_avg -= abs(_TT_in2[i].y - _TT_in2[i + 1].y);
 			}
-<<<<<<< HEAD:CVES/LineSearchBased.cpp
-			else if (_TT_in2_avg != 0) {
-				_TT_in2_avg = (_TT_in2_avg + abs(_TT_in2[i].y - _TT_in2[i + 1].y))/2;
-=======
 			else if(_TT_in2_avg != 0){
 				_TT_in2_avg = abs(_TT_in2[i].y - _TT_in2[i + 1].y) + abs(_TT_in2_avg - abs(_TT_in2[i].y - _TT_in2[i + 1].y));
-				
->>>>>>> origin/CVES_HandRecognition:CVES/ChessLineSearchAlg.cpp
 			}
 		}
 	}
@@ -701,16 +540,16 @@ void LineSearchBased::GetgraySidelines(IplImage *image, vector<MyGrayPoint> *lin
 	if (SumFlag) {
 		if (_TT_in1.size() != 0) {
 			for (register int i = 0; i < _TT_in1.size(); i++)
-				in_line_point->push_back(_TT_in1[i]);
+				InLinePoint->push_back(_TT_in1[i]);
 		}
 		if (_TT_in2.size() != 0) {
 			for (register int i = 0; i < _TT_in2.size(); i++)
-				in_line_point->push_back(_TT_in2[i]);
+				InLinePoint->push_back(_TT_in2[i]);
 		}
 	}
 }
 
-void LineSearchBased::GetTrueLines(vector<MyPoint> in_line_point1, vector<MyPoint> in_line_point2, vector<MyPoint> *Ture_in_line_point) {
+void LineSearchBased::Get_TrueLines(vector<MyPoint> in_line_point1, vector<MyPoint> in_line_point2, vector<MyPoint> *Ture_in_line_point) {
 	if (in_line_point1.size() == 9){
 		for (register int i = 0; i < in_line_point1.size(); i++)
 			Ture_in_line_point->push_back(in_line_point1[i]);
@@ -721,17 +560,15 @@ void LineSearchBased::GetTrueLines(vector<MyPoint> in_line_point1, vector<MyPoin
 	}
 }
 
-void LineSearchBased::MemoryClear() {
-	// 전역으로 쓰인 모든 변수들을 clear 해준다.
-	line_x1.clear(), line_x2.clear(), line_y1.clear(), line_y2.clear(), line_x11.clear(), line_x22.clear(), line_y11.clear(), line_y22.clear();
-
-	in_line_point_x1.clear(), in_line_point_x2.clear(), in_line_point_y1.clear(), in_line_point_y2.clear(), in_line_point_x11.clear(), in_line_point_x22.clear(), in_line_point_y11.clear(), in_line_point_y22.clear();
-
-	true_line_point_x1.clear(), true_line_point_x2.clear(), true_line_point_y1.clear(), true_line_point_y2.clear();
-<<<<<<< HEAD:CVES/LineSearchBased.cpp
+void LineSearchBased::Set_MyLinePoint(int X1, int Y1, int X2, int Y2, MyLinePoint *SetLinePoint) {
+	// 2개의 x,y 쌍을 받아 setLinePoint에 반환해준다 .
+	SetLinePoint->x1 = X1;
+	SetLinePoint->x2 = X2;
+	SetLinePoint->y1 = Y1;
+	SetLinePoint->y2 = Y2;
 }
 
-MyGrayPoint LineSearchBased::setMyGrayPoint(int grayscale, int x, int y) {
+MyGrayPoint LineSearchBased::Set_MyPointAtGrayScale(int grayscale, int x, int y) {
 	// grayscale과 해당하는 위치를 모두 저장하기 위한 반환함수로 함수내에 임시 MyGrayPoint 변수를 만들어 
 	// 각 멤버변수에 입력받은 값들을 저장해 반환해준다.
 	MyGrayPoint t_graypoint;
@@ -741,11 +578,9 @@ MyGrayPoint LineSearchBased::setMyGrayPoint(int grayscale, int x, int y) {
 	t_graypoint.y = y;
 
 	return t_graypoint;
-=======
->>>>>>> origin/CVES_HandRecognition:CVES/ChessLineSearchAlg.cpp
 }
 
-MyPoint LineSearchBased::setMyPoint(int x, int y) {
+MyPoint LineSearchBased::Set_MyPoint(int x, int y) {
 	// 위치값 x,y를 저장하기 위한 반환함수로 함수내에 임시 MyPoint 변수를 만들어 
 	// 각 멤버변수에 입력받은 값들을 저장해 반환해준다.
 	MyPoint t_point;
@@ -753,6 +588,94 @@ MyPoint LineSearchBased::setMyPoint(int x, int y) {
 	t_point.y = y;
 
 	return t_point;
+}
+
+void LineSearchBased::GrayImageBinarization(IplImage *GrayImage) {
+	// 이미지의 grayscale을 저장할 변수.
+	float _THist[256] = {0, };
+	int _TTemp[256];
+
+	memset(_TTemp, 0, sizeof(int) * 256);
+
+	bool _TFlag = true;
+
+	// 영상의 grayscale을 저장한다.
+	for (register int i = 0; i < GrayImage->width; i++) {
+		for (register int j = 0; j < GrayImage->height; j++) {
+			_TTemp[Get_GrayScale(GrayImage, i, j)]++;
+
+			// 맨 처음 영상이 단일색으로 나올 경우가 있기 때문에 예외 처리를 해준다.
+			if (Get_GrayScale(GrayImage, i, j) != 0)
+				_TFlag = false;
+		}
+	}
+
+	if (_TFlag)
+		return;
+
+	float _TArea = (float)GrayImage->width * GrayImage->height;
+
+	// grayscale의 평균값.
+	for (register int i = 1; i < 256; i++)
+		_THist[i] = _TTemp[i] / _TArea;
+
+	int _TT, _TTold;
+
+	float _TSum = 0.f;
+	for (register int i = 1; i < 256; i++)
+		_TSum += (i * _THist[i]);
+
+	_TT = (int)_TSum;
+
+	// grayscale의 기준 T를 찾는 과정으로 
+	// 간단히 얻을 수있는 모든 grayscale의 평균을 구한다고 보면 된다.
+	do {
+		_TTold = _TT;
+		int _T_A1, _T_A2, _T_B1, _T_B2, _T_U1, _T_U2;
+
+		_T_A1 = _T_B1 = 0;
+
+		for (register int i = 0; i < _TTold; i++) {
+			_T_A1 += (i * _TTemp[i]);
+			_T_B1 += _TTemp[i];
+		}
+
+		if (_T_A1 == 0 && _T_B1 == 0) return;
+
+		_T_U1 = _T_A1 / _T_B1;
+		_T_A2 = _T_B2 = 0;
+
+		for (register int i = _TTold + 1; i < 256; i++) {
+			_T_A2 += (i * _TTemp[i]);
+			_T_B2 += (_TTemp[i]);
+		}
+
+		if (_T_A2 == 0 && _T_B2 == 0) return;
+
+		_T_U2 = _T_A2 / _T_B2;
+
+		if (_T_B1 == 0) _T_B1 = 1.f;
+		if (_T_B2 == 0) _T_B2 = 1.f;
+
+		_TT = (int)((_T_U1 + _T_U2) / 2);
+	} while (_TT != _TTold);
+
+	for (register int i = 0; i < GrayImage->width; i++) {
+		for (register int j = 0; j < GrayImage->height; j++) {
+			int _TIndex = i + (j * GrayImage->widthStep);
+			// 해당 위치의 grayscale을 T값을 기준으로 이진화를 결정한다 
+			GrayImage->imageData[_TIndex] = Get_GrayScale(GrayImage, i, j) > _TT - 20 ? 255 : 0;
+		}
+	}
+}
+
+void LineSearchBased::MemoryClear() {
+	// 전역으로 쓰인 모든 변수들을 clear 해준다.
+	line_x1.clear(), line_x2.clear(), line_y1.clear(), line_y2.clear(), line_x11.clear(), line_x22.clear(), line_y11.clear(), line_y22.clear();
+
+	in_line_point_x1.clear(), in_line_point_x2.clear(), in_line_point_y1.clear(), in_line_point_y2.clear(), in_line_point_x11.clear(), in_line_point_x22.clear(), in_line_point_y11.clear(), in_line_point_y22.clear();
+
+	true_line_point_x1.clear(), true_line_point_x2.clear(), true_line_point_y1.clear(), true_line_point_y2.clear();
 }
 
 #pragma region Thread
@@ -771,24 +694,24 @@ void *
 #endif
 	Param) {
 	GraySideLinesPointStruct *_TGraySideLinesPointStruct = (GraySideLinesPointStruct *)Param;
-	_TGraySideLinesPointStruct->T_ChessLineSearchAlg->GetgraySidelines(_TGraySideLinesPointStruct->chess_image, _TGraySideLinesPointStruct->Lines, _TGraySideLinesPointStruct->LinePoint, _TGraySideLinesPointStruct->InLinePoints, _TGraySideLinesPointStruct->XYflag);
+	_TGraySideLinesPointStruct->T_ChessLineSearchAlg->Get_SideLinesAtGrayScale(_TGraySideLinesPointStruct->ChessImage, _TGraySideLinesPointStruct->Lines, _TGraySideLinesPointStruct->LinePoint, _TGraySideLinesPointStruct->InLinePoints, _TGraySideLinesPointStruct->XYflag);
 
-	_endthread();
+	//_endthread();
 	return 0;
 }
 #pragma endregion Thread
 #pragma endregion Private Functions
 
 #pragma region Public Functions
-void LineSearchBased::ChessLineSearchProcess(IplImage *Source, vector<ChessPoint> *Point) {
+void LineSearchBased::ChessLineSearchProcess(IplImage *Source, vector<ChessPoint> *ChessPoint) {
 	// 영상 이진화.
 	GrayImageBinarization(Source);
 
 	// 해당 영상에서의 좌표 x,y 와 grayscale을 추출하여 vector<MyGrayPoint> 형의 line에 저장.
-	GetLinegrayScale(Source, Linefindcount_x1, Linefindcount_y1, Linefindcount_x2, Linefindcount_y2, Linefindcount_x11, Linefindcount_y11, Linefindcount_x22, Linefindcount_y22);
+	Get_LineAtGrayScale(Source, Linefindcount_x1, Linefindcount_y1, Linefindcount_x2, Linefindcount_y2, Linefindcount_x11, Linefindcount_y11, Linefindcount_x22, Linefindcount_y22);
 
 	// 체스판의 경계를 구하여 in_line_point 변수들에 저장.
-	GetgraySidelinesPoint(Source);
+	Get_SideLinesPointAtGrayScale(Source);
 
 	// 해당 라인에서 9곳의 체스판 경계를 찾지 못 하였으면,
 	// 탐색라인을 이동시켜 적절한 탐색라인을 찾는다.
@@ -857,7 +780,7 @@ void LineSearchBased::ChessLineSearchProcess(IplImage *Source, vector<ChessPoint
 
 	if (true_line_point_x1.size() == 9 && true_line_point_x2.size() ==  9 && true_line_point_y1.size() == 9 && true_line_point_y2.size() == 9) {
 		// 각 찾은 경계점들의 수직이 되는 점 모두의 교차점을 찾는다.
-		GetInCrossPoint(Source, Point);
+		Get_InCrossPoint(Source, ChessPoint);
 	}
 	else /*if (in_line_point_x1.size() != 9 || in_line_point_x2.size() != 9 || in_line_point_x1.size() != 9 || in_line_point_x2.size() != 9) */{
 

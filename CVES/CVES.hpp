@@ -28,8 +28,15 @@
 
 #include "EngineS.hpp"
 
+#include "ImageTransformForQT.hpp"
+
 //#if defined(USING_QT)
 #include <QMainWindow>
+#include <QtCore>
+#include <QtGui>
+#include <QMutex>
+
+//#include <QTimer>
 
 namespace Ui {
 	class CVES;
@@ -42,11 +49,22 @@ class CVES : public QMainWindow
 private:
 	Ui::CVES *ui;
 
+	//QTimer *_Timer;
+	QMutex _FrameImageProtectQMutex;
+	ImageTransformForQT _ImageTransformForQT;
+
 public:
 	explicit CVES(QWidget *parent = 0);
 	~CVES();
 
 	EngineS *_EngineS;
+	static void EngineSFrameCallback(IplImage *NowFrame);
+
+public slots:
+	//void FrameUpdate();
+private slots:
+	//void show();
+	void on_actionExit_triggered();
 };
 //#endif
 #endif // _CVES_hpp_

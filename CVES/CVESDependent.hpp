@@ -44,7 +44,7 @@
 #pragma region struct_ChessPoint
 typedef struct _ChessPoint {
 	CvPoint Cordinate; // 좌표 위치.
-	CvPoint index; // 좌표 인덱스.
+	CvPoint Index; // 좌표 인덱스.
 } ChessPoint;
 #pragma endregion struct_ChessPoint
 
