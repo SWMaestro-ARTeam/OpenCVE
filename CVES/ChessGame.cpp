@@ -381,8 +381,6 @@ void ChessGame::Moving_Default(CvPoint Moving_Input[]) {
 	_TValue1 = _Board[Moving_Input[0].x][Moving_Input[0].y];
 	_TValue2 = _Board[Moving_Input[1].x][Moving_Input[1].y];
 
-	printf("======(%d, %d), (%d, %d)\n",Moving_Input[0].x, Moving_Input[0].y, Moving_Input[1].x, Moving_Input[1].y);
-
 	// 이전 움직임 초기화
 	_BeforeMove.position = cvPoint(-1,-1);
 	_BeforeMove.Piece = -1;
@@ -780,9 +778,9 @@ int ChessGame::Read_Mode() {
 	}
 }
 
-void ChessGame::Check_InvalidMove( IplImage *Source, vector<ChessPoint> _CP, CvPoint _out[] )
+bool ChessGame::Check_InvalidMove( IplImage *Source, vector<ChessPoint> _CP, CvPoint _out[] )
 {
-	static bool _first_check = false;
+	static bool _first_check = false;	// error move가 해당 함수에 처음으로 진입하였는지를 확인
 	if(_error_move.flag == true){
 		Draw_InvalidMove(Source, _CP, _error_move);
 
@@ -792,7 +790,11 @@ void ChessGame::Check_InvalidMove( IplImage *Source, vector<ChessPoint> _CP, CvP
 		{
 			_first_check = false;
 		}
+
+		return true;
 	}
+
+	return false;
 }
 
 void ChessGame::Draw_InvalidMove(IplImage *Source, vector<ChessPoint> _CP, error_move _InvalidMove)
@@ -807,11 +809,11 @@ void ChessGame::Draw_InvalidMove(IplImage *Source, vector<ChessPoint> _CP, error
 	for(register int i = 0; i < 81; i++){
 		ChessPoint _temp_CP = _CP.at(i);
 
-		if(_temp_CP.Index.x == p_after.x && _temp_CP.Index.y == p_after.y){
+		if(_temp_CP.Index.x == p_after.y && _temp_CP.Index.y == p_after.x){
 			CP_after = cvPoint((_temp_CP.Cordinate.x + _CP.at(i+9).Cordinate.x)/2, (_temp_CP.Cordinate.y + _CP.at(i+9).Cordinate.y)/2);
 		}
 
-		if(_temp_CP.Index.x == p_before.x && _temp_CP.Index.y == p_before.y){
+		if(_temp_CP.Index.x == p_before.y && _temp_CP.Index.y == p_before.x){
 			CP_before = cvPoint((_temp_CP.Cordinate.x + _CP.at(i+9).Cordinate.x)/2, (_temp_CP.Cordinate.y + _CP.at(i+9).Cordinate.y)/2);
 		}
 

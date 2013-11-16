@@ -649,24 +649,26 @@ void EngineS::Evaluation() {
 		// Out 결과로, Turn을 출력한다.
 		_IsTrun = _ChessGame->Chess_process(out, predicted_mode);
 
-		// UCI 좌표 만들어주기.
-		// "Move $%$%"
-		string _TString = string("Move ").append(string(_ChessGame->Get_RecentMove()));
+		_DetectionResultOnlyImageProtectMutex.lock();
+		if(_ChessGame->Check_InvalidMove(_DetectionResultOnlyImage, _CrossPoint, out)){
+			string _TString = string("Move ").append(string(_ChessGame->Get_RecentMove()));
 
-		// Game을 하고 있는 Client를 검색한다.
-		// 들어온 Client 중에 알맞은 Client에게 답을 보낸다.
-		for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
-			if (_IsTrun == true && strcmp("White", _TVal->ClientName) == 0) {
-				// White Turn일 때.
-				char *_TCharArr = (char *)_StringTools.StringToConstCharPointer(_TString.c_str());
-				_TelepathyServer->SendDataToOne(_TCharArr, _TVal->ClientSocket);
-			}
-			else if (_IsTrun != true && strcmp("Black", _TVal->ClientName) == 0) {
-				// Black Turn일 때.
-				char *_TCharArr = (char *)_StringTools.StringToConstCharPointer(_TString.c_str());
-				_TelepathyServer->SendDataToOne(_TCharArr, _TVal->ClientSocket);
+			// Game을 하고 있는 Client를 검색한다.
+			// 들어온 Client 중에 알맞은 Client에게 답을 보낸다.
+			for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
+				if (_IsTrun == true && strcmp("White", _TVal->ClientName) == 0) {
+					// White Turn일 때.
+					char *_TCharArr = (char *)_StringTools.StringToConstCharPointer(_TString.c_str());
+					_TelepathyServer->SendDataToOne(_TCharArr, _TVal->ClientSocket);
+				}
+				else if (_IsTrun != true && strcmp("Black", _TVal->ClientName) == 0) {
+					// Black Turn일 때.
+					char *_TCharArr = (char *)_StringTools.StringToConstCharPointer(_TString.c_str());
+					_TelepathyServer->SendDataToOne(_TCharArr, _TVal->ClientSocket);
+				}
 			}
 		}
+		_DetectionResultOnlyImageProtectMutex.unlock();
 #if defined(DEBUG_MODE)
 		//uci에 맞춰 return하는 부분 현재 printf로 출력
 		_ChessGame->Show_ChessImage();
