@@ -215,6 +215,7 @@ void ChessGame::Moving_Castling(CvPoint Moving_Input[]){
 			return;
 		}
 	}
+		printf("캐슬링 error");
 
 	_Turn = !_Turn;
 
@@ -228,6 +229,7 @@ void ChessGame::Moving_Enpassant(CvPoint Moving_Input[]) {
 	_TValue1 = _Board[Moving_Input[0].x][Moving_Input[0].y];
 	_TValue2 = _Board[Moving_Input[1].x][Moving_Input[1].y];
 	_TValue3 = _Board[Moving_Input[2].x][Moving_Input[2].y];
+
 
 	if (_Turn == WHITE_TURN) {
 		_TempMove._TurnFlag = WHITE_TURN;
@@ -356,6 +358,9 @@ void ChessGame::Moving_Enpassant(CvPoint Moving_Input[]) {
 			return;
 		}
 	}
+
+		printf("앙파상 error");
+
 	_Turn = !_Turn;
 
 	strcpy(_RecentMove, _TempMove._Movement);
@@ -368,6 +373,8 @@ void ChessGame::Moving_Default(CvPoint Moving_Input[]) {
 	memset(_TempMove._Movement, NULL, sizeof(_TempMove._Movement));
 	_TValue1 = _Board[Moving_Input[0].x][Moving_Input[0].y];
 	_TValue2 = _Board[Moving_Input[1].x][Moving_Input[1].y];
+
+	printf("======(%d, %d), (%d, %d)\n",Moving_Input[0].x, Moving_Input[0].y, Moving_Input[1].x, Moving_Input[1].y);
 
 	// 이전 움직임 초기화
 	_BeforeMove.position = cvPoint(-1,-1);
