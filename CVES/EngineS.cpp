@@ -62,9 +62,6 @@ EngineS::EngineS() {
 	_ImageSkin = NULL;
 	_PrevImage = NULL;
 	_ImageSub = NULL;
-
-	// ?
-	_CamHSV = cvCreateImage(_Resolution, IPL_DEPTH_8U, 3);
 }
 
 EngineS::~EngineS() {
@@ -75,8 +72,6 @@ EngineS::~EngineS() {
 	IsTictokEnable = false;
 	
 	G_EngineS = NULL;
-
-	cvReleaseImage(&_CamHSV);
 }
 #pragma endregion Constructor & Destructor
 
@@ -132,7 +127,6 @@ void EngineS::Initialize_ImageProcessing() {
 	_ChessObjectDetection = new ChessObjectDetection();
 
 	_ChessRecognitionProcessingPause = false;
-	_HandRecognitionProcessingPause = false;
 	ChessRecognitionInitialize = false;
 	HandRecognitionInitialize = false;
 	// 모드 초기화.
@@ -617,70 +611,65 @@ void EngineS::See() {
 
 void EngineS::Evaluation() {
 	// 손이 들어온 이후, 빠져나간 상황에서 judge.
-	if (_InHandCheck == true) {
-		// 차영상의 결과에 체스말의 이동경로 추적. 캐슬링, 앙파상 처리를 위하여 4개의 오브젝트를 디텍션
-		CvPoint out[4];
-		out[0] = out[1] = out[2] = out[3] = cvPoint(-1, -1);
-		// 체스말의 움직임을 계산.
-		//_CheckInChessboard->Calculate_Movement(_OtherBinaryImage, _CrossPoint, out);
-		_ChessObjectDetection->Get_Movement(_PrevImage, _PureImage, _CrossPoint, out);
+	// 차영상의 결과에 체스말의 이동경로 추적. 캐슬링, 앙파상 처리를 위하여 4개의 오브젝트를 디텍션
+	CvPoint out[4];
+	out[0] = out[1] = out[2] = out[3] = cvPoint(-1, -1);
+	// 체스말의 움직임을 계산.
+	_ChessObjectDetection->Get_Movement(_PrevImage, _PureImage, _CrossPoint, out);
 
-		// 디텍션 된 결과가 두개 이상 존재한다면 실행
-		if (out[0].x != -1 && out[1].x != -1) {
-			_HandRecognitionProcessingPause = true;
-			// 이동 처리부.
-			_InHandCheck = false;
-			_SubCheck = false;
-			_BeforeHandFirst = true;
+	// 디텍션 된 결과가 두개 이상 존재한다면 실행
+	if (out[0].x != -1 && out[1].x != -1) {
+		// 이동 처리부.
+		_InHandCheck = false;
+		_SubCheck = false;
+		_BeforeHandFirst = true;
 
-			// 이전 보드의 상태를 보고 예측함
-			int predicted_mode = _ChessGame->Read_Mode();
-			// 예측값과 현재 디텍션된 값을 비교하여 실측값을 넘겨줌
-			int out_count = 0;
-			for (register int i = 0; i < 4; i++) {
-				if (out[i].x != -1) {
-					out_count++;
-					//printf("(%d, %d)\n", out[i].x, out[i].y);
-				}
+		// 이전 보드의 상태를 보고 예측함
+		int predicted_mode = _ChessGame->Read_Mode();
+		// 예측값과 현재 디텍션된 값을 비교하여 실측값을 넘겨줌
+		int out_count = 0;
+		for (register int i = 0; i < 4; i++) {
+			if (out[i].x != -1) {
+				out_count++;
+				//printf("(%d, %d)\n", out[i].x, out[i].y);
 			}
-			predicted_mode = (out_count < predicted_mode ? out_count : predicted_mode);
-
-			// chessgame 이동부.
-			//printf("predict: %d, out_count : %d\n", predicted_mode, out_count);
-			// Out 결과로, Turn을 출력한다.
-			_IsTrun = _ChessGame->Chess_process(out, predicted_mode);
-
-			// UCI 좌표 만들어주기.
-			// "Move $%$%"
-			string _TString = string("Move ").append(string(_ChessGame->Get_RecentMove()));
-
-			// Game을 하고 있는 Client를 검색한다.
-			// 들어온 Client 중에 알맞은 Client에게 답을 보낸다.
-			for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
-				if (_IsTrun == true && strcmp("White", _TVal->ClientName) == 0) {
-					// White Turn일 때.
-					char *_TCharArr = (char *)_StringTools.StringToConstCharPointer(_TString.c_str());
-					_TelepathyServer->SendDataToOne(_TCharArr, _TVal->ClientSocket);
-				}
-				else if (_IsTrun != true && strcmp("Black", _TVal->ClientName) == 0) {
-					// Black Turn일 때.
-					char *_TCharArr = (char *)_StringTools.StringToConstCharPointer(_TString.c_str());
-					_TelepathyServer->SendDataToOne(_TCharArr, _TVal->ClientSocket);
-				}
-			}
-#if defined(DEBUG_MODE)
-			// uci에 맞춰 return하는 부분 현재 printf로 출력
-			//printf("%s\n", buf);
-			_ChessGame->Show_ChessImage();
-#endif
-			_HandRecognitionProcessingPause = false;
 		}
-		/*else
-			_InHandCheck = false;*/
+		predicted_mode = (out_count < predicted_mode ? out_count : predicted_mode);
 
-		// CVES process가 죽었을 경우를 대비하여 현재 경로들을 txt파일로 저장 & voting을 통하여 현재 말의 이동경로를 확정.
-		// 구현 예정.
+		// chessgame 이동부.
+		//printf("predict: %d, out_count : %d\n", predicted_mode, out_count);
+		// Out 결과로, Turn을 출력한다.
+		_IsTrun = _ChessGame->Chess_process(out, predicted_mode);
+
+		// UCI 좌표 만들어주기.
+		// "Move $%$%"
+		string _TString = string("Move ").append(string(_ChessGame->Get_RecentMove()));
+
+		// Game을 하고 있는 Client를 검색한다.
+		// 들어온 Client 중에 알맞은 Client에게 답을 보낸다.
+		for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
+			if (_IsTrun == true && strcmp("White", _TVal->ClientName) == 0) {
+				// White Turn일 때.
+				char *_TCharArr = (char *)_StringTools.StringToConstCharPointer(_TString.c_str());
+				_TelepathyServer->SendDataToOne(_TCharArr, _TVal->ClientSocket);
+			}
+			else if (_IsTrun != true && strcmp("Black", _TVal->ClientName) == 0) {
+				// Black Turn일 때.
+				char *_TCharArr = (char *)_StringTools.StringToConstCharPointer(_TString.c_str());
+				_TelepathyServer->SendDataToOne(_TCharArr, _TVal->ClientSocket);
+			}
+		}
+#if defined(DEBUG_MODE)
+		// uci에 맞춰 return하는 부분 현재 printf로 출력
+		//printf("%s\n", buf);
+		_ChessGame->Show_ChessImage();
+#endif
 	}
+	/*else
+	_InHandCheck = false;*/
+
+	// CVES process가 죽었을 경우를 대비하여 현재 경로들을 txt파일로 저장 & voting을 통하여 현재 말의 이동경로를 확정.
+	// 구현 예정.
 }
 
 void EngineS::DisplayInfomation() {
@@ -701,7 +690,7 @@ void EngineS::DisplayInfomation() {
 
 void EngineS::Verdict() {
 	See();
-	Evaluation();
+	//Evaluation();
 	DisplayInfomation();
 	//imgproc_mode();
 
@@ -1219,8 +1208,7 @@ void *
 	_TEngine_S->HandRecognitionInitialize = true;
 
 	while (_TEngine_S->EngineEnable != false) {
-		if (/*_TEngine_S->IsStarted == true &&  */_TEngine_S->_OriginForHandDetection->empty() != true
-			&& _TEngine_S->_HandRecognitionProcessingPause != true) {
+		if (/*_TEngine_S->IsStarted == true &&  */_TEngine_S->_OriginForHandDetection->empty() != true) {
 			if (_TEngine_S->_CamOriginImage != NULL || _TEngine_S->_CamOriginImage->imageData != '\0') {
 				IplImage *_THandOriginImage;
 				IplImage *_THandDetectionImage = cvCreateImage(cvSize(_TEngine_S->_ROIRect.width, _TEngine_S->_ROIRect.height), IPL_DEPTH_8U, 3);
@@ -1304,6 +1292,9 @@ void *
 						if (_TEngine_S->_CheckInChessboard->Check_InChessboard(_TEngine_S->_ImageSkin, _TEngine_S->_CrossPoint)) {
 							// img_Skin은 손 추정물체만 남긴 이미지.
 							_TEngine_S->_InHandCheck = true;
+						}else if(_TEngine_S->_InHandCheck == true){
+							// Evauluation 실행부
+							_TEngine_S->Evaluation();
 						}
 
 //#if !defined(USING_QT)
@@ -1333,7 +1324,8 @@ void *
 				cvReleaseImage(&_THandDetectionImage);
 			}
 		}
-		Sleep(10);
+		//Sleep(10);
+		cvWaitKey(33);
 	}
 	_TEngine_S->HandRecognitionInitialize = false;
 	_TEngine_S->_HandRecognition->Deinitialize_HandRecognition();

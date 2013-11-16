@@ -112,13 +112,12 @@ private:
 	
 	int _ImageProcessMode; //모드 설정/
 	bool _SubCheck;
-	bool _InHandCheck;
+	bool _InHandCheck;		// 체스보드 위에 손이 있는지 체크
 	bool _BeforeHandFirst;
 	bool _IsRestorePossible;
 	bool _IsTrun;
 
 	bool _ChessRecognitionProcessingPause;
-	bool _HandRecognitionProcessingPause;
 
 	CvCapture *_Cam; // 캠.
 	// 공유 자원 문제를 피하기 위해, 약 3가지의 Part에서 쓰는 Image를 Queue를 줌.
@@ -141,7 +140,6 @@ private:
 	IplImage *_TempPrev2; // 임시 이전 영상 저장 이미지.
 	IplImage *_OtherBinaryImage; // 손을 제외한 나머지 이진 영상.
 	IplImage *_PureImage;	//원본 ROI 셋팅 영상을 저장하기 위한 이미지.
-	IplImage *_CamHSV;
 
 	CvSize _Resolution; // 전체 해상도.
 	CvSize _ROI_Resolution; // ROI상의 해상도.
