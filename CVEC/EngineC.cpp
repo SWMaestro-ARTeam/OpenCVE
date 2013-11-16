@@ -37,6 +37,7 @@ EngineC::EngineC() {
 	_IsNoCVESProcess = false;
 	_ServerPID = 0;
 	EngineEnable = false;
+	EngineEnd = false;
 	EnginePause = false;
 	G_EngineC = this;
 }
@@ -47,6 +48,7 @@ EngineC::~EngineC() {
 	_IsNoCVESProcess = false;
 	_ServerPID = 0;
 	EngineEnable = false;
+	EngineEnd = false;
 	EnginePause = false;
 	G_EngineC = NULL;
 }
@@ -784,7 +786,7 @@ void EngineC::StartUp_Check() {
 	// Process가 시작될 때까지 기다린다.
 	// 만약 _TEngine_C->IsNoCVESProcess가 true면 0(이는, Server를 가지고 있지 않으므로 while을 실행하지 않는다는 이야기)
 	// 만약 _TEngine_C->IsNoCVESProcess가 false면 _TEngine_C->_ProcessConfirm->IsProcessActive를 검사.
-	while ((_IsNoCVESProcess) ? 0 : !_ProcessConfirm->IsProcessActive) ;
+	while ((_IsNoCVESProcess) ? 0 : !_ProcessConfirm->IsProcessActive) Sleep(10);
 	// 2. Process Enable 뒤 Server 접속.
 	Connect_Server();
 }
@@ -959,16 +961,16 @@ void *
 			delete _InternalProtocolCS;
 			delete _StringTokenizer;
 		}
-		//Sleep(10);
+		Sleep(10);
 	}
 #if defined(WINDOWS_SYS)
 	_endthread();
 #elif defined(POSIX_SYS)
 
 #endif
+	_TEngine_C->EngineEnd = true;
 	return 0;
 }
-
 #pragma endregion Command Queue Processing Thread
 
 #pragma region CVEC Processing Thread
@@ -999,6 +1001,7 @@ void *
 		// Parser Engine Pause.
 		//while (EnginePause) ;
 		_TEngine_C->Parsing_Command();
+		Sleep(5);
 	}
 
 	// 4. EngineC Deinitializing.

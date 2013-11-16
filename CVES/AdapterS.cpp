@@ -53,14 +53,11 @@ int AdapterS::Go_EngineS(int argc, char* argv[]) {
 	w.show();
 	_TApplicationReturnValue = a.exec();
 	_EngineS->TEngineSFrameCallback = NULL;
-	//while (_EngineS->EngineEnable)
-	Sleep(100);
-#else
-	// Thread 처리 할 경우 Main Application이 Thread보다 먼저 죽어버리는 경우가 발생하므로,
-	// 이를 방지하기 위해 Engine이 Enable일 때까지 계속 멈춰 있게 하여야 한다.
-	while (_EngineS->EngineEnable) 
-		Sleep(10);
 #endif
+	// Thread 처리 할 경우 Main Application이 Thread보다 먼저 죽어버리는 경우가 발생하므로,
+	// 이를 방지하기 위해 Engine이 End일 때까지 계속 멈춰 있게 하여야 한다.
+	while (!_EngineS->EngineEnd) Sleep(10);
+
 	// 4. Delete pointer.
 	delete _EngineS;
 

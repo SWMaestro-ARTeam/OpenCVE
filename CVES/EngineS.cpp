@@ -33,6 +33,7 @@ EngineS::EngineS() {
 	
 	// Engine을 시작을 위한 Switch 설정.
 	EngineEnable = false;
+	EngineEnd = false;
 	IsStarted = false;
 	IsTictokEnable = false;
 
@@ -68,6 +69,7 @@ EngineS::~EngineS() {
 	_IsRestorePossible = false;
 	
 	EngineEnable = false;
+	EngineEnd = false;
 	IsStarted = false;
 	IsTictokEnable = false;
 	
@@ -557,6 +559,9 @@ void EngineS::See() {
 	IplImage *_TChessBoardDetection = cvCreateImage(cvSize(_Resolution_Width, _Resolution_Height), IPL_DEPTH_8U, 3);
 	IplImage *_THandDetection = cvCreateImage(cvSize(_Resolution_Width, _Resolution_Height), IPL_DEPTH_8U, 3);
 
+	bool _IsNoReleaseChessBoardDetection = false;
+	bool _IsNoReleaseHandDetection = false;
+
 	_CamOriginImage = cvQueryFrame(_Cam);
 	if (_CamOriginImage->width >= _Resolution_Width
 		&& _CamOriginImage->height >= _Resolution_Height) {	
@@ -577,22 +582,24 @@ void EngineS::See() {
 
 		//imgproc_mode();
 
-		if (_OriginForChessBoardDetection->size() < 5)
+		if (_OriginForChessBoardDetection->size() < 10)
 			_OriginForChessBoardDetection->push(_TChessBoardDetection);
 		else {
 			// 버릴때 그냥 버리면 안되고, 무조건 해제를 해주고 버린다.
 			IplImage *_TImage = _OriginForChessBoardDetection->front();
-			_OriginForChessBoardDetection->pop();
 			cvReleaseImage(&_TImage);
+			_OriginForChessBoardDetection->pop();
+			cvReleaseImage(&_TChessBoardDetection);
 		}
 
-		if (_OriginForHandDetection->size() < 5)
+		if (_OriginForHandDetection->size() < 10)
 			_OriginForHandDetection->push(_THandDetection);
 		else {
 			// 버릴때 그냥 버리면 안되고, 무조건 해제를 해주고 버린다.
 			IplImage *_TImage = _OriginForHandDetection->front();
-			_OriginForHandDetection->pop();
 			cvReleaseImage(&_TImage);
+			_OriginForHandDetection->pop();
+			cvReleaseImage(&_THandDetection);
 		}
 	}
 	else {
@@ -662,11 +669,9 @@ void EngineS::Evaluation() {
 #if defined(DEBUG_MODE)
 		// uci에 맞춰 return하는 부분 현재 printf로 출력
 		//printf("%s\n", buf);
-		_ChessGame->Show_ChessImage();
+		//_ChessGame->Show_ChessImage();
 #endif
 	}
-	/*else
-	_InHandCheck = false;*/
 
 	// CVES process가 죽었을 경우를 대비하여 현재 경로들을 txt파일로 저장 & voting을 통하여 현재 말의 이동경로를 확정.
 	// 구현 예정.
@@ -674,10 +679,12 @@ void EngineS::Evaluation() {
 
 void EngineS::DisplayInfomation() {
 	_DetectionResultOnlyImageProtectMutex.lock();
-	Draw_ROI(_DetectionResultOnlyImage, 
-		(_ChessRecognitionProcessingFrames > _HandRecognitionProcessingFrames)
-		? _ChessRecognitionProcessingFrames : _HandRecognitionProcessingFrames
-		, _ROIRectColour);
+	if (IsStarted == true) {
+		Draw_ROI(_DetectionResultOnlyImage, 
+			(_ChessRecognitionProcessingFrames > _HandRecognitionProcessingFrames)
+			? _ChessRecognitionProcessingFrames : _HandRecognitionProcessingFrames
+			, _ROIRectColour);
+	}
 #if !defined(USING_QT)
 	// 화면을 표시한다.
 	cvShowImage("CVES", _DetectionResultOnlyImage);
@@ -689,13 +696,19 @@ void EngineS::DisplayInfomation() {
 }
 
 void EngineS::Verdict() {
+	int _TWait = 33;
 	See();
 	//Evaluation();
 	DisplayInfomation();
 	//imgproc_mode();
-
-	if (cvWaitKey(30) == 27)
+#if defined(WINDOWS_SYS)
+#	if !defined(USING_QT)
+	if (cvWaitKey(33) == 27)
 		EngineEnable = false;
+#	endif
+	//_TWait -= 10;
+	//Sleep(_TWait);
+#endif
 }
 
 // 제거 대상 0순위.
@@ -1086,7 +1099,7 @@ void *
 			delete _TInternalProtocolCS;
 			delete _TStringTokenizer;
 		}
-		//Sleep(10);
+		Sleep(10);
 	}
 
 #if defined(WINDOWS_SYS)
@@ -1122,7 +1135,7 @@ void *
 	_TEngine_S->ChessRecognitionInitialize = true;
 
 	while (_TEngine_S->EngineEnable != false) {
-		if (/*_TEngine_S->IsStarted == true && */_TEngine_S->_OriginForChessBoardDetection->empty() != true
+		if (/*_TEngine_S->IsStarted == true &&*/_TEngine_S->_OriginForChessBoardDetection->empty() != true
 			&& _TEngine_S->_ChessRecognitionProcessingPause != true) {
 			// 일단 Chess Image를 받음.
 			if (_TEngine_S->_CamOriginImage != NULL || _TEngine_S->_CamOriginImage->imageData != '\0') {
@@ -1210,7 +1223,7 @@ void *
 	_TEngine_S->HandRecognitionInitialize = true;
 
 	while (_TEngine_S->EngineEnable != false) {
-		if (/*_TEngine_S->IsStarted == true &&  */_TEngine_S->_OriginForHandDetection->empty() != true) {
+		if (_TEngine_S->IsStarted == true && _TEngine_S->_OriginForHandDetection->empty() != true) {
 			if (_TEngine_S->_CamOriginImage != NULL || _TEngine_S->_CamOriginImage->imageData != '\0') {
 				IplImage *_THandOriginImage;
 				IplImage *_THandDetectionImage = cvCreateImage(cvSize(_TEngine_S->_ROIRect.width, _TEngine_S->_ROIRect.height), IPL_DEPTH_8U, 3);
@@ -1294,7 +1307,8 @@ void *
 						if (_TEngine_S->_CheckInChessboard->Check_InChessboard(_TEngine_S->_ImageSkin, _TEngine_S->_CrossPoint)) {
 							// img_Skin은 손 추정물체만 남긴 이미지.
 							_TEngine_S->_InHandCheck = true;
-						}else if(_TEngine_S->_InHandCheck == true){
+						}
+						else if(_TEngine_S->_InHandCheck == true) {
 							// Evauluation 실행부
 							_TEngine_S->Evaluation();
 						}
@@ -1326,8 +1340,8 @@ void *
 				cvReleaseImage(&_THandDetectionImage);
 			}
 		}
-		//Sleep(10);
-		cvWaitKey(33);
+		Sleep(10);
+		//cvWaitKey(1);
 	}
 	_TEngine_S->HandRecognitionInitialize = false;
 	_TEngine_S->_HandRecognition->Deinitialize_HandRecognition();
@@ -1401,6 +1415,8 @@ void *
 #elif defined(POSIX_SYS)
 
 #endif
+	// 가장 마지막으로, Engine이 End가 됨을 알림.
+	_TEngine_S->EngineEnd = true;
 	return 0;
 }
 #pragma endregion CVEC Processing Thread

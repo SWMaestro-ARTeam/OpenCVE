@@ -275,6 +275,7 @@ public:
 	~EngineS();
 
 	bool EngineEnable;
+	bool EngineEnd;
 	bool IsStarted;
 	bool IsTictokEnable;
 	bool ChessRecognitionInitialize;

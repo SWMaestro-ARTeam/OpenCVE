@@ -28,10 +28,12 @@
 #pragma region Constructor & Destructor
 ChessRecognition::ChessRecognition() {
 	_IsInitialized = false;
+	_EndThread = false;
 }
 
 ChessRecognition::~ChessRecognition() {
 	_IsInitialized = false;
+	_EndThread = false;
 }
 #pragma endregion Constructor & Destructor
 
@@ -242,8 +244,12 @@ void *
 	cvReleaseMemStorage(&_TStorageY);
 
 	delete _TChessRecognition->_HoughLineBased;
-	//_endthread();
+#if defined(WINDOWS_SYS)
+	_endthread();
+#elif defined(POSIX_SYS)
 
+#endif
+	_TChessRecognition->_EndThread = true;
 	return 0;
 }
 
@@ -295,7 +301,12 @@ void *
 	//cvReleaseImage(&img_process);
 	delete _TChessRecognition->_LineSearchBased;
 
-	//_endthread();
+#if defined(WINDOWS_SYS)
+	_endthread();
+#elif defined(POSIX_SYS)
+
+#endif
+	_TChessRecognition->_EndThread = true;
 	return 0;
 }
 #pragma endregion Threads
@@ -367,6 +378,10 @@ void ChessRecognition::Initialize_ChessRecognition(int Width, int Height, int Mo
 }
 
 void ChessRecognition::Deinitialize_ChessRecognition() {
+	_EnableThread = false;
+	// Thread 안전 종료.
+	while (_EndThread != true) Sleep(10);
+	// 이후 모든 자원 반환.
 	cvZero(_ChessBoardDetectionInternalImage);
 	cvReleaseImage(&_ChessBoardDetectionInternalImage);
 }

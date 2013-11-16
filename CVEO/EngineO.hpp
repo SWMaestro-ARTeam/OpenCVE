@@ -119,6 +119,7 @@ public:
 	~EngineO();
 
 	bool EngineEnable;
+	bool EngineEnd;
 
 	queue<char *> *CommandQueue;
 

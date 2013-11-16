@@ -179,6 +179,7 @@ public:
 	~EngineC();
 
 	bool EngineEnable;
+	bool EngineEnd;
 	bool EnginePause;
 
 	void EngineC_Start();

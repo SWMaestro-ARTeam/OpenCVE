@@ -69,7 +69,7 @@
 
 // If defined Debug mode by compiler(M$ Visual Studio & Qt Creator).
 #if defined(_DEBUG) || !defined(QT_NO_DEBUG)
-#define DEBUG_MODE
+//#define DEBUG_MODE
 #endif
 
 #define ZERO_ 0

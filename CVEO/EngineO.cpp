@@ -29,11 +29,13 @@ EngineO *G_EngineO;
 
 EngineO::EngineO() {
 	EngineEnable = false;
+	EngineEnd = false;
 	G_EngineO = this;
 }
 
 EngineO::~EngineO() {
 	EngineEnable = false;
+	EngineEnd = false;
 	G_EngineO = NULL;
 }
 
@@ -237,6 +239,7 @@ void *
 
 	_TEngine_O->Engine_DeInitializing();
 
+	_TEngine_O->EngineEnd = true;
 	return 0;
 }
 #pragma endregion CVEO Processing Thread

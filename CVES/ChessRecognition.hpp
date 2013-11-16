@@ -55,6 +55,7 @@ private:
 	int _Width, _Height;
 	int _MODE;
 	bool _EnableThread;
+	bool _EndThread;
 	bool _IsInitialized;
 
 	vector<ChessPoint> _CP; // 교점
