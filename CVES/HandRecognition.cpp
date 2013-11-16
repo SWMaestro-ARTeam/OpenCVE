@@ -200,16 +200,26 @@ void HandRecognition::Subtraction_PreviousFrame(IplImage *Source, IplImage *Dest
 
 		// 프로그램의 성능을 위해 몇 프레임마다 차영상을 적용할 것인가를 if문을 통하여 조절할 수 있음.
 		if (_TFrameCount == 1) {
-			cvCopy(Source, _Image_Now);
+			//cvCopy(Source, _Image_Now);
+			cvCvtColor(Source, Lab_src, CV_BGR2Lab);
+			cvCvtColor(_Image_Previous, Lab_prev, CV_BGR2Lab);
 
 			// image 내부의 모든 픽셀을 대상으로 rgb 차영상 적용.
 			for (register int i = 0; i < Source->width; i++) {
 				for (register int j = 0; j < Source->height; j++) {
-					unsigned char SUB_B = abs((unsigned char)Source->imageData[(i * 3) + (j * Source->widthStep)] - (unsigned char)_Image_Previous->imageData[(i * 3) + (j * _Image_Previous->widthStep)]);
+					/*unsigned char SUB_B = abs((unsigned char)Source->imageData[(i * 3) + (j * Source->widthStep)] - (unsigned char)_Image_Previous->imageData[(i * 3) + (j * _Image_Previous->widthStep)]);
 					unsigned char SUB_G = abs((unsigned char)Source->imageData[(i * 3) + (j * Source->widthStep) + 1] - (unsigned char)_Image_Previous->imageData[(i * 3) + (j * _Image_Previous->widthStep) + 1]);
-					unsigned char SUB_R = abs((unsigned char)Source->imageData[(i * 3) + (j * Source->widthStep) + 2] - (unsigned char)_Image_Previous->imageData[(i * 3) + (j * _Image_Previous->widthStep) + 2]);
+					unsigned char SUB_R = abs((unsigned char)Source->imageData[(i * 3) + (j * Source->widthStep) + 2] - (unsigned char)_Image_Previous->imageData[(i * 3) + (j * _Image_Previous->widthStep) + 2]);*/
 
-					if(SUB_B > SUB_THRESHOLD || SUB_G > SUB_THRESHOLD || SUB_R > SUB_THRESHOLD) {
+					unsigned char SUB_L = abs((unsigned char)Lab_src->imageData[(i * 3) + (j * Lab_src->widthStep)] - (unsigned char)Lab_prev->imageData[(i * 3) + (j * Lab_prev->widthStep)]);
+					unsigned char SUB_a = abs((unsigned char)Lab_src->imageData[(i * 3) + (j * Lab_src->widthStep) + 1] - (unsigned char)Lab_prev->imageData[(i * 3) + (j * Lab_prev->widthStep) + 1]);
+					unsigned char SUB_b = abs((unsigned char)Lab_src->imageData[(i * 3) + (j * Lab_src->widthStep) + 2] - (unsigned char)Lab_prev->imageData[(i * 3) + (j * Lab_prev->widthStep) + 2]);
+
+					/*if(SUB_B > SUB_THRESHOLD || SUB_G > SUB_THRESHOLD || SUB_R > SUB_THRESHOLD) {
+						Destination->imageData[i + (j * Destination->widthStep)] = (unsigned char)255;
+					}*/
+
+					if(SUB_L > SUB_LabTHRESHOLD*5 && (SUB_a > SUB_LabTHRESHOLD || SUB_b > SUB_LabTHRESHOLD)) {
 						Destination->imageData[i + (j * Destination->widthStep)] = (unsigned char)255;
 					}
 				}

@@ -34,7 +34,8 @@ EngineS::EngineS() {
 	// Engine을 시작을 위한 Switch 설정.
 	EngineEnable = false;
 	EngineEnd = false;
-	IsStarted = false;
+	//IsStarted = false;
+	IsStarted = true;
 	IsTictokEnable = false;
 
 	// Camera에 대한 해상도 및 ROI 변수 크기 설정.
@@ -649,28 +650,29 @@ void EngineS::Evaluation() {
 		// Out 결과로, Turn을 출력한다.
 		_IsTrun = _ChessGame->Chess_process(out, predicted_mode);
 
-		// UCI 좌표 만들어주기.
-		// "Move $%$%"
-		string _TString = string("Move ").append(string(_ChessGame->Get_RecentMove()));
+		_DetectionResultOnlyImageProtectMutex.lock();
+		if(_ChessGame->Check_InvalidMove(_DetectionResultOnlyImage, _CrossPoint, out)){
+			string _TString = string("Move ").append(string(_ChessGame->Get_RecentMove()));
 
-		// Game을 하고 있는 Client를 검색한다.
-		// 들어온 Client 중에 알맞은 Client에게 답을 보낸다.
-		for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
-			if (_IsTrun == true && strcmp("White", _TVal->ClientName) == 0) {
-				// White Turn일 때.
-				char *_TCharArr = (char *)_StringTools.StringToConstCharPointer(_TString.c_str());
-				_TelepathyServer->SendDataToOne(_TCharArr, _TVal->ClientSocket);
-			}
-			else if (_IsTrun != true && strcmp("Black", _TVal->ClientName) == 0) {
-				// Black Turn일 때.
-				char *_TCharArr = (char *)_StringTools.StringToConstCharPointer(_TString.c_str());
-				_TelepathyServer->SendDataToOne(_TCharArr, _TVal->ClientSocket);
+			// Game을 하고 있는 Client를 검색한다.
+			// 들어온 Client 중에 알맞은 Client에게 답을 보낸다.
+			for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
+				if (_IsTrun == true && strcmp("White", _TVal->ClientName) == 0) {
+					// White Turn일 때.
+					char *_TCharArr = (char *)_StringTools.StringToConstCharPointer(_TString.c_str());
+					_TelepathyServer->SendDataToOne(_TCharArr, _TVal->ClientSocket);
+				}
+				else if (_IsTrun != true && strcmp("Black", _TVal->ClientName) == 0) {
+					// Black Turn일 때.
+					char *_TCharArr = (char *)_StringTools.StringToConstCharPointer(_TString.c_str());
+					_TelepathyServer->SendDataToOne(_TCharArr, _TVal->ClientSocket);
+				}
 			}
 		}
+		_DetectionResultOnlyImageProtectMutex.unlock();
 #if defined(DEBUG_MODE)
-		// uci에 맞춰 return하는 부분 현재 printf로 출력
-		//printf("%s\n", buf);
-		//_ChessGame->Show_ChessImage();
+		//uci에 맞춰 return하는 부분 현재 printf로 출력
+		_ChessGame->Show_ChessImage();
 #endif
 	}
 
@@ -1174,6 +1176,9 @@ void *
 				cvCopy(_TChessBoardOriginImage, _TEngine_S->_DetectionResultOnlyImage);
 				_TEngine_S->_DetectionResultOnlyImageProtectMutex.unlock();
 
+				// 체스판이 디텍션됬을 때는 색상을 초록색으로 변경한다
+				_TEngine_S->_ROIRectColour = cvScalar(0,255);
+
 				// 썼던 Image를 Release한다.
 				// Queue로 받아온 _TChessBoardOriginImage의 경우, 보내준 쪽(Go_ImageProcessing)이 아니라, 여기서 Release를 해야 함.
 				cvReleaseImage(&_TChessBoardOriginImage);
@@ -1266,6 +1271,7 @@ void *
 //#	endif
 //#endif
 							_TEngine_S->_SubCheck = true;
+							_TEngine_S->_ROIRectColour = cvScalar(0,255,255);
 						}
 						// debug
 					}
@@ -1293,8 +1299,9 @@ void *
 						// 손 정의 - 차영상 결과 디텍션된 오브젝트.
 						//          오브젝트 중 window 경계에 있는 물체
 						_TEngine_S->_BlobLabeling->GetSideBlob(_TEngine_S->_ImageSkin, &_TEngine_S->_PieceIndex, _TEngine_S->_OtherBinaryImage); // 손이 아니라고 판정되는 오브젝트를 이진 영상에서 제거
+#if defined(DEBUG_MODE)
 						_TEngine_S->Compose_diffImage(_THandDetectionImage, _TEngine_S->_ImageSkin, cvScalar(100, 100, 255)); // 손만 남은 이진 영상으로 원본 영상에 색을 부여
-
+#endif
 						// 이미지 처리에 사용되는 이미지에 Chessboard recognition 결과로 연산된 좌표를 표기
 						//_ChessRecognition.drawPoint(_ImageChess, _CrossPoint);
 						cvDilate(_TEngine_S->_ImageSkin, _TEngine_S->_ImageSkin, 0, 5);
@@ -1308,9 +1315,11 @@ void *
 						if (_TEngine_S->_CheckInChessboard->Check_InChessboard(_TEngine_S->_ImageSkin, _TEngine_S->_CrossPoint)) {
 							// img_Skin은 손 추정물체만 남긴 이미지.
 							_TEngine_S->_InHandCheck = true;
+							_TEngine_S->_ROIRectColour = cvScalar(0,255,255);
 						}
 						else if(_TEngine_S->_InHandCheck == true) {
 							// Evauluation 실행부
+
 							_TEngine_S->Evaluation();
 						}
 
@@ -1341,8 +1350,8 @@ void *
 				cvReleaseImage(&_THandDetectionImage);
 			}
 		}
-		Sleep(10);
-		//cvWaitKey(1);
+		//Sleep(10);
+		cvWaitKey(33);
 	}
 	_TEngine_S->HandRecognitionInitialize = false;
 	_TEngine_S->_HandRecognition->Deinitialize_HandRecognition();
