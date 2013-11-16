@@ -604,9 +604,7 @@ bool ChessGame::Chess_process(CvPoint Input[], int MOVE_MODE) {
 		break;
 	}
 
-	//
-	_Turn = !_Turn;
-
+	//_Turn = !_Turn;
 	return !_Turn;
 }
 

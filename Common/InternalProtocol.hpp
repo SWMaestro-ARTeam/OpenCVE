@@ -74,15 +74,15 @@
 #define STR_I_TICTOKISOFF "TicTokisOff" // +
 
 #define STR_I_DISP "Disp"
-#define STR_I_OMOVE STR_I_MOVE
+#define STR_I_OMOVE "OMove"
 
 #define STR_I_DISP_MINX "MinX"
 #define STR_I_DISP_MINY "MinY"
 #define STR_I_DISP_MAXX "MaxX"
 #define STR_I_DISP_MAXY "MaxY"
 
-#define STR_I_OMOVE_BLACK STR_I_INFO_BLACK
-#define STR_I_OMOVE_WHITE STR_I_INFO_WHITE
+#define STR_I_OMOVE_WHITE "OWhite"
+#define STR_I_OMOVE_BLACK "OBlack"
 
 // Observer -> CVES
 #define STR_I_STATUSNOW "StatusNow"
@@ -146,8 +146,8 @@
 #define VALUE_I_DISP_MAXX 3430
 #define VALUE_I_DISP_MAXY 3440
 
-#define VALUE_I_OMOVE_BLACK 3510
-#define VALUE_I_OMOVE_WHITE 3520
+#define VALUE_I_OMOVE_WHITE 3510
+#define VALUE_I_OMOVE_BLACK 3520
 
 // Observer -> CVES
 #define VALUE_I_STATUSNOW 4100

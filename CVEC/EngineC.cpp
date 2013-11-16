@@ -397,9 +397,9 @@ void EngineC::Command_Position(CommandString *_UCICS) {
 				}
 				break;
 		}
-		//Sleep(10);
+		Sleep(10);
 	}
-	//Sleep(10);
+	Sleep(10);
 	// while이 종료되면 해야 할 것들.
 	// 1. while에서 받아놓은 Move String을 보낸다.
 	/*
@@ -794,6 +794,7 @@ void EngineC::StartUp_Check() {
 #pragma region Client Received Callback
 void EngineC::ClientReceivedCallback(char *Buffer) {
 	// using mutex.
+	Sleep(100);
 	//G_EngineC->_QueueProtectMutex.lock();
 	char _TBuffer[BUFFER_MAX_32767];
 	memset(_TBuffer, NULL, sizeof(_TBuffer));
@@ -863,7 +864,7 @@ void EngineC::ClientDisconnectedCallback() {
 			if (_TIsConnected == true)
 				break;
 		}
-		//Sleep(10);
+		Sleep(10);
 	}
 }
 #pragma endregion Client Disconnented Callback
@@ -963,12 +964,12 @@ void *
 		}
 		Sleep(10);
 	}
+
 #if defined(WINDOWS_SYS)
 	_endthread();
 #elif defined(POSIX_SYS)
 
 #endif
-	_TEngine_C->EngineEnd = true;
 	return 0;
 }
 #pragma endregion Command Queue Processing Thread
@@ -1001,12 +1002,13 @@ void *
 		// Parser Engine Pause.
 		//while (EnginePause) ;
 		_TEngine_C->Parsing_Command();
-		Sleep(5);
+		//Sleep(10);
 	}
 
 	// 4. EngineC Deinitializing.
 	_TEngine_C->Engine_DeInitializing();
 
+	_TEngine_C->EngineEnd = true;
 #if defined(WINDOWS_SYS)
 	_endthread();
 #elif defined(POSIX_SYS)

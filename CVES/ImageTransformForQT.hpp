@@ -41,7 +41,7 @@ public:
 	//using std::string;
 	//using std::iostream;
 
-	QImage *IplImageToQImage(const IplImage* iplImage,/* uchar** data,*/ double mini=0.0, double maxi=0.0);
+	QImage *IplImageToQImage(const IplImage* iplImage, uchar** data, double mini=0.0, double maxi=0.0);
 	IplImage *QImageToIplImage(const QImage *qImage);
 };
 

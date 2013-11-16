@@ -563,8 +563,9 @@ void EngineS::See() {
 	bool _IsNoReleaseHandDetection = false;
 
 	_CamOriginImage = cvQueryFrame(_Cam);
-	if (_CamOriginImage->width >= _Resolution_Width
-		&& _CamOriginImage->height >= _Resolution_Height) {	
+
+	if (_CamOriginImage != NULL && (_CamOriginImage->width >= _Resolution_Width
+		&& _CamOriginImage->height >= _Resolution_Height)) {	
 		cvFlip(_CamOriginImage, _CamOriginImage, FLIP_MODE);
 		//cvCvtColor(_CamOriginalImage, _CamHSV, CV_BGR2HSV);
 
@@ -964,7 +965,7 @@ void EngineS::Verdict() {
 
 #pragma region Callbacks
 void EngineS::ServerReceivedCallback(char *Buffer, SOCKET ClientSocket) {
-	//Sleep(100);
+	Sleep(100);
 	// using mutex.
 	//G_EngineS->_QueueProtectMutex.lock();
 	ServerGetInformation *_TServerGetInformation = new ServerGetInformation;
@@ -1409,14 +1410,13 @@ void *
 	}
 
 	_TEngine_S->Deinitialize_ImageProcessing();
-
+	// 가장 마지막으로, Engine이 End가 됨을 알림.
+	_TEngine_S->EngineEnd = true;
 #if defined(WINDOWS_SYS)
 	_endthread();
 #elif defined(POSIX_SYS)
 
 #endif
-	// 가장 마지막으로, Engine이 End가 됨을 알림.
-	_TEngine_S->EngineEnd = true;
 	return 0;
 }
 #pragma endregion CVEC Processing Thread

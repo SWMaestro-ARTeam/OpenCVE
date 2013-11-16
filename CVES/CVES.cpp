@@ -49,9 +49,9 @@ void CVES::EngineSFrameCallback(IplImage *NowFrame) {
 	if (G_CVES->_EngineS->IsAllInitialize() == true) {
 		//G_CVES->_FrameImageProtectQMutex.lock();
 		//IplImage *_TFrame = NowFrame;
-		//uchar *_TData;
-		QImage *_TFrameImage = G_CVES->_ImageTransformForQT.IplImageToQImage(NowFrame);
-		//QImage *_TFrameImage = G_CVES->_ImageTransformForQT.IplImageToQImage(NowFrame, &_TData);
+		uchar *_TData;
+		//QImage *_TFrameImage = G_CVES->_ImageTransformForQT.IplImageToQImage(NowFrame);
+		QImage *_TFrameImage = G_CVES->_ImageTransformForQT.IplImageToQImage(NowFrame, &_TData);
 		//QImage _TFrameImage((uchar *)NowFrame->imageData, NowFrame->width, NowFrame->height, NowFrame->widthStep, QImage::Format_);
 		G_CVES->ui->ImageViewLabel->setPixmap(QPixmap::fromImage(*_TFrameImage));
 

@@ -240,6 +240,12 @@ void *
 	_TEngine_O->Engine_DeInitializing();
 
 	_TEngine_O->EngineEnd = true;
+
+#if defined(WINDOWS_SYS)
+	_endthread();
+#elif defined(POSIX_SYS)
+
+#endif
 	return 0;
 }
 #pragma endregion CVEO Processing Thread

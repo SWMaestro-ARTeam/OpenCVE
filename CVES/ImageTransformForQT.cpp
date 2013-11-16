@@ -56,7 +56,7 @@ IplImage *ImageTransformForQT::QImageToIplImage(const QImage *qImage) {
 		delete qImg;
 		cvReleaseImage(&iplImg);
 */
-QImage *ImageTransformForQT::IplImageToQImage(const IplImage *iplImage,/* uchar **data, */double mini, double maxi) {
+QImage *ImageTransformForQT::IplImageToQImage(const IplImage *iplImage, uchar **data, double mini, double maxi) {
 	uchar *qImageBuffer = NULL;
 	int width = iplImage->width;
 
@@ -204,9 +204,9 @@ QImage *ImageTransformForQT::IplImageToQImage(const IplImage *iplImage,/* uchar 
 	else {
 		qImage = new QImage(qImageBuffer, width, height, QImage::Format_RGB32);
 	}
-	//*data = qImageBuffer;
-	if (qImageBuffer != NULL)
-		free(qImageBuffer);
+	*data = qImageBuffer;
+	//if (qImageBuffer != NULL)
+		//free(qImageBuffer);
 
 	return qImage;
 }

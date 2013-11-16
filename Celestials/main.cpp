@@ -43,10 +43,10 @@ void Celestials_Manual() {
 int main(int argc, char *argv[]) {
 	int _TApplicationReturnValue = 0;
 
-	//if (argc > 0/*1*/) {
-	if (argc > 1) {
-		//STRING_SWITCH_BEGIN(string("/Observer"))
-		STRING_SWITCH_BEGIN(string((char *)argv[1]))
+	if (argc > 0/*1*/) {
+	//if (argc > 1) {
+		STRING_SWITCH_BEGIN(string("/Server"))
+		//STRING_SWITCH_BEGIN(string((char *)argv[1]))
 		{
 			CASE("/Server")
 				AdapterS _TAdapterS;
