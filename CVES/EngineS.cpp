@@ -34,7 +34,8 @@ EngineS::EngineS() {
 	// Engine을 시작을 위한 Switch 설정.
 	EngineEnable = false;
 	EngineEnd = false;
-	IsStarted = false;
+	//IsStarted = false;
+	IsStarted = true;
 	IsTictokEnable = false;
 
 	// Camera에 대한 해상도 및 ROI 변수 크기 설정.
@@ -667,9 +668,8 @@ void EngineS::Evaluation() {
 			}
 		}
 #if defined(DEBUG_MODE)
-		// uci에 맞춰 return하는 부분 현재 printf로 출력
-		//printf("%s\n", buf);
-		//_ChessGame->Show_ChessImage();
+		//uci에 맞춰 return하는 부분 현재 printf로 출력
+		_ChessGame->Show_ChessImage();
 #endif
 	}
 
@@ -1292,8 +1292,9 @@ void *
 						// 손 정의 - 차영상 결과 디텍션된 오브젝트.
 						//          오브젝트 중 window 경계에 있는 물체
 						_TEngine_S->_BlobLabeling->GetSideBlob(_TEngine_S->_ImageSkin, &_TEngine_S->_PieceIndex, _TEngine_S->_OtherBinaryImage); // 손이 아니라고 판정되는 오브젝트를 이진 영상에서 제거
+#if defined(DEBUG_MODE)
 						_TEngine_S->Compose_diffImage(_THandDetectionImage, _TEngine_S->_ImageSkin, cvScalar(100, 100, 255)); // 손만 남은 이진 영상으로 원본 영상에 색을 부여
-
+#endif
 						// 이미지 처리에 사용되는 이미지에 Chessboard recognition 결과로 연산된 좌표를 표기
 						//_ChessRecognition.drawPoint(_ImageChess, _CrossPoint);
 						cvDilate(_TEngine_S->_ImageSkin, _TEngine_S->_ImageSkin, 0, 5);
@@ -1340,8 +1341,8 @@ void *
 				cvReleaseImage(&_THandDetectionImage);
 			}
 		}
-		Sleep(10);
-		//cvWaitKey(1);
+		//Sleep(10);
+		cvWaitKey(33);
 	}
 	_TEngine_S->HandRecognitionInitialize = false;
 	_TEngine_S->_HandRecognition->Deinitialize_HandRecognition();

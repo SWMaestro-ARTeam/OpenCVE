@@ -578,6 +578,51 @@ bool ChessGame::Rule_DefaultMove(CvPoint Before, CvPoint After) {
 
 	return false;
 }
+
+void ChessGame::cvQuiver(IplImage *Image,int x,int y,int u,int v,CvScalar Color,int Size,int Thickness){
+	CvPoint pt1,pt2;
+	double Theta;
+	double PI = 3.1416;
+
+
+	if(u==0)
+		Theta=PI/2;
+	else
+		Theta=atan2(double(v),(double)(u));
+
+
+	pt1.x=x;
+	pt1.y=y;
+
+	pt2.x=x+u;
+	pt2.y=y+v;
+
+	cvDrawLine(Image,pt1,pt2,Color,Thickness,8);  //Draw Line
+
+
+	Size=(int)(Size*0.707);
+
+
+
+	if(Theta==PI/2 && pt1.y > pt2.y){
+		pt1.x=(int)(Size*cos(Theta)-Size*sin(Theta)+pt2.x);
+		pt1.y=(int)(Size*sin(Theta)+Size*cos(Theta)+pt2.y);
+		cvDrawLine(Image,pt1,pt2,Color,Thickness,8);  //Draw Line
+
+		pt1.x=(int)(Size*cos(Theta)+Size*sin(Theta)+pt2.x);
+		pt1.y=(int)(Size*sin(Theta)-Size*cos(Theta)+pt2.y);
+		cvDrawLine(Image,pt1,pt2,Color,Thickness,8);  //Draw Line
+	}
+	else{
+		pt1.x=(int)(-Size*cos(Theta)-Size*sin(Theta)+pt2.x);
+		pt1.y=(int)(-Size*sin(Theta)+Size*cos(Theta)+pt2.y);
+		cvDrawLine(Image,pt1,pt2,Color,Thickness,8);  //Draw Line
+
+		pt1.x=(int)(-Size*cos(Theta)+Size*sin(Theta)+pt2.x);
+		pt1.y=(int)(-Size*sin(Theta)-Size*cos(Theta)+pt2.y);
+		cvDrawLine(Image,pt1,pt2,Color,Thickness,8);  //Draw Line
+	}
+}
 #pragma endregion Private Functions
 
 #pragma region Public Functions
@@ -605,7 +650,7 @@ bool ChessGame::Chess_process(CvPoint Input[], int MOVE_MODE) {
 	}
 
 	//
-	_Turn = !_Turn;
+	//_Turn = !_Turn;
 
 	return !_Turn;
 }
@@ -720,4 +765,48 @@ int ChessGame::Read_Mode() {
 		}
 	}
 }
+
+void ChessGame::Check_InvalidMove( IplImage *Source, vector<ChessPoint> _CP, CvPoint _out[] )
+{
+	static bool _first_check = false;
+	if(_error_move.flag == true){
+		Draw_InvalidMove(Source, _CP, _error_move);
+
+		if(_first_check == true)
+			check_return(_out);
+		else
+		{
+			_first_check = false;
+		}
+	}
+}
+
+void ChessGame::Draw_InvalidMove(IplImage *Source, vector<ChessPoint> _CP, error_move _InvalidMove)
+{
+	CvPoint p_before, p_after;
+	CvPoint CP_before, CP_after;
+	p_after = _InvalidMove.after;
+	p_before = _InvalidMove.before;
+
+	bool after_complete, before_complete;
+	after_complete = before_complete = false;
+	for(register int i = 0; i < 81; i++){
+		ChessPoint _temp_CP = _CP.at(i);
+
+		if(_temp_CP.Index.x == p_after.x && _temp_CP.Index.y == p_after.y){
+			CP_after = cvPoint((_temp_CP.Cordinate.x + _CP.at(i+9).Cordinate.x)/2, (_temp_CP.Cordinate.y + _CP.at(i+9).Cordinate.y)/2);
+		}
+
+		if(_temp_CP.Index.x == p_before.x && _temp_CP.Index.y == p_before.y){
+			CP_before = cvPoint((_temp_CP.Cordinate.x + _CP.at(i+9).Cordinate.x)/2, (_temp_CP.Cordinate.y + _CP.at(i+9).Cordinate.y)/2);
+		}
+
+		if(after_complete == true && before_complete == true)
+			break;
+	}
+
+	cvDrawCircle(Source, CP_before, 5, cvScalar(0,0,255), -1);
+	cvQuiver(Source, CP_before.x, CP_before.y, CP_after.x, CP_after.y, cvScalar(0,0,255), 3, 3);
+}
+
 #pragma endregion Public Functions
