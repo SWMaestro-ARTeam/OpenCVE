@@ -110,7 +110,7 @@ private:
 	float _ChessRecognitionProcessingFrames;
 	float _HandRecognitionProcessingFrames;
 	
-	int _ImageProcessMode; //모드 설정/
+	//int _ImageProcessMode; //모드 설정/
 	bool _SubCheck;
 	bool _InHandCheck;		// 체스보드 위에 손이 있는지 체크
 	bool _BeforeHandFirst;
@@ -181,7 +181,7 @@ private:
 
 	void Process_Info(CommandString *IPCS, SOCKET Socket);
 
-	bool Check_Exit();
+	//bool Check_Exit();
 
 	// 매 루프에서 호출되는 image process 함수.
 	
@@ -200,7 +200,7 @@ private:
 	void Evaluation();
 	void DisplayInfomation();
 	void Verdict();
-	void imgproc_mode();
+	//void imgproc_mode();
 
 	static void ServerReceivedCallback(char *Buffer, SOCKET ClientSocket);
 	static void AnyConnentionNotifier(SOCKET ClientSocket);
