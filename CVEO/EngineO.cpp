@@ -181,22 +181,19 @@ UINT WINAPI
 			int _NSeek_CVESToCVEO = _TEngine_O->_InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*_InternalProtocolCS->CharArrayListIter);
 
 			switch (_NSeek_CVESToCVEO) {
-				case VALUE_I_INFOO :
-					// 일단 InfoO가 오면 기본적으로 자기한테 맞는 것이 온것이므로, Switch만 올려놓고 무시한다.
-					break;
 				case VALUE_I_DISP :
 					// 한꺼번에 처리가 가능하게 끔 CallBack으로 보내준다.
 					while (_InternalProtocolCS->NextCharArrayIter()) {
-						_TString.append(_InternalProtocolCS->CharArrayListIter);
-						if (_InternalProtocolCS->IsLastCharArrayIter() != ture)
+						_TString.append(*_InternalProtocolCS->CharArrayListIter);
+						if (_InternalProtocolCS->IsLastCharArrayIter() != true)
 							_TString.append(" ");
 					}
 					_TEngine_O->TEngineODataReceivedCallback(_TEngine_O->_StringTools.StringToConstCharPointer(_TString));
 					break;
 				case VALUE_I_OMOVE :
 					while (_InternalProtocolCS->NextCharArrayIter()) {
-						_TString.append(_InternalProtocolCS->CharArrayListIter);
-						if (_InternalProtocolCS->IsLastCharArrayIter() != ture)
+						_TString.append(*_InternalProtocolCS->CharArrayListIter);
+						if (_InternalProtocolCS->IsLastCharArrayIter() != true)
 							_TString.append(" ");
 					}
 					_TEngine_O->TEngineODataReceivedCallback(_TEngine_O->_StringTools.StringToConstCharPointer(_TString));
@@ -206,9 +203,13 @@ UINT WINAPI
 			delete _InternalProtocolCS;
 			delete _StringTokenizer;
 		}
-		//Sleep(10);
+		Sleep(10);
 	}
+#if defined(WINDOWS_SYS)
 	_endthread();
+#elif defined(POSIX_SYS)
+
+#endif
 	return 0;
 }
 
@@ -241,6 +242,8 @@ void *
 #pragma endregion CVEO Processing Thread
 
 void EngineO::EngineO_Start() {
+	_Thread.StartThread(CVEOProcessingThread, this);
+	/*
 #if defined(WINDOWS_SYS)
 	HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, CVEOProcessingThread, this, 0, NULL);
 #elif defined(POSIX_SYS)
@@ -255,4 +258,5 @@ void EngineO::EngineO_Start() {
 	// Create thread.
 	pthread_create(&_TThread, NULL, CVEOProcessingThread, (void *)this);
 #endif
+*/
 }

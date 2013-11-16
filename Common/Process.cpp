@@ -609,11 +609,19 @@ void *
 		//}
 		// Process가 종료 되어 Handle이 없어졌다면, 최종적으로 Thread가 끝난다.
 		G_Process->IsProcessActive = false;
+
+#if defined(WINDOWS_SYS)
+		_endthread();
+#elif defined(POSIX_SYS)
+
+#endif
 		return 0;
 }
 #pragma endregion Exec Process thread
 
 void Process::CreateProcessOnThread(char *ProcessName) {
+	_Thread.StartThread(ExecProcessLoopThread, (LPVOID)ProcessName);
+	/*
 #if defined(WINDOWS_SYS)
 	//#ifdef _AFXDLL
 	//DWORD _TThreadID = 0;
@@ -632,6 +640,7 @@ void Process::CreateProcessOnThread(char *ProcessName) {
 	// Create thread.
 	pthread_create(&_TThread, NULL, ExecProcessLoopThread, (void *)ProcessName);
 #endif
+	*/
 }
 
 #if defined(WINDOWS_SYS)

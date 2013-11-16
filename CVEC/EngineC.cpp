@@ -190,6 +190,8 @@ bool EngineC::Connect_Server() {
 			_TelepathyClient->ClientReceiveStart();
 			
 			// Command 처리용 Thread를 생성.
+			_Thread.StartThread(ClientCommandQueueProcessingThread, this);
+			/*
 #if defined(WINDOWS_SYS)
 			HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, ClientCommandQueueProcessingThread, this, 0, NULL);
 #elif defined(POSIX_SYS)
@@ -204,6 +206,7 @@ bool EngineC::Connect_Server() {
 			// Create thread.
 			pthread_create(&_TThread, NULL, ClientCommandQueueProcessingThread, (void *)this);
 #endif
+			*/
 			_TIsConnected = true;
 		}
 	}
@@ -958,7 +961,11 @@ void *
 		}
 		//Sleep(10);
 	}
+#if defined(WINDOWS_SYS)
 	_endthread();
+#elif defined(POSIX_SYS)
+
+#endif
 	return 0;
 }
 
@@ -997,6 +1004,11 @@ void *
 	// 4. EngineC Deinitializing.
 	_TEngine_C->Engine_DeInitializing();
 
+#if defined(WINDOWS_SYS)
+	_endthread();
+#elif defined(POSIX_SYS)
+
+#endif
 	return 0;
 }
 #pragma endregion CVEC Processing Thread
@@ -1005,6 +1017,8 @@ void *
 
 #pragma region Public Functions
 void EngineC::EngineC_Start() {
+	_Thread.StartThread(CVECProcessingThread, this);
+	/*
 #if defined(WINDOWS_SYS)
 	HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, CVECProcessingThread, this, 0, NULL);
 #elif defined(POSIX_SYS)
@@ -1019,5 +1033,6 @@ void EngineC::EngineC_Start() {
 	// Create thread.
 	pthread_create(&_TThread, NULL, CVECProcessingThread, (void *)this);
 #endif
+	*/
 }
 #pragma endregion Public Functions

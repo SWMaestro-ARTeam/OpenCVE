@@ -139,7 +139,7 @@ UINT WINAPI
 // using pthread
 void *
 #endif
-	ChessRecognition::thread_hough(
+	ChessRecognition::HoughLineThread(
 #if defined(WINDOWS_SYS)
 	LPVOID
 #elif defined(POSIX_SYS)
@@ -254,7 +254,7 @@ UINT WINAPI
 // using pthread
 void *
 #endif
-	ChessRecognition::thread_ChessLineSearchAlg(
+	ChessRecognition::LineSearchThread(
 #if defined(WINDOWS_SYS)
 	LPVOID
 #elif defined(POSIX_SYS)
@@ -327,6 +327,8 @@ void ChessRecognition::Initialize_ChessRecognition(int Width, int Height, int Mo
 	// 1 - linefitting을 이용한 chessboard recognition.
 	// 2 - x, y 선형 탐색을 이용한 chessboard recognition.
 	if (Mode == 1) {
+		_Thread.StartThread(HoughLineThread, this);
+		/*
 #if defined(WINDOWS_SYS)
 		HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, thread_hough, this, 0, NULL);
 #elif defined(POSIX_SYS)
@@ -341,8 +343,11 @@ void ChessRecognition::Initialize_ChessRecognition(int Width, int Height, int Mo
 		// Create thread.
 		pthread_create(&_TThread, NULL, thread_hough, (void *)this);
 #endif
+		*/
 	}
 	else if (Mode == 2) {
+		_Thread.StartThread(LineSearchThread, this);
+		/*
 #if defined(WINDOWS_SYS)
 		HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, thread_ChessLineSearchAlg, this, 0, NULL);
 #elif defined(POSIX_SYS)
@@ -357,6 +362,7 @@ void ChessRecognition::Initialize_ChessRecognition(int Width, int Height, int Mo
 		// Create thread.
 		pthread_create(&_TThread, NULL, thread_ChessLineSearchAlg, (void *)this);
 #endif
+		*/
 	}
 }
 

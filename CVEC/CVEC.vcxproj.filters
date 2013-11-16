@@ -147,6 +147,15 @@
     <Filter Include="CVEC_System\AdapterC\Source">
       <UniqueIdentifier>{fb5b3e44-03b2-46ba-be85-86c9ea48be07}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Common\Thread">
+      <UniqueIdentifier>{ffab46f3-0424-4191-85be-998aa289048f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Thread\Source">
+      <UniqueIdentifier>{b3757bc9-b9cc-404c-a37d-26dd9181c382}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Thread\Header">
+      <UniqueIdentifier>{b71ec4e3-44fc-46cf-8987-178958d16548}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UCICommandSesker.cpp">
@@ -193,6 +202,9 @@
     </ClCompile>
     <ClCompile Include="AdapterC.cpp">
       <Filter>CVEC_System\AdapterC\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Thread.cpp">
+      <Filter>Common\Thread\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -252,6 +264,9 @@
     </ClInclude>
     <ClInclude Include="AdapterC.hpp">
       <Filter>CVEC_System\AdapterC\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Thread.hpp">
+      <Filter>Common\Thread\Header</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

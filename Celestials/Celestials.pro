@@ -8,12 +8,14 @@ QT	+= core gui
 QT	+= widgets
 
 #QMAKE_CXXFLAGS += -fno-keep-inline-dllexport
+QMAKE_CXXFLAGS -= -fno-keep-inline-dllexport
 #QMAKE_CXXFLAGS += -std=c++0x -fpermissive -fexceptions -g -I../Common/
 QMAKE_CXXFLAGS += -std=c++11 -fpermissive -fexceptions
 #-D USING_QT
 #-D../Common/SystemDependency.hpp
 
 #QMAKE_LFLAGS += -static -static-libgcc
+QMAKE_LFLAGS += -static -static-libgcc
 #QMAKE_LFLAGS += -static -static-libgcc -enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -22,6 +24,7 @@ TARGET = Celestials
 TEMPLATE = app
 
 CONFIG   += console precompile_header
+#CONFIG   += precompile_header
 PRECOMPILED_HEADER = ../Common/SystemDependency.hpp
 #CONFIG	+= qt warn_on release static staticlib
 CONFIG	+= static staticlib
@@ -55,7 +58,8 @@ SOURCES +=\
     ../CVEO/AdapterO.cpp \
     ../CVES/CVES.cpp \
     main.cpp \
-    ../CVES/ImageTransformForQT.cpp
+    ../CVES/ImageTransformForQT.cpp \
+    ../Common/Thread.cpp
 
 HEADERS  += \
 		../Common/SystemDependency.hpp \
@@ -94,7 +98,9 @@ HEADERS  += \
     ../CVEO/AdapterO.hpp \
     ../CVEO/main.cpp.autosave \
     ../CVES/CVES.hpp \
-    ../CVES/ImageTransformForQT.hpp
+    ../CVES/ImageTransformForQT.hpp \
+    ../CVEO/CVEODependent.hpp \
+    ../Common/Thread.hpp
 
 FORMS    += \
     ../CVEO/CVEO.ui \

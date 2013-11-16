@@ -30,6 +30,8 @@
 
 #include "ExtendedBlackBox.hpp"
 
+#include "Thread.hpp"
+
 #include <list>
 
 #if defined(WINDOWS_SYS)
@@ -88,6 +90,7 @@ public:
 	// Server Class
 	class Server {
 	private:
+		Thread _Thread;
 #if defined(WINDOWS_SYS)
 		WSADATA _WSAData;
 		SOCKET _ServerSocket;
@@ -159,6 +162,7 @@ public:
 	// Client Class
 	class Client {
 	private:
+		Thread _Thread;
 		unsigned int _Address;
 #if defined(WINDOWS_SYS)
 		HOSTENT *_HostEntry;

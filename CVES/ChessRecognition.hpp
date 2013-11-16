@@ -27,6 +27,9 @@
 #define _ChessRecognition_hpp_
 
 #include "Common.hpp"
+
+#include "Thread.hpp"
+
 // CVESDependent into ChessLineSearchAlg.
 #include "LineSearchBased.hpp"
 #include "HoughLineBased.hpp"
@@ -47,6 +50,7 @@ class ChessRecognition {
 private:
 	HoughLineBased *_HoughLineBased;
 	LineSearchBased *_LineSearchBased;
+	Thread _Thread;
 	
 	int _Width, _Height;
 	int _MODE;
@@ -76,7 +80,7 @@ private:
 		// using pthread
 		void *
 #endif
-		thread_hough(
+		HoughLineThread(
 #if defined(WINDOWS_SYS)
 		LPVOID
 #elif defined(POSIX_SYS)
@@ -92,7 +96,7 @@ private:
 		// using pthread
 		void *
 #endif
-		thread_ChessLineSearchAlg(
+		LineSearchThread(
 #if defined(WINDOWS_SYS)
 		LPVOID
 #elif defined(POSIX_SYS)

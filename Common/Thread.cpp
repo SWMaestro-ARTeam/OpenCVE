@@ -23,46 +23,21 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-//#include "SystemDependency.hpp"
+#include "Thread.hpp"
 
-#include "AdapterS.hpp"
-
-int AdapterS::Go_EngineS(int argc, char* argv[]) {
-	int _TApplicationReturnValue = 0;
-	EngineS *_EngineS;
-
-	// 1. CVEC Engine 생성.
-	_EngineS = new EngineS();
-
-#if defined(USING_QT)
-	QApplication a(argc, argv);
-	CVES w;
-
-	// Engine Pointer를 넘겨준다.
-	w._EngineS = _EngineS;
-	// 영상이 들어올 CallBack의 주소를 넘겨준다.
-	_EngineS->TEngineSFrameCallback = w.EngineSFrameCallback;
+void Thread::StartThread(unsigned (__stdcall *_StartAddress) (void *), void *Argument) {
+#if defined(WINDOWS_SYS)
+	HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, _StartAddress, Argument, 0, NULL);
+#elif defined(POSIX_SYS)
+	pthread_t _TThread;
+	pthread_attr_t _TThreadAttr;
+	// pthread attribute initialize.
+	pthread_attr_init(&_TThreadAttr);
+	// Detached thread.
+	pthread_attr_setdetachstate(&_TThreadAttr, PTHREAD_CREATE_DETACHED);
+	// User space thread.
+	pthread_attr_setscope(&_TThreadAttr, PTHREAD_SCOPE_SYSTEM);
+	// Create thread.
+	pthread_create(&_TThread, NULL, _StartAddress, (void *)Argument);
 #endif
-
-	// 2. Engine Enable.
-	_EngineS->EngineEnable = true;
-	// 3. Engine Start.
-	_EngineS->EngineS_Start();
-
-#if defined(USING_QT)
-	w.show();
-	_TApplicationReturnValue = a.exec();
-	_EngineS->TEngineSFrameCallback = NULL;
-	//while (_EngineS->EngineEnable)
-	Sleep(100);
-#else
-	// Thread 처리 할 경우 Main Application이 Thread보다 먼저 죽어버리는 경우가 발생하므로,
-	// 이를 방지하기 위해 Engine이 Enable일 때까지 계속 멈춰 있게 하여야 한다.
-	while (_EngineS->EngineEnable) 
-		Sleep(10);
-#endif
-	// 4. Delete pointer.
-	delete _EngineS;
-
-	return _TApplicationReturnValue;
 }

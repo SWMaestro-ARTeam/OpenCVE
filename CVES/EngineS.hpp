@@ -45,6 +45,8 @@
 // Time Module
 #include "Time.hpp"
 
+#include "Thread.hpp"
+
 #include "CodeConverter.hpp"
 // String Tools
 #include "StringTools.hpp"
@@ -91,6 +93,7 @@ private:
 
 	// Common Modules.
 	Telepathy::Server *_TelepathyServer;
+	Thread _Thread;
 	InternalProtocolSeeker _InternalProtocolSeeker;
 	CodeConverter _CodeConverter;
 	StringTools _StringTools;

@@ -696,7 +696,11 @@ void *
 	GraySideLinesPointStruct *_TGraySideLinesPointStruct = (GraySideLinesPointStruct *)Param;
 	_TGraySideLinesPointStruct->T_ChessLineSearchAlg->Get_SideLinesAtGrayScale(_TGraySideLinesPointStruct->ChessImage, _TGraySideLinesPointStruct->Lines, _TGraySideLinesPointStruct->LinePoint, _TGraySideLinesPointStruct->InLinePoints, _TGraySideLinesPointStruct->XYflag);
 
-	//_endthread();
+#if defined(WINDOWS_SYS)
+	_endthread();
+#elif defined(POSIX_SYS)
+
+#endif
 	return 0;
 }
 #pragma endregion Thread

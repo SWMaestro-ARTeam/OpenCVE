@@ -27,6 +27,7 @@
 #define _Process_hpp_
 
 #include "Common.hpp"
+#include "Thread.hpp"
 
 #include "CodeConverter.hpp"
 
@@ -182,6 +183,8 @@ private:
 	PROCESS_BASIC_INFORMATION *_PBI;
 	DWORD _Size;
 	NTSTATUS _Status;
+
+	Thread _Thread;
 #elif defined(POSIX_SYS)
 
 #endif

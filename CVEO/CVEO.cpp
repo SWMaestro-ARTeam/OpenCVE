@@ -91,7 +91,7 @@ void CVEO::EngineODataReceivedCallback(char *Buffer) {
 			case VALUE_I_DISP_MAXX :
 				_IsMaxX = true;
 				break;
-			case VALUE_I_DISP_MAXX :
+			case VALUE_I_DISP_MAXY :
 				_IsMaxY = true;
 				break;
 
@@ -106,29 +106,29 @@ void CVEO::EngineODataReceivedCallback(char *Buffer) {
 				if (_IsMinX) {
 					_IsMinX = false;
 					// MinX 값을 설정.
-					_TString.append(string((const char *)*_UCICS->CharArrayListIter));
-					_ChessGridMinX = atoi(G_CVEO->_StringTools.StringToConstCharPointer(_TString));
+					_TString.append(string((const char *)*_InternalProtocolCS->CharArrayListIter));
+					G_CVEO->_ChessGridMinX = atoi(G_CVEO->_StringTools.StringToConstCharPointer(_TString));
 					_TString.clear();
 				}
 				else if (_IsMinY) {
 					_IsMinY = false;
 					// MinX 값을 설정.
-					_TString.append(string((const char *)*_UCICS->CharArrayListIter));
-					_ChessGridMinY = atoi(G_CVEO->_StringTools.StringToConstCharPointer(_TString));
+					_TString.append(string((const char *)*_InternalProtocolCS->CharArrayListIter));
+					G_CVEO->_ChessGridMinY = atoi(G_CVEO->_StringTools.StringToConstCharPointer(_TString));
 					_TString.clear();
 				}
 				else if (_IsMaxX) {
 					_IsMaxX = false;
 					// MinX 값을 설정.
-					_TString.append(string((const char *)*_UCICS->CharArrayListIter));
-					_ChessGridMaxX = atoi(G_CVEO->_StringTools.StringToConstCharPointer(_TString));
+					_TString.append(string((const char *)*_InternalProtocolCS->CharArrayListIter));
+					G_CVEO->_ChessGridMaxX = atoi(G_CVEO->_StringTools.StringToConstCharPointer(_TString));
 					_TString.clear();
 				}
 				else if (_IsMinY) {
 					_IsMinY = false;
 					// MinX 값을 설정.
-					_TString.append(string((const char *)*_UCICS->CharArrayListIter));
-					_ChessGridMaxY = atoi(G_CVEO->_StringTools.StringToConstCharPointer(_TString));
+					_TString.append(string((const char *)*_InternalProtocolCS->CharArrayListIter));
+					G_CVEO->_ChessGridMaxY = atoi(G_CVEO->_StringTools.StringToConstCharPointer(_TString));
 					_TString.clear();
 				}
 				else if (_IsBlack) {

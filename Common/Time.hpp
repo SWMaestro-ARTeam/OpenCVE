@@ -28,6 +28,8 @@
 
 #include "SystemDependency.hpp"
 
+#include "Thread.hpp"
+
 #include <stdio.h>
 
 #include <cstdio>
@@ -37,7 +39,7 @@
 
 #if defined(WINDOWS_SYS)
 #include <windows.h>
-#include <process.h>
+//#include <process.h>
 #elif defined(POSIX_SYS)
 #include <sys/resource.h>
 #include <sys/time.h>
@@ -74,6 +76,8 @@ public:
 
 class Timer {
 private:
+	Thread _Thread;
+
 	bool _IsStart;
 public:
 	void SetTimeSeconds(int Seconds);

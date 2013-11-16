@@ -61,6 +61,9 @@
     <ClCompile Include="AdapterS.cpp">
       <Filter>CVES_System\AdapterS\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\Common\Thread.cpp">
+      <Filter>Common\Thread\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BlobLabeling.hpp">
@@ -137,6 +140,9 @@
     </ClInclude>
     <ClInclude Include="AdapterS.hpp">
       <Filter>CVES_System\AdapterS\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Thread.hpp">
+      <Filter>Common\Thread\Header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -289,6 +295,15 @@
     </Filter>
     <Filter Include="CVES_System\AdapterS\Source">
       <UniqueIdentifier>{f5438f5a-f8b5-450b-adb3-7f6ec9ed659e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Thread">
+      <UniqueIdentifier>{9ae1e940-d697-486f-b6c3-f1deb2ba7b31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Thread\Source">
+      <UniqueIdentifier>{7426d2c0-16b7-4587-b0dd-ae20eb08100e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Thread\Header">
+      <UniqueIdentifier>{5d21e90c-e5b5-4fe1-80af-19c1b5734da5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

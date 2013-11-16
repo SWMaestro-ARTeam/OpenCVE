@@ -36,7 +36,8 @@ SOURCES += main.cpp \
     ../Common/Debug.cpp \
     ../Common/CodeConverter.cpp \
     ../Common/StringTools.cpp \
-    AdapterC.cpp
+    AdapterC.cpp \
+    ../Common/Thread.cpp
 
 HEADERS += \
     UCICommandSeeker.hpp \
@@ -58,7 +59,8 @@ HEADERS += \
     ../Common/CodeConverter.hpp \
     CVECDependent.hpp \
     ../Common/StringTools.hpp \
-    AdapterC.hpp
+    AdapterC.hpp \
+    ../Common/Thread.hpp
 
 MINGW_PATH = C:/System_Emulator/MinGW
 QT_PATH = C:/System_Development/Qt/5.1.1

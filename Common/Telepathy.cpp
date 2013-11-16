@@ -61,7 +61,11 @@ void *
 	while (1) 
 		G_TelepathyServer->ServerListentoClient();
 
+#if defined(WINDOWS_SYS)
 	_endthread();
+#elif defined(POSIX_SYS)
+
+#endif
 	return 0;
 }
 
@@ -85,8 +89,11 @@ void *
 		if (G_TelepathyServer->ServerReceiving(_CTlientSocket) == false)
 			break;
 	}
-
+#if defined(WINDOWS_SYS)
 	_endthread();
+#elif defined(POSIX_SYS)
+
+#endif
 	return 0;
 }
 #pragma endregion Server Threads
@@ -146,13 +153,10 @@ bool Telepathy::Server::ServerStart() {
 	}
 	else {
 		// Client 관리 Thread 시작.
+		_Thread.StartThread(Server_ConnectionThread, NULL);
+		/*
 #if defined(WINDOWS_SYS)
-//	#ifdef _AFXDLL
-		//AfxBeginThread(Server_ConnectionThread, 0);
-		/*DWORD _TThreadID = 0;
-		CreateThread(NULL, 0, Server_ConnectionThread, 0, 0, &_TThreadID);*/
 		HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, Server_ConnectionThread, NULL, 0, NULL);
-//	#endif
 #elif defined(POSIX_SYS)
 		pthread_t _TThread;
 		pthread_attr_t _TThreadAttr;
@@ -165,6 +169,7 @@ bool Telepathy::Server::ServerStart() {
 		// Create thread.
 		pthread_create(&_TThread, NULL, Server_ConnectionThread, (void *)0);
 #endif
+		*/
 		_TIsStarted = IsServerStarted = true;
 	}
 	return _TIsStarted;
@@ -217,14 +222,16 @@ void Telepathy::Server::ServerListentoClient() {
 		return ;
 
 	// Thread Begin.
+	_Thread.StartThread(Server_ReceivingThread, 
 #if defined(WINDOWS_SYS)
-	// windows용.
-//	#ifdef _AFXDLL
-	//AfxBeginThread(Server_ReceivingThread, (void *)_M_HClientSocket);
-	/*DWORD _TThreadID = 0;
-	CreateThread(NULL, 0, Server_ReceivingThread, (LPVOID)_TSocket, 0, &_TThreadID);*/
+		(LPVOID)
+#elif defined(POSIX_SYS)
+		(void *)
+#endif
+		_TSocket);
+	/*
+#if defined(WINDOWS_SYS)
 	HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, Server_ReceivingThread, (LPVOID)_TSocket, 0, NULL);
-//	#endif // _AFXDLL
 #elif defined(POSIX_SYS)
 	pthread_t _TThread;
 	pthread_attr_t _TThreadAttr;
@@ -237,6 +244,7 @@ void Telepathy::Server::ServerListentoClient() {
 	// Create thread.
 	pthread_create(&_TThread, NULL, Server_ReceivingThread, (void *)_TSocket);
 #endif
+	*/
 }
 
 // Server가 Client들에게 정보를 받는 과정.
@@ -390,7 +398,11 @@ void *
 		}
 	}
 
+#if defined(WINDOWS_SYS)
 	_endthread();
+#elif defined(POSIX_SYS)
+
+#endif
 	return 0;
 }
 #pragma endregion Client Threads
@@ -442,6 +454,8 @@ void Telepathy::Client::ClientReceiveStart() {
 	}
 	else {
 		// Client 관리 Thread 시작.
+		_Thread.StartThread(Client_ReceivingThread, NULL);
+		/*
 #if defined(WINDOWS_SYS)
 		HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, Client_ReceivingThread, NULL, 0, NULL);
 #elif defined(POSIX_SYS)
@@ -456,6 +470,7 @@ void Telepathy::Client::ClientReceiveStart() {
 		// Create thread.
 		pthread_create(&_TThread, NULL, Client_ReceivingThread, (void *)_ClientSocket);
 #endif
+		*/
 	}
 }
 

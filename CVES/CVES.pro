@@ -42,7 +42,8 @@ SOURCES += main.cpp \
     ChessObjectDetection.cpp \
     CVES.cpp \
     AdapterS.cpp \
-    ImageTransformForQT.cpp
+    ImageTransformForQT.cpp \
+    ../Common/Thread.cpp
 
 HEADERS += \
 		../Common/Time.hpp \
@@ -68,7 +69,8 @@ HEADERS += \
     ChessObjectDetection.hpp \
     CVES.hpp \
     AdapterS.hpp \
-    ImageTransformForQT.hpp
+    ImageTransformForQT.hpp \
+    ../Common/Thread.hpp
 
 FORMS += CVES.ui
 

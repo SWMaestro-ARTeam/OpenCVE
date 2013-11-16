@@ -65,6 +65,7 @@ private:
 	Telepathy::Server *_TelepathyServer; // AI Adapter 용.
 	Telepathy::Client *_TelepathyClient; // CVES 통신용.
 	Process *_ProcessConfirm;
+	Thread _Thread;
 
 	UCICommandSeeker _UCICommandSeeker;
 	InternalProtocolSeeker _InternalProtocolSeeker;

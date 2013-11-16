@@ -36,7 +36,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "CVECDependent.hpp"
+#include "CVEODependent.hpp"
 
 // 공통 상수 정의
 #include "Common.hpp"
@@ -45,7 +45,8 @@
 // Internal Protocol Seeker
 #include "InternalProtocolSeeker.hpp"
 // Process Confirm Module
-#include "Process.hpp"
+//#include "Process.hpp"
+#include "Thread.hpp"
 // String Tokenizer
 #include "StringTokenizer.hpp"
 // Telepathy Module
@@ -58,6 +59,7 @@
 class EngineO {
 private:
 	Telepathy::Client *_TelepathyClient; // CVES 통신용.
+	Thread _Thread;
 
 	InternalProtocolSeeker _InternalProtocolSeeker;
 	StringTools _StringTools;

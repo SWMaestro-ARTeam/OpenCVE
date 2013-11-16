@@ -214,6 +214,8 @@ bool EngineS::Start_Server() {
 			// Command Queue 생성.
 			CommandQueue = new queue<ServerGetInformation *>();
 			// Command 처리용 Thread를 생성.
+			_Thread.StartThread(ServerCommandQueueProcessingThread, this);
+			/*
 #if defined(WINDOWS_SYS)
 			HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, ServerCommandQueueProcessingThread, this, 0, NULL);
 #elif defined(POSIX_SYS)
@@ -228,6 +230,7 @@ bool EngineS::Start_Server() {
 			// Create thread.
 			pthread_create(&_TThread, NULL, ServerCommandQueueProcessingThread, (void *)this);
 #endif
+			*/
 			_TIsStarted = true;
 		}
 		else {
@@ -245,6 +248,9 @@ void EngineS::Stop_Server() {
 }
 
 bool EngineS::Start_ImageProcessing() {
+	_Thread.StartThread(ChessRecognitionProcessingThread, this);
+	_Thread.StartThread(HandRecognitionProcessingThread, this);
+	/*
 #if defined(WINDOWS_SYS)
 	HANDLE _TThreadHandle[2];
 	_TThreadHandle[0] = (HANDLE)_beginthreadex(NULL, 0, ChessRecognitionProcessingThread, this, 0, NULL);
@@ -265,6 +271,7 @@ bool EngineS::Start_ImageProcessing() {
 	pthread_create(&_TThread[0], NULL, ChessRecognitionProcessingThread, (void *)this);
 	pthread_create(&_TThread[1], NULL, HandRecognitionProcessingThread, (void *)this);
 #endif
+	*/
 	return true;
 }
 
@@ -1093,7 +1100,11 @@ void *
 		//Sleep(10);
 	}
 
-	//_endthread();
+#if defined(WINDOWS_SYS)
+	_endthread();
+#elif defined(POSIX_SYS)
+
+#endif
 	return 0;
 }
 #pragma endregion Server Command Queue Processing Thread
@@ -1172,7 +1183,11 @@ void *
 	_TEngine_S->_ChessRecognition->Deinitialize_ChessRecognition();
 	delete _TEngine_S->_ChessRecognition;
 
-	//_endthread();
+#if defined(WINDOWS_SYS)
+	_endthread();
+#elif defined(POSIX_SYS)
+
+#endif
 	return 0;
 }
 #pragma endregion Chess Recognition Processing Thread
@@ -1328,7 +1343,11 @@ void *
 	delete _TEngine_S->_BlobLabeling;
 	delete _TEngine_S->_CheckInChessboard;
 
-	//_endthread();
+#if defined(WINDOWS_SYS)
+	_endthread();
+#elif defined(POSIX_SYS)
+
+#endif
 	return 0;
 }
 #pragma endregion Hand Recognition Processing Thread
@@ -1381,6 +1400,11 @@ void *
 
 	_TEngine_S->Deinitialize_ImageProcessing();
 
+#if defined(WINDOWS_SYS)
+	_endthread();
+#elif defined(POSIX_SYS)
+
+#endif
 	return 0;
 }
 #pragma endregion CVEC Processing Thread
@@ -1406,6 +1430,8 @@ bool EngineS::IsAllInitialize() {
 
 void EngineS::EngineS_Start() {
 	Sleep(100);
+	_Thread.StartThread(CVESProcessingThread, this);
+	/*
 #if defined(WINDOWS_SYS)
 	HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, CVESProcessingThread, this, 0, NULL);
 #elif defined(POSIX_SYS)
@@ -1420,6 +1446,7 @@ void EngineS::EngineS_Start() {
 	// Create thread.
 	pthread_create(&_TThread, NULL, CVESProcessingThread, (void *)this);
 #endif
+	*/
 }
 
 void EngineS::EngineS_Destroy() {

@@ -131,7 +131,10 @@ void Timer::SetTimeMicroSeconds(int MicroSeconds) {
 
 void Timer::Start() {
 	_IsStart = true;
+	_Thread.StartThread(TimerProcessingThread, this);
+	/*
 	HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, TimerProcessingThread, this, 0, NULL);
+	*/
 }
 
 void Timer::End() {
@@ -157,5 +160,11 @@ void *
 	while (_TTimer->_IsStart) {
 		//if ()
 	}
+
+#if defined(WINDOWS_SYS)
+	_endthread();
+#elif defined(POSIX_SYS)
+
+#endif
 	return 0;
 }
