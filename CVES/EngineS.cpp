@@ -1173,6 +1173,9 @@ void *
 				cvCopy(_TChessBoardOriginImage, _TEngine_S->_DetectionResultOnlyImage);
 				_TEngine_S->_DetectionResultOnlyImageProtectMutex.unlock();
 
+				// 체스판이 디텍션됬을 때는 색상을 초록색으로 변경한다
+				_TEngine_S->_ROIRectColour = cvScalar(0,255);
+
 				// 썼던 Image를 Release한다.
 				// Queue로 받아온 _TChessBoardOriginImage의 경우, 보내준 쪽(Go_ImageProcessing)이 아니라, 여기서 Release를 해야 함.
 				cvReleaseImage(&_TChessBoardOriginImage);
@@ -1265,6 +1268,7 @@ void *
 //#	endif
 //#endif
 							_TEngine_S->_SubCheck = true;
+							_TEngine_S->_ROIRectColour = cvScalar(0,255,255);
 						}
 						// debug
 					}
@@ -1308,9 +1312,11 @@ void *
 						if (_TEngine_S->_CheckInChessboard->Check_InChessboard(_TEngine_S->_ImageSkin, _TEngine_S->_CrossPoint)) {
 							// img_Skin은 손 추정물체만 남긴 이미지.
 							_TEngine_S->_InHandCheck = true;
+							_TEngine_S->_ROIRectColour = cvScalar(0,255,255);
 						}
 						else if(_TEngine_S->_InHandCheck == true) {
 							// Evauluation 실행부
+
 							_TEngine_S->Evaluation();
 						}
 
