@@ -59,6 +59,8 @@ ChessGame::ChessGame() {
 
 	_TempMove._Movement = new char[32];
 	memset(_TempMove._Movement, NULL, sizeof(_TempMove._Movement));
+
+	_error_move.flag = false;
 }
 
 ChessGame::~ChessGame() {
@@ -214,6 +216,8 @@ void ChessGame::Moving_Castling(CvPoint Moving_Input[]){
 		}
 	}
 
+	_Turn = !_Turn;
+
 	strcpy(_RecentMove, _TempMove._Movement);
 	_Chess_Movement.push(_TempMove);
 }
@@ -352,6 +356,7 @@ void ChessGame::Moving_Enpassant(CvPoint Moving_Input[]) {
 			return;
 		}
 	}
+	_Turn = !_Turn;
 
 	strcpy(_RecentMove, _TempMove._Movement);
 	_Chess_Movement.push(_TempMove);
@@ -380,12 +385,24 @@ void ChessGame::Moving_Default(CvPoint Moving_Input[]) {
 				if (_TValue1 == W_Pawn && Moving_Input[1].y == 7)
 					_Board[Moving_Input[1].x][Moving_Input[1].y] = W_Queen;
 
+				if(_TValue1 == W_Pawn && Moving_Input[1].y == 7)
+					_Board[Moving_Input[1].x][Moving_Input[1].y] = W_Queen;
+
 				Make_UCICoordinate(Moving_Input[0], Moving_Input[1]);
 				_BeforeMove.Piece = _TValue1;
 				_BeforeMove.position = Moving_Input[1];
+
+				_Turn = !_Turn;
 			}
-			else {
-				printf("error! return (%d, %d) -> (%d, %d)", Moving_Input[1].x, Moving_Input[1].y, Moving_Input[0].x, Moving_Input[0].y);
+			else{
+
+				//////////////////////////////////////////////////////////////////////////
+				// 체스룰에 반하는 무브가 들어왔을때
+
+				_error_move.flag = true;
+				_error_move.before = Moving_Input[1];
+				_error_move.after = Moving_Input[0];
+				
 				return;
 			}
 		}
@@ -400,17 +417,32 @@ void ChessGame::Moving_Default(CvPoint Moving_Input[]) {
 				Make_UCICoordinate(Moving_Input[1], Moving_Input[0]);
 				_BeforeMove.Piece = _TValue2;
 				_BeforeMove.position = Moving_Input[0];
+
+				_Turn = !_Turn;
 			}
-			else {
-				printf("error! return (%d, %d) -> (%d, %d)", Moving_Input[0].x, Moving_Input[0].y, Moving_Input[1].x, Moving_Input[1].y);
+			else{
+
+				_error_move.flag = true;
+				_error_move.before = Moving_Input[0];
+				_error_move.after = Moving_Input[1];
+				
 				return;
 			}
 		}
-		else {
-			//자신의 턴이 아닐때 체스말을 움직임.
-			strcpy(_TempMove._Movement, "Invalid");
-			// 턴을 안옮기기 위해서 반전시킴
-			_Turn = !_Turn;
+		else{
+			//////////////////////////////////////////////////////////////////////////
+			// 현재 턴에 맞는 말이 아닌 다른 말을 움직였을 경우
+
+			if(_TValue1 == Ground){
+				_error_move.flag = true;
+				_error_move.before = Moving_Input[0];
+				_error_move.after = Moving_Input[1];
+			}
+			else if(_TValue2 == Ground){
+				_error_move.flag = true;
+				_error_move.before = Moving_Input[1];
+				_error_move.after = Moving_Input[0];
+			}
 		}
 	}
 	else if (_Turn == BLACK_TURN) {
@@ -428,9 +460,13 @@ void ChessGame::Moving_Default(CvPoint Moving_Input[]) {
 				Make_UCICoordinate(Moving_Input[0], Moving_Input[1]);
 				_BeforeMove.Piece = _TValue1;
 				_BeforeMove.position = Moving_Input[1];
+
+				_Turn = !_Turn;
 			}
 			else {
-				printf("error! return (%d, %d) -> (%d, %d)", Moving_Input[1].x, Moving_Input[1].y, Moving_Input[0].x, Moving_Input[0].y);
+				_error_move.flag = true;
+				_error_move.before = Moving_Input[1];
+				_error_move.after = Moving_Input[0];
 				return;
 			}
 		}
@@ -445,17 +481,28 @@ void ChessGame::Moving_Default(CvPoint Moving_Input[]) {
 				Make_UCICoordinate(Moving_Input[1], Moving_Input[0]);
 				_BeforeMove.Piece = _TValue2;
 				_BeforeMove.position = Moving_Input[0];
+
+				_Turn = !_Turn;
 			}
 			else {
-				printf("error! return (%d, %d) -> (%d, %d)", Moving_Input[0].x, Moving_Input[0].y, Moving_Input[1].x, Moving_Input[1].y);
+				_error_move.flag = true;
+				_error_move.before = Moving_Input[0];
+				_error_move.after = Moving_Input[1];
 				return;
 			}
 		}
 		else {
-			//자신의 턴이 아닐때 체스말을 움직임.
-			strcpy(_TempMove._Movement, "Invalid");
-			// 턴을 안옮기기 위해서 반전시킴
-			_Turn = !_Turn;
+			// 자신의 턴이 아닐때 체스말을 움직임.
+			if(_TValue1 == Ground){
+				_error_move.flag = true;
+				_error_move.before = Moving_Input[0];
+				_error_move.after = Moving_Input[1];
+			}
+			else if(_TValue2 == Ground){
+				_error_move.flag = true;
+				_error_move.before = Moving_Input[1];
+				_error_move.after = Moving_Input[0];
+			}
 		}
 	}
 	memset(_RecentMove, NULL, sizeof(_RecentMove));
@@ -612,6 +659,15 @@ void ChessGame::Show_ChessImage() {
 	cvShowImage("ChessGame", tempgame_board);
 #endif
 	cvReleaseImage(&tempgame_board);
+}
+
+void ChessGame::check_return(CvPoint move_input[]){
+	if(move_input[0].x == _error_move.after.x && move_input[0].y == _error_move.after.y && move_input[1].x == _error_move.before.x && move_input[1].y == _error_move.before.y){
+		_error_move.flag = false;
+	}
+	else if(move_input[0].x == _error_move.before.x && move_input[0].y == _error_move.before.y && move_input[1].x == _error_move.after.x && move_input[1].y == _error_move.after.y){
+		_error_move.flag = false;
+	}
 }
 
 string ChessGame::Get_RecentMove() {
