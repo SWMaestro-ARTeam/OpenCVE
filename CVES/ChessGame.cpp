@@ -661,13 +661,6 @@ bool ChessGame::Chess_process(CvPoint Input[], int MOVE_MODE) {
 		break;
 	}
 
-<<<<<<< HEAD
-	//_Turn = !_Turn;
-=======
-	//
-	//_Turn = !_Turn;
-
->>>>>>> origin/CVES_NewEngine_Extended
 	return !_Turn;
 }
 

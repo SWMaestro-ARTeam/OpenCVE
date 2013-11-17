@@ -507,10 +507,10 @@ void EngineS::Sub_image(IplImage *Source1, IplImage *Source2, IplImage *Destinat
 	// 그림자 보정을 위한 Lab 색상계 변환.
 	IplImage *Lab_src1 = cvCreateImage(cvGetSize(Source1), IPL_DEPTH_8U, 3);
 	IplImage *Lab_src2 = cvCreateImage(cvGetSize(Source1), IPL_DEPTH_8U, 3);
-	/*cvCvtColor(src1, Lab_src1, CV_BGR2Lab);
-	cvCvtColor(src2, Lab_src2, CV_BGR2Lab);*/
-	cvCopy(Source1, Lab_src1); // 기존 RGB로 테스트.
-	cvCopy(Source2, Lab_src2);
+	cvCvtColor(Source1, Lab_src1, CV_BGR2Lab);
+	cvCvtColor(Source2, Lab_src2, CV_BGR2Lab);
+	//cvCopy(Source1, Lab_src1); // 기존 RGB로 테스트.
+	//cvCopy(Source2, Lab_src2);
 
 	// 차영상 연산. 각 R,G,B값에 SUB_THRESHOLD를 적용하여 binary image 생성.
 	for (register int i = 0; i < Source1->width; i++) {
@@ -520,12 +520,12 @@ void EngineS::Sub_image(IplImage *Source1, IplImage *Source2, IplImage *Destinat
 			unsigned char SUB_a = abs((unsigned char)Lab_src1->imageData[(i * 3) + (j * Lab_src1->widthStep) + 1] - (unsigned char)Lab_src2->imageData[(i * 3) + (j * Lab_src2->widthStep) + 1]);
 			unsigned char SUB_b = abs((unsigned char)Lab_src1->imageData[(i * 3) + (j * Lab_src1->widthStep) + 2] - (unsigned char)Lab_src2->imageData[(i * 3) + (j * Lab_src2->widthStep) + 2]);
 
-			/*if ((SUB_L > SUB_LabTHRESHOLD*5) && (SUB_a > SUB_LabTHRESHOLD || SUB_b > SUB_LabTHRESHOLD)) {
-				dst->imageData[i + (j * dst->widthStep)] = (unsigned char)255;
-			}*/
-			if (SUB_L > SUB_THRESHOLD || SUB_a > SUB_THRESHOLD || SUB_b > SUB_THRESHOLD) {
+			if ((SUB_L > SUB_LabTHRESHOLD*5) && (SUB_a > SUB_LabTHRESHOLD || SUB_b > SUB_LabTHRESHOLD)) {
 				Destination->imageData[i + (j * Destination->widthStep)] = (unsigned char)255;
 			}
+			/*if (SUB_L > SUB_THRESHOLD || SUB_a > SUB_THRESHOLD || SUB_b > SUB_THRESHOLD) {
+				Destination->imageData[i + (j * Destination->widthStep)] = (unsigned char)255;
+			}*/
 		}
 	}
 
@@ -564,9 +564,8 @@ void EngineS::See() {
 	bool _IsNoReleaseHandDetection = false;
 
 	_CamOriginImage = cvQueryFrame(_Cam);
-
-	if (_CamOriginImage != NULL && (_CamOriginImage->width >= _Resolution_Width
-		&& _CamOriginImage->height >= _Resolution_Height)) {	
+	if (_CamOriginImage->width >= _Resolution_Width
+		&& _CamOriginImage->height >= _Resolution_Height) {	
 		cvFlip(_CamOriginImage, _CamOriginImage, FLIP_MODE);
 		//cvCvtColor(_CamOriginalImage, _CamHSV, CV_BGR2HSV);
 
@@ -651,7 +650,8 @@ void EngineS::Evaluation() {
 		_IsTrun = _ChessGame->Chess_process(out, predicted_mode);
 
 		_DetectionResultOnlyImageProtectMutex.lock();
-		if(_ChessGame->Check_InvalidMove(_DetectionResultOnlyImage, _CrossPoint, out)){
+		// Check_InvalidMove가 false일 때는 정상움직임, Check_InvalildMove가 true일때는 InvalidMove
+		if(_ChessGame->Check_InvalidMove(_DetectionResultOnlyImage, _CrossPoint, out) == false){
 			string _TString = string("Move ").append(string(_ChessGame->Get_RecentMove()));
 
 			// Game을 하고 있는 Client를 검색한다.
@@ -670,6 +670,7 @@ void EngineS::Evaluation() {
 			}
 		}
 		_DetectionResultOnlyImageProtectMutex.unlock();
+
 #if defined(DEBUG_MODE)
 		//uci에 맞춰 return하는 부분 현재 printf로 출력
 		_ChessGame->Show_ChessImage();
@@ -967,7 +968,7 @@ void EngineS::Verdict() {
 
 #pragma region Callbacks
 void EngineS::ServerReceivedCallback(char *Buffer, SOCKET ClientSocket) {
-	Sleep(100);
+	//Sleep(100);
 	// using mutex.
 	//G_EngineS->_QueueProtectMutex.lock();
 	ServerGetInformation *_TServerGetInformation = new ServerGetInformation;
@@ -1164,6 +1165,11 @@ void *
 				// Cross Point를 찾는다.
 				_TEngine_S->_ChessRecognition->Find_ChessPoint(_TChessBoardOriginImage, &_TEngine_S->_CrossPoint);
 
+				if(_TEngine_S->_CrossPoint.size() == 81){
+					// 체스판이 디텍션됬을 때는 색상을 초록색으로 변경한다
+					_TEngine_S->_ROIRectColour = cvScalar(0,255);
+				}
+
 				// ROI를 원래대로 돌려 놓는다.
 				cvResetImageROI(_TChessBoardOriginImage);
 
@@ -1175,9 +1181,6 @@ void *
 				cvZero(_TEngine_S->_DetectionResultOnlyImage);
 				cvCopy(_TChessBoardOriginImage, _TEngine_S->_DetectionResultOnlyImage);
 				_TEngine_S->_DetectionResultOnlyImageProtectMutex.unlock();
-
-				// 체스판이 디텍션됬을 때는 색상을 초록색으로 변경한다
-				_TEngine_S->_ROIRectColour = cvScalar(0,255);
 
 				// 썼던 Image를 Release한다.
 				// Queue로 받아온 _TChessBoardOriginImage의 경우, 보내준 쪽(Go_ImageProcessing)이 아니라, 여기서 Release를 해야 함.
@@ -1287,6 +1290,8 @@ void *
 						// 오브젝트 디텍션에 사용되는 차영상 연산 수행.
 						_TEngine_S->Sub_image(_TEngine_S->_PrevImage, _THandDetectionImage, _TEngine_S->_ImageSkin);
 
+
+
 						// 차영상 결과를 이미지 처리에 사용되는 이미지로 색 부여.
 						/*_TEngine_S->Compose_diffImage(_THandDetectionImage, _TEngine_S->_ImageSkin, cvScalar(0, 255, 255));*/
 
@@ -1306,9 +1311,9 @@ void *
 						//_ChessRecognition.drawPoint(_ImageChess, _CrossPoint);
 						cvDilate(_TEngine_S->_ImageSkin, _TEngine_S->_ImageSkin, 0, 5);
 //#if !defined(USING_QT)
-//#	if defined(DEBUG_MODE)
-//						cvShowImage("skin", _TEngine_S->_ImageSkin);
-//#	endif
+#	if defined(DEBUG_MODE)
+						cvShowImage("skin", _TEngine_S->_ImageSkin);
+#	endif
 //#endif
 
 						// 체스보드 안으로 손이 들어왔는지를 확인
@@ -1419,13 +1424,14 @@ void *
 	}
 
 	_TEngine_S->Deinitialize_ImageProcessing();
-	// 가장 마지막으로, Engine이 End가 됨을 알림.
-	_TEngine_S->EngineEnd = true;
+
 #if defined(WINDOWS_SYS)
 	_endthread();
 #elif defined(POSIX_SYS)
 
 #endif
+	// 가장 마지막으로, Engine이 End가 됨을 알림.
+	_TEngine_S->EngineEnd = true;
 	return 0;
 }
 #pragma endregion CVEC Processing Thread

@@ -436,7 +436,7 @@ void ChessRecognition::Find_ChessPoint(IplImage *Source, vector<ChessPoint> *Poi
 				copy(_CP.begin(), _CP.end(), back_inserter(*Point));
 				_Vec_ProtectionMutex.unlock();
 				// 보정으로 인한 문제가 발생하여 잠시 보류.
-				//Refine_CrossPoint(point); 
+				//Refine_CrossPoint(point);
 #if !defined(USING_QT)
 				DrawPoints(Source, *Point);
 #endif
