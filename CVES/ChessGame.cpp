@@ -714,13 +714,18 @@ void ChessGame::Show_ChessImage() {
 	cvReleaseImage(&tempgame_board);
 }
 
-void ChessGame::check_return(CvPoint move_input[]){
+bool ChessGame::check_return( CvPoint move_input[] )
+{
 	if(move_input[0].x == _error_move.after.x && move_input[0].y == _error_move.after.y && move_input[1].x == _error_move.before.x && move_input[1].y == _error_move.before.y){
 		_error_move.flag = false;
+		return true;
 	}
 	else if(move_input[0].x == _error_move.before.x && move_input[0].y == _error_move.before.y && move_input[1].x == _error_move.after.x && move_input[1].y == _error_move.after.y){
 		_error_move.flag = false;
+		return true;
 	}
+
+	return false;
 }
 
 string ChessGame::Get_RecentMove() {
@@ -778,10 +783,13 @@ bool ChessGame::Check_InvalidMove( IplImage *Source, vector<ChessPoint> _CP, CvP
 {
 	static bool _first_check = false;	// error move가 해당 함수에 처음으로 진입하였는지를 확인
 	if(_error_move.flag == true){
-		Draw_InvalidMove(Source, _CP, _error_move, ROI_X, ROI_Y);
+		//Draw_InvalidMove(Source, _CP, _error_move, ROI_X, ROI_Y);
 
-		if(_first_check == true)
-			check_return(_out);
+		if(_first_check == true){
+			if(check_return(_out) == true){
+				_first_check = false;
+			}
+		}
 		else
 		{
 			_first_check = true;
@@ -793,12 +801,12 @@ bool ChessGame::Check_InvalidMove( IplImage *Source, vector<ChessPoint> _CP, CvP
 	return false;
 }
 
-void ChessGame::Draw_InvalidMove( IplImage *Source, vector<ChessPoint> _CP, error_move _InvalidMove, int ROI_X, int ROI_Y )
+void ChessGame::Draw_InvalidMove( IplImage *Source, vector<ChessPoint> _CP, int ROI_X, int ROI_Y )
 {
 	CvPoint p_before, p_after;
 	CvPoint CP_before, CP_after;
-	p_after = _InvalidMove.after;
-	p_before = _InvalidMove.before;
+	p_after = _error_move.after;
+	p_before = _error_move.before;
 
 	bool after_complete, before_complete;
 	after_complete = before_complete = false;
@@ -824,6 +832,11 @@ void ChessGame::Draw_InvalidMove( IplImage *Source, vector<ChessPoint> _CP, erro
 #if defined(DEBUG_MODE)
 	cvShowImage("source", Source);
 #endif
+}
+
+bool ChessGame::Return_errorFlag() /* 최근 움직임이 Invalild move라면 return true*/
+{
+	return _error_move.flag;
 }
 
 #pragma endregion Public Functions

@@ -649,7 +649,6 @@ void EngineS::Evaluation() {
 		// Out 결과로, Turn을 출력한다.
 		_IsTrun = _ChessGame->Chess_process(out, predicted_mode);
 
-		_DetectionResultOnlyImageProtectMutex.lock();
 		// Check_InvalidMove가 false일 때는 정상움직임, Check_InvalildMove가 true일때는 InvalidMove
 		if(_ChessGame->Check_InvalidMove(_DetectionResultOnlyImage, _CrossPoint, out, 100, 20) == false){
 			string _TString = string("Move ").append(string(_ChessGame->Get_RecentMove()));
@@ -669,7 +668,6 @@ void EngineS::Evaluation() {
 				}
 			}
 		}
-		_DetectionResultOnlyImageProtectMutex.unlock();
 
 #if defined(DEBUG_MODE)
 		//uci에 맞춰 return하는 부분 현재 printf로 출력
@@ -688,6 +686,10 @@ void EngineS::DisplayInfomation() {
 			(_ChessRecognitionProcessingFrames > _HandRecognitionProcessingFrames)
 			? _ChessRecognitionProcessingFrames : _HandRecognitionProcessingFrames
 			, _ROIRectColour);
+
+		if(_ChessGame->Return_errorFlag() == true){
+			_ChessGame->Draw_InvalidMove(_DetectionResultOnlyImage, _CrossPoint, 100, 20);
+		}
 	}
 #if !defined(USING_QT)
 	// 화면을 표시한다.
