@@ -96,8 +96,9 @@ private:
 	// 기본 이동 체스룰
 	bool Rule_DefaultMove(CvPoint before, CvPoint after);
 
-	void cvQuiver(IplImage *Image,int x,int y,int u,int v,CvScalar Color,int Size,int Thickness); // 체스 화살표 그리기
-	void Draw_InvalidMove(IplImage *Source, vector<ChessPoint> _CP, error_move _InvalidMove); // 이미지에 잘못된 움직임을 정정하라는 UI를 그림
+	void cvQuiver(IplImage *Image, CvPoint pt1, CvPoint pt2,CvScalar Color,int Size,int Thickness); // 체스 화살표 그리기
+	void drawArrow(IplImage *img, CvPoint pStart, CvPoint pEnd, int len, int alpha, CvScalar color, int thickness, int lineType); // 체스 화살표 그리기
+	void Draw_InvalidMove(IplImage *Source, vector<ChessPoint> _CP, error_move _InvalidMove, int ROI_X, int ROI_Y); // 이미지에 잘못된 움직임을 정정하라는 UI를 그림
 	// 
 	void check_return(CvPoint move_input[]);
 public:
@@ -109,7 +110,7 @@ public:
 	bool Chess_process(CvPoint input1[], int MOVE_MODE);
 	void Show_ChessBoard(); // cmd에 체스판을 그림.
 	void Show_ChessImage(); // chess UI를 Draw
-	bool Check_InvalidMove( IplImage *Source, vector<ChessPoint> _CP, CvPoint _out[] );
+	bool Check_InvalidMove( IplImage *Source, vector<ChessPoint> _CP, CvPoint _out[], int ROI_X, int ROI_Y );
 	string Get_RecentMove(); // list에 저장된 가장 최근 movement를 return; Dequeue와 같음.
 	int Read_Mode();
 };

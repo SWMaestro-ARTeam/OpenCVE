@@ -651,7 +651,7 @@ void EngineS::Evaluation() {
 
 		_DetectionResultOnlyImageProtectMutex.lock();
 		// Check_InvalidMove가 false일 때는 정상움직임, Check_InvalildMove가 true일때는 InvalidMove
-		if(_ChessGame->Check_InvalidMove(_DetectionResultOnlyImage, _CrossPoint, out) == false){
+		if(_ChessGame->Check_InvalidMove(_DetectionResultOnlyImage, _CrossPoint, out, 100, 20) == false){
 			string _TString = string("Move ").append(string(_ChessGame->Get_RecentMove()));
 
 			// Game을 하고 있는 Client를 검색한다.
@@ -1132,6 +1132,7 @@ void *
 #endif
 	Param) {
 	EngineS *_TEngine_S = (EngineS *)Param;
+	bool first_recognition = false;
 
 	// Chess 인식을 위한 Class 초기화.
 	_TEngine_S->_ChessRecognition = new ChessRecognition();
@@ -1165,9 +1166,10 @@ void *
 				// Cross Point를 찾는다.
 				_TEngine_S->_ChessRecognition->Find_ChessPoint(_TChessBoardOriginImage, &_TEngine_S->_CrossPoint);
 
-				if(_TEngine_S->_CrossPoint.size() == 81){
+				if(_TEngine_S->_CrossPoint.size() == 81 && first_recognition == false){
 					// 체스판이 디텍션됬을 때는 색상을 초록색으로 변경한다
 					_TEngine_S->_ROIRectColour = cvScalar(0,255);
+					first_recognition = true;
 				}
 
 				// ROI를 원래대로 돌려 놓는다.
@@ -1281,34 +1283,27 @@ void *
 					else {
 						// 추후 해야할 작업 : 빠질때 어떻게 작업할 것인가.
 						// 손이 들어옴 판정 이후 작업.
-
-//#if !defined(USING_QT)
-//#	if defined(DEBUG_MODE)
-//						cvShowImage("유레카1", _THandDetectionImage);
-//#	endif
-//#endif
 						// 오브젝트 디텍션에 사용되는 차영상 연산 수행.
 						_TEngine_S->Sub_image(_TEngine_S->_PrevImage, _THandDetectionImage, _TEngine_S->_ImageSkin);
-
-
 
 						// 차영상 결과를 이미지 처리에 사용되는 이미지로 색 부여.
 						/*_TEngine_S->Compose_diffImage(_THandDetectionImage, _TEngine_S->_ImageSkin, cvScalar(0, 255, 255));*/
 
 						// BlobLabeling
-						_TEngine_S->_BlobLabeling->SetParam(_TEngine_S->_ImageSkin, 1);
-						_TEngine_S->_BlobLabeling->DoLabeling();
-						_TEngine_S->_BlobLabeling->DrawLabel(_THandDetectionImage, cvScalar(255,0,255));
+						//_TEngine_S->_BlobLabeling->SetParam(_TEngine_S->_ImageSkin, 1);
+						//_TEngine_S->_BlobLabeling->DoLabeling();
+						//_TEngine_S->_BlobLabeling->DrawLabel(_THandDetectionImage, cvScalar(255,0,255));
 
 						// 손판정
 						// 손 정의 - 차영상 결과 디텍션된 오브젝트.
 						//          오브젝트 중 window 경계에 있는 물체
-						_TEngine_S->_BlobLabeling->GetSideBlob(_TEngine_S->_ImageSkin, &_TEngine_S->_PieceIndex, _TEngine_S->_OtherBinaryImage); // 손이 아니라고 판정되는 오브젝트를 이진 영상에서 제거
+						//_TEngine_S->_BlobLabeling->GetSideBlob(_TEngine_S->_ImageSkin, &_TEngine_S->_PieceIndex, _TEngine_S->_OtherBinaryImage); // 손이 아니라고 판정되는 오브젝트를 이진 영상에서 제거
 #if defined(DEBUG_MODE)
-						_TEngine_S->Compose_diffImage(_THandDetectionImage, _TEngine_S->_ImageSkin, cvScalar(100, 100, 255)); // 손만 남은 이진 영상으로 원본 영상에 색을 부여
+						//_TEngine_S->Compose_diffImage(_THandDetectionImage, _TEngine_S->_ImageSkin, cvScalar(100, 100, 255)); // 손만 남은 이진 영상으로 원본 영상에 색을 부여
 #endif
 						// 이미지 처리에 사용되는 이미지에 Chessboard recognition 결과로 연산된 좌표를 표기
 						//_ChessRecognition.drawPoint(_ImageChess, _CrossPoint);
+						_TEngine_S->_HandRecognition->Detect_SkinColour(_THandDetectionImage, _TEngine_S->_ImageSkin);
 						cvDilate(_TEngine_S->_ImageSkin, _TEngine_S->_ImageSkin, 0, 5);
 //#if !defined(USING_QT)
 #	if defined(DEBUG_MODE)
@@ -1326,6 +1321,7 @@ void *
 							// Evauluation 실행부
 
 							_TEngine_S->Evaluation();
+							_TEngine_S->_ROIRectColour = cvScalar(0,255);
 						}
 
 //#if !defined(USING_QT)

@@ -591,49 +591,48 @@ bool ChessGame::Rule_DefaultMove(CvPoint Before, CvPoint After) {
 	return false;
 }
 
-void ChessGame::cvQuiver(IplImage *Image,int x,int y,int u,int v,CvScalar Color,int Size,int Thickness){
-	CvPoint pt1,pt2;
-	double Theta;
-	double PI = 3.1416;
-
-
-	if(u==0)
-		Theta=PI/2;
-	else
-		Theta=atan2(double(v),(double)(u));
-
-
-	pt1.x=x;
-	pt1.y=y;
-
-	pt2.x=x+u;
-	pt2.y=y+v;
-
-	cvDrawLine(Image,pt1,pt2,Color,Thickness,8);  //Draw Line
-
-
-	Size=(int)(Size*0.707);
-
-
-
-	if(Theta==PI/2 && pt1.y > pt2.y){
-		pt1.x=(int)(Size*cos(Theta)-Size*sin(Theta)+pt2.x);
-		pt1.y=(int)(Size*sin(Theta)+Size*cos(Theta)+pt2.y);
-		cvDrawLine(Image,pt1,pt2,Color,Thickness,8);  //Draw Line
-
-		pt1.x=(int)(Size*cos(Theta)+Size*sin(Theta)+pt2.x);
-		pt1.y=(int)(Size*sin(Theta)-Size*cos(Theta)+pt2.y);
-		cvDrawLine(Image,pt1,pt2,Color,Thickness,8);  //Draw Line
-	}
-	else{
-		pt1.x=(int)(-Size*cos(Theta)-Size*sin(Theta)+pt2.x);
-		pt1.y=(int)(-Size*sin(Theta)+Size*cos(Theta)+pt2.y);
-		cvDrawLine(Image,pt1,pt2,Color,Thickness,8);  //Draw Line
-
-		pt1.x=(int)(-Size*cos(Theta)+Size*sin(Theta)+pt2.x);
-		pt1.y=(int)(-Size*sin(Theta)-Size*cos(Theta)+pt2.y);
-		cvDrawLine(Image,pt1,pt2,Color,Thickness,8);  //Draw Line
-	}
+//void ChessGame::cvQuiver(IplImage *Image, CvPoint pt1, CvPoint pt2, CvScalar Color,int Size,int Thickness){
+//	double Theta;
+//	double PI = 3.1416;
+//	if(pt2.x == 0)
+//		Theta = PI/2;
+//	else
+//	{
+//		Theta = atan2(double(pt2.y - pt1.y), (double)(pt2.x - pt1.x));
+//	}
+//	cvLine(Image, pt1, pt2, Color, Thickness, 8);
+//	Size = (int)(Size*0.707);
+//	double arrow_length = sqrt(pow((float)(pt1.y - pt2.y),2) + pow((float)(pt1.x - pt2.x), 2));
+//
+//	if(Theta = PI/2 && pt1.y > pt2.y){
+//		pt1.x = (int)(Size*cos(Theta) - Size*sin(Theta) + pt2.x);
+//		pt1.y = (int)(Size*sin(Theta) + Size*cos(Theta) + pt2.y);
+//		cvLine(Image, pt1, pt2, Color, Thickness, 8);
+//		pt1.x = (int)(Size*cos(Theta) + Size*sin(Theta) + pt2.x);
+//		pt1.y = (int)(Size*sin(Theta) - Size*cos(Theta) + pt2.y);
+//		cvLine(Image, pt1, pt2, Color, Thickness, 8);
+//	}
+//	else{
+//		pt1.x = (int)(-Size*cos(Theta) - Size*sin(Theta) + pt2.x);
+//		pt1.y = (int)(-Size*sin(Theta) + Size*cos(Theta) + pt2.y);
+//		cvLine(Image, pt1, pt2, Color, Thickness, 8);
+//		pt1.x = (int)(-Size*cos(Theta) + Size*sin(Theta) + pt2.x);
+//		pt1.y = (int)(-Size*sin(Theta) - Size*cos(Theta) + pt2.y);
+//		cvLine(Image, pt1, pt2, Color, Thickness, 8);
+//	}
+//}
+void ChessGame::drawArrow(IplImage *img, CvPoint pStart, CvPoint pEnd, int len, int alpha, CvScalar color, int thickness, int lineType)
+{    
+	const double PI = 3.1415926;    
+	CvPoint arrow;
+	double angle = atan2((double)(pStart.y - pEnd.y), (double)(pStart.x - pEnd.x));  
+	cvLine(img, pStart, pEnd, color, thickness, lineType);
+	arrow.x = pEnd.x + len * cos(angle + PI * alpha / 180);     
+	arrow.y = pEnd.y + len * sin(angle + PI * alpha / 180);  
+	cvLine(img, pEnd, arrow, color, thickness, lineType);   
+	arrow.x = pEnd.x + len * cos(angle - PI * alpha / 180);     
+	arrow.y = pEnd.y + len * sin(angle - PI * alpha / 180);    
+	cvLine(img, pEnd, arrow, color, thickness, lineType);
 }
 #pragma endregion Private Functions
 
@@ -775,17 +774,17 @@ int ChessGame::Read_Mode() {
 	}
 }
 
-bool ChessGame::Check_InvalidMove( IplImage *Source, vector<ChessPoint> _CP, CvPoint _out[] )
+bool ChessGame::Check_InvalidMove( IplImage *Source, vector<ChessPoint> _CP, CvPoint _out[], int ROI_X, int ROI_Y )
 {
 	static bool _first_check = false;	// error move가 해당 함수에 처음으로 진입하였는지를 확인
 	if(_error_move.flag == true){
-		Draw_InvalidMove(Source, _CP, _error_move);
+		Draw_InvalidMove(Source, _CP, _error_move, ROI_X, ROI_Y);
 
 		if(_first_check == true)
 			check_return(_out);
 		else
 		{
-			_first_check = false;
+			_first_check = true;
 		}
 
 		return true;
@@ -794,7 +793,7 @@ bool ChessGame::Check_InvalidMove( IplImage *Source, vector<ChessPoint> _CP, CvP
 	return false;
 }
 
-void ChessGame::Draw_InvalidMove(IplImage *Source, vector<ChessPoint> _CP, error_move _InvalidMove)
+void ChessGame::Draw_InvalidMove( IplImage *Source, vector<ChessPoint> _CP, error_move _InvalidMove, int ROI_X, int ROI_Y )
 {
 	CvPoint p_before, p_after;
 	CvPoint CP_before, CP_after;
@@ -807,19 +806,24 @@ void ChessGame::Draw_InvalidMove(IplImage *Source, vector<ChessPoint> _CP, error
 		ChessPoint _temp_CP = _CP.at(i);
 
 		if(_temp_CP.Index.x == p_after.y && _temp_CP.Index.y == p_after.x){
-			CP_after = cvPoint((_temp_CP.Cordinate.x + _CP.at(i+9).Cordinate.x)/2, (_temp_CP.Cordinate.y + _CP.at(i+9).Cordinate.y)/2);
+			CP_after = cvPoint(((_temp_CP.Cordinate.x + ROI_X) + (_CP.at(i+10).Cordinate.x + ROI_X))/2, ((_temp_CP.Cordinate.y + ROI_Y) + (_CP.at(i+10).Cordinate.y + ROI_Y))/2);
 		}
 
 		if(_temp_CP.Index.x == p_before.y && _temp_CP.Index.y == p_before.x){
-			CP_before = cvPoint((_temp_CP.Cordinate.x + _CP.at(i+9).Cordinate.x)/2, (_temp_CP.Cordinate.y + _CP.at(i+9).Cordinate.y)/2);
+			CP_before = cvPoint(((_temp_CP.Cordinate.x + ROI_X) + (_CP.at(i+10).Cordinate.x + ROI_X))/2, ((_temp_CP.Cordinate.y + ROI_Y) + (_CP.at(i+10).Cordinate.y + ROI_Y))/2);
 		}
 
 		if(after_complete == true && before_complete == true)
 			break;
 	}
 
-	cvDrawCircle(Source, CP_before, 5, cvScalar(0,0,255), -1);
-	cvQuiver(Source, CP_before.x, CP_before.y, CP_after.x, CP_after.y, cvScalar(0,0,255), 3, 3);
+	cvDrawCircle(Source, CP_before, 10, cvScalar(0,0,255), 2);
+	//cvQuiver(Source, CP_before, CP_after, cvScalar(0,0,255), 3, 3);
+	drawArrow(Source, CP_before, CP_after, 10, 30, cvScalar(0,0,255), 3, 8);
+	//cvDrawLine(Source, CP_before, CP_after, cvScalar(0,0,255), 3);
+#if defined(DEBUG_MODE)
+	cvShowImage("source", Source);
+#endif
 }
 
 #pragma endregion Public Functions
