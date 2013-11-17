@@ -36,14 +36,6 @@
 
 #include <mutex>
 
-#if defined(WINDOWS_SYS)
-#include <Windows.h>
-#include <process.h>
-//#include <thread>
-#elif defined(POSIX_SYS)
-
-#endif
-
 using namespace std;
 
 class ChessRecognition {
@@ -65,14 +57,10 @@ private:
 	mutex _ChessBoardDetectionInternalImageProtectMutex;
 	mutex _Vec_ProtectionMutex;
 
-	// 점 그리기.
-	void DrawPoints(IplImage *Source, vector<ChessPoint> Point);
-	// 라인 return.
-	void Get_Line(vector<pair<float, float> > *XLines, vector<pair<float, float> > *YLines);
-	// 교차점 보정함수.
-	void Refine_CrossPoint(vector<ChessPoint> *CrossPoint);
+	void DrawPoints(IplImage *Source, vector<ChessPoint> Point); // 점 그리기.
+	void Get_Line(vector<pair<float, float> > *XLines, vector<pair<float, float> > *YLines); // 라인 return.
+	void Refine_CrossPoint(vector<ChessPoint> *CrossPoint); // 교차점 보정함수.
 
-	// Thread 함수에 대해서는 나중에 수정 하기로 함.
 	static
 #if defined(WINDOWS_SYS)
 		UINT WINAPI
@@ -104,17 +92,13 @@ private:
 		void *
 #endif
 		arg);
-	//CRITICAL_SECTION cs, vec_cs; // thread 동기화를 위한 cs
 public:
 	ChessRecognition();
 	~ChessRecognition();
 
-	// 초기화.
-	void Initialize_ChessRecognition(int Width, int Height, int Mode);
+	void Initialize_ChessRecognition(int Width, int Height, int Mode); // 초기화.
 	void Deinitialize_ChessRecognition();
-
-	// 처리용 이미지 복사.
-	void Copy_Img(IplImage *Source);
+	void Copy_Image(IplImage *Source); // 처리용 이미지 복사.
 	void Find_ChessPoint(IplImage *Source, vector<ChessPoint> *Point);
 };
 #endif

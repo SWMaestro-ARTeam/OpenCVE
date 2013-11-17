@@ -25,21 +25,22 @@
 
 #include "CheckInChessboard.hpp"
 
+#pragma region Constructor & Destructor
 CheckInChessboard::CheckInChessboard() {
 }
 
 CheckInChessboard::~CheckInChessboard() {
 }
+#pragma endregion Constructor & Destructor
 
-// 이상 없음.
+#pragma region Private Functions
 float CheckInChessboard::Get_TriangleArea(CvPoint Value_P, CvPoint Value_Q, CvPoint Value_R) {
 	// 2차원 좌표 p,q,r로 생성되는 삼각형의 넓이를 구함.
 	return (float)abs(((Value_P.x * Value_Q.y) + (Value_Q.x * Value_R.y) + (Value_R.x * Value_P.y))
 		- ((Value_P.y * Value_Q.x) + (Value_Q.y * Value_R.x) + (Value_R.y * Value_P.x))) / 2.0;
 }
 
-// 이상 없음.
-CvPoint CheckInChessboard::Get_Chessidx(CvPoint Point, vector<ChessPoint> CrossPoint) {
+CvPoint CheckInChessboard::Get_ChessIndex(CvPoint Point, vector<ChessPoint> CrossPoint) {
 	// chessboard의 교점의 index를 부여.
 	// left-top이 원점인 좌표계로 index를 부여
 	for (register int i = 0; i < CrossPoint.size() - 10; i++) {
@@ -52,8 +53,7 @@ CvPoint CheckInChessboard::Get_Chessidx(CvPoint Point, vector<ChessPoint> CrossP
 	return cvPoint(-1, -1);
 }
 
-// 이상 없음.
-CvPoint CheckInChessboard::Get_ChessboxPos(int Width, int Height, vector<ChessPoint> CrossPoint) {
+CvPoint CheckInChessboard::Get_ChessBoxPosition(int Width, int Height, vector<ChessPoint> CrossPoint) {
 	// width, height가 가리키는 픽셀이 어느 체스보드 인덱스를 가지는지를 계산하여 반환.
 	// 차영상 결과로 이진화된 이미지의 true 값을 가지는 픽셀의 좌표로 체스판의 인덱스 반환.
 	for (register int i = 0; i < 8; i++) {
@@ -70,8 +70,9 @@ CvPoint CheckInChessboard::Get_ChessboxPos(int Width, int Height, vector<ChessPo
 	//error return;
 	return cvPoint(-1,-1);
 }
+#pragma endregion Private Functions
 
-// 이상 없음.
+#pragma region Private Functions
 bool CheckInChessboard::Check_InChessboard(IplImage *Image, vector<ChessPoint> Point) {
 	// Chess_point를 통하여 binary image의 픽셀이 chess board 내부에 존재하는지를 확인.
 	// 1) 체스판 사각형의 크기를 연산하여 _TTriangleArea에 저장
@@ -118,8 +119,7 @@ bool CheckInChessboard::Check_InChessboard(IplImage *Image, vector<ChessPoint> P
 	return false;
 }
 
-// 이상 없음.
-bool CheckInChessboard::Check_imgZero(IplImage *Image) {
+bool CheckInChessboard::Check_ImageZero(IplImage *Image) {
 	// binary image에 픽셀값이 모드 0인지를 확인
 	unsigned char _TPixelValue;
 
@@ -134,8 +134,6 @@ bool CheckInChessboard::Check_imgZero(IplImage *Image) {
 		return true;
 }
 
-// 이상 없음.
-//void CheckInChessboard::Calculate_Movement(IplImage *BinaryImage, vector<ChessPoint> cross_point, CvPoint out[], float score_threshold) {
 void CheckInChessboard::Calculate_Movement(IplImage *BinaryImage, vector<ChessPoint> CrossPoint, CvPoint Result[], float ScoreThreshold) {
 	// 차영상의 결과 이미지를 이용하여 체스보드의 score를 부여.
 	// score / 면적 을 이용하여 가장 많이 변한 두 좌표를 반환.
@@ -193,13 +191,12 @@ void CheckInChessboard::Calculate_Movement(IplImage *BinaryImage, vector<ChessPo
 		}
 	}
 
-	//4개에 할당
+	// 4개에 할당.
 	for (register int i = 0; i < 4; i++) {
 		Result[i] = _TPMax[i];
 	}
 }
 
-// 이상 없음.
 void CheckInChessboard::Calculate_BoardScore(IplImage *BinaryImage, vector<ChessPoint> CrossPoint, float ScoreBox[][8]) {
 	float _TChess_Area[8][8]; // 체스 영역 저장 배열.
 
@@ -223,7 +220,7 @@ void CheckInChessboard::Calculate_BoardScore(IplImage *BinaryImage, vector<Chess
 
 			// 어느 좌표에 위치하는지 확인.
 			if (pixel_value != 0) {
-				CvPoint chessbox_pos = Get_ChessboxPos(i, j, CrossPoint);
+				CvPoint chessbox_pos = Get_ChessBoxPosition(i, j, CrossPoint);
 				if (chessbox_pos.x != -1 || chessbox_pos.y != -1)
 					ScoreBox[chessbox_pos.x][chessbox_pos.y]++;
 			}
@@ -236,3 +233,4 @@ void CheckInChessboard::Calculate_BoardScore(IplImage *BinaryImage, vector<Chess
 		}
 	}
 }
+#pragma endregion Private Functions

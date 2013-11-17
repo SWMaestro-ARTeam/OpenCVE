@@ -48,14 +48,14 @@ typedef struct __MoveFormat {
 } MoveFormat;
 
 typedef struct __BeforeMove {
-	int Piece;
-	CvPoint position;
+	int _Piece;
+	CvPoint _Position;
 } BeforeMove;
 
-typedef struct error_move{
-	bool flag;
-	CvPoint before, after;
-};
+typedef struct __ErrorMove{
+	bool _Flag;
+	CvPoint _Before, _After;
+} ErrorMove;
 
 enum {			//체스말
 	Ground, 
@@ -70,7 +70,7 @@ private:
 	bool _Turn;
 	char _RecentMove[6]; //가장 최근 움직임을 저장
 
-	error_move _error_move;
+	ErrorMove _error_move;
 	CvPoint _Before, _After;
 	CvPoint _BeforeMove_Pawn;
 	BeforeMove _BeforeMove;
@@ -83,8 +83,8 @@ private:
 	FILE *_Movement_Log;		//체스 이동경로 Log를 남길 파일포인터.
 	std::queue<MoveFormat> _Chess_Movement;
 
-	void Make_UCICoordinate(CvPoint before, CvPoint after);
-	char Mapping_UCICharacter(int position); // 글자 좌표로 매핑
+	void Make_UCICoordinate(CvPoint Before, CvPoint After);
+	char Mapping_UCICharacter(int Position); // 글자 좌표로 매핑
 
 	// MODE 판독 함수 
 
@@ -97,16 +97,16 @@ private:
 	bool Rule_DefaultMove(CvPoint before, CvPoint after);
 
 	void cvQuiver(IplImage *Image,int x,int y,int u,int v,CvScalar Color,int Size,int Thickness); // 체스 화살표 그리기
-	void Draw_InvalidMove(IplImage *Source, vector<ChessPoint> _CP, error_move _InvalidMove); // 이미지에 잘못된 움직임을 정정하라는 UI를 그림
+	void Draw_InvalidMove(IplImage *Source, vector<ChessPoint> _CP, ErrorMove _InvalidMove); // 이미지에 잘못된 움직임을 정정하라는 UI를 그림
 	// 
-	void check_return(CvPoint move_input[]);
+	void Check_Return(CvPoint move_input[]);
 public:
 	ChessGame();
 	~ChessGame();
 
 	// chess board의 말 움직임 진행 함수.
 	// MOVE_MODE : CASTLING_MOVE - 캐슬링 detect, ENPASSANT_MOVE - 앙파상 detect, other - 두 가지 말의 이동만을 체크함.
-	bool Chess_process(CvPoint input1[], int MOVE_MODE);
+	bool Chess_Process(CvPoint input1[], int MOVE_MODE);
 	void Show_ChessBoard(); // cmd에 체스판을 그림.
 	void Show_ChessImage(); // chess UI를 Draw
 	bool Check_InvalidMove( IplImage *Source, vector<ChessPoint> _CP, CvPoint _out[] );

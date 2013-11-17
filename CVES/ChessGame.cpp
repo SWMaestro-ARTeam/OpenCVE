@@ -49,8 +49,8 @@ ChessGame::ChessGame() {
 
 	_ChessBoard_Image = cvLoadImage("./Chess_UI/Chessboard.png", CV_LOAD_IMAGE_UNCHANGED);
 
-	_BeforeMove.Piece = -1;
-	_BeforeMove.position = cvPoint(-1,-1);
+	_BeforeMove._Piece = -1;
+	_BeforeMove._Position = cvPoint(-1,-1);
 
 	for(int i=0;i<8;i++){
 		_W_PawnMove[i] = false;
@@ -60,7 +60,7 @@ ChessGame::ChessGame() {
 	_TempMove._Movement = new char[32];
 	memset(_TempMove._Movement, NULL, sizeof(_TempMove._Movement));
 
-	_error_move.flag = false;
+	_error_move._Flag = false;
 }
 
 ChessGame::~ChessGame() {
@@ -125,16 +125,16 @@ void ChessGame::Moving_Castling(CvPoint Moving_Input[]){
 					_V_SWAP(_Board[_T_Ground[1].x][_T_Ground[1].y], _Board[_T_King.x][_T_King.y]);
 
 					Make_UCICoordinate(_T_King, _T_Ground[1]);
-					_BeforeMove.Piece = W_King;
-					_BeforeMove.position = _T_Ground[1];
+					_BeforeMove._Piece = W_King;
+					_BeforeMove._Position = _T_Ground[1];
 				}
 				else if (_T_Ground[0].x > _T_Ground[1].x) {
 					_V_SWAP(_Board[_T_Ground[0].x][_T_Ground[0].y], _Board[_T_King.x][_T_King.y]);
 					_V_SWAP(_Board[_T_Ground[1].x][_T_Ground[1].y], _Board[_T_Rook.x][_T_Rook.y]);
 
 					Make_UCICoordinate(_T_King, _T_Ground[0]);
-					_BeforeMove.Piece = W_King;
-					_BeforeMove.position = _T_Ground[0];
+					_BeforeMove._Piece = W_King;
+					_BeforeMove._Position = _T_Ground[0];
 				}
 			}
 			else if (_T_King.x > _T_Rook.x) {
@@ -143,16 +143,16 @@ void ChessGame::Moving_Castling(CvPoint Moving_Input[]){
 					_V_SWAP(_Board[_T_Ground[1].x][_T_Ground[1].y], _Board[_T_Rook.x][_T_Rook.y]);
 
 					Make_UCICoordinate(_T_King, _T_Ground[0]);
-					_BeforeMove.Piece = W_King;
-					_BeforeMove.position = _T_Ground[0];
+					_BeforeMove._Piece = W_King;
+					_BeforeMove._Position = _T_Ground[0];
 				}
 				else if (_T_Ground[0].x > _T_Ground[1].x) {
 					_V_SWAP(_Board[_T_Ground[0].x][_T_Ground[0].y], _Board[_T_Rook.x][_T_Rook.y]);
 					_V_SWAP(_Board[_T_Ground[1].x][_T_Ground[1].y], _Board[_T_King.x][_T_King.y]);
 
 					Make_UCICoordinate(_T_King, _T_Ground[1]);
-					_BeforeMove.Piece = W_King;
-					_BeforeMove.position = _T_Ground[1];
+					_BeforeMove._Piece = W_King;
+					_BeforeMove._Position = _T_Ground[1];
 				}
 			}
 		}
@@ -179,16 +179,16 @@ void ChessGame::Moving_Castling(CvPoint Moving_Input[]){
 					_V_SWAP(_Board[_T_Ground[1].x][_T_Ground[1].y], _Board[_T_King.x][_T_King.y]);
 
 					Make_UCICoordinate(_T_King, _T_Ground[1]);
-					_BeforeMove.Piece = W_King;
-					_BeforeMove.position = _T_Ground[1];
+					_BeforeMove._Piece = W_King;
+					_BeforeMove._Position = _T_Ground[1];
 				}
 				else if (_T_Ground[0].x > _T_Ground[1].x) {
 					_V_SWAP(_Board[_T_Ground[0].x][_T_Ground[0].y], _Board[_T_King.x][_T_King.y]);
 					_V_SWAP(_Board[_T_Ground[1].x][_T_Ground[1].y], _Board[_T_Rook.x][_T_Rook.y]);
 
 					Make_UCICoordinate(_T_King, _T_Ground[0]);
-					_BeforeMove.Piece = W_King;
-					_BeforeMove.position = _T_Ground[0];
+					_BeforeMove._Piece = W_King;
+					_BeforeMove._Position = _T_Ground[0];
 				}
 			}
 			else if (_T_King.x > _T_Rook.x) {
@@ -197,16 +197,16 @@ void ChessGame::Moving_Castling(CvPoint Moving_Input[]){
 					_V_SWAP(_Board[_T_Ground[1].x][_T_Ground[1].y], _Board[_T_Rook.x][_T_Rook.y]);
 
 					Make_UCICoordinate(_T_King, _T_Ground[0]);
-					_BeforeMove.Piece = W_King;
-					_BeforeMove.position = _T_Ground[0];
+					_BeforeMove._Piece = W_King;
+					_BeforeMove._Position = _T_Ground[0];
 				}
 				else if (_T_Ground[0].x > _T_Ground[1].x) {
 					_V_SWAP(_Board[_T_Ground[0].x][_T_Ground[0].y], _Board[_T_Rook.x][_T_Rook.y]);
 					_V_SWAP(_Board[_T_Ground[1].x][_T_Ground[1].y], _Board[_T_King.x][_T_King.y]);
 
 					Make_UCICoordinate(_T_King, _T_Ground[1]);
-					_BeforeMove.Piece = W_King;
-					_BeforeMove.position = _T_Ground[1];
+					_BeforeMove._Piece = W_King;
+					_BeforeMove._Position = _T_Ground[1];
 				}
 			}
 		}
@@ -243,7 +243,7 @@ void ChessGame::Moving_Enpassant(CvPoint Moving_Input[]) {
 	if (_Turn == WHITE_TURN) {
 		_TempMove._TurnFlag = WHITE_TURN;
 
-		if (_TValue1 == Ground && Moving_Input[0].y - 1 == _BeforeMove.position.y) {
+		if (_TValue1 == Ground && Moving_Input[0].y - 1 == _BeforeMove._Position.y) {
 			if (_TValue2 == W_Pawn) {
 				// 1. 폰이 이동할 예정인 빈공간과 현재 이동한 폰의 위치를 스왑한다
 				// 2. 나머지 하나는 다른 색 폰이므로 제거를 해주기 위해 Ground로 바꾸어준다
@@ -252,52 +252,52 @@ void ChessGame::Moving_Enpassant(CvPoint Moving_Input[]) {
 				_Board[Moving_Input[2].x][Moving_Input[2].y] = Ground;
 
 				Make_UCICoordinate(Moving_Input[1], Moving_Input[0]);
-				_BeforeMove.Piece = W_Pawn;
-				_BeforeMove.position = Moving_Input[0];
+				_BeforeMove._Piece = W_Pawn;
+				_BeforeMove._Position = Moving_Input[0];
 			}
 			else if (_TValue3 == W_Pawn) {
 				_V_SWAP(_Board[Moving_Input[0].x][Moving_Input[0].y],_Board[Moving_Input[2].x][Moving_Input[2].y]);
 				_Board[Moving_Input[1].x][Moving_Input[1].y] = Ground;
 
 				Make_UCICoordinate(Moving_Input[2], Moving_Input[0]);
-				_BeforeMove.Piece = W_Pawn;
-				_BeforeMove.position = Moving_Input[0];
+				_BeforeMove._Piece = W_Pawn;
+				_BeforeMove._Position = Moving_Input[0];
 			}
 		}
-		else if (_TValue2 == Ground && Moving_Input[1].y - 1 == _BeforeMove.position.y) {
+		else if (_TValue2 == Ground && Moving_Input[1].y - 1 == _BeforeMove._Position.y) {
 			if (_TValue1 == W_Pawn) {
 				_V_SWAP(_Board[Moving_Input[1].x][Moving_Input[1].y],_Board[Moving_Input[0].x][Moving_Input[0].y]);
 				_Board[Moving_Input[2].x][Moving_Input[2].y] = Ground;
 
 				Make_UCICoordinate(Moving_Input[0], Moving_Input[1]);
-				_BeforeMove.Piece = W_Pawn;
-				_BeforeMove.position = Moving_Input[1];
+				_BeforeMove._Piece = W_Pawn;
+				_BeforeMove._Position = Moving_Input[1];
 			}
 			else if (_TValue3 == W_Pawn) {
 				_V_SWAP(_Board[Moving_Input[1].x][Moving_Input[1].y],_Board[Moving_Input[2].x][Moving_Input[2].y]);
 				_Board[Moving_Input[0].x][Moving_Input[0].y] = Ground;
 
 				Make_UCICoordinate(Moving_Input[2], Moving_Input[1]);
-				_BeforeMove.Piece = W_Pawn;
-				_BeforeMove.position = Moving_Input[1];
+				_BeforeMove._Piece = W_Pawn;
+				_BeforeMove._Position = Moving_Input[1];
 			}
 		}
-		else if (_TValue3 == Ground && Moving_Input[2].y - 1 == _BeforeMove.position.y) {
+		else if (_TValue3 == Ground && Moving_Input[2].y - 1 == _BeforeMove._Position.y) {
 			if (_TValue1 == W_Pawn){
 				_V_SWAP(_Board[Moving_Input[2].x][Moving_Input[2].y],_Board[Moving_Input[0].x][Moving_Input[0].y]);
 				_Board[Moving_Input[1].x][Moving_Input[1].y] = Ground;
 
 				Make_UCICoordinate(Moving_Input[0], Moving_Input[2]);
-				_BeforeMove.Piece = W_Pawn;
-				_BeforeMove.position = Moving_Input[2];
+				_BeforeMove._Piece = W_Pawn;
+				_BeforeMove._Position = Moving_Input[2];
 			}
 			else if (_TValue2 == W_Pawn) {
 				_V_SWAP(_Board[Moving_Input[2].x][Moving_Input[2].y],_Board[Moving_Input[1].x][Moving_Input[1].y]);
 				_Board[Moving_Input[0].x][Moving_Input[0].y] = Ground;
 
 				Make_UCICoordinate(Moving_Input[1], Moving_Input[2]);
-				_BeforeMove.Piece = W_Pawn;
-				_BeforeMove.position = Moving_Input[2];
+				_BeforeMove._Piece = W_Pawn;
+				_BeforeMove._Position = Moving_Input[2];
 			}
 		}
 		else {
@@ -308,22 +308,22 @@ void ChessGame::Moving_Enpassant(CvPoint Moving_Input[]) {
 	else if (_Turn == BLACK_TURN) {
 		_TempMove._TurnFlag = BLACK_TURN;
 
-		if(_TValue1 == Ground && Moving_Input[0].y + 1 == _BeforeMove.position.x){
+		if(_TValue1 == Ground && Moving_Input[0].y + 1 == _BeforeMove._Position.x){
 			if(_TValue2 == B_Pawn){
 				_V_SWAP(_Board[Moving_Input[0].x][Moving_Input[0].y],_Board[Moving_Input[1].x][Moving_Input[1].y]);
 				_Board[Moving_Input[2].x][Moving_Input[2].y] = Ground;
 
 				Make_UCICoordinate(Moving_Input[1], Moving_Input[0]);
-				_BeforeMove.Piece = B_Pawn;
-				_BeforeMove.position = Moving_Input[0];
+				_BeforeMove._Piece = B_Pawn;
+				_BeforeMove._Position = Moving_Input[0];
 			}
 			else if (_TValue3 == B_Pawn) {
 				_V_SWAP(_Board[Moving_Input[0].x][Moving_Input[0].y],_Board[Moving_Input[2].x][Moving_Input[2].y]);
 				_Board[Moving_Input[1].x][Moving_Input[1].y] = Ground;
 
 				Make_UCICoordinate(Moving_Input[2], Moving_Input[0]);
-				_BeforeMove.Piece = B_Pawn;
-				_BeforeMove.position = Moving_Input[0];
+				_BeforeMove._Piece = B_Pawn;
+				_BeforeMove._Position = Moving_Input[0];
 			}
 		}
 		else if (_TValue2 == Ground && Moving_Input[1].y + 1 == _BeforeMove_Pawn.x) {
@@ -332,16 +332,16 @@ void ChessGame::Moving_Enpassant(CvPoint Moving_Input[]) {
 				_Board[Moving_Input[2].x][Moving_Input[2].y] = Ground;
 
 				Make_UCICoordinate(Moving_Input[0], Moving_Input[1]);
-				_BeforeMove.Piece = B_Pawn;
-				_BeforeMove.position = Moving_Input[1];
+				_BeforeMove._Piece = B_Pawn;
+				_BeforeMove._Position = Moving_Input[1];
 			}
 			else if (_TValue3 == B_Pawn) {
 				_V_SWAP(_Board[Moving_Input[1].x][Moving_Input[1].y],_Board[Moving_Input[2].x][Moving_Input[2].y]);
 				_Board[Moving_Input[0].x][Moving_Input[0].y] = Ground;
 
 				Make_UCICoordinate(Moving_Input[2], Moving_Input[1]);
-				_BeforeMove.Piece = B_Pawn;
-				_BeforeMove.position = Moving_Input[1];
+				_BeforeMove._Piece = B_Pawn;
+				_BeforeMove._Position = Moving_Input[1];
 			}
 		}
 		else if (_TValue3 == Ground && Moving_Input[2].y + 1 == _BeforeMove_Pawn.x) {
@@ -350,16 +350,16 @@ void ChessGame::Moving_Enpassant(CvPoint Moving_Input[]) {
 				_Board[Moving_Input[1].x][Moving_Input[1].y] = Ground;
 
 				Make_UCICoordinate(Moving_Input[0], Moving_Input[2]);
-				_BeforeMove.Piece = B_Pawn;
-				_BeforeMove.position = Moving_Input[2];
+				_BeforeMove._Piece = B_Pawn;
+				_BeforeMove._Position = Moving_Input[2];
 			}
 			else if (_TValue2 == B_Pawn) {
 				_V_SWAP(_Board[Moving_Input[2].x][Moving_Input[2].y],_Board[Moving_Input[1].x][Moving_Input[1].y]);
 				_Board[Moving_Input[0].x][Moving_Input[0].y] = Ground;
 
 				Make_UCICoordinate(Moving_Input[1], Moving_Input[2]);
-				_BeforeMove.Piece = B_Pawn;
-				_BeforeMove.position = Moving_Input[2];
+				_BeforeMove._Piece = B_Pawn;
+				_BeforeMove._Position = Moving_Input[2];
 			}
 		}
 		else {
@@ -382,8 +382,8 @@ void ChessGame::Moving_Default(CvPoint Moving_Input[]) {
 	_TValue2 = _Board[Moving_Input[1].x][Moving_Input[1].y];
 
 	// 이전 움직임 초기화
-	_BeforeMove.position = cvPoint(-1,-1);
-	_BeforeMove.Piece = -1;
+	_BeforeMove._Position = cvPoint(-1,-1);
+	_BeforeMove._Piece = -1;
 	// 체스 무브 진행
 	if (_Turn == WHITE_TURN) {
 		// 백색 차례일때
@@ -401,8 +401,8 @@ void ChessGame::Moving_Default(CvPoint Moving_Input[]) {
 					_Board[Moving_Input[1].x][Moving_Input[1].y] = W_Queen;
 
 				Make_UCICoordinate(Moving_Input[0], Moving_Input[1]);
-				_BeforeMove.Piece = _TValue1;
-				_BeforeMove.position = Moving_Input[1];
+				_BeforeMove._Piece = _TValue1;
+				_BeforeMove._Position = Moving_Input[1];
 
 				_Turn = !_Turn;
 			}
@@ -411,9 +411,9 @@ void ChessGame::Moving_Default(CvPoint Moving_Input[]) {
 				//////////////////////////////////////////////////////////////////////////
 				// 체스룰에 반하는 무브가 들어왔을때
 
-				_error_move.flag = true;
-				_error_move.before = Moving_Input[1];
-				_error_move.after = Moving_Input[0];
+				_error_move._Flag = true;
+				_error_move._Before = Moving_Input[1];
+				_error_move._After = Moving_Input[0];
 				
 				return;
 			}
@@ -427,16 +427,16 @@ void ChessGame::Moving_Default(CvPoint Moving_Input[]) {
 					_Board[Moving_Input[0].x][Moving_Input[0].y] = W_Queen;
 
 				Make_UCICoordinate(Moving_Input[1], Moving_Input[0]);
-				_BeforeMove.Piece = _TValue2;
-				_BeforeMove.position = Moving_Input[0];
+				_BeforeMove._Piece = _TValue2;
+				_BeforeMove._Position = Moving_Input[0];
 
 				_Turn = !_Turn;
 			}
 			else{
 
-				_error_move.flag = true;
-				_error_move.before = Moving_Input[0];
-				_error_move.after = Moving_Input[1];
+				_error_move._Flag = true;
+				_error_move._Before = Moving_Input[0];
+				_error_move._After = Moving_Input[1];
 				
 				return;
 			}
@@ -446,14 +446,14 @@ void ChessGame::Moving_Default(CvPoint Moving_Input[]) {
 			// 현재 턴에 맞는 말이 아닌 다른 말을 움직였을 경우
 
 			if(_TValue1 == Ground){
-				_error_move.flag = true;
-				_error_move.before = Moving_Input[0];
-				_error_move.after = Moving_Input[1];
+				_error_move._Flag = true;
+				_error_move._Before = Moving_Input[0];
+				_error_move._After = Moving_Input[1];
 			}
 			else if(_TValue2 == Ground){
-				_error_move.flag = true;
-				_error_move.before = Moving_Input[1];
-				_error_move.after = Moving_Input[0];
+				_error_move._Flag = true;
+				_error_move._Before = Moving_Input[1];
+				_error_move._After = Moving_Input[0];
 			}
 		}
 	}
@@ -470,15 +470,15 @@ void ChessGame::Moving_Default(CvPoint Moving_Input[]) {
 					_Board[Moving_Input[1].x][Moving_Input[1].y] = B_Queen;
 
 				Make_UCICoordinate(Moving_Input[0], Moving_Input[1]);
-				_BeforeMove.Piece = _TValue1;
-				_BeforeMove.position = Moving_Input[1];
+				_BeforeMove._Piece = _TValue1;
+				_BeforeMove._Position = Moving_Input[1];
 
 				_Turn = !_Turn;
 			}
 			else {
-				_error_move.flag = true;
-				_error_move.before = Moving_Input[1];
-				_error_move.after = Moving_Input[0];
+				_error_move._Flag = true;
+				_error_move._Before = Moving_Input[1];
+				_error_move._After = Moving_Input[0];
 				return;
 			}
 		}
@@ -491,29 +491,29 @@ void ChessGame::Moving_Default(CvPoint Moving_Input[]) {
 					_Board[Moving_Input[0].x][Moving_Input[0].y] = B_Queen;
 
 				Make_UCICoordinate(Moving_Input[1], Moving_Input[0]);
-				_BeforeMove.Piece = _TValue2;
-				_BeforeMove.position = Moving_Input[0];
+				_BeforeMove._Piece = _TValue2;
+				_BeforeMove._Position = Moving_Input[0];
 
 				_Turn = !_Turn;
 			}
 			else {
-				_error_move.flag = true;
-				_error_move.before = Moving_Input[0];
-				_error_move.after = Moving_Input[1];
+				_error_move._Flag = true;
+				_error_move._Before = Moving_Input[0];
+				_error_move._After = Moving_Input[1];
 				return;
 			}
 		}
 		else {
 			// 자신의 턴이 아닐때 체스말을 움직임.
 			if(_TValue1 == Ground){
-				_error_move.flag = true;
-				_error_move.before = Moving_Input[0];
-				_error_move.after = Moving_Input[1];
+				_error_move._Flag = true;
+				_error_move._Before = Moving_Input[0];
+				_error_move._After = Moving_Input[1];
 			}
 			else if(_TValue2 == Ground){
-				_error_move.flag = true;
-				_error_move.before = Moving_Input[1];
-				_error_move.after = Moving_Input[0];
+				_error_move._Flag = true;
+				_error_move._Before = Moving_Input[1];
+				_error_move._After = Moving_Input[0];
 			}
 		}
 	}
@@ -591,83 +591,73 @@ bool ChessGame::Rule_DefaultMove(CvPoint Before, CvPoint After) {
 	return false;
 }
 
-void ChessGame::cvQuiver(IplImage *Image,int x,int y,int u,int v,CvScalar Color,int Size,int Thickness){
-	CvPoint pt1,pt2;
-	double Theta;
-	double PI = 3.1416;
+void ChessGame::cvQuiver(IplImage *Image, int _X, int _Y, int _U, int _V, CvScalar Colour, int Size, int Thickness) {
+	CvPoint _TPt1, _TPt2;
+	double _TTheta;
+	double _TPI = 3.1416;
 
-
-	if(u==0)
-		Theta=PI/2;
+	if (_U == 0)
+		_TTheta = _TPI / 2;
 	else
-		Theta=atan2(double(v),(double)(u));
+		_TTheta = atan2(double(_V),(double)(_U));
 
+	_TPt1.x = _X;
+	_TPt1.y = _Y;
 
-	pt1.x=x;
-	pt1.y=y;
+	_TPt2.x = _X + _U;
+	_TPt2.y = _Y + _V;
 
-	pt2.x=x+u;
-	pt2.y=y+v;
+	cvDrawLine(Image,_TPt1,_TPt2,Colour,Thickness,8);  //Draw Line
 
-	cvDrawLine(Image,pt1,pt2,Color,Thickness,8);  //Draw Line
+	Size = (int)(Size * 0.707);
 
+	if (_TTheta == _TPI/2 && _TPt1.y > _TPt2.y){
+		_TPt1.x = (int)((Size * cos(_TTheta)) - (Size * sin(_TTheta)) + _TPt2.x);
+		_TPt1.y = (int)((Size * sin(_TTheta)) + (Size * cos(_TTheta)) + _TPt2.y);
+		cvDrawLine(Image, _TPt1, _TPt2, Colour, Thickness, 8); //Draw Line
 
-	Size=(int)(Size*0.707);
-
-
-
-	if(Theta==PI/2 && pt1.y > pt2.y){
-		pt1.x=(int)(Size*cos(Theta)-Size*sin(Theta)+pt2.x);
-		pt1.y=(int)(Size*sin(Theta)+Size*cos(Theta)+pt2.y);
-		cvDrawLine(Image,pt1,pt2,Color,Thickness,8);  //Draw Line
-
-		pt1.x=(int)(Size*cos(Theta)+Size*sin(Theta)+pt2.x);
-		pt1.y=(int)(Size*sin(Theta)-Size*cos(Theta)+pt2.y);
-		cvDrawLine(Image,pt1,pt2,Color,Thickness,8);  //Draw Line
+		_TPt1.x = (int)(Size * cos(_TTheta) + Size * sin(_TTheta) + _TPt2.x);
+		_TPt1.y = (int)(Size * sin(_TTheta) - Size * cos(_TTheta) + _TPt2.y);
+		cvDrawLine(Image, _TPt1, _TPt2, Colour, Thickness, 8); //Draw Line
 	}
 	else{
-		pt1.x=(int)(-Size*cos(Theta)-Size*sin(Theta)+pt2.x);
-		pt1.y=(int)(-Size*sin(Theta)+Size*cos(Theta)+pt2.y);
-		cvDrawLine(Image,pt1,pt2,Color,Thickness,8);  //Draw Line
+		_TPt1.x = (int)(-Size * cos(_TTheta) - Size * sin(_TTheta) + _TPt2.x);
+		_TPt1.y = (int)(-Size * sin(_TTheta) + Size * cos(_TTheta) + _TPt2.y);
+		cvDrawLine(Image, _TPt1, _TPt2, Colour, Thickness, 8);  //Draw Line
 
-		pt1.x=(int)(-Size*cos(Theta)+Size*sin(Theta)+pt2.x);
-		pt1.y=(int)(-Size*sin(Theta)-Size*cos(Theta)+pt2.y);
-		cvDrawLine(Image,pt1,pt2,Color,Thickness,8);  //Draw Line
+		_TPt1. x =(int)(-Size * cos(_TTheta) + Size * sin(_TTheta) + _TPt2.x);
+		_TPt1.y = (int)(-Size * sin(_TTheta) - Size * cos(_TTheta) + _TPt2.y);
+		cvDrawLine(Image, _TPt1, _TPt2, Colour, Thickness, 8);  //Draw Line
 	}
 }
 #pragma endregion Private Functions
 
 #pragma region Public Functions
-bool ChessGame::Chess_process(CvPoint Input[], int MOVE_MODE) {
+bool ChessGame::Chess_Process(CvPoint Input[], int MOVE_MODE) {
 	CvPoint _TMove[4];
 
-	switch(MOVE_MODE){
-	case CASTLING_MOVE:
-		for (register int i = 0; i < 4; i++)
-			_TMove[i] = cvPoint(Input[i].x, Input[i].y);
+	switch (MOVE_MODE) {
+		case CASTLING_MOVE:
+			for (register int i = 0; i < 4; i++)
+				_TMove[i] = cvPoint(Input[i].x, Input[i].y);
 
-		Moving_Castling(_TMove);
-		break;
-	case ENPASSANT_MOVE:
-		for (register int i = 0; i < 4; i++)
-			_TMove[i] = cvPoint(Input[i].x, Input[i].y);
+			Moving_Castling(_TMove);
+			break;
+		case ENPASSANT_MOVE:
+			for (register int i = 0; i < 4; i++)
+				_TMove[i] = cvPoint(Input[i].x, Input[i].y);
 
-		Moving_Enpassant(_TMove);
-		break;
-	case DEFAULT_MOVE:
-		for (register int i = 0; i < 4; i++)
-			_TMove[i] = cvPoint(Input[i].x, Input[i].y);
-		Moving_Default(_TMove);
-		break;
+			Moving_Enpassant(_TMove);
+			break;
+		case DEFAULT_MOVE:
+			for (register int i = 0; i < 4; i++)
+				_TMove[i] = cvPoint(Input[i].x, Input[i].y);
+
+			Moving_Default(_TMove);
+			break;
 	}
 
-<<<<<<< HEAD
 	//_Turn = !_Turn;
-=======
-	//
-	//_Turn = !_Turn;
-
->>>>>>> origin/CVES_NewEngine_Extended
 	return !_Turn;
 }
 
@@ -682,30 +672,30 @@ void ChessGame::Show_ChessBoard() {
 }
 
 void ChessGame::Show_ChessImage() {
-	char temp_buf[32];
-	IplImage *tempgame_board;
-	tempgame_board = cvCloneImage(_ChessBoard_Image);
+	char _TTempBuffer[32];
+	IplImage *_TTempGameBoard;
+	_TTempGameBoard = cvCloneImage(_ChessBoard_Image);
 
 	for (register int i = 0; i < 8; i++) {
 		for (register int j = 0; j < 8; j++) {
-			if(_Board[i][j] != 0){
-				sprintf(temp_buf, "./Chess_UI/%d.png", _Board[i][j]);
-				_ChessPiece = cvLoadImage(temp_buf, CV_LOAD_IMAGE_UNCHANGED);
+			if (_Board[i][j] != 0) {
+				sprintf(_TTempBuffer, "./Chess_UI/%d.png", _Board[i][j]);
+				_ChessPiece = cvLoadImage(_TTempBuffer, CV_LOAD_IMAGE_UNCHANGED);
 
 				//cvSetImageROI(chessboard_img, cvRect(j*64, i*64, 64, 64));
 				// 알파값 추가 처리.
 				for (register int k = 0; k < _ChessPiece->width; k++){
 					for (register int l = 0; l < _ChessPiece->height; l++){
-						unsigned char B = (unsigned char)_ChessPiece->imageData[(k*4) + (l*_ChessPiece->widthStep) + 0];
-						unsigned char G = (unsigned char)_ChessPiece->imageData[(k*4) + (l*_ChessPiece->widthStep) + 1];
-						unsigned char R = (unsigned char)_ChessPiece->imageData[(k*4) + (l*_ChessPiece->widthStep) + 2];
-						unsigned char A = (unsigned char)_ChessPiece->imageData[(k*4) + (l*_ChessPiece->widthStep) + 3];
+						unsigned char _T_B = (unsigned char)_ChessPiece->imageData[(k * 4) + (l * _ChessPiece->widthStep) + 0];
+						unsigned char _T_G = (unsigned char)_ChessPiece->imageData[(k * 4) + (l * _ChessPiece->widthStep) + 1];
+						unsigned char _T_R = (unsigned char)_ChessPiece->imageData[(k * 4) + (l * _ChessPiece->widthStep) + 2];
+						unsigned char _T_A = (unsigned char)_ChessPiece->imageData[(k * 4) + (l * _ChessPiece->widthStep) + 3];
 
 						// 아이콘이 불투명한 영역만 붙여 넣기.
-						if(A > 100){
-							tempgame_board->imageData[(j*64+k)*4 + (i*64+l)*tempgame_board->widthStep + 0] = B;
-							tempgame_board->imageData[(j*64+k)*4 + (i*64+l)*tempgame_board->widthStep + 1] = G;
-							tempgame_board->imageData[(j*64+k)*4 + (i*64+l)*tempgame_board->widthStep + 2] = R;
+						if (_T_A > 100){
+							_TTempGameBoard->imageData[(j * 64 + k) * 4 + (i * 64 + l) * _TTempGameBoard->widthStep + 0] = _T_B;
+							_TTempGameBoard->imageData[(j * 64 + k) * 4 + (i * 64 + l) * _TTempGameBoard->widthStep + 1] = _T_G;
+							_TTempGameBoard->imageData[(j * 64 + k) * 4 + (i * 64 + l) * _TTempGameBoard->widthStep + 2] = _T_R;
 						}
 					}
 				}
@@ -717,17 +707,23 @@ void ChessGame::Show_ChessImage() {
 		}
 	}
 #if !defined(USING_QT)
-	cvShowImage("ChessGame", tempgame_board);
+	cvShowImage("ChessGame", _TTempGameBoard);
 #endif
-	cvReleaseImage(&tempgame_board);
+	cvReleaseImage(&_TTempGameBoard);
 }
 
-void ChessGame::check_return(CvPoint move_input[]){
-	if(move_input[0].x == _error_move.after.x && move_input[0].y == _error_move.after.y && move_input[1].x == _error_move.before.x && move_input[1].y == _error_move.before.y){
-		_error_move.flag = false;
+void ChessGame::Check_Return(CvPoint move_input[]) {
+	if (move_input[0].x == _error_move._After.x
+		&& move_input[0].y == _error_move._After.y
+		&& move_input[1].x == _error_move._Before.x
+		&& move_input[1].y == _error_move._Before.y) {
+		_error_move._Flag = false;
 	}
-	else if(move_input[0].x == _error_move.before.x && move_input[0].y == _error_move.before.y && move_input[1].x == _error_move.after.x && move_input[1].y == _error_move.after.y){
-		_error_move.flag = false;
+	else if (move_input[0].x == _error_move._Before.x
+		&& move_input[0].y == _error_move._Before.y
+		&& move_input[1].x == _error_move._After.x
+		&& move_input[1].y == _error_move._After.y) {
+		_error_move._Flag = false;
 	}
 }
 
@@ -736,44 +732,44 @@ string ChessGame::Get_RecentMove() {
 }
 
 int ChessGame::Read_Mode() {
-	static int W_King_MOVED = false;
-	static int B_King_MOVED = false;
-	static int W_Rook_MOVED = false;
-	static int B_Rook_MOVED = false;
+	static int _TW_King_MOVED = false;
+	static int _TB_King_MOVED = false;
+	static int _TW_Rook_MOVED = false;
+	static int _TB_Rook_MOVED = false;
 
 	// 이전 움직임 좌표를 확인하여 flag를 지움
-	if (_BeforeMove.Piece == W_King)
-		W_King_MOVED = true;
-	else if (_BeforeMove.Piece == B_King)
-		B_King_MOVED = true;
-	else if (_BeforeMove.Piece == W_Rook)
-		W_Rook_MOVED = true;
-	else if (_BeforeMove.Piece == B_Rook)
-		B_Rook_MOVED = true;
+	if (_BeforeMove._Piece == W_King)
+		_TW_King_MOVED = true;
+	else if (_BeforeMove._Piece == B_King)
+		_TB_King_MOVED = true;
+	else if (_BeforeMove._Piece == W_Rook)
+		_TW_Rook_MOVED = true;
+	else if (_BeforeMove._Piece == B_Rook)
+		_TB_Rook_MOVED = true;
 
-	if (_BeforeMove.position.x == -1 || _BeforeMove.position.y == -1) {
+	if (_BeforeMove._Position.x == -1 || _BeforeMove._Position.y == -1) {
 		return DEFAULT_MOVE;
 	}
 	else {
 		// 앙파상 & 캐슬링 판정부
 		if (_Turn == WHITE_TURN) {
-			if (W_King_MOVED == false && W_Rook_MOVED == false) {
+			if (_TW_King_MOVED == false && _TW_Rook_MOVED == false) {
 				if ((_Board[1][0] == Ground && _Board[2][0] == Ground && _Board[3][0] == Ground) || (_Board[5][0] == Ground && _Board[6][0] == Ground))
 					return CASTLING_MOVE;
 			}
 			
-			if (_BeforeMove.Piece == B_Pawn)
+			if (_BeforeMove._Piece == B_Pawn)
 				return ENPASSANT_MOVE;
 			else
 				return DEFAULT_MOVE;
 		}
 		else if (_Turn == BLACK_TURN) {
-			if (B_King_MOVED == false && B_Rook_MOVED == false) {
+			if (_TB_King_MOVED == false && _TB_Rook_MOVED == false) {
 				if ((_Board[1][7] == Ground && _Board[2][7] == Ground && _Board[3][7] == Ground) || (_Board[5][7] == Ground && _Board[6][7] == Ground))
 					return CASTLING_MOVE;
 			}
 			
-			if (_BeforeMove.Piece == W_Pawn) {
+			if (_BeforeMove._Piece == W_Pawn) {
 				return ENPASSANT_MOVE;
 			}
 			else
@@ -782,17 +778,16 @@ int ChessGame::Read_Mode() {
 	}
 }
 
-bool ChessGame::Check_InvalidMove( IplImage *Source, vector<ChessPoint> _CP, CvPoint _out[] )
-{
-	static bool _first_check = false;	// error move가 해당 함수에 처음으로 진입하였는지를 확인
-	if(_error_move.flag == true){
+bool ChessGame::Check_InvalidMove(IplImage *Source, vector<ChessPoint> _CP, CvPoint _out[]) {
+	static bool _TFirstCheck = false;	// error move가 해당 함수에 처음으로 진입하였는지를 확인
+	
+	if (_error_move._Flag == true) {
 		Draw_InvalidMove(Source, _CP, _error_move);
 
-		if(_first_check == true)
-			check_return(_out);
-		else
-		{
-			_first_check = false;
+		if (_TFirstCheck == true)
+			Check_Return(_out);
+		else {
+			_TFirstCheck = false;
 		}
 
 		return true;
@@ -801,32 +796,32 @@ bool ChessGame::Check_InvalidMove( IplImage *Source, vector<ChessPoint> _CP, CvP
 	return false;
 }
 
-void ChessGame::Draw_InvalidMove(IplImage *Source, vector<ChessPoint> _CP, error_move _InvalidMove)
-{
-	CvPoint p_before, p_after;
-	CvPoint CP_before, CP_after;
-	p_after = _InvalidMove.after;
-	p_before = _InvalidMove.before;
+void ChessGame::Draw_InvalidMove(IplImage *Source, vector<ChessPoint> _CP, ErrorMove _InvalidMove) {
+	CvPoint _TP_Before, _TP_After;
+	CvPoint _TCP_Before, _TCP_After;
+	_TP_After = _InvalidMove._After;
+	_TP_Before = _InvalidMove._Before;
 
 	bool after_complete, before_complete;
 	after_complete = before_complete = false;
-	for(register int i = 0; i < 81; i++){
+
+	for (register int i = 0; i < 81; i++) {
 		ChessPoint _temp_CP = _CP.at(i);
 
-		if(_temp_CP.Index.x == p_after.y && _temp_CP.Index.y == p_after.x){
-			CP_after = cvPoint((_temp_CP.Cordinate.x + _CP.at(i+9).Cordinate.x)/2, (_temp_CP.Cordinate.y + _CP.at(i+9).Cordinate.y)/2);
+		if (_temp_CP.Index.x == _TP_After.y && _temp_CP.Index.y == _TP_After.x) {
+			_TCP_After = cvPoint((_temp_CP.Cordinate.x + _CP.at(i + 9).Cordinate.x) / 2, (_temp_CP.Cordinate.y + _CP.at(i + 9).Cordinate.y) / 2);
 		}
 
-		if(_temp_CP.Index.x == p_before.y && _temp_CP.Index.y == p_before.x){
-			CP_before = cvPoint((_temp_CP.Cordinate.x + _CP.at(i+9).Cordinate.x)/2, (_temp_CP.Cordinate.y + _CP.at(i+9).Cordinate.y)/2);
+		if (_temp_CP.Index.x == _TP_Before.y && _temp_CP.Index.y == _TP_Before.x) {
+			_TCP_Before = cvPoint((_temp_CP.Cordinate.x + _CP.at(i + 9).Cordinate.x) / 2, (_temp_CP.Cordinate.y + _CP.at(i + 9).Cordinate.y) / 2);
 		}
 
-		if(after_complete == true && before_complete == true)
+		if (after_complete == true && before_complete == true)
 			break;
 	}
 
-	cvDrawCircle(Source, CP_before, 5, cvScalar(0,0,255), -1);
-	cvQuiver(Source, CP_before.x, CP_before.y, CP_after.x, CP_after.y, cvScalar(0,0,255), 3, 3);
+	cvDrawCircle(Source, _TCP_Before, 5, cvScalar(0,0,255), -1);
+	cvQuiver(Source, _TCP_Before.x, _TCP_Before.y, _TCP_After.x, _TCP_After.y, cvScalar(0,0,255), 3, 3);
 }
 
 #pragma endregion Public Functions

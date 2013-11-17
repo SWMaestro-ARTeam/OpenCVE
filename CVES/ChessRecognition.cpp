@@ -38,7 +38,7 @@ ChessRecognition::~ChessRecognition() {
 #pragma endregion Constructor & Destructor
 
 #pragma region Private Functions
-// 결과만 반환.
+
 void ChessRecognition::DrawPoints(IplImage *Source, vector<ChessPoint> Point) {
 	if (_EnableThread != false) {
 		// src image에 chessboard의 교점과 각 교점의 index를 표기.
@@ -58,8 +58,6 @@ void ChessRecognition::DrawPoints(IplImage *Source, vector<ChessPoint> Point) {
 	}
 }
 
-// only hough Lines.
-// 작동만 하면 결과만 반환.
 void ChessRecognition::Get_Line(vector<pair<float, float> > *XLines, vector<pair<float, float> > *YLines) {
 	if (_EnableThread != false) {
 		if (_HoughLineBased != NULL) {
@@ -83,7 +81,6 @@ void ChessRecognition::Get_Line(vector<pair<float, float> > *XLines, vector<pair
 	}
 }
 
-// 작동만 하면 결과만 반환.
 void ChessRecognition::Refine_CrossPoint(vector<ChessPoint> *CrossPoint) {
 	if (_EnableThread != false) {
 		// chessboard recognition을 통하여 생성한 교점의 좌표를 보정하는 함수.
@@ -219,9 +216,7 @@ void *
 
 		// cvSeq를 vector로 바꾸기 위한 연산.
 		_TChessRecognition->_Vec_ProtectionMutex.lock();
-		//EnterCriticalSection(&_TChessRecognition->vec_cs);
 		_TChessRecognition->_HoughLineBased->CastSequence(_TLineX, _TLineY);
-		//LeaveCriticalSection(&_TChessRecognition->vec_cs);
 		_TChessRecognition->_Vec_ProtectionMutex.unlock();
 
 		Sleep(2);
@@ -276,21 +271,15 @@ void *
 	while (_TChessRecognition->_EnableThread != false) {
 		// 연산에 필요한 이미지를 main으로부터 복사해 옴.
 		_TChessRecognition->_ChessBoardDetectionInternalImageProtectMutex.lock();
-		//EnterCriticalSection(&(_TChessRecognition->cs));
-		
 		if (_TChessRecognition->_ChessBoardDetectionInternalImage->nChannels != 1)
 			cvConvert(_TChessRecognition->_ChessBoardDetectionInternalImage, _TGray);
 		else
 			cvCopy(_TChessRecognition->_ChessBoardDetectionInternalImage, _TGray);
-
-		//LeaveCriticalSection(&_TChessRecognition->cs);
 		_TChessRecognition->_ChessBoardDetectionInternalImageProtectMutex.unlock();
 
 		// 복사한 이미지를 실제 연산에 사용.
 		_TChessRecognition->_ChessBoardDetectionInternalImageProtectMutex.lock();
-		//EnterCriticalSection(&_TChessRecognition->vec_cs);
 		_TChessRecognition->_LineSearchBased->ChessLineSearchProcess(_TGray, &_TChessRecognition->_CP);
-		//LeaveCriticalSection(&_TChessRecognition->vec_cs);
 		_TChessRecognition->_ChessBoardDetectionInternalImageProtectMutex.unlock();
 
 		Sleep(2);
@@ -315,16 +304,7 @@ void *
 #pragma region Public Functions
 void ChessRecognition::Initialize_ChessRecognition(int Width, int Height, int Mode) {
 	// 관심영역의 width와 height를 입력받고, ChessRecogniton mode를 설정함. 현재 모드 1,2 제공
-	//static bool _TFirstCheck = false;
-
 	_EnableThread = true;
-
-	//init이 처음 호출되었을 경우 thread 동기화를 위한 critical section 초기화
-	/*if (_TFirstCheck == false) {
-	_TFirstCheck = true;
-	}
-	else
-	cvReleaseImage(&_ChessBoardDetectionInternalImage);*/
 
 	// 내부 연산에 사용되는 이미지.
 	_ChessBoardDetectionInternalImage = cvCreateImage(cvSize(Width, Height), IPL_DEPTH_8U, 1);
@@ -339,41 +319,9 @@ void ChessRecognition::Initialize_ChessRecognition(int Width, int Height, int Mo
 	// 2 - x, y 선형 탐색을 이용한 chessboard recognition.
 	if (Mode == 1) {
 		_Thread.StartThread(HoughLineThread, this);
-		/*
-#if defined(WINDOWS_SYS)
-		HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, thread_hough, this, 0, NULL);
-#elif defined(POSIX_SYS)
-		pthread_t _TThread;
-		pthread_attr_t _TThreadAttr;
-		// pthread attribute initialize.
-		pthread_attr_init(&_TThreadAttr);
-		// Detached thread.
-		pthread_attr_setdetachstate(&_TThreadAttr, PTHREAD_CREATE_DETACHED);
-		// User space thread.
-		pthread_attr_setscope(&_TThreadAttr, PTHREAD_SCOPE_SYSTEM);
-		// Create thread.
-		pthread_create(&_TThread, NULL, thread_hough, (void *)this);
-#endif
-		*/
 	}
 	else if (Mode == 2) {
 		_Thread.StartThread(LineSearchThread, this);
-		/*
-#if defined(WINDOWS_SYS)
-		HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, thread_ChessLineSearchAlg, this, 0, NULL);
-#elif defined(POSIX_SYS)
-		pthread_t _TThread;
-		pthread_attr_t _TThreadAttr;
-		// pthread attribute initialize.
-		pthread_attr_init(&_TThreadAttr);
-		// Detached thread.
-		pthread_attr_setdetachstate(&_TThreadAttr, PTHREAD_CREATE_DETACHED);
-		// User space thread.
-		pthread_attr_setscope(&_TThreadAttr, PTHREAD_SCOPE_SYSTEM);
-		// Create thread.
-		pthread_create(&_TThread, NULL, thread_ChessLineSearchAlg, (void *)this);
-#endif
-		*/
 	}
 }
 
@@ -386,7 +334,7 @@ void ChessRecognition::Deinitialize_ChessRecognition() {
 	cvReleaseImage(&_ChessBoardDetectionInternalImage);
 }
 
-void ChessRecognition::Copy_Img(IplImage *Source) {
+void ChessRecognition::Copy_Image(IplImage *Source) {
 	// main의 cam으로부터 받아온 이미지를 thread의 연산에 사용하기 위해서 복사해오는 함수.
 	// 연산에 사용되는 이미지는 Grayscale이기 때문에 색상 변환 연산 진행.
 	if (_EnableThread != false) {

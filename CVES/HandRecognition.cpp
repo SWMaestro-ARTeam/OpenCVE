@@ -25,8 +25,7 @@
 
 #include "HandRecognition.hpp"
 
-// 무조건 순차적으로 처리한다.
-
+#pragma region Constructor & Destructor
 HandRecognition::HandRecognition() {
 	_IsInitialize = false;
 }
@@ -34,7 +33,33 @@ HandRecognition::HandRecognition() {
 HandRecognition::~HandRecognition() {
 	_IsInitialize = false;
 }
+#pragma endregion Constructor & Destructor
 
+#pragma region Private Functions
+bool HandRecognition::RangeDetectionOfRGBSkinColour(int Value_R, int Value_G, int Value_B) {
+	// RGB image의 각 픽셀값을 입력받아서 skin의 범위 해당하는지 return
+	bool e1 = (Value_R > 95) && (Value_G > 40) && (Value_B > 20) && ((_V_MAX(Value_R, _V_MAX(Value_G, Value_B)) - _V_MIN(Value_R, _V_MIN(Value_G , Value_B))) > 15) && (abs(Value_R - Value_G) > 15) && (Value_R > Value_G) && (Value_R > Value_B);
+	bool e2 = (Value_R > 220) && (Value_G > 210) && (Value_B > 170) && (abs(Value_R - Value_G) <= 15) && (Value_R > Value_B) && (Value_G > Value_B);
+	return (e1||e2);
+}
+
+bool HandRecognition::RangeDetectionOfYCrCbSkinColour(float Value_Y, float Value_Cr, float Value_Cb) {
+	// Y, Cr, Cb image를 통하여 skin 영역의 색상을 구분.
+	bool e3 = Value_Cr <= (1.5862 * Value_Cb) + 20;
+	bool e4 = Value_Cr >= (0.3448 * Value_Cb) + 76.2069;
+	bool e5 = Value_Cr >= (-4.5652 * Value_Cb) + 234.5652;
+	bool e6 = Value_Cr <= (-1.15 * Value_Cb) + 301.75;
+	bool e7 = Value_Cr <= (-2.2857 * Value_Cb) + 432.85;
+	return e3 && e4 && e5 && e6 && e7;
+}
+
+bool HandRecognition::RangeDetectionOfHSVSkinColour(float Value_H, float Value_S, float Value_V) {
+	// HSV image의 H를 통하여 SKin color 범주에 있는지 확인.
+	return (Value_H < 25) || (Value_H > 230);
+}
+#pragma endregion Private Functions
+
+#pragma region Public Functions
 void HandRecognition::Initialize_HandRecognition(int Width, int Height) {
 	// 관심영역의 size를 구함.
 	_Image_Width = Width;
@@ -75,29 +100,6 @@ void HandRecognition::Initialize_Differential_Image() {
 	else {
 
 	}
-}
-
-bool HandRecognition::RangeDetectionOfRGBSkinColour(int Value_R, int Value_G, int Value_B) {
-	// RGB image의 각 픽셀값을 입력받아서 skin의 범위 해당하는지 return
-	bool e1 = (Value_R > 95) && (Value_G > 40) && (Value_B > 20) && ((_V_MAX(Value_R, _V_MAX(Value_G, Value_B)) - _V_MIN(Value_R, _V_MIN(Value_G , Value_B))) > 15) && (abs(Value_R - Value_G) > 15) && (Value_R > Value_G) && (Value_R > Value_B);
-	bool e2 = (Value_R > 220) && (Value_G > 210) && (Value_B > 170) && (abs(Value_R - Value_G) <= 15) && (Value_R > Value_B) && (Value_G > Value_B);
-	return (e1||e2);
-}
-
-bool HandRecognition::RangeDetectionOfYCrCbSkinColour(float Value_Y, float Value_Cr, float Value_Cb) {
-	// Y, Cr, Cb image를 통하여 skin 영역의 색상을 구분.
-	bool e3 = Value_Cr <= (1.5862 * Value_Cb) + 20;
-	bool e4 = Value_Cr >= (0.3448 * Value_Cb) + 76.2069;
-	bool e5 = Value_Cr >= (-4.5652 * Value_Cb) + 234.5652;
-	bool e6 = Value_Cr <= (-1.15 * Value_Cb) + 301.75;
-	bool e7 = Value_Cr <= (-2.2857 * Value_Cb) + 432.85;
-	return e3 && e4 && e5 && e6 && e7;
-}
-
-
-bool HandRecognition::RangeDetectionOfHSVSkinColour(float Value_H, float Value_S, float Value_V) {
-	// HSV image의 H를 통하여 SKin color 범주에 있는지 확인.
-	return (Value_H < 25) || (Value_H > 230);
 }
 
 void HandRecognition::Detect_SkinColour(IplImage *Source, IplImage *Destination) {
@@ -239,3 +241,4 @@ void HandRecognition::Subtraction_PreviousFrame(IplImage *Source, IplImage *Dest
 	else {
 	}
 }
+#pragma endregion Public Functions

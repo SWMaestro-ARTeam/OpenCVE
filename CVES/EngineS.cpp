@@ -648,12 +648,11 @@ void EngineS::Evaluation() {
 		// chessgame 이동부.
 		//printf("predict: %d, out_count : %d\n", predicted_mode, out_count);
 		// Out 결과로, Turn을 출력한다.
-		_IsTrun = _ChessGame->Chess_process(out, predicted_mode);
+		_IsTrun = _ChessGame->Chess_Process(out, predicted_mode);
 
-		_DetectionResultOnlyImageProtectMutex.lock();
-		if(_ChessGame->Check_InvalidMove(_DetectionResultOnlyImage, _CrossPoint, out)){
+		//_DetectionResultOnlyImageProtectMutex.lock();
+		if (_ChessGame->Check_InvalidMove(_DetectionResultOnlyImage, _CrossPoint, out) != true) {
 			string _TString = string("Move ").append(string(_ChessGame->Get_RecentMove()));
-
 			// Game을 하고 있는 Client를 검색한다.
 			// 들어온 Client 중에 알맞은 Client에게 답을 보낸다.
 			for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
@@ -669,7 +668,7 @@ void EngineS::Evaluation() {
 				}
 			}
 		}
-		_DetectionResultOnlyImageProtectMutex.unlock();
+		//_DetectionResultOnlyImageProtectMutex.unlock();
 #if defined(DEBUG_MODE)
 		//uci에 맞춰 return하는 부분 현재 printf로 출력
 		_ChessGame->Show_ChessImage();
@@ -1160,7 +1159,7 @@ void *
 				// Detection 할 Image를 원본 영상에서 Copy한다.
 				cvCopy(_TChessBoardOriginImage, _TChessBoardDetectionImage);
 				// ChessRecognition Module에 분석을 위한 Image를 보낸다.
-				_TEngine_S->_ChessRecognition->Copy_Img(_TChessBoardDetectionImage);
+				_TEngine_S->_ChessRecognition->Copy_Image(_TChessBoardDetectionImage);
 				// Cross Point를 찾는다.
 				_TEngine_S->_ChessRecognition->Find_ChessPoint(_TChessBoardOriginImage, &_TEngine_S->_CrossPoint);
 
@@ -1251,9 +1250,9 @@ void *
 				// Chess Recognition Thread는 계속적으로 좌표를 뽑고 있기 때문에 처리 중간에 81개에서
 				// 다른 값으로 변화할 수 있는 소지가 크므로, 중간에 Chess Recognition Thread를 중지시킨다.
 				// Chess Recognition Thread와의 Sync를 맞추기 위한 조치.
-				_TEngine_S->_ChessRecognitionProcessingPause = true;
+				
 				if (_TEngine_S->_CrossPoint.size() == 81) {
-					
+					_TEngine_S->_ChessRecognitionProcessingPause = true;	
 					if (_TEngine_S->_SubCheck == false) {
 						// 손이 들어오기 직전 영상을 촬영.
 						_TEngine_S->_HandRecognition->Subtraction_PreviousFrame(_THandDetectionImage, _TEngine_S->_ImageSkin, _TEngine_S->_BeforeHandFirst); // 턴별 차영상
@@ -1291,14 +1290,14 @@ void *
 						/*_TEngine_S->Compose_diffImage(_THandDetectionImage, _TEngine_S->_ImageSkin, cvScalar(0, 255, 255));*/
 
 						// BlobLabeling
-						_TEngine_S->_BlobLabeling->SetParam(_TEngine_S->_ImageSkin, 1);
-						_TEngine_S->_BlobLabeling->DoLabeling();
+						_TEngine_S->_BlobLabeling->Set_Parameter(_TEngine_S->_ImageSkin, 1);
+						_TEngine_S->_BlobLabeling->Go_Labeling();
 						_TEngine_S->_BlobLabeling->DrawLabel(_THandDetectionImage, cvScalar(255,0,255));
 
 						// 손판정
 						// 손 정의 - 차영상 결과 디텍션된 오브젝트.
 						//          오브젝트 중 window 경계에 있는 물체
-						_TEngine_S->_BlobLabeling->GetSideBlob(_TEngine_S->_ImageSkin, &_TEngine_S->_PieceIndex, _TEngine_S->_OtherBinaryImage); // 손이 아니라고 판정되는 오브젝트를 이진 영상에서 제거
+						_TEngine_S->_BlobLabeling->Get_SideBlob(_TEngine_S->_ImageSkin, &_TEngine_S->_PieceIndex, _TEngine_S->_OtherBinaryImage); // 손이 아니라고 판정되는 오브젝트를 이진 영상에서 제거
 #if defined(DEBUG_MODE)
 						_TEngine_S->Compose_diffImage(_THandDetectionImage, _TEngine_S->_ImageSkin, cvScalar(100, 100, 255)); // 손만 남은 이진 영상으로 원본 영상에 색을 부여
 #endif
@@ -1330,9 +1329,8 @@ void *
 //#endif
 					}
 					// debug
-					
+					_TEngine_S->_ChessRecognitionProcessingPause = false;	
 				}
-				_TEngine_S->_ChessRecognitionProcessingPause = false;
 
 				cvCopy(_TEngine_S->_TempPrev, _TEngine_S->_TempPrev2);
 				cvCopy(_TEngine_S->_PureImage, _TEngine_S->_TempPrev);
