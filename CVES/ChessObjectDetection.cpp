@@ -32,7 +32,7 @@ ChessObjectDetection::ChessObjectDetection() {
 	_low_bright = 135;
 	_high_bright = 0;
 
-	_thickness = 15;
+	_thickness = 20;
 
 	_score_threshold = 0.01;
 	_sub_threshold = 0.01;
@@ -322,6 +322,7 @@ void ChessObjectDetection::Detect_SobelCannyScore(IplImage *Source, vector<_Ches
 
 		cvCvtColor(Source, _TGray, CV_BGR2GRAY);
 		// sobel->canny.
+		cvSmooth(_TGray, _TGray, CV_GAUSSIAN);
 		cvSobel(_TGray, _TSobel, 1, 1, 5);
 		cvCanny(_TSobel, _TAdd_Canny, 100, 150);
 
@@ -332,15 +333,17 @@ void ChessObjectDetection::Detect_SobelCannyScore(IplImage *Source, vector<_Ches
 		// 각 체스보드 그리드 안에 엣지가 존재하는 면적비를 연산.
 		float score_board[8][8]; // 엣지 / 체스그리드 면적 => 스코어
 
-		_CheckChessboard.Calculate_BoardScore(_TAdd_Canny, CrossPoint, score_board);
+		_CheckChessboard.Calculate_BoardScore(_TAdd_Canny, _TGray, CrossPoint, score_board);
 
 		// 스코어 thresholding
-		Thresholding_Score(score_board, _score_threshold);
+		//Thresholding_Score(score_board, _score_threshold);
 
 		// 출력으로 복사
-		for (register int i = 0; i < 8; i++)
-			for (register int j = 0; j < 8; j++)
+		for (register int i = 0; i < 8; i++){
+			for (register int j = 0; j < 8; j++){
 				ScoreOut[i][j] = score_board[i][j];
+			}
+		}
 
 #ifdef DEBUG_MODE
 		cvShowImage("Add_Canny", _TAdd_Canny);

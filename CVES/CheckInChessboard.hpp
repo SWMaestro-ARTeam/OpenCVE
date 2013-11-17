@@ -40,6 +40,8 @@ private:
 	CvPoint	Get_Chessidx(CvPoint Point, vector<ChessPoint> CrossPoint);
 	// width, height가 가리키는 픽셀이 어느 체스보드 인덱스를 가지는지를 계산하여 반환.
 	CvPoint Get_ChessboxPos(int Width, int Height, vector<ChessPoint> CrossPoint);
+	unsigned char Get_MedianVaul_Inkernel(unsigned char _kernel[][PIXEL_PICK_KERNEL_SIZE]);
+	float Get_GridPixelvalue(IplImage *gray, CvPoint Headpoint, CvPoint Head_right, CvPoint Head_down, CvPoint right_down);
 
 public:
 	CheckInChessboard();
@@ -52,7 +54,7 @@ public:
 	// 차영상의 결과로 나온 이진 이미지를 계산하여 체스말의 좌표이동을 반환.
 	void Calculate_Movement(IplImage *BinaryImage, vector<ChessPoint> CrossPoint, CvPoint out[], float ScoreThreshold = 0.1);
 	// binary 이미지를 이용하여 보드의 각 칸에 스코어를 연산함
-	void Calculate_BoardScore(IplImage *BinaryImage, vector<ChessPoint> CrossPoint, float ScoreBox[][8]);
+	void Calculate_BoardScore(IplImage *BinaryImage, IplImage *GrayImage, vector<ChessPoint> CrossPoint, float ScoreBox[][8]);
 };
 
 #endif

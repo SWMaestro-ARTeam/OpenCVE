@@ -1286,7 +1286,7 @@ void *
 						// 추후 해야할 작업 : 빠질때 어떻게 작업할 것인가.
 						// 손이 들어옴 판정 이후 작업.
 						// 오브젝트 디텍션에 사용되는 차영상 연산 수행.
-						_TEngine_S->Sub_image(_TEngine_S->_PrevImage, _THandDetectionImage, _TEngine_S->_ImageSkin);
+						//_TEngine_S->Sub_image(_TEngine_S->_PrevImage, _THandDetectionImage, _TEngine_S->_ImageSkin);
 
 						// 차영상 결과를 이미지 처리에 사용되는 이미지로 색 부여.
 						/*_TEngine_S->Compose_diffImage(_THandDetectionImage, _TEngine_S->_ImageSkin, cvScalar(0, 255, 255));*/
