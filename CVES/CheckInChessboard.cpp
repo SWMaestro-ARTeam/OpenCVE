@@ -26,9 +26,11 @@
 #include "CheckInChessboard.hpp"
 
 CheckInChessboard::CheckInChessboard() {
+	_Blob.Initialize_BlobLabeling();
 }
 
 CheckInChessboard::~CheckInChessboard() {
+	_Blob.Deinitialize_BlobLabeling();
 }
 
 // 이상 없음.
@@ -223,38 +225,58 @@ void CheckInChessboard::Calculate_BoardScore( IplImage *BinaryImage, IplImage *G
 	// 체스보드 내부 전체 평균을 계산
 	float Chess_avg_pixvalue; 
 
-	IplImage *temp_src = cvCreateImage(cvSize(400, 400), IPL_DEPTH_8U, 1);
-	CvMat* warp_mat = cvCreateMat(3, 3, CV_32FC1);
-	int thickness = 3;
+	/*//IplImage *temp_src = cvCreateImage(cvSize(400, 400), IPL_DEPTH_8U, 1);
+	//CvMat* warp_mat = cvCreateMat(3, 3, CV_32FC1);
+	//int thickness = 3;
 
-	CvPoint2D32f srcTri[4], dstTri[4];
+	//CvPoint2D32f srcTri[4], dstTri[4];
 
-	// 평균을 구하기 위해서 투영변환 연산
-	srcTri[0].x = CrossPoint.at(0).Cordinate.x + thickness;              // X1
-	srcTri[0].y = CrossPoint.at(0).Cordinate.y + thickness;
-	srcTri[1].x = CrossPoint.at(72).Cordinate.x + thickness;    // Y1
-	srcTri[1].y = CrossPoint.at(72).Cordinate.y - thickness;
-	srcTri[2].x = CrossPoint.at(8).Cordinate.x - thickness;              // Z1
-	srcTri[2].y = CrossPoint.at(8).Cordinate.y + thickness;
-	srcTri[3].x = CrossPoint.at(80).Cordinate.x - thickness;
-	srcTri[3].y = CrossPoint.at(80).Cordinate.y - thickness;
+	//// 평균을 구하기 위해서 투영변환 연산
+	//srcTri[0].x = CrossPoint.at(0).Cordinate.x + thickness;              // X1
+	//srcTri[0].y = CrossPoint.at(0).Cordinate.y + thickness;
+	//srcTri[1].x = CrossPoint.at(72).Cordinate.x + thickness;    // Y1
+	//srcTri[1].y = CrossPoint.at(72).Cordinate.y - thickness;
+	//srcTri[2].x = CrossPoint.at(8).Cordinate.x - thickness;              // Z1
+	//srcTri[2].y = CrossPoint.at(8).Cordinate.y + thickness;
+	//srcTri[3].x = CrossPoint.at(80).Cordinate.x - thickness;
+	//srcTri[3].y = CrossPoint.at(80).Cordinate.y - thickness;
 
-	dstTri[0].x = 0;
-	dstTri[0].y = 0;
-	dstTri[1].x = 399;   // Y2
-	dstTri[1].y = 0;
-	dstTri[2].x = 0;   // Z2
-	dstTri[2].y = 399;
-	dstTri[3].x = 399;   // Z2
-	dstTri[3].y = 399;
+	//dstTri[0].x = 0;
+	//dstTri[0].y = 0;
+	//dstTri[1].x = 399;   // Y2
+	//dstTri[1].y = 0;
+	//dstTri[2].x = 0;   // Z2
+	//dstTri[2].y = 399;
+	//dstTri[3].x = 399;   // Z2
+	//dstTri[3].y = 399;
 
-	cvGetPerspectiveTransform(srcTri, dstTri, warp_mat);
-	cvWarpPerspective(GrayImage, temp_src, warp_mat);
+	//cvGetPerspectiveTransform(srcTri, dstTri, warp_mat);
+	//cvWarpPerspective(GrayImage, temp_src, warp_mat);
 
-	CvScalar _Avg_scalar = cvAvg(temp_src);
-	Chess_avg_pixvalue = _Avg_scalar.val[0];
-	cvReleaseImage(&temp_src);
-	cvReleaseMat(&warp_mat);
+	//CvScalar _Avg_scalar = cvAvg(temp_src);
+	//Chess_avg_pixvalue = _Avg_scalar.val[0];
+	//cvReleaseImage(&temp_src);
+	//cvReleaseMat(&warp_mat);*/
+
+	int count = 0;
+	long pix_total = 0;
+	for(register int i = 0; i < GrayImage->width; i++){
+		for(register int j = 0; j < GrayImage->height; j++){
+			unsigned char pixel_value = (unsigned char)GrayImage->imageData[i + j * GrayImage->widthStep];
+
+			if(pixel_value != 0){
+				count++;
+				pix_total += pixel_value;
+			}
+		}
+	}
+
+	//CvScalar _Avg_scalar = cvAvg(GrayImage);
+	Chess_avg_pixvalue = /*_Avg_scalar.val[0]*/pix_total / count;
+
+	//BlobLabeling
+	_Blob.SetParam(BinaryImage, 1);
+	_Blob.DoLabeling();
 
 	// 차영상 면적 계산부.
 	for (register int i = 0; i < BinaryImage->width; i++) {
@@ -355,4 +377,42 @@ float CheckInChessboard::Get_GridPixelvalue( IplImage *gray, CvPoint Headpoint, 
 	cvReleaseMat(&warp_mat);
 
 	return (float)	Get_MedianVaul_Inkernel(_kernel);
+}
+
+void CheckInChessboard::Delete_Chessboard( IplImage *Image, vector<ChessPoint> Point )
+{
+	CvPoint _T_LeftTop, _T_LeftBottom, _T_RightTop, _T_RightBottom; // 왼쪽 위, 왼쪽 아래, 오른쪽 위 오른쪽 아래.
+
+	// tArea : chessboard 전체 넓이, 나머지 : 삼각형 넓이.
+	float _TTriangleArea, _TTriangle1Area, _TTriangle2Area, _TTriangle3Area, _TTriangle4Area;
+
+	// chessboard의 코너점을 구함.
+	_T_LeftTop = Point.at(0).Cordinate;
+	_T_RightTop = Point.at(8).Cordinate;
+	_T_LeftBottom = Point.at(72).Cordinate;
+	_T_RightBottom = Point.at(80).Cordinate;
+
+	// 코너점을 이용하여 chessboard의 넓이 연산.
+	_TTriangleArea = Get_TriangleArea(_T_LeftTop, _T_LeftBottom, _T_RightTop) + Get_TriangleArea(_T_RightTop, _T_RightBottom, _T_LeftBottom);
+
+	// binary image에 존재하는 모든 픽셀을 대상으로 각 코너점과 이루는 삼각형의 넓이를 연산.
+	for (register int i = 0; i < Image->width; i++) {
+		for (register int j = 0; j < Image->height; j++) {
+			unsigned char pixel_value = (unsigned char)Image->imageData[i + j * Image->widthStep];
+
+			if (pixel_value != 0) {
+				// Detection된 임의의 픽셀 좌표와 체스판의 코너점으로 이루어진 삼각형 네개의 넓이를 연산.
+				_TTriangle1Area = Get_TriangleArea(cvPoint(i,j), _T_LeftTop, _T_RightTop);
+				_TTriangle2Area = Get_TriangleArea(cvPoint(i,j), _T_RightTop, _T_RightBottom);
+				_TTriangle3Area = Get_TriangleArea(cvPoint(i,j), _T_RightBottom, _T_LeftBottom);
+				_TTriangle4Area = Get_TriangleArea(cvPoint(i,j), _T_LeftBottom, _T_LeftTop);
+
+				float _TTotalArea = _TTriangle1Area + _TTriangle2Area + _TTriangle3Area + _TTriangle4Area;
+
+				// 각 삼각형의 합이 chessboard의 넓이와 같다면 return true; => 픽셀이 chessboard 내부에 존재함.
+				if (fabs(_TTriangleArea - _TTotalArea) >= 2)
+					Image->imageData[i + j * Image->widthStep] = 0;
+			}
+		}
+	}
 }

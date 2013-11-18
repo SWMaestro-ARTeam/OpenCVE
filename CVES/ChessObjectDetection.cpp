@@ -328,8 +328,12 @@ void ChessObjectDetection::Detect_SobelCannyScore(IplImage *Source, vector<_Ches
 
 		// 체스보드의 라인영향을 최소화시킴.
 		Delete_ChessLine(_TAdd_Canny, CrossPoint);
+		// 체스보드 이외의 영역을 모두 지워냄
+		_CheckChessboard.Delete_Chessboard(_TAdd_Canny, CrossPoint);
+		_CheckChessboard.Delete_Chessboard(_TGray, CrossPoint);
 
-		cvDilate(_TAdd_Canny, _TAdd_Canny, 0, 3);
+		cvDilate(_TAdd_Canny, _TAdd_Canny, 0, 5);
+		cvErode(_TAdd_Canny, _TAdd_Canny, 0, 2);
 
 		// 오브젝트 유무를 확인하기 위해서
 		// 각 체스보드 그리드 안에 엣지가 존재하는 면적비를 연산.
@@ -348,6 +352,7 @@ void ChessObjectDetection::Detect_SobelCannyScore(IplImage *Source, vector<_Ches
 		}
 
 #ifdef DEBUG_MODE
+		cvShowImage("gray", _TGray);
 		cvShowImage("Add_Canny", _TAdd_Canny);
 #endif
 

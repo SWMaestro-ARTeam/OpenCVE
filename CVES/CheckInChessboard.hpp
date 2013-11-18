@@ -27,12 +27,15 @@
 #define _CheckInChessboard_hpp_
 
 #include "CVESDependent.hpp"
+#include "BlobLabeling.hpp"
 #include <mutex>
 
 using namespace std;
 
 class CheckInChessboard {
 private:
+	BlobLabeling _Blob;
+
 	mutex _InChessBoardCalculateProtectMutex;
 	// p, q, r로 이루어진 삼각형의 넓이 return.
 	float Get_TriangleArea(CvPoint Value_P, CvPoint Value_Q, CvPoint Value_R);
@@ -55,6 +58,8 @@ public:
 	void Calculate_Movement(IplImage *BinaryImage, vector<ChessPoint> CrossPoint, CvPoint out[], float ScoreThreshold = 0.1);
 	// binary 이미지를 이용하여 보드의 각 칸에 스코어를 연산함
 	void Calculate_BoardScore(IplImage *BinaryImage, IplImage *GrayImage, vector<ChessPoint> CrossPoint, float ScoreBox[][8]);
+	// 체스보드 바깥을 모두 지움
+	void Delete_Chessboard(IplImage *Image, vector<ChessPoint> Point);
 };
 
 #endif
