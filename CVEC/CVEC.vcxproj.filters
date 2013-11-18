@@ -156,6 +156,15 @@
     <Filter Include="Common\Thread\Header">
       <UniqueIdentifier>{b71ec4e3-44fc-46cf-8987-178958d16548}</UniqueIdentifier>
     </Filter>
+    <Filter Include="CVEC_System\Option">
+      <UniqueIdentifier>{ba2dbe84-2fcf-4181-b676-100ec8c521dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVEC_System\Option\Header">
+      <UniqueIdentifier>{339060dc-00fe-41ed-8012-016c8f6eb746}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVEC_System\Option\Source">
+      <UniqueIdentifier>{1d48fa24-366d-4985-a516-0fddc2c0fc8a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UCICommandSesker.cpp">
@@ -166,9 +175,6 @@
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>CVEC_System\Main\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Option.cpp">
-      <Filter>CVEC_System\EngineC\Source</Filter>
     </ClCompile>
     <ClCompile Include="EngineC.cpp">
       <Filter>CVEC_System\EngineC\Source</Filter>
@@ -206,13 +212,13 @@
     <ClCompile Include="..\Common\Thread.cpp">
       <Filter>Common\Thread\Source</Filter>
     </ClCompile>
+    <ClCompile Include="Option.cpp">
+      <Filter>CVEC_System\Option\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="UCICommand.hpp">
       <Filter>CVEC_System\UCI\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Option.hpp">
-      <Filter>CVEC_System\EngineC\Header</Filter>
     </ClInclude>
     <ClInclude Include="EngineC.hpp">
       <Filter>CVEC_System\EngineC\Header</Filter>
@@ -267,6 +273,9 @@
     </ClInclude>
     <ClInclude Include="..\Common\Thread.hpp">
       <Filter>Common\Thread\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Option.hpp">
+      <Filter>CVEC_System\Option\Header</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -36,6 +36,8 @@
 #include <QtGui>
 #include <QMutex>
 
+#include <queue>
+
 //#include <QTimer>
 
 namespace Ui {
@@ -49,9 +51,10 @@ class CVES : public QMainWindow
 private:
 	Ui::CVES *ui;
 
-	//QTimer *_Timer;
+	QTimer *_Timer;
 	QMutex _FrameImageProtectQMutex;
-	ImageTransformForQT _ImageTransformForQT;
+	ImageTransformForQT *_ImageTransformForQT;
+	queue<IplImage *> *_FrameQueue;
 
 public:
 	explicit CVES(QWidget *parent = 0);
@@ -61,7 +64,7 @@ public:
 	static void EngineSFrameCallback(IplImage *NowFrame);
 
 public slots:
-	//void FrameUpdate();
+	void FrameUpdate();
 private slots:
 	//void show();
 	void on_actionExit_triggered();

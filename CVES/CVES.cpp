@@ -33,22 +33,44 @@ QMainWindow(parent),
 ui(new Ui::CVES) {
 	ui->setupUi(this);
 	G_CVES = this;
-	/*
+
 	_Timer = new QTimer(this);
+	_ImageTransformForQT = new ImageTransformForQT();
+
+	_FrameQueue = new queue<IplImage *>();
+
 	connect(_Timer, SIGNAL(timeout()), this, SLOT(FrameUpdate()));
-	_Timer->start(33);
-	*/
+	_Timer->start(100);
 
 }
 
 CVES::~CVES() {
+	delete _Timer;
+	delete _ImageTransformForQT;
+	delete _FrameQueue;
+
 	delete ui;
 }
 
 void CVES::EngineSFrameCallback(IplImage *NowFrame) {
-	if (G_CVES->_EngineS->IsAllInitialize() == true) {
+	// 생각보다 Qt의 QImage 처리가 매우 느리다.
+	// 이미 예상은 했지만, Memory Leak이 날 정도로 매우 심각하므로,
+	// 이것을 빨리 해결해야한다.
+
+	if (G_CVES->_FrameQueue->size() < 10) {
+		G_CVES->_FrameQueue->push(NowFrame);
+	}
+	else {
+		IplImage *_TImage = G_CVES->_FrameQueue->front();
+		cvReleaseImage(&_TImage);
+		G_CVES->_FrameQueue->pop();
+		cvReleaseImage(&NowFrame);
+	}
+
+	//if (G_CVES->_EngineS->IsAllInitialize() == true) {
 		//G_CVES->_FrameImageProtectQMutex.lock();
 		//IplImage *_TFrame = NowFrame;
+		/*
 		uchar *_TData;
 		//QImage *_TFrameImage = G_CVES->_ImageTransformForQT.IplImageToQImage(NowFrame);
 		QImage *_TFrameImage = G_CVES->_ImageTransformForQT.IplImageToQImage(NowFrame, &_TData);
@@ -56,13 +78,33 @@ void CVES::EngineSFrameCallback(IplImage *NowFrame) {
 		G_CVES->ui->ImageViewLabel->setPixmap(QPixmap::fromImage(*_TFrameImage));
 
 		delete _TFrameImage;
+		*/
 		//delete _TData;
 		//cvReleaseImage(&_TFrame);
 		//G_CVES->_FrameImageProtectQMutex.unlock();
-	}
+	//}
+
 }
-/*
+
 void CVES::FrameUpdate() {
+	if (_FrameQueue->empty() != true) {
+		_FrameImageProtectQMutex.lock();
+		IplImage *_TFrameIplImage = _FrameQueue->front();
+		_FrameQueue->pop();
+
+		uchar *_TData;
+		QImage *_TFrameQImage = G_CVES->_ImageTransformForQT->IplImageToQImage(_TFrameIplImage, &_TData);
+		//QImage _TFrameQImage((uchar *)_TFrameIplImage->imageData, _TFrameIplImage->width, _TFrameIplImage->height, _TFrameIplImage->widthStep, QImage::Format_RGB888);
+		//G_CVES->ui->ImageViewLabel->setPixmap(QPixmap::fromImage(_TFrameQImage));
+		G_CVES->ui->ImageViewLabel->setPixmap(QPixmap::fromImage(*_TFrameQImage).scaled(G_CVES->ui->ImageViewLabel->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+
+		//delete _TFrameQImage;
+		//if (_TFrameIplImage != NULL && _TFrameIplImage != 0x00)
+			cvReleaseImage(&_TFrameIplImage);
+
+		_FrameImageProtectQMutex.unlock();
+	}
+	/*
 	if (_EngineS->IsAllInitialize() == true) {
 		IplImage *_TFrame = _EngineS->Get_FrameImage();
 		uchar *_TData;
@@ -72,8 +114,8 @@ void CVES::FrameUpdate() {
 
 		cvReleaseImage(&_TFrame);
 	}
+	*/
 }
-*/
 
 //void CVES::show() {
 //	_EngineS->TEngineSFrameCallback = EngineSFrameCallback;

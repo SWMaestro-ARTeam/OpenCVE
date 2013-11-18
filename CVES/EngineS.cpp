@@ -34,8 +34,8 @@ EngineS::EngineS() {
 	// Engine을 시작을 위한 Switch 설정.
 	EngineEnable = false;
 	EngineEnd = false;
-	//IsStarted = false;
-	IsStarted = true;
+	IsStarted = false;
+	//IsStarted = true;
 	IsTictokEnable = false;
 
 	// Camera에 대한 해상도 및 ROI 변수 크기 설정.
@@ -691,8 +691,10 @@ void EngineS::DisplayInfomation() {
 	// 화면을 표시한다.
 	cvShowImage("CVES", _DetectionResultOnlyImage);
 #else
-	if (TEngineSFrameCallback != NULL)
-		TEngineSFrameCallback(_DetectionResultOnlyImage);
+	if (TEngineSFrameCallback != NULL) {
+		IplImage *_TCVESView = cvCloneImage(_DetectionResultOnlyImage);
+		TEngineSFrameCallback(_TCVESView);
+	}
 #endif
 	_DetectionResultOnlyImageProtectMutex.unlock();
 }
@@ -1426,7 +1428,7 @@ void *
 #endif
 	return 0;
 }
-#pragma endregion CVEC Processing Thread
+#pragma endregion CVES Processing Thread
 #pragma endregion Threads
 #pragma endregion Private Functions
 
