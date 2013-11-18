@@ -333,7 +333,7 @@ void ChessObjectDetection::Detect_SobelCannyScore(IplImage *Source, vector<_Ches
 		_CheckChessboard.Delete_Chessboard(_TGray, CrossPoint);
 
 		cvDilate(_TAdd_Canny, _TAdd_Canny, 0, 5);
-		cvErode(_TAdd_Canny, _TAdd_Canny, 0, 2);
+		cvErode(_TAdd_Canny, _TAdd_Canny, 0, 4);
 
 		// 오브젝트 유무를 확인하기 위해서
 		// 각 체스보드 그리드 안에 엣지가 존재하는 면적비를 연산.

@@ -218,7 +218,8 @@ void CheckInChessboard::Calculate_BoardScore( IplImage *BinaryImage, IplImage *G
 			CvPoint right_down = CrossPoint.at(cross_idx + 10).Cordinate;
 			ScoreBox[i][j] = 0;
 			_TChess_Area[i][j] = Get_TriangleArea(Head_point, Head_right, Head_down) + Get_TriangleArea(Head_right, right_down, Head_down);
-			_TChess_gray[i][j] = Get_GridPixelvalue(GrayImage, Head_point, Head_right, Head_down, right_down)/* / _TChess_Area[i][j]*/;
+			//_TChess_gray[i][j] = Get_GridPixelvalue(GrayImage, Head_point, Head_right, Head_down, right_down)/* / _TChess_Area[i][j]*/;
+			_TChess_gray[i][j] = 0;
 		}
 	}
 
@@ -277,6 +278,16 @@ void CheckInChessboard::Calculate_BoardScore( IplImage *BinaryImage, IplImage *G
 	//BlobLabeling
 	_Blob.SetParam(BinaryImage, 1);
 	_Blob.DoLabeling();
+
+	CvPoint _center, _idx;
+	float _AvgPixValue;
+	for(register int i = 0; i < _Blob._LabelingQty; i++){
+		_center = cvPoint(_Blob._LabelingInfomation[i].x + _Blob._LabelingInfomation[i].width/2, _Blob._LabelingInfomation[i].y + _Blob._LabelingInfomation[i].height/2);
+		_idx = Get_ChessboxPos(_center.x, _center.y, CrossPoint);
+
+		_AvgPixValue = Get_AvgRect(GrayImage, BinaryImage, _Blob._LabelingInfomation[i]);
+		_TChess_gray[_idx.x][_idx.y] = _AvgPixValue;
+	}
 
 	// 차영상 면적 계산부.
 	for (register int i = 0; i < BinaryImage->width; i++) {
@@ -415,4 +426,25 @@ void CheckInChessboard::Delete_Chessboard( IplImage *Image, vector<ChessPoint> P
 			}
 		}
 	}
+}
+
+float CheckInChessboard::Get_AvgRect( IplImage *GrayImage, IplImage *edge, CvRect ROI )
+{
+	int count = 0;
+	long total = 0;
+
+	for(register int i = 0; i < ROI.width; i++){
+		for(register int j = 0; j < ROI.height; j++){
+			unsigned char _edgeValue = (unsigned char)edge->imageData[(ROI.x + i) + (ROI.y + j) * edge->widthStep];
+			unsigned char _pixelValue = (unsigned char)GrayImage->imageData[(ROI.x + i) + (ROI.y + j) * GrayImage->widthStep];
+
+
+			if(_edgeValue == 255){
+				count++;
+				total += _pixelValue;
+			}
+		}
+	}
+
+	return total / count;
 }

@@ -46,6 +46,9 @@ private:
 	unsigned char Get_MedianVaul_Inkernel(unsigned char _kernel[][PIXEL_PICK_KERNEL_SIZE]);
 	float Get_GridPixelvalue(IplImage *gray, CvPoint Headpoint, CvPoint Head_right, CvPoint Head_down, CvPoint right_down);
 
+	// 사각형 내부 평균 픽셀값을 구함
+	float Get_AvgRect(IplImage *GrayImage, IplImage *edge, CvRect ROI);
+
 public:
 	CheckInChessboard();
 	~CheckInChessboard();
