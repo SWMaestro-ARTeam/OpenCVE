@@ -142,6 +142,7 @@ void HandRecognition::Detect_SkinColour(IplImage *Source, IplImage *Destination)
 		// noise에 의한 영향을 줄이기 위해 모폴로지 연산 적용.
 		cvErode(Destination, Destination, 0, MOP_NUM);
 		cvDilate(Destination, Destination, 0, MOP_NUM);
+		cvDilate(Destination, Destination, 0, 5);
 	}
 	else {
 

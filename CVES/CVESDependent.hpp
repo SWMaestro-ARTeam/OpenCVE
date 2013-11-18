@@ -35,6 +35,7 @@
 #define ROI_DEFAULT_WIDTH 440
 #define ROI_DEFAULT_HEIGHT 440
 #define ROI_FRAME_THICKNESS 4
+#define PIXEL_PICK_KERNEL_SIZE 5
 
 #define _V_MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define _V_MIN(a, b) (((a) < (b)) ? (a) : (b))

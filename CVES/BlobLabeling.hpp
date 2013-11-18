@@ -33,10 +33,14 @@
 class BlobLabeling {
 private:
 	IplImage *_LabelingImage; // 레이블링을 위한 이미지
-	CvRect *_LabelingInfomation; // 각 레이블 정보
+//<<<<<<< HEAD
+	//CvRect *_LabelingInfomation; // 각 레이블 정보
 	Visited *_VisitPoint; // 레이블링시 방문정보
+//=======
 	
-	int _LabelingQty; // 레이블의 갯수
+//	Visited *m_vPoint; // 레이블링시 방문정보
+//>>>>>>> origin/CVES_NewEngine_Extended
+	
 	int _LabelingThreshold; // 레이블링 스레스홀드 값
 	int _ROI_Width, _ROI_Height; // image 관심영역에 대한 사이즈
 
@@ -56,11 +60,26 @@ public:
 	BlobLabeling();
 	~BlobLabeling();
 
+//<<<<<<< HEAD
 	void Get_SideBlob(IplImage *TargetImage, std::vector<int> *PieceIndex, IplImage *OtherImage); // 벽에 붙은 이미지 외에 other에 저장.
 	void Set_Parameter(IplImage *TargetImage, int Threshold); // 레이블링 이미지 선택.
 	void DrawLabel(IplImage *img, CvScalar RGB); // 레이블 그리기.	
 	void Go_Labeling(); // 레이블링(실행).
+//=======
+	CvRect *_LabelingInfomation; // 각 레이블 정보
+	int _LabelingQty; // 레이블의 갯수
 
+	/*
+	// 레이블링 이미지 선택
+	void SetParam(IplImage *image, int nThreshold);
+	// 레이블링(실행)
+	void DoLabeling();
+	// 레이블 그리기
+	void DrawLabel(IplImage *img, CvScalar RGB);
+	// 벽에 붙은 이미지 외에 other에 저장
+	void GetSideBlob(IplImage *img, std::vector<int> *piece_idx, IplImage *other);
+>>>>>>> origin/CVES_NewEngine_Extended
+*/
 	void Initialize_BlobLabeling();
 	void Deinitialize_BlobLabeling();
 };

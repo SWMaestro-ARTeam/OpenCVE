@@ -34,8 +34,8 @@ EngineS::EngineS() {
 	// Engine을 시작을 위한 Switch 설정.
 	EngineEnable = false;
 	EngineEnd = false;
-	IsStarted = false;
-	//IsStarted = true;
+	//IsStarted = false;
+	IsStarted = true;
 	IsTictokEnable = false;
 
 	// Camera에 대한 해상도 및 ROI 변수 크기 설정.
@@ -507,10 +507,10 @@ void EngineS::Sub_image(IplImage *Source1, IplImage *Source2, IplImage *Destinat
 	// 그림자 보정을 위한 Lab 색상계 변환.
 	IplImage *Lab_src1 = cvCreateImage(cvGetSize(Source1), IPL_DEPTH_8U, 3);
 	IplImage *Lab_src2 = cvCreateImage(cvGetSize(Source1), IPL_DEPTH_8U, 3);
-	/*cvCvtColor(src1, Lab_src1, CV_BGR2Lab);
-	cvCvtColor(src2, Lab_src2, CV_BGR2Lab);*/
-	cvCopy(Source1, Lab_src1); // 기존 RGB로 테스트.
-	cvCopy(Source2, Lab_src2);
+	cvCvtColor(Source1, Lab_src1, CV_BGR2Lab);
+	cvCvtColor(Source2, Lab_src2, CV_BGR2Lab);
+	//cvCopy(Source1, Lab_src1); // 기존 RGB로 테스트.
+	//cvCopy(Source2, Lab_src2);
 
 	// 차영상 연산. 각 R,G,B값에 SUB_THRESHOLD를 적용하여 binary image 생성.
 	for (register int i = 0; i < Source1->width; i++) {
@@ -520,12 +520,12 @@ void EngineS::Sub_image(IplImage *Source1, IplImage *Source2, IplImage *Destinat
 			unsigned char SUB_a = abs((unsigned char)Lab_src1->imageData[(i * 3) + (j * Lab_src1->widthStep) + 1] - (unsigned char)Lab_src2->imageData[(i * 3) + (j * Lab_src2->widthStep) + 1]);
 			unsigned char SUB_b = abs((unsigned char)Lab_src1->imageData[(i * 3) + (j * Lab_src1->widthStep) + 2] - (unsigned char)Lab_src2->imageData[(i * 3) + (j * Lab_src2->widthStep) + 2]);
 
-			/*if ((SUB_L > SUB_LabTHRESHOLD*5) && (SUB_a > SUB_LabTHRESHOLD || SUB_b > SUB_LabTHRESHOLD)) {
-				dst->imageData[i + (j * dst->widthStep)] = (unsigned char)255;
-			}*/
-			if (SUB_L > SUB_THRESHOLD || SUB_a > SUB_THRESHOLD || SUB_b > SUB_THRESHOLD) {
+			if ((SUB_L > SUB_LabTHRESHOLD*5) && (SUB_a > SUB_LabTHRESHOLD || SUB_b > SUB_LabTHRESHOLD)) {
 				Destination->imageData[i + (j * Destination->widthStep)] = (unsigned char)255;
 			}
+			/*if (SUB_L > SUB_THRESHOLD || SUB_a > SUB_THRESHOLD || SUB_b > SUB_THRESHOLD) {
+				Destination->imageData[i + (j * Destination->widthStep)] = (unsigned char)255;
+			}*/
 		}
 	}
 
@@ -564,9 +564,8 @@ void EngineS::See() {
 	bool _IsNoReleaseHandDetection = false;
 
 	_CamOriginImage = cvQueryFrame(_Cam);
-
-	if (_CamOriginImage != NULL && (_CamOriginImage->width >= _Resolution_Width
-		&& _CamOriginImage->height >= _Resolution_Height)) {	
+	if (_CamOriginImage->width >= _Resolution_Width
+		&& _CamOriginImage->height >= _Resolution_Height) {	
 		cvFlip(_CamOriginImage, _CamOriginImage, FLIP_MODE);
 		//cvCvtColor(_CamOriginalImage, _CamHSV, CV_BGR2HSV);
 
@@ -650,8 +649,13 @@ void EngineS::Evaluation() {
 		// Out 결과로, Turn을 출력한다.
 		_IsTrun = _ChessGame->Chess_Process(out, predicted_mode);
 
+//<<<<<<< HEAD
 		//_DetectionResultOnlyImageProtectMutex.lock();
-		if (_ChessGame->Check_InvalidMove(_DetectionResultOnlyImage, _CrossPoint, out) != true) {
+		//if (_ChessGame->Check_InvalidMove(_DetectionResultOnlyImage, _CrossPoint, out) != true) {
+//=======
+		// Check_InvalidMove가 false일 때는 정상움직임, Check_InvalildMove가 true일때는 InvalidMove
+		if(_ChessGame->Check_InvalidMove(_DetectionResultOnlyImage, _CrossPoint, out, 100, 20) == false){
+//>>>>>>> origin/CVES_NewEngine_Extended
 			string _TString = string("Move ").append(string(_ChessGame->Get_RecentMove()));
 			// Game을 하고 있는 Client를 검색한다.
 			// 들어온 Client 중에 알맞은 Client에게 답을 보낸다.
@@ -668,7 +672,11 @@ void EngineS::Evaluation() {
 				}
 			}
 		}
+//<<<<<<< HEAD
 		//_DetectionResultOnlyImageProtectMutex.unlock();
+//=======
+
+//>>>>>>> origin/CVES_NewEngine_Extended
 #if defined(DEBUG_MODE)
 		//uci에 맞춰 return하는 부분 현재 printf로 출력
 		_ChessGame->Show_ChessImage();
@@ -686,6 +694,10 @@ void EngineS::DisplayInfomation() {
 			(_ChessRecognitionProcessingFrames > _HandRecognitionProcessingFrames)
 			? _ChessRecognitionProcessingFrames : _HandRecognitionProcessingFrames
 			, _ROIRectColour);
+
+		if(_ChessGame->Return_errorFlag() == true){
+			_ChessGame->Draw_InvalidMove(_DetectionResultOnlyImage, _CrossPoint, 100, 20);
+		}
 	}
 #if !defined(USING_QT)
 	// 화면을 표시한다.
@@ -968,7 +980,7 @@ void EngineS::Verdict() {
 
 #pragma region Callbacks
 void EngineS::ServerReceivedCallback(char *Buffer, SOCKET ClientSocket) {
-	Sleep(100);
+	//Sleep(100);
 	// using mutex.
 	//G_EngineS->_QueueProtectMutex.lock();
 	ServerGetInformation *_TServerGetInformation = new ServerGetInformation;
@@ -1132,6 +1144,7 @@ void *
 #endif
 	Param) {
 	EngineS *_TEngine_S = (EngineS *)Param;
+	bool first_recognition = false;
 
 	// Chess 인식을 위한 Class 초기화.
 	_TEngine_S->_ChessRecognition = new ChessRecognition();
@@ -1165,6 +1178,12 @@ void *
 				// Cross Point를 찾는다.
 				_TEngine_S->_ChessRecognition->Find_ChessPoint(_TChessBoardOriginImage, &_TEngine_S->_CrossPoint);
 
+				if(_TEngine_S->_CrossPoint.size() == 81 && first_recognition == false){
+					// 체스판이 디텍션됬을 때는 색상을 초록색으로 변경한다
+					_TEngine_S->_ROIRectColour = cvScalar(0,255);
+					first_recognition = true;
+				}
+
 				// ROI를 원래대로 돌려 놓는다.
 				cvResetImageROI(_TChessBoardOriginImage);
 
@@ -1176,9 +1195,6 @@ void *
 				cvZero(_TEngine_S->_DetectionResultOnlyImage);
 				cvCopy(_TChessBoardOriginImage, _TEngine_S->_DetectionResultOnlyImage);
 				_TEngine_S->_DetectionResultOnlyImageProtectMutex.unlock();
-
-				// 체스판이 디텍션됬을 때는 색상을 초록색으로 변경한다
-				_TEngine_S->_ROIRectColour = cvScalar(0,255);
 
 				// 썼던 Image를 Release한다.
 				// Queue로 받아온 _TChessBoardOriginImage의 경우, 보내준 쪽(Go_ImageProcessing)이 아니라, 여기서 Release를 해야 함.
@@ -1279,37 +1295,42 @@ void *
 					else {
 						// 추후 해야할 작업 : 빠질때 어떻게 작업할 것인가.
 						// 손이 들어옴 판정 이후 작업.
-
-//#if !defined(USING_QT)
-//#	if defined(DEBUG_MODE)
-//						cvShowImage("유레카1", _THandDetectionImage);
-//#	endif
-//#endif
 						// 오브젝트 디텍션에 사용되는 차영상 연산 수행.
-						_TEngine_S->Sub_image(_TEngine_S->_PrevImage, _THandDetectionImage, _TEngine_S->_ImageSkin);
+						//_TEngine_S->Sub_image(_TEngine_S->_PrevImage, _THandDetectionImage, _TEngine_S->_ImageSkin);
 
 						// 차영상 결과를 이미지 처리에 사용되는 이미지로 색 부여.
 						/*_TEngine_S->Compose_diffImage(_THandDetectionImage, _TEngine_S->_ImageSkin, cvScalar(0, 255, 255));*/
 
 						// BlobLabeling
-						_TEngine_S->_BlobLabeling->Set_Parameter(_TEngine_S->_ImageSkin, 1);
-						_TEngine_S->_BlobLabeling->Go_Labeling();
-						_TEngine_S->_BlobLabeling->DrawLabel(_THandDetectionImage, cvScalar(255,0,255));
+//<<<<<<< HEAD
+//						_TEngine_S->_BlobLabeling->Set_Parameter(_TEngine_S->_ImageSkin, 1);
+//						_TEngine_S->_BlobLabeling->Go_Labeling();
+//						_TEngine_S->_BlobLabeling->DrawLabel(_THandDetectionImage, cvScalar(255,0,255));
+//=======
+						//_TEngine_S->_BlobLabeling->SetParam(_TEngine_S->_ImageSkin, 1);
+						//_TEngine_S->_BlobLabeling->DoLabeling();
+						//_TEngine_S->_BlobLabeling->DrawLabel(_THandDetectionImage, cvScalar(255,0,255));
+//>>>>>>> origin/CVES_NewEngine_Extended
 
 						// 손판정
 						// 손 정의 - 차영상 결과 디텍션된 오브젝트.
 						//          오브젝트 중 window 경계에 있는 물체
-						_TEngine_S->_BlobLabeling->Get_SideBlob(_TEngine_S->_ImageSkin, &_TEngine_S->_PieceIndex, _TEngine_S->_OtherBinaryImage); // 손이 아니라고 판정되는 오브젝트를 이진 영상에서 제거
+//<<<<<<< HEAD
+//						_TEngine_S->_BlobLabeling->Get_SideBlob(_TEngine_S->_ImageSkin, &_TEngine_S->_PieceIndex, _TEngine_S->_OtherBinaryImage); // 손이 아니라고 판정되는 오브젝트를 이진 영상에서 제거
+//=======
+						//_TEngine_S->_BlobLabeling->GetSideBlob(_TEngine_S->_ImageSkin, &_TEngine_S->_PieceIndex, _TEngine_S->_OtherBinaryImage); // 손이 아니라고 판정되는 오브젝트를 이진 영상에서 제거
+//>>>>>>> origin/CVES_NewEngine_Extended
 #if defined(DEBUG_MODE)
-						_TEngine_S->Compose_diffImage(_THandDetectionImage, _TEngine_S->_ImageSkin, cvScalar(100, 100, 255)); // 손만 남은 이진 영상으로 원본 영상에 색을 부여
+						//_TEngine_S->Compose_diffImage(_THandDetectionImage, _TEngine_S->_ImageSkin, cvScalar(100, 100, 255)); // 손만 남은 이진 영상으로 원본 영상에 색을 부여
 #endif
 						// 이미지 처리에 사용되는 이미지에 Chessboard recognition 결과로 연산된 좌표를 표기
 						//_ChessRecognition.drawPoint(_ImageChess, _CrossPoint);
+						_TEngine_S->_HandRecognition->Detect_SkinColour(_THandDetectionImage, _TEngine_S->_ImageSkin);
 						cvDilate(_TEngine_S->_ImageSkin, _TEngine_S->_ImageSkin, 0, 5);
 //#if !defined(USING_QT)
-//#	if defined(DEBUG_MODE)
-//						cvShowImage("skin", _TEngine_S->_ImageSkin);
-//#	endif
+#	if defined(DEBUG_MODE)
+						cvShowImage("skin", _TEngine_S->_ImageSkin);
+#	endif
 //#endif
 
 						// 체스보드 안으로 손이 들어왔는지를 확인
@@ -1322,6 +1343,7 @@ void *
 							// Evauluation 실행부
 
 							_TEngine_S->Evaluation();
+							_TEngine_S->_ROIRectColour = cvScalar(0,255);
 						}
 
 //#if !defined(USING_QT)
@@ -1419,13 +1441,14 @@ void *
 	}
 
 	_TEngine_S->Deinitialize_ImageProcessing();
-	// 가장 마지막으로, Engine이 End가 됨을 알림.
-	_TEngine_S->EngineEnd = true;
+
 #if defined(WINDOWS_SYS)
 	_endthread();
 #elif defined(POSIX_SYS)
 
 #endif
+	// 가장 마지막으로, Engine이 End가 됨을 알림.
+	_TEngine_S->EngineEnd = true;
 	return 0;
 }
 #pragma endregion CVES Processing Thread
