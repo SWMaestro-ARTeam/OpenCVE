@@ -32,7 +32,7 @@ ChessObjectDetection::ChessObjectDetection() {
 	_low_bright = 135;
 	_high_bright = 0;
 
-	_thickness = 20;
+	_thickness = 23;
 
 	_score_threshold = 0.01;
 	_sub_threshold = 0.01;
@@ -126,7 +126,7 @@ void ChessObjectDetection::Delete_ChessLine(IplImage *Edge, vector<_ChessPoint> 
 void ChessObjectDetection::Thresholding_Score(float Score[][8], float Threshold) {
 	for (register int i = 0; i < 8; i++) {
 		for (register int j = 0; j < 8; j++) {
-			if (Score[i][j] < Threshold)
+			if (fabs(Score[i][j]) < Threshold)
 				Score[i][j] = 0.0f;
 		}
 	}
@@ -234,69 +234,103 @@ void ChessObjectDetection::DetectMovement(float score_before[][8], float score_a
 
 	// 스코어를 면적으로 나눠줘서 비율을 구함.
 	// 가장 비율이 큰 두 좌표를 리턴. -> num 개의 좌표를 리턴
-	float temp_max[4];
-	CvPoint p_max[4];
+//	float temp_max[4];
+//	CvPoint p_max[4];
+//
+//	// 초기화
+//	for (register int i = 0; i < 4; i++){
+//		p_max[i] = cvPoint(-1,-1);
+//		temp_max[i] = -1.0;
+//	}
+//
+//	// 스코어 차이값 연산부
+//	for(register int i = 0; i < 8; i++)
+//		for(register int j = 0; j < 8; j++)
+//			sub_score[i][j] = fabs(score_before[i][j] - score_after[i][j]);
+//
+//	// 0번지부터 큰순으로 연산한 결과 저장
+//	for (register int i = 0 ; i < 8; i++) {
+//		for (register int j = 0; j < 8; j++) {
+//
+//			if(_sub_threshold <= sub_score[i][j]){
+//				if(temp_max[0] <= sub_score[i][j]){
+//					temp_max[3] = temp_max[2];
+//					temp_max[2] = temp_max[1];
+//					temp_max[1] = temp_max[0];
+//					temp_max[0] = sub_score[i][j];
+//
+//					p_max[3] = p_max[2];
+//					p_max[2] = p_max[1];
+//					p_max[1] = p_max[0];
+//					p_max[0] = cvPoint(i,j);
+//				}
+//				else if(temp_max[0] > sub_score[i][j] && sub_score[i][j] >= temp_max[1]) {
+//					temp_max[3] = temp_max[2];
+//					temp_max[2] = temp_max[1];
+//					temp_max[1] = sub_score[i][j];
+//
+//					p_max[3] = p_max[2];
+//					p_max[2] = p_max[1];
+//					p_max[1] = cvPoint(i,j);
+//				}
+//				else if(temp_max[1] > sub_score[i][j] && sub_score[i][j] >= temp_max[2]) {
+//					temp_max[3] = temp_max[2];
+//					temp_max[2] = sub_score[i][j];
+//
+//					p_max[3] = p_max[2];
+//					p_max[2] = cvPoint(i,j);
+//				}
+//				else if(temp_max[2] > sub_score[i][j] && sub_score[i][j] >= temp_max[3]) {
+//					temp_max[3] = sub_score[i][j];
+//
+//					p_max[3] = cvPoint(i,j);
+//				}
+//			}
+//		}
+//	}
+//
+//	// 4개에 할당.
+//	for (register int i = 0; i < 4; i++){
+//		out[i] = p_max[i];
+//#ifdef DEBUG_MODE
+//		printf("(%d, %d) - %f\n", p_max[i].x, p_max[i].y, temp_max[i]);
+//#endif
+//	}
+//#ifdef DEBUG_MODE
+//	printf("\n");
+//#endif
 
-	// 초기화
-	for (register int i = 0; i < 4; i++){
-		p_max[i] = cvPoint(-1,-1);
-		temp_max[i] = -1.0;
+	for(register int i = 0; i < 8; i++){
+		for(register int j = 0; j < 8; j++){
+			if(score_before[i][j] > 0)
+				score_before[i][j] = 1;
+			else if(score_before[i][j] < 0)
+				score_before[i][j] = -1;
+			if(score_after[i][j] > 0)
+				score_after[i][j] = 1;
+			else if(score_after[i][j] < 0)
+				score_after[i][j] = -1;
+		}
 	}
 
-	// 스코어 차이값 연산부
-	for(register int i = 0; i < 8; i++)
-		for(register int j = 0; j < 8; j++)
-			sub_score[i][j] = fabs(score_before[i][j] - score_after[i][j]);
+	for(register int i = 0; i < 4; i++)
+		out[i] = cvPoint(-1,-1);
 
-	// 0번지부터 큰순으로 연산한 결과 저장
-	for (register int i = 0 ; i < 8; i++) {
-		for (register int j = 0; j < 8; j++) {
-
-			if(_sub_threshold <= sub_score[i][j]){
-				if(temp_max[0] <= sub_score[i][j]){
-					temp_max[3] = temp_max[2];
-					temp_max[2] = temp_max[1];
-					temp_max[1] = temp_max[0];
-					temp_max[0] = sub_score[i][j];
-
-					p_max[3] = p_max[2];
-					p_max[2] = p_max[1];
-					p_max[1] = p_max[0];
-					p_max[0] = cvPoint(i,j);
-				}
-				else if(temp_max[0] > sub_score[i][j] && sub_score[i][j] >= temp_max[1]) {
-					temp_max[3] = temp_max[2];
-					temp_max[2] = temp_max[1];
-					temp_max[1] = sub_score[i][j];
-
-					p_max[3] = p_max[2];
-					p_max[2] = p_max[1];
-					p_max[1] = cvPoint(i,j);
-				}
-				else if(temp_max[1] > sub_score[i][j] && sub_score[i][j] >= temp_max[2]) {
-					temp_max[3] = temp_max[2];
-					temp_max[2] = sub_score[i][j];
-
-					p_max[3] = p_max[2];
-					p_max[2] = cvPoint(i,j);
-				}
-				else if(temp_max[2] > sub_score[i][j] && sub_score[i][j] >= temp_max[3]) {
-					temp_max[3] = sub_score[i][j];
-
-					p_max[3] = cvPoint(i,j);
+	int count = 0;
+	for(register int i = 0; i < 8; i++){
+		for(register int j = 0; j < 8; j++){
+			if(fabs(score_before[i][j] - score_after[i][j]) > 0){
+				if(count < 4){
+					out[count] = cvPoint(i,j);
+#if defined(DEBUG_MODE)
+					printf("%d : (%d, %d) - score %d\n", count, i,j, (int)(score_before[i][j] - score_after[i][j]));
+#endif
+					count++;
 				}
 			}
 		}
 	}
-
-	// 4개에 할당.
-	for (register int i = 0; i < 4; i++){
-		out[i] = p_max[i];
-#ifdef DEBUG_MODE
-		printf("(%d, %d) - %f\n", p_max[i].x, p_max[i].y, temp_max[i]);
-#endif
-	}
-#ifdef DEBUG_MODE
+#if defined(DEBUG_MODE)
 	printf("\n");
 #endif
 }
@@ -322,18 +356,22 @@ void ChessObjectDetection::Detect_SobelCannyScore(IplImage *Source, vector<_Ches
 
 		cvCvtColor(Source, _TGray, CV_BGR2GRAY);
 		// sobel->canny.
-		cvSmooth(_TGray, _TGray, CV_GAUSSIAN);
+		for(register int i = 0; i < NUM_GAUSS; i++){
+			cvSmooth(_TGray, _TGray, CV_MEDIAN);
+		}
+		for(register int i = 0; i < NUM_MEDIAN; i++){
+			cvSmooth(_TGray, _TGray, CV_GAUSSIAN);
+		}
 		cvSobel(_TGray, _TSobel, 1, 1, 5);
 		cvCanny(_TSobel, _TAdd_Canny, 100, 150);
 
 		// 체스보드의 라인영향을 최소화시킴.
 		Delete_ChessLine(_TAdd_Canny, CrossPoint);
 		// 체스보드 이외의 영역을 모두 지워냄
-		_CheckChessboard.Delete_Chessboard(_TAdd_Canny, CrossPoint);
 		_CheckChessboard.Delete_Chessboard(_TGray, CrossPoint);
-
-		cvDilate(_TAdd_Canny, _TAdd_Canny, 0, 5);
-		cvErode(_TAdd_Canny, _TAdd_Canny, 0, 4);
+		_CheckChessboard.Delete_Chessboard(_TAdd_Canny, CrossPoint);
+		cvDilate(_TAdd_Canny, _TAdd_Canny, 0, 7);
+		cvErode(_TAdd_Canny, _TAdd_Canny, 0, 6);
 
 		// 오브젝트 유무를 확인하기 위해서
 		// 각 체스보드 그리드 안에 엣지가 존재하는 면적비를 연산.
@@ -342,7 +380,7 @@ void ChessObjectDetection::Detect_SobelCannyScore(IplImage *Source, vector<_Ches
 		_CheckChessboard.Calculate_BoardScore(_TAdd_Canny, _TGray, CrossPoint, score_board);
 
 		// 스코어 thresholding
-		//Thresholding_Score(score_board, _score_threshold);
+		Thresholding_Score(score_board, _score_threshold);
 
 		// 출력으로 복사
 		for (register int i = 0; i < 8; i++){

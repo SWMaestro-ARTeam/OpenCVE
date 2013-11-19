@@ -31,6 +31,9 @@
 #include "CVESDependent.hpp"
 #include "CheckInChessboard.hpp"
 
+#define NUM_MEDIAN 3
+#define NUM_GAUSS 1
+
 using namespace std;
 
 class ChessObjectDetection {

@@ -206,6 +206,7 @@ void CheckInChessboard::Calculate_BoardScore( IplImage *BinaryImage, IplImage *G
 {
 	float _TChess_Area[8][8]; // 체스 영역 저장 배열.
 	float _TChess_gray[8][8]; // 체스 그리드의 평균 색상값 저장
+	int _TChess_Blob[8][8];		// 체스 내부 blob의 갯수를 잡음
 	unsigned char _kernel[PIXEL_PICK_KERNEL_SIZE][PIXEL_PICK_KERNEL_SIZE]; // 픽셀값을 취할 커널
 
 	// 각 체스 영역 면적 계산부
@@ -220,6 +221,7 @@ void CheckInChessboard::Calculate_BoardScore( IplImage *BinaryImage, IplImage *G
 			_TChess_Area[i][j] = Get_TriangleArea(Head_point, Head_right, Head_down) + Get_TriangleArea(Head_right, right_down, Head_down);
 			//_TChess_gray[i][j] = Get_GridPixelvalue(GrayImage, Head_point, Head_right, Head_down, right_down)/* / _TChess_Area[i][j]*/;
 			_TChess_gray[i][j] = 0;
+			_TChess_Blob[i][j] = 0;
 		}
 	}
 
@@ -285,8 +287,17 @@ void CheckInChessboard::Calculate_BoardScore( IplImage *BinaryImage, IplImage *G
 		_center = cvPoint(_Blob._LabelingInfomation[i].x + _Blob._LabelingInfomation[i].width/2, _Blob._LabelingInfomation[i].y + _Blob._LabelingInfomation[i].height/2);
 		_idx = Get_ChessboxPos(_center.x, _center.y, CrossPoint);
 
-		_AvgPixValue = Get_AvgRect(GrayImage, BinaryImage, _Blob._LabelingInfomation[i]);
-		_TChess_gray[_idx.x][_idx.y] = _AvgPixValue;
+		_AvgPixValue = /*Get_AvgRect(GrayImage, BinaryImage, _Blob._LabelingInfomation[i])*/Get_MedianRect(GrayImage, _Blob._LabelingInfomation[i]);
+		_TChess_Blob[_idx.x][_idx.y]++;
+		_TChess_gray[_idx.x][_idx.y] += _AvgPixValue;
+
+		cvDrawRect(GrayImage, cvPoint(_Blob._LabelingInfomation[i].x, _Blob._LabelingInfomation[i].y), cvPoint(_Blob._LabelingInfomation[i].x + _Blob._LabelingInfomation[i].width, _Blob._LabelingInfomation[i].y + _Blob._LabelingInfomation[i].height), cvScalarAll(255), 3);
+	}
+
+	for(register int i = 0; i < 8; i++){
+		for(register int j = 0; j < 8; j++){
+			_TChess_gray[i][j] /= _TChess_Blob[i][j];
+		}
 	}
 
 	// 차영상 면적 계산부.
@@ -326,6 +337,10 @@ void CheckInChessboard::Calculate_BoardScore( IplImage *BinaryImage, IplImage *G
 	for (register int i = 0 ; i < 8; i++) {
 		for (register int j = 0; j < 8; j++) {
 			ScoreBox[i][j] /= _TChess_Area[i][j];
+			/*if(ScoreBox[i][j] > 0)
+				ScoreBox[i][j] = 1;
+			else if(ScoreBox[i][j] < 0)
+				ScoreBox[i][j] = -1;*/
 		}
 	}
 }
@@ -447,4 +462,29 @@ float CheckInChessboard::Get_AvgRect( IplImage *GrayImage, IplImage *edge, CvRec
 	}
 
 	return total / count;
+}
+
+unsigned char CheckInChessboard::Get_MedianRect( IplImage *Gray, CvRect ROI )
+{
+	IplImage *ROI_Image = cvCreateImage(cvSize(ROI.width, ROI.height), IPL_DEPTH_8U, 1);
+
+	cvSetImageROI(Gray, ROI);
+	cvCopy(Gray, ROI_Image);
+	cvResetImageROI(Gray);
+
+	// 속력 문제 개선 여지
+	vector<unsigned char> _temp_vector;
+	
+	for(register int i = 0; i < ROI_Image->width; i++){
+		for(register int j = 0; j < ROI_Image->height; j++){
+			_temp_vector.push_back(ROI_Image->imageData[i + j * ROI_Image->widthStep]);
+		}
+	}
+	
+	sort(_temp_vector.begin(), _temp_vector.end());
+
+	unsigned char return_value = (unsigned char)_temp_vector.at((ROI_Image->width-1)*(ROI_Image->height-1) / 2);
+	cvReleaseImage(&ROI_Image);
+
+	return return_value;
 }

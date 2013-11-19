@@ -48,6 +48,8 @@ private:
 
 	// 사각형 내부 평균 픽셀값을 구함
 	float Get_AvgRect(IplImage *GrayImage, IplImage *edge, CvRect ROI);
+	// 사각형 내부 평균 중간값을 구함
+	unsigned char Get_MedianRect(IplImage *Gray, CvRect ROI);
 
 public:
 	CheckInChessboard();
