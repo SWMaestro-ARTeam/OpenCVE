@@ -291,7 +291,11 @@ void CheckInChessboard::Calculate_BoardScore( IplImage *BinaryImage, IplImage *G
 		_TChess_Blob[_idx.x][_idx.y]++;
 		_TChess_gray[_idx.x][_idx.y] += _AvgPixValue;
 
-		cvDrawRect(GrayImage, cvPoint(_Blob._LabelingInfomation[i].x, _Blob._LabelingInfomation[i].y), cvPoint(_Blob._LabelingInfomation[i].x + _Blob._LabelingInfomation[i].width, _Blob._LabelingInfomation[i].y + _Blob._LabelingInfomation[i].height), cvScalarAll(255), 3);
+		if(_AvgPixValue > Chess_avg_pixvalue){
+			cvDrawRect(GrayImage, cvPoint(_Blob._LabelingInfomation[i].x, _Blob._LabelingInfomation[i].y), cvPoint(_Blob._LabelingInfomation[i].x + _Blob._LabelingInfomation[i].width, _Blob._LabelingInfomation[i].y + _Blob._LabelingInfomation[i].height), cvScalarAll(255), -1);
+		}else{
+			cvDrawRect(GrayImage, cvPoint(_Blob._LabelingInfomation[i].x, _Blob._LabelingInfomation[i].y), cvPoint(_Blob._LabelingInfomation[i].x + _Blob._LabelingInfomation[i].width, _Blob._LabelingInfomation[i].y + _Blob._LabelingInfomation[i].height), cvScalarAll(0), -1);
+		}		
 	}
 
 	for(register int i = 0; i < 8; i++){

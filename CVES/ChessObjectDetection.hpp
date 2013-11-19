@@ -31,8 +31,8 @@
 #include "CVESDependent.hpp"
 #include "CheckInChessboard.hpp"
 
-#define NUM_MEDIAN 3
-#define NUM_GAUSS 1
+#define NUM_MEDIAN 2
+#define NUM_GAUSS 2
 
 using namespace std;
 
