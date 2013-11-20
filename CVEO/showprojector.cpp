@@ -19,11 +19,11 @@ ShowProjector::ShowProjector(/*list<CvPoint> _ChessDisplayCalcultionPoint8*/){
 
     G_ShowProjector = this;
 
-    complete = false;
-    count = 0;
+    _complete = false;
+    _count = 0;
 
     for(int i=0; i<4;i++)
-        before_ChessSquarePoint.push_back(cvPoint(0,0));
+        _before_ChessSquarePoint.push_back(cvPoint(0,0));
 }
 
 ShowProjector::~ShowProjector(){
@@ -38,33 +38,33 @@ void ShowProjector::mymouse(int event, int x, int y, int flags, void* param){
 
     switch(event){
     case CV_EVENT_LBUTTONDOWN:
-        if(G_ShowProjector->complete == false){
-            G_ShowProjector->position[G_ShowProjector->count] = cvPoint(x,y);
-            printf("click x : %d, y :%d\n", G_ShowProjector->position[G_ShowProjector->count].x, G_ShowProjector->position[G_ShowProjector->count].y);
-            G_ShowProjector->count++;
+        if(G_ShowProjector->_complete == false){
+            G_ShowProjector->_position[G_ShowProjector->_count] = cvPoint(x,y);
+            printf("click x : %d, y :%d\n", G_ShowProjector->_position[G_ShowProjector->_count].x, G_ShowProjector->_position[G_ShowProjector->_count].y);
+            G_ShowProjector->_count++;
 
-            if(G_ShowProjector->count == 4){
-                G_ShowProjector->complete = true;
+            if(G_ShowProjector->_count == 4){
+                G_ShowProjector->_complete = true;
 
-                G_ShowProjector->srcTri[0].x = 0;              // X1
-                G_ShowProjector->srcTri[0].y = 0;
-                G_ShowProjector->srcTri[1].x = G_ShowProjector->tempgame_board->width-1;    // Y1
-                G_ShowProjector->srcTri[1].y = 0;
-                G_ShowProjector->srcTri[2].x = 0;              // Z1
-                G_ShowProjector->srcTri[2].y = G_ShowProjector->tempgame_board->height - 1;
-                G_ShowProjector->srcTri[3].x = G_ShowProjector->tempgame_board->width-1;
-                G_ShowProjector->srcTri[3].y = G_ShowProjector->tempgame_board->height - 1;
+                G_ShowProjector->_srcTri[0].x = 0;              // X1
+                G_ShowProjector->_srcTri[0].y = 0;
+                G_ShowProjector->_srcTri[1].x = G_ShowProjector->tempgame_board->width-1;    // Y1
+                G_ShowProjector->_srcTri[1].y = 0;
+                G_ShowProjector->_srcTri[2].x = 0;              // Z1
+                G_ShowProjector->_srcTri[2].y = G_ShowProjector->tempgame_board->height - 1;
+                G_ShowProjector->_srcTri[3].x = G_ShowProjector->tempgame_board->width-1;
+                G_ShowProjector->_srcTri[3].y = G_ShowProjector->tempgame_board->height - 1;
 
-                G_ShowProjector->dstTri[0].x = G_ShowProjector->position[0].x;
-                G_ShowProjector->dstTri[0].y = G_ShowProjector->position[0].y;
-                G_ShowProjector->dstTri[1].x = G_ShowProjector->position[1].x;   // Y2
-                G_ShowProjector->dstTri[1].y = G_ShowProjector->position[1].y;
-                G_ShowProjector->dstTri[2].x = G_ShowProjector->position[2].x;   // Z2
-                G_ShowProjector->dstTri[2].y = G_ShowProjector->position[2].y;
-                G_ShowProjector->dstTri[3].x = G_ShowProjector->position[3].x;   // Z2
-                G_ShowProjector->dstTri[3].y = G_ShowProjector->position[3].y;
+                G_ShowProjector->_dstTri[0].x = G_ShowProjector->_position[0].x;
+                G_ShowProjector->_dstTri[0].y = G_ShowProjector->_position[0].y;
+                G_ShowProjector->_dstTri[1].x = G_ShowProjector->_position[1].x;   // Y2
+                G_ShowProjector->_dstTri[1].y = G_ShowProjector->_position[1].y;
+                G_ShowProjector->_dstTri[2].x = G_ShowProjector->_position[2].x;   // Z2
+                G_ShowProjector->_dstTri[2].y = G_ShowProjector->_position[2].y;
+                G_ShowProjector->_dstTri[3].x = G_ShowProjector->_position[3].x;   // Z2
+                G_ShowProjector->_dstTri[3].y = G_ShowProjector->_position[3].y;
 
-                cvGetPerspectiveTransform(G_ShowProjector->srcTri, G_ShowProjector->dstTri, G_ShowProjector->warp_mat);
+                cvGetPerspectiveTransform(G_ShowProjector->_srcTri, G_ShowProjector->_dstTri, G_ShowProjector->warp_mat);
 
             }
         }
@@ -106,13 +106,13 @@ void ShowProjector::ShowChessImage(){
 
     for (register int i = 0; i < 8; i++) {
         for (register int j = 0; j < 8; j++) {
-            if((Turn == WHITE_TURN && _Board[i][j] >= W_King && _Board[i][j] <= W_Pawn) || (Turn == BLACK_TURN && _Board[i][j] >= B_King && _Board[i][j] <= B_Pawn)){
+            if((_Turn == WHITE_TURN && _Board[i][j] >= W_King && _Board[i][j] <= W_Pawn) || (_Turn == BLACK_TURN && _Board[i][j] >= B_King && _Board[i][j] <= B_Pawn)){
                 if(_Board[i][j] != 0){
                     sprintf(temp_buf, "%s/%d.png", str,_Board[i][j]);
                     IplImage *Chess_Piece = cvLoadImage(temp_buf, CV_LOAD_IMAGE_UNCHANGED);
 
                     if(Chess_Piece != NULL){
-                        ImageRotate(Chess_Piece, Turn);
+                        ImageRotate(Chess_Piece, _Turn);
                         //cvSetImageROI(chessboard_img, cvRect(j*64, i*64, 64, 64));
                         // 알파값 추가 처리.
                         for (register int k = 0; k < Chess_Piece->width; k++){
@@ -167,11 +167,11 @@ void ShowProjector::ShowProjector_process(/*int up_Board[8][8]*/){
     while(1){
         cvCopy(white_board, draw_board);
 
-        if(!complete){
-            for(int i = 0; i < count; i++)
-                cvDrawCircle(draw_board, position[i], 5, cvScalar(0,0,255), -1);
+        if(!_complete){
+            for(int i = 0; i < _count; i++)
+                cvDrawCircle(draw_board, _position[i], 5, cvScalar(0,0,255), -1);
         }
-        else if(complete){
+        else if(_complete){
             cvCvtColor(tempgame_board,  Chess_RGB, CV_BGRA2BGR);
 
             ShowChessImage();
@@ -179,16 +179,14 @@ void ShowProjector::ShowProjector_process(/*int up_Board[8][8]*/){
             //UpdateBoard(up_Board[8][8]);
 
             cvWarpPerspective(Chess_RGB, draw_board, warp_mat);
-            for(int i = 0; i < count; i++)
-                cvDrawCircle(draw_board, position[i], 5, cvScalar(0,0,255), -1);
+            for(int i = 0; i < _count; i++)
+                cvDrawCircle(draw_board, _position[i], 5, cvScalar(0,0,255), -1);
         }
 
         cvShowImage("CVEO_test", draw_board);
 
         if(cvWaitKey(10) == 27)
             break;
-        else
-            Turn = !Turn;
    }
 }
 

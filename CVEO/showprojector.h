@@ -20,18 +20,16 @@ class ShowProjector
 {
 private:
     //bool Turn = WHITE_TURN;
-    bool Turn = BLACK_TURN;
+    bool _Turn = BLACK_TURN;
 
-    CvPoint position[4];
-    int count;
-    bool complete;
+    CvPoint _position[4];
+    int _count;
+    bool _complete;
     int _Board[8][8];
-    int window_height, window_width, cam_height, cam_width;
 
+    list<CvPoint> _before_ChessSquarePoint;
 
-    list<CvPoint> before_ChessSquarePoint;
-
-    CvPoint2D32f srcTri[4], dstTri[4];
+    CvPoint2D32f _srcTri[4], _dstTri[4];
 
     IplImage *white_board;
     IplImage *draw_board;
