@@ -199,13 +199,7 @@ void CheckInChessboard::Calculate_Movement(IplImage *BinaryImage, vector<ChessPo
 	}
 }
 
-//<<<<<<< HEAD
-//void CheckInChessboard::Calculate_BoardScore(IplImage *BinaryImage, vector<ChessPoint> CrossPoint, float ScoreBox[][8]) {
-//=======
-// 이상 없음.
-void CheckInChessboard::Calculate_BoardScore( IplImage *BinaryImage, IplImage *GrayImage, vector<ChessPoint> CrossPoint, float ScoreBox[][8] )
-{
-//>>>>>>> origin/CVES_NewEngine_Extended
+void CheckInChessboard::Calculate_BoardScore(IplImage *BinaryImage, IplImage *GrayImage, vector<ChessPoint> CrossPoint, float ScoreBox[][8]) {
 	float _TChess_Area[8][8]; // 체스 영역 저장 배열.
 	float _TChess_gray[8][8]; // 체스 그리드의 평균 색상값 저장
 	unsigned char _kernel[PIXEL_PICK_KERNEL_SIZE][PIXEL_PICK_KERNEL_SIZE]; // 픽셀값을 취할 커널
@@ -220,47 +214,12 @@ void CheckInChessboard::Calculate_BoardScore( IplImage *BinaryImage, IplImage *G
 			CvPoint right_down = CrossPoint.at(cross_idx + 10).Cordinate;
 			ScoreBox[i][j] = 0;
 			_TChess_Area[i][j] = Get_TriangleArea(Head_point, Head_right, Head_down) + Get_TriangleArea(Head_right, right_down, Head_down);
-			//_TChess_gray[i][j] = Get_GridPixelvalue(GrayImage, Head_point, Head_right, Head_down, right_down)/* / _TChess_Area[i][j]*/;
 			_TChess_gray[i][j] = 0;
 		}
 	}
 
 	// 체스보드 내부 전체 평균을 계산
 	float Chess_avg_pixvalue; 
-
-	/*//IplImage *temp_src = cvCreateImage(cvSize(400, 400), IPL_DEPTH_8U, 1);
-	//CvMat* warp_mat = cvCreateMat(3, 3, CV_32FC1);
-	//int thickness = 3;
-
-	//CvPoint2D32f srcTri[4], dstTri[4];
-
-	//// 평균을 구하기 위해서 투영변환 연산
-	//srcTri[0].x = CrossPoint.at(0).Cordinate.x + thickness;              // X1
-	//srcTri[0].y = CrossPoint.at(0).Cordinate.y + thickness;
-	//srcTri[1].x = CrossPoint.at(72).Cordinate.x + thickness;    // Y1
-	//srcTri[1].y = CrossPoint.at(72).Cordinate.y - thickness;
-	//srcTri[2].x = CrossPoint.at(8).Cordinate.x - thickness;              // Z1
-	//srcTri[2].y = CrossPoint.at(8).Cordinate.y + thickness;
-	//srcTri[3].x = CrossPoint.at(80).Cordinate.x - thickness;
-	//srcTri[3].y = CrossPoint.at(80).Cordinate.y - thickness;
-
-	//dstTri[0].x = 0;
-	//dstTri[0].y = 0;
-	//dstTri[1].x = 399;   // Y2
-	//dstTri[1].y = 0;
-	//dstTri[2].x = 0;   // Z2
-	//dstTri[2].y = 399;
-	//dstTri[3].x = 399;   // Z2
-	//dstTri[3].y = 399;
-
-	//cvGetPerspectiveTransform(srcTri, dstTri, warp_mat);
-	//cvWarpPerspective(GrayImage, temp_src, warp_mat);
-
-	//CvScalar _Avg_scalar = cvAvg(temp_src);
-	//Chess_avg_pixvalue = _Avg_scalar.val[0];
-	//cvReleaseImage(&temp_src);
-	//cvReleaseMat(&warp_mat);*/
-
 	int count = 0;
 	long pix_total = 0;
 	for(register int i = 0; i < GrayImage->width; i++){
@@ -301,36 +260,18 @@ void CheckInChessboard::Calculate_BoardScore( IplImage *BinaryImage, IplImage *G
 
 			// 어느 좌표에 위치하는지 확인.
 			if (pixel_value != 0) {
-//<<<<<<< HEAD
-//				CvPoint chessbox_pos = Get_ChessBoxPosition(i, j, CrossPoint);
-//				if (chessbox_pos.x != -1 || chessbox_pos.y != -1)
-//					ScoreBox[chessbox_pos.x][chessbox_pos.y]++;
-//=======
-
-				////// 각 그리드의 센터포인트를 구함
-
-				//CvPoint _grid_center;
-				//// 픽셀값 커널 취하기. -> 커널의 median값을 취함
-				//for(register int k = 0; k < PIXEL_PICK_KERNEL_SIZE; k++){
-				//	for(register int l = 0; l < PIXEL_PICK_KERNEL_SIZE; l++){
-				//		_kernel[k][l] = (unsigned char)GrayImage->imageData[(_grid_center.x-(PIXEL_PICK_KERNEL_SIZE/2)+k) + (_grid_center.y-(PIXEL_PICK_KERNEL_SIZE/2)+l)*GrayImage->widthStep];
-				//	}
-				//}
-				//// median 추출
+				// 각 그리드의 센터포인트를 구함
+				// median 추출
 				//unsigned char _Median_value = Get_MedianVaul_Inkernel(_kernel);
 
 				CvPoint chessbox_pos = Get_ChessBoxPosition(i, j, CrossPoint);
 				//CvPoint chessbox_pos = Get_ChessboxPos(i, j, CrossPoint);
-				if (chessbox_pos.x != -1 || chessbox_pos.y != -1){
+				if (chessbox_pos.x != -1 || chessbox_pos.y != -1) {
 					if(_TChess_gray[chessbox_pos.x][chessbox_pos.y] > Chess_avg_pixvalue)
 						ScoreBox[chessbox_pos.x][chessbox_pos.y] += 1;
 					else
-					{
 						ScoreBox[chessbox_pos.x][chessbox_pos.y] -= 1;
-					}
-					//ScoreBox[chessbox_pos.x][chessbox_pos.y]++;
 				}
-//>>>>>>> origin/CVES_NewEngine_Extended
 			}
 		}
 	}
@@ -345,8 +286,7 @@ void CheckInChessboard::Calculate_BoardScore( IplImage *BinaryImage, IplImage *G
 #pragma endregion Private Functions
 //=======
 
-unsigned char CheckInChessboard::Get_MedianVaul_Inkernel( unsigned char _kernel[][PIXEL_PICK_KERNEL_SIZE] )
-{
+unsigned char CheckInChessboard::Get_MedianVaul_Inkernel(unsigned char _kernel[][PIXEL_PICK_KERNEL_SIZE]) {
 	std::vector<unsigned char> _Median_value;
 	for(register int i = 0; i < PIXEL_PICK_KERNEL_SIZE; i++){
 		for(register int j = 0; j < PIXEL_PICK_KERNEL_SIZE; j++ ){
@@ -359,8 +299,7 @@ unsigned char CheckInChessboard::Get_MedianVaul_Inkernel( unsigned char _kernel[
 	return _Median_value.at((PIXEL_PICK_KERNEL_SIZE*PIXEL_PICK_KERNEL_SIZE)/2 + 1);
 }
 
-float CheckInChessboard::Get_GridPixelvalue( IplImage *gray, CvPoint Headpoint, CvPoint Head_right, CvPoint Head_down, CvPoint right_down )
-{
+float CheckInChessboard::Get_GridPixelvalue(IplImage *gray, CvPoint Headpoint, CvPoint Head_right, CvPoint Head_down, CvPoint right_down) {
 	IplImage *temp_src = cvCreateImage(cvSize(40, 40), IPL_DEPTH_8U, 1);
 	CvMat* warp_mat = cvCreateMat(3, 3, CV_32FC1);
 	int thickness = 3;
@@ -405,8 +344,7 @@ float CheckInChessboard::Get_GridPixelvalue( IplImage *gray, CvPoint Headpoint, 
 	return (float)	Get_MedianVaul_Inkernel(_kernel);
 }
 
-void CheckInChessboard::Delete_Chessboard( IplImage *Image, vector<ChessPoint> Point )
-{
+void CheckInChessboard::Delete_Chessboard(IplImage *Image, vector<ChessPoint> Point) {
 	CvPoint _T_LeftTop, _T_LeftBottom, _T_RightTop, _T_RightBottom; // 왼쪽 위, 왼쪽 아래, 오른쪽 위 오른쪽 아래.
 
 	// tArea : chessboard 전체 넓이, 나머지 : 삼각형 넓이.
@@ -443,8 +381,7 @@ void CheckInChessboard::Delete_Chessboard( IplImage *Image, vector<ChessPoint> P
 	}
 }
 
-float CheckInChessboard::Get_AvgRect( IplImage *GrayImage, IplImage *edge, CvRect ROI )
-{
+float CheckInChessboard::Get_AvgRect(IplImage *GrayImage, IplImage *edge, CvRect ROI) {
 	int count = 0;
 	long total = 0;
 
@@ -463,4 +400,3 @@ float CheckInChessboard::Get_AvgRect( IplImage *GrayImage, IplImage *edge, CvRec
 
 	return total / count;
 }
-//>>>>>>> origin/CVES_NewEngine_Extended

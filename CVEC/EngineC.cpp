@@ -107,11 +107,6 @@ void EngineC::Put_Author() {
 	// 4 Parser Engine Start.
 	SendToGUI("OpenCVE Client Engine Version %s.", ENGINE_EXEC_VER);
 	SendToGUI("{Doohoon Kim, Sungpil Moon, Kyuhong Choi} Copyright All right reserved.");
-	/*
-	// in ARTeam of SW Maestro 4th.
-	printf("OpenCVE Connector Ver %s Start.\n",  ENGINE_EXEC_VER);
-	printf("Engine Copyright by ARTeam.\n");
-	*/
 }
 
 void EngineC::Engine_Initializing() {
@@ -193,22 +188,6 @@ bool EngineC::Connect_Server() {
 			
 			// Command 처리용 Thread를 생성.
 			_Thread.StartThread(ClientCommandQueueProcessingThread, this);
-			/*
-#if defined(WINDOWS_SYS)
-			HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, ClientCommandQueueProcessingThread, this, 0, NULL);
-#elif defined(POSIX_SYS)
-			pthread_t _TThread;
-			pthread_attr_t _TThreadAttr;
-			// pthread attribute initialize.
-			pthread_attr_init(&_TThreadAttr);
-			// Detached thread.
-			pthread_attr_setdetachstate(&_TThreadAttr, PTHREAD_CREATE_DETACHED);
-			// User space thread.
-			pthread_attr_setscope(&_TThreadAttr, PTHREAD_SCOPE_SYSTEM);
-			// Create thread.
-			pthread_create(&_TThread, NULL, ClientCommandQueueProcessingThread, (void *)this);
-#endif
-			*/
 			_TIsConnected = true;
 		}
 	}
@@ -345,7 +324,6 @@ void EngineC::Command_Position(CommandString *_UCICS) {
 	bool _TIsStartpos = false;
 	bool _TIsMoves = false;
 
-	bool _TSideCheck = false;
 	int _TIsMoveCount = 0;
 
 	_TString.append("Info Position ");
@@ -364,7 +342,6 @@ void EngineC::Command_Position(CommandString *_UCICS) {
 				// Null Move 이면 White, 아니면 Black.
 				if (_UCICS->IsLastCharArrayIter() == true) {
 					_IsWhite = true;
-					_TSideCheck = true;
 					//_TString.append(STR_I_INFO_MOVENULL);
 					_TString.append(STR_I_INFO_WHITE);
 					//Sleep(10);
@@ -400,17 +377,7 @@ void EngineC::Command_Position(CommandString *_UCICS) {
 		Sleep(10);
 	}
 	Sleep(10);
-	// while이 종료되면 해야 할 것들.
-	// 1. while에서 받아놓은 Move String을 보낸다.
-	/*
-	if (_TSideCheck == true) {
-		if (_IsWhite == true) {
-			_TString.append(STR_I_INFO_WHITE);
-		}
-		else
-			_TString.append(STR_I_INFO_BLACK);
-	}
-	*/
+	
 	_TelepathyClient->SendData((char *)_StringTools.StringToConstCharPointer(_TString));
 }
 
@@ -582,7 +549,7 @@ void EngineC::Parsing_Command() {
 			Command_Isready();
 			break;
 		case VALUE_SETOPTION :
-			Command_Setoption(_TUCICommandString); //
+			Command_Setoption(_TUCICommandString);
 			break;
 		case VALUE_UCINEWGAME :
 			Command_Ucinewgame();
@@ -591,10 +558,10 @@ void EngineC::Parsing_Command() {
 			Command_Register();
 			break;
 		case VALUE_POSITION :
-			Command_Position(_TUCICommandString); //
+			Command_Position(_TUCICommandString);
 			break;
 		case VALUE_GO :
-			Command_Go(_TUCICommandString); //
+			Command_Go(_TUCICommandString);
 			break;
 		case VALUE_STOP :
 			Command_Stop();
@@ -795,12 +762,10 @@ void EngineC::StartUp_Check() {
 void EngineC::ClientReceivedCallback(char *Buffer) {
 	// using mutex.
 	Sleep(100);
-	//G_EngineC->_QueueProtectMutex.lock();
 	char _TBuffer[BUFFER_MAX_32767];
 	memset(_TBuffer, NULL, sizeof(_TBuffer));
 	strcpy(_TBuffer, Buffer);
 	G_EngineC->CommandQueue->push(_TBuffer);
-	//G_EngineC->_QueueProtectMutex.unlock();
 }
 #pragma endregion Client Received Callback
 
@@ -809,11 +774,7 @@ void EngineC::ClientDisconnectedCallback() {
 	bool _TIsConnected = false;
 	// 3. Parser가 살아있을 때 까지 무조건 계속 while 돌며 Process가 살아있는지, 통신이 살아있는지 Check 함.
 	// 간혹 Loop에 걸렸을때 갑자기 종료가 될 수 있기 때문에, 항상 전제를 Engine이 Enable일 때만 돌게 끔 작업.
-	//if (G_EngineC->EngineEnable == false)
-	//	G_EngineC->_TelepathyClient->IsConnectedClient = false;
-
 	while (G_EngineC->EngineEnable) {
-	//if (G_EngineC->EngineEnable) {
 		bool _Urgency = false;
 
 		// 만약 여기서 끊기면, 게임이 끊겼다고 생각하고 재실행 및 재접속 작업에 돌입한다.
@@ -999,10 +960,7 @@ void *
 
 	// 3. EngineC go Parsing.
 	while (_TEngine_C->EngineEnable) {
-		// Parser Engine Pause.
-		//while (EnginePause) ;
 		_TEngine_C->Parsing_Command();
-		//Sleep(10);
 	}
 
 	// 4. EngineC Deinitializing.
@@ -1023,21 +981,5 @@ void *
 #pragma region Public Functions
 void EngineC::EngineC_Start() {
 	_Thread.StartThread(CVECProcessingThread, this);
-	/*
-#if defined(WINDOWS_SYS)
-	HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, CVECProcessingThread, this, 0, NULL);
-#elif defined(POSIX_SYS)
-	pthread_t _TThread;
-	pthread_attr_t _TThreadAttr;
-	// pthread attribute initialize.
-	pthread_attr_init(&_TThreadAttr);
-	// Detached thread.
-	pthread_attr_setdetachstate(&_TThreadAttr, PTHREAD_CREATE_DETACHED);
-	// User space thread.
-	pthread_attr_setscope(&_TThreadAttr, PTHREAD_SCOPE_SYSTEM);
-	// Create thread.
-	pthread_create(&_TThread, NULL, CVECProcessingThread, (void *)this);
-#endif
-	*/
 }
 #pragma endregion Public Functions

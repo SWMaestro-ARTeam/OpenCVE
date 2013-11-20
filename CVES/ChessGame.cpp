@@ -564,9 +564,7 @@ bool ChessGame::Rule_DefaultMove(CvPoint Before, CvPoint After) {
 			return true;
 	}
 	else if (_Board[Before.x][Before.y] == W_Queen || _Board[Before.x][Before.y] == B_Queen) {
-
 		// 가로 세로 직선, 전과 현재의 이동 위치의 차이의 절대값이 같으면 대각선상에 위치한다 판별
-
 		if ((After.x == Before.x && After.y != Before.y) || (After.x != Before.x && After.y == Before.y) || (abs(After.x - Before.x) == abs(After.y - Before.y)))
 			return true;
 	}
@@ -591,7 +589,6 @@ bool ChessGame::Rule_DefaultMove(CvPoint Before, CvPoint After) {
 	return false;
 }
 
-//<<<<<<< HEAD
 //void ChessGame::cvQuiver(IplImage *Image, int _X, int _Y, int _U, int _V, CvScalar Colour, int Size, int Thickness) {
 //	CvPoint _TPt1, _TPt2;
 //	double _TTheta;
@@ -702,10 +699,6 @@ bool ChessGame::Chess_Process(CvPoint Input[], int MOVE_MODE) {
 			break;
 	}
 
-//<<<<<<< HEAD
-	//_Turn = !_Turn;
-//=======
-//>>>>>>> origin/CVES_NewEngine_Extended
 	return !_Turn;
 }
 
@@ -760,21 +753,6 @@ void ChessGame::Show_ChessImage() {
 	cvReleaseImage(&_TTempGameBoard);
 }
 
-//<<<<<<< HEAD
-////void ChessGame::Check_Return(CvPoint move_input[]) {
-//	if (move_input[0].x == _error_move._After.x
-//		&& move_input[0].y == _error_move._After.y
-//		&& move_input[1].x == _error_move._Before.x
-//		&& move_input[1].y == _error_move._Before.y) {
-//		_error_move._Flag = false;
-//	}
-//	else if (move_input[0].x == _error_move._Before.x
-//		&& move_input[0].y == _error_move._Before.y
-//		&& move_input[1].x == _error_move._After.x
-//		&& move_input[1].y == _error_move._After.y) {
-//		_error_move._Flag = false;
-//=======
-//bool ChessGame::check_return( CvPoint move_input[] )
 bool ChessGame::Check_Return(CvPoint move_input[]) {
 	/*if(move_input[0].x == _error_move.after.x && move_input[0].y == _error_move.after.y && move_input[1].x == _error_move.before.x && move_input[1].y == _error_move.before.y){
 		_error_move.flag = false;
@@ -796,20 +774,6 @@ bool ChessGame::Check_Return(CvPoint move_input[]) {
 		&& move_input[1].y == _error_move._After.y) {
 		_error_move._Flag = false;
 		return true;
-	//if(move_input[0].x == _error_move.after.x 
-	//	&& move_input[0].y == _error_move.after.y 
-	//	&& move_input[1].x == _error_move.before.x 
-	//	&& move_input[1].y == _error_move.before.y){
-	//	_error_move.flag = false;
-	//	return true;
-	//}
-	//else if(move_input[0].x == _error_move.before.x 
-	//	&& move_input[0].y == _error_move.before.y 
-	//	&& move_input[1].x == _error_move.after.x 
-	//	&& move_input[1].y == _error_move.after.y){
-	//	_error_move.flag = false;
-	//	return true;
-//>>>>>>> origin/CVES_NewEngine_Extended
 	}
 
 	return false;
@@ -866,18 +830,6 @@ int ChessGame::Read_Mode() {
 	}
 }
 
-//<<<<<<< HEAD
-//bool ChessGame::Check_InvalidMove(IplImage *Source, vector<ChessPoint> _CP, CvPoint _out[]) {
-//	static bool _TFirstCheck = false;	// error move가 해당 함수에 처음으로 진입하였는지를 확인
-//	
-//	if (_error_move._Flag == true) {
-//		//Draw_InvalidMove(Source, _CP, _error_move);
-//
-//		if (_TFirstCheck == true)
-//			Check_Return(_out);
-//		else {
-//			_TFirstCheck = false;
-//=======
 bool ChessGame::Check_InvalidMove(IplImage *Source, vector<ChessPoint> _CP, CvPoint _out[], int ROI_X, int ROI_Y) {
 	static bool _first_check = false;	// error move가 해당 함수에 처음으로 진입하였는지를 확인
 
@@ -885,16 +837,14 @@ bool ChessGame::Check_InvalidMove(IplImage *Source, vector<ChessPoint> _CP, CvPo
 	if (_error_move._Flag == true) {
 		//Draw_InvalidMove(Source, _CP, _error_move, ROI_X, ROI_Y);
 
-		if(_first_check == true){
+		if (_first_check == true) {
 			//if(check_return(_out) == true){
 			if(Check_Return(_out) == true){
 				_first_check = false;
 			}
 		}
-		else
-		{
+		else {
 			_first_check = true;
-//>>>>>>> origin/CVES_NewEngine_Extended
 		}
 
 		return true;
@@ -903,13 +853,6 @@ bool ChessGame::Check_InvalidMove(IplImage *Source, vector<ChessPoint> _CP, CvPo
 	return false;
 }
 
-//<<<<<<< HEAD
-//void ChessGame::Draw_InvalidMove(IplImage *Source, vector<ChessPoint> _CP, ErrorMove _InvalidMove) {
-//	CvPoint _TP_Before, _TP_After;
-//	CvPoint _TCP_Before, _TCP_After;
-//	_TP_After = _InvalidMove._After;
-//	_TP_Before = _InvalidMove._Before;
-//=======
 void ChessGame::Draw_InvalidMove(IplImage *Source, vector<ChessPoint> _CP, int ROI_X, int ROI_Y) {
 	CvPoint p_before, p_after;
 	CvPoint CP_before, CP_after;
@@ -917,7 +860,6 @@ void ChessGame::Draw_InvalidMove(IplImage *Source, vector<ChessPoint> _CP, int R
 	p_before = _error_move.before;*/
 	p_after = _error_move._After;
 	p_before = _error_move._Before;
-//>>>>>>> origin/CVES_NewEngine_Extended
 
 	bool after_complete, before_complete;
 	after_complete = before_complete = false;
@@ -925,31 +867,18 @@ void ChessGame::Draw_InvalidMove(IplImage *Source, vector<ChessPoint> _CP, int R
 	for (register int i = 0; i < 81; i++) {
 		ChessPoint _temp_CP = _CP.at(i);
 
-//<<<<<<< HEAD
-//		if (_temp_CP.Index.x == _TP_After.y && _temp_CP.Index.y == _TP_After.x) {
-//			_TCP_After = cvPoint((_temp_CP.Cordinate.x + _CP.at(i + 9).Cordinate.x) / 2, (_temp_CP.Cordinate.y + _CP.at(i + 9).Cordinate.y) / 2);
-//		}
-//
-//		if (_temp_CP.Index.x == _TP_Before.y && _temp_CP.Index.y == _TP_Before.x) {
-//			_TCP_Before = cvPoint((_temp_CP.Cordinate.x + _CP.at(i + 9).Cordinate.x) / 2, (_temp_CP.Cordinate.y + _CP.at(i + 9).Cordinate.y) / 2);
-//=======
 		if(_temp_CP.Index.x == p_after.y && _temp_CP.Index.y == p_after.x){
 			CP_after = cvPoint(((_temp_CP.Cordinate.x + ROI_X) + (_CP.at(i+10).Cordinate.x + ROI_X))/2, ((_temp_CP.Cordinate.y + ROI_Y) + (_CP.at(i+10).Cordinate.y + ROI_Y))/2);
 		}
 
 		if(_temp_CP.Index.x == p_before.y && _temp_CP.Index.y == p_before.x){
 			CP_before = cvPoint(((_temp_CP.Cordinate.x + ROI_X) + (_CP.at(i+10).Cordinate.x + ROI_X))/2, ((_temp_CP.Cordinate.y + ROI_Y) + (_CP.at(i+10).Cordinate.y + ROI_Y))/2);
-//>>>>>>> origin/CVES_NewEngine_Extended
 		}
 
 		if (after_complete == true && before_complete == true)
 			break;
 	}
 
-//<<<<<<< HEAD
-//	cvDrawCircle(Source, _TCP_Before, 5, cvScalar(0,0,255), -1);
-//	cvQuiver(Source, _TCP_Before.x, _TCP_Before.y, _TCP_After.x, _TCP_After.y, cvScalar(0,0,255), 3, 3);
-//=======
 	cvDrawCircle(Source, CP_before, 10, cvScalar(0,0,255), 2);
 	//cvQuiver(Source, CP_before, CP_after, cvScalar(0,0,255), 3, 3);
 	drawArrow(Source, CP_before, CP_after, 10, 30, cvScalar(0,0,255), 3, 8);
@@ -961,9 +890,7 @@ void ChessGame::Draw_InvalidMove(IplImage *Source, vector<ChessPoint> _CP, int R
 
 bool ChessGame::Return_errorFlag() {
 	// 최근 움직임이 Invalild move라면 return true
-	//return _error_move.flag;
 	return _error_move._Flag;
-//>>>>>>> origin/CVES_NewEngine_Extended
 }
 
 #pragma endregion Public Functions

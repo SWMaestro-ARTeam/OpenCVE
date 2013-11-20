@@ -49,48 +49,6 @@ ChessObjectDetection::~ChessObjectDetection() {
 #pragma endregion Constructor & Destructor
 
 #pragma region Private Functions
-// 이상 없음.
-//void ChessObjectDetection::ConvertHplane(IplImage *Source) {
-//	IplImage *_TTemp_Source = cvCreateImage(cvGetSize(Source), IPL_DEPTH_8U, 3);
-//
-//	cvCvtColor(Source, _TTemp_Source, CV_BGR2HSV);
-//	cvSetImageCOI(_TTemp_Source, 1);
-//	cvCopy(_TTemp_Source, _H_Plane);
-//
-//	cvReleaseImage(&_TTemp_Source);
-//}
-
-// 이상 없음.
-//void ChessObjectDetection::ConvertSplane(IplImage *Source) {
-//	IplImage *_TTemp_Source = cvCreateImage(cvGetSize(Source), IPL_DEPTH_8U, 3);
-//
-//	cvCvtColor(Source, _TTemp_Source, CV_BGR2HSV);
-//	cvSetImageCOI(_TTemp_Source, 2);
-//	cvCopy(_TTemp_Source, _S_Plane);
-//
-//	cvReleaseImage(&_TTemp_Source);
-//}
-
-// 이상 없음.
-//void ChessObjectDetection::Add_CannyImage(IplImage *H_Canny, IplImage *S_Canny, IplImage *Destination) {
-//	IplImage *_TH_Canny = cvCreateImage(cvGetSize(H_Canny), IPL_DEPTH_8U, 1);
-//	IplImage *_TS_Canny = cvCreateImage(cvGetSize(S_Canny), IPL_DEPTH_8U, 1);
-//
-//	cvZero(Destination);
-//
-//	for (register int i = 0; i < Destination->width; i++) {
-//		for (register int j = 0; j < Destination->height; j++) {
-//			unsigned char H_Value = (unsigned char)_TH_Canny->imageData[i + j * _TH_Canny->widthStep];
-//			unsigned char S_Value = (unsigned char)_TS_Canny->imageData[i + j * _TS_Canny->widthStep];
-//
-//			if (H_Value != 0 || S_Value != 0)
-//				Destination->imageData[i + j * Destination->widthStep] = 255;
-//		}
-//	}
-//
-//	cvReleaseImage(&_TH_Canny);
-//	cvReleaseImage(&_TS_Canny);
-//}
 
 void ChessObjectDetection::Delete_ChessLine(IplImage *Edge, vector<_ChessPoint> CrossPoint) {
 	if (CrossPoint.size() == 0) // 체스보드 인식 좌표가 없다면 return error
@@ -235,56 +193,6 @@ void ChessObjectDetection::Detect_SobelCannyScore(IplImage *Source, vector<_Ches
 		cvReleaseImage(&_TAdd_Canny);
 	}
 }
-
-//void ChessObjectDetection::Get_EdgeImage(IplImage *Source, IplImage *Destination) {
-//	IplImage *_THSV = cvCreateImage(cvGetSize(Source), IPL_DEPTH_8U, 3);
-//	IplImage *_TH = cvCreateImage(cvGetSize(Source), IPL_DEPTH_8U, 1);
-//	IplImage *_TS = cvCreateImage(cvGetSize(Source), IPL_DEPTH_8U, 1);
-//
-//	cvZero(Destination);
-//
-//	cvCvtColor(Source, _THSV, CV_BGR2HSV);
-//
-//	cvSetImageCOI(_THSV, 1);
-//	cvCopy(_THSV, _TH);
-//	cvSetImageCOI(_THSV, 2);
-//	cvCopy(_THSV, _TS);
-//
-//	Add_CannyImage(_TH,_TS, Destination);
-//	//cvCanny(H, dst, threshold1, threshold2);
-//
-//	cvReleaseImage(&_THSV);
-//	cvReleaseImage(&_TH);
-//	cvReleaseImage(&_TS);
-//}
-
-// 이상 없음.
-//void ChessObjectDetection::DetectObject(IplImage *Source, vector<_ChessPoint> CrossPoint, bool *Board[]) {
-//	IplImage *_T_H_Canny = cvCreateImage(cvGetSize(Source), IPL_DEPTH_8U, 1);
-//	IplImage *_T_S_Canny = cvCreateImage(cvGetSize(Source), IPL_DEPTH_8U, 1); 
-//	IplImage *_T_Add_Canny = cvCreateImage(cvGetSize(Source), IPL_DEPTH_8U, 1);
-//
-//	ConvertHplane(Source);
-//	ConvertSplane(Source);
-//
-//	cvCanny(_H_Plane, _T_H_Canny, _Canny_LowThreshold, _Canny_HighThreshold);
-//	cvCanny(_S_Plane, _T_S_Canny, _Canny_LowThreshold, _Canny_HighThreshold);
-//
-//	Add_CannyImage(_T_H_Canny, _T_S_Canny, _T_Add_Canny);
-//
-//	cvShowImage("Canny", _T_Add_Canny);
-//
-//	// 체스보드의 라인영향을 최소화시킴.
-//	Delete_ChessLine(_T_Add_Canny, CrossPoint);
-//
-//	// 오브젝트 유무를 확인하기 위해서 각 체스보드 그리드 안에 엣지가 존재하는 면적비를 연산.
-//	float ScoreBoard[8][8]; // 엣지 / 체스그리드 면적 => 스코어.
-//	_CheckChessboard.Calculate_BoardScore(_T_Add_Canny, CrossPoint, ScoreBoard);
-//
-//	cvReleaseImage(&_T_Add_Canny);
-//	cvReleaseImage(&_T_H_Canny);
-//	cvReleaseImage(&_T_S_Canny);
-//}
 #pragma endregion Private Functions
 
 #pragma region Public Functions
@@ -322,53 +230,6 @@ void ChessObjectDetection::Set_SubThreshold(int Threshold) {
 void ChessObjectDetection::Set_ScoreThreshold(int Threshold) {
 	_ScoreThreshold = Threshold;
 }
-
-//void ChessObjectDetection::DetectScore(IplImage *src, vector<_ChessPoint> _cross_point, float score_out[][8]) {
-//	if(_cross_point.size() != 0){
-//		IplImage *brightHigh_Canny = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 1);
-//		IplImage *brightLow_Canny = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 1); 
-//		IplImage *Add_Canny = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 1);
-//		IplImage *high_bright_img = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 3);
-//		IplImage *low_bright_img = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 3);
-//
-//		//밝은 영상 어두운 영상 생성
-//		cvAddS(src, CV_RGB(_high_bright,_high_bright,_high_bright), high_bright_img);
-//		cvSubS(src, CV_RGB(_low_bright, _low_bright, _low_bright), low_bright_img);
-//
-//		// 각 밝기에서 H, S Edge detection
-//		Get_EdgeImage(high_bright_img, brightHigh_Canny);
-//		Get_EdgeImage(low_bright_img, brightLow_Canny);
-//
-//		cvAdd(brightHigh_Canny, brightLow_Canny, Add_Canny);
-//		// 체스보드의 라인영향을 최소화시킴
-//		Delete_ChessLine(Add_Canny, _cross_point);
-//
-//		// 오브젝트 유무를 확인하기 위해서
-//		// 각 체스보드 그리드 안에 엣지가 존재하는 면적비를 연산
-//		float score_board[8][8]; // 엣지 / 체스그리드 면적 => 스코어
-//		_CheckChessboard.Calculate_BoardScore(Add_Canny, _cross_point, score_board);
-//
-//		// 스코어 thresholding
-//		Thresholding_Score(score_board, _score_threshold);
-//
-//		// 출력으로 복사
-//		for(int i = 0; i < 8; i++)
-//			for(int j = 0; j < 8; j++)
-//				score_out[i][j] = score_board[i][j];
-//
-//#ifdef DEBUG_MODE
-//		cvShowImage("Add_Canny", Add_Canny);
-//#endif
-//
-//		cvReleaseImage(&Add_Canny);
-//		cvReleaseImage(&brightHigh_Canny);
-//		cvReleaseImage(&brightLow_Canny);
-//
-//		cvReleaseImage(&high_bright_img);
-//		cvReleaseImage(&low_bright_img);
-//	}
-//}
-//<<<<<<< HEAD
 #pragma endregion Public Functions
 //=======
 
