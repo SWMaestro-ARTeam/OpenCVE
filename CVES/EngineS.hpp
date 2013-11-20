@@ -116,8 +116,12 @@ private:
 	bool _BeforeHandFirst;
 	bool _IsRestorePossible;
 	bool _IsTrun;
-
+	bool _AI_mode;					// AI_mode인지 판정
+	bool _CVEO_ready;				// CVEO가 준비된 상태인지를 확인
 	bool _ChessRecognitionProcessingPause;
+
+	bool _ponder_exist;			// 폰더의 존재 유무
+	CvPoint _ponder_before, _ponder_after;
 
 	CvCapture *_Cam; // 캠.
 	// 공유 자원 문제를 피하기 위해, 약 3가지의 Part에서 쓰는 Image를 Queue를 줌.

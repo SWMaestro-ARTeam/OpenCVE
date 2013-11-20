@@ -31,8 +31,8 @@
 #include "CVESDependent.hpp"
 #include "CheckInChessboard.hpp"
 
-#define NUM_MEDIAN 2
-#define NUM_GAUSS 2
+#define NUM_MEDIAN 1
+#define NUM_GAUSS 0
 
 using namespace std;
 
@@ -45,12 +45,6 @@ private:
 	int _thickness; // 체스보드 격자를 지워낼 두께
 	int _score_threshold; // 스코어 thresholding 변수
 	int _sub_threshold; // 움직임 Detection시 좌표를 반환할 차이 스코어 차이 threshold
-
-	//IplImage *_H_Plane;	// HSV에 H 평면
-	//IplImage *_S_Plane; // HSV에 S 평면
-
-	//void ConvertHplane(IplImage *Source);	// src - RGB, RGB 색상계에서 HSV 색상계의  H평면 분리
-	//void ConvertSplane(IplImage *Source);  // src - RGB, RGB 색상계에서 HSV 색상계의  S평면 분리
 
 	//void Add_CannyImage(IplImage *H_Canny, IplImage *S_Canny, IplImage *Destination); // 두 가지 CannyEdge Detection OR 연산 이미지 생성
 	void Delete_ChessLine(IplImage *Edge, vector<ChessPoint> CrossPoint); // 디텍션된 엣지 영상에서 교점들을 사용하여 엣지들을 최소화함

@@ -97,7 +97,6 @@ private:
 	bool Rule_DefaultMove(CvPoint before, CvPoint after);
 
 	void cvQuiver(IplImage *Image, CvPoint pt1, CvPoint pt2,CvScalar Color,int Size,int Thickness); // 체스 화살표 그리기
-	void drawArrow(IplImage *img, CvPoint pStart, CvPoint pEnd, int len, int alpha, CvScalar color, int thickness, int lineType); // 체스 화살표 그리기
 	// 
 	bool check_return(CvPoint move_input[]);
 public:
@@ -114,5 +113,6 @@ public:
 	int Read_Mode();
 	void Draw_InvalidMove(IplImage *Source, vector<ChessPoint> _CP, int ROI_X, int ROI_Y); // 이미지에 잘못된 움직임을 정정하라는 UI를 그림
 	bool Return_errorFlag();		// 최근 움직임이 Invalild move라면 return true;
+	void drawArrow(IplImage *img, CvPoint pStart, CvPoint pEnd, int len, int alpha, CvScalar color, int thickness, int lineType); // 체스 화살표 그리기
 };
 #endif

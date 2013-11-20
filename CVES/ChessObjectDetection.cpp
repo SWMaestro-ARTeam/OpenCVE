@@ -232,8 +232,8 @@ void ChessObjectDetection::Set_ScoreThreshold(int threshold) {
 void ChessObjectDetection::DetectMovement(float score_before[][8], float score_after[][8], CvPoint out[]) {
 	float sub_score[8][8];
 
-	// 스코어를 면적으로 나눠줘서 비율을 구함.
-	// 가장 비율이 큰 두 좌표를 리턴. -> num 개의 좌표를 리턴
+//	// 스코어를 면적으로 나눠줘서 비율을 구함.
+//	// 가장 비율이 큰 두 좌표를 리턴. -> num 개의 좌표를 리턴
 //	float temp_max[4];
 //	CvPoint p_max[4];
 //
@@ -319,7 +319,7 @@ void ChessObjectDetection::DetectMovement(float score_before[][8], float score_a
 	int count = 0;
 	for(register int i = 0; i < 8; i++){
 		for(register int j = 0; j < 8; j++){
-			if(fabs(score_before[i][j] - score_after[i][j]) > 0){
+			if((sub_score[i][j] = fabs(score_before[i][j] - score_after[i][j])) > 0){
 				if(count < 4){
 					out[count] = cvPoint(i,j);
 #if defined(DEBUG_MODE)
@@ -333,14 +333,34 @@ void ChessObjectDetection::DetectMovement(float score_before[][8], float score_a
 #if defined(DEBUG_MODE)
 	printf("\n");
 #endif
+
+	// 면적 기반 정렬
+	float sub_out[4];
+	for(register int i = 0; i < count-1; i++){
+		sub_out[i] = sub_score[out[i].x][out[i].y];
+	}
+
+	float MAX_subscore = -1.0;
+	for(register int i = 0; i < count-1; i++){
+		for(register int j = 0; j < count-1; j++){
+			if(sub_out[i] < sub_out[j]){
+				float t = sub_out[j];
+				sub_out[j] = sub_out[i];
+				sub_out[i] = t;
+
+				CvPoint t_point = out[j];
+				out[j] = out[i];
+				out[i] = t_point;
+
+			}
+		}
+	}
 }
 
 void ChessObjectDetection::Get_Movement(IplImage *before, IplImage *after, vector<_ChessPoint> _cross_point, CvPoint out[]) {
 	float before_score[8][8], after_score[8][8];
 
 	// 이전 영상과 이후 영상의 스코어를 계산.
-	/*DetectScore(before, _cross_point, before_score);
-	DetectScore(after, _cross_point, after_score);*/
 	Detect_SobelCannyScore(before, _cross_point, before_score);
 	Detect_SobelCannyScore(after, _cross_point, after_score);
 

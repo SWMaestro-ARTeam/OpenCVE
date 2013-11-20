@@ -37,6 +37,9 @@ EngineS::EngineS() {
 	//IsStarted = false;
 	IsStarted = true;
 	IsTictokEnable = false;
+	_AI_mode = false;
+	_CVEO_ready = false;
+	_ponder_exist = false;
 
 	// Camera에 대한 해상도 및 ROI 변수 크기 설정.
 	_Resolution_Width = SERVER_VIEW_DEFAULT_WIDTH;
@@ -73,6 +76,10 @@ EngineS::~EngineS() {
 	EngineEnd = false;
 	IsStarted = false;
 	IsTictokEnable = false;
+
+	_AI_mode = false;
+	_CVEO_ready = false;
+	_ponder_exist = false;
 	
 	G_EngineS = NULL;
 }
@@ -531,7 +538,7 @@ void EngineS::Sub_image(IplImage *Source1, IplImage *Source2, IplImage *Destinat
 
 	// 차영상 연산 결과에 median filter 적용 & 후추 소금 노이즈를 제거하기 위한 mopology 연산 적용.
 	cvErode(Destination, Destination, 0, 2);
-	cvDilate(Destination, Destination, 0, 2);
+	cvDilate(Destination, Destination, 0, 8);
 
 	cvReleaseImage(&Lab_src1);
 	cvReleaseImage(&Lab_src2);
@@ -648,6 +655,8 @@ void EngineS::Evaluation() {
 		//printf("predict: %d, out_count : %d\n", predicted_mode, out_count);
 		// Out 결과로, Turn을 출력한다.
 		_IsTrun = _ChessGame->Chess_process(out, predicted_mode);
+		// 무언가를 놓았을때 ponder가 없음으로 초기화한다
+		_ponder_exist = false;
 
 		// Check_InvalidMove가 false일 때는 정상움직임, Check_InvalildMove가 true일때는 InvalidMove
 		if(_ChessGame->Check_InvalidMove(_DetectionResultOnlyImage, _CrossPoint, out, 100, 20) == false){
@@ -689,6 +698,12 @@ void EngineS::DisplayInfomation() {
 
 		if(_ChessGame->Return_errorFlag() == true){
 			_ChessGame->Draw_InvalidMove(_DetectionResultOnlyImage, _CrossPoint, 100, 20);
+		}
+
+		// 폰더가 있을 경우 초록색 화살표로 도움을 준다.
+		if(_ponder_exist == true){
+
+			_ChessGame->drawArrow(_DetectionResultOnlyImage, _ponder_before, _ponder_after, 10, 30, cvScalar(0, 255), 3, 8);
 		}
 	}
 #if !defined(USING_QT)
@@ -1055,6 +1070,7 @@ void *
 						// 이미지 처리에 사용되는 이미지에 Chessboard recognition 결과로 연산된 좌표를 표기
 						//_ChessRecognition.drawPoint(_ImageChess, _CrossPoint);
 						_TEngine_S->_HandRecognition->Detect_SkinColour(_THandDetectionImage, _TEngine_S->_ImageSkin);
+						//_TEngine_S->Sub_image(_TEngine_S->_PrevImage, _THandDetectionImage, _TEngine_S->_ImageSkin);
 						cvDilate(_TEngine_S->_ImageSkin, _TEngine_S->_ImageSkin, 0, 5);
 //#if !defined(USING_QT)
 #	if defined(DEBUG_MODE)

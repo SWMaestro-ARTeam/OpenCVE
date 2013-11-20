@@ -228,39 +228,6 @@ void CheckInChessboard::Calculate_BoardScore( IplImage *BinaryImage, IplImage *G
 	// 체스보드 내부 전체 평균을 계산
 	float Chess_avg_pixvalue; 
 
-	/*//IplImage *temp_src = cvCreateImage(cvSize(400, 400), IPL_DEPTH_8U, 1);
-	//CvMat* warp_mat = cvCreateMat(3, 3, CV_32FC1);
-	//int thickness = 3;
-
-	//CvPoint2D32f srcTri[4], dstTri[4];
-
-	//// 평균을 구하기 위해서 투영변환 연산
-	//srcTri[0].x = CrossPoint.at(0).Cordinate.x + thickness;              // X1
-	//srcTri[0].y = CrossPoint.at(0).Cordinate.y + thickness;
-	//srcTri[1].x = CrossPoint.at(72).Cordinate.x + thickness;    // Y1
-	//srcTri[1].y = CrossPoint.at(72).Cordinate.y - thickness;
-	//srcTri[2].x = CrossPoint.at(8).Cordinate.x - thickness;              // Z1
-	//srcTri[2].y = CrossPoint.at(8).Cordinate.y + thickness;
-	//srcTri[3].x = CrossPoint.at(80).Cordinate.x - thickness;
-	//srcTri[3].y = CrossPoint.at(80).Cordinate.y - thickness;
-
-	//dstTri[0].x = 0;
-	//dstTri[0].y = 0;
-	//dstTri[1].x = 399;   // Y2
-	//dstTri[1].y = 0;
-	//dstTri[2].x = 0;   // Z2
-	//dstTri[2].y = 399;
-	//dstTri[3].x = 399;   // Z2
-	//dstTri[3].y = 399;
-
-	//cvGetPerspectiveTransform(srcTri, dstTri, warp_mat);
-	//cvWarpPerspective(GrayImage, temp_src, warp_mat);
-
-	//CvScalar _Avg_scalar = cvAvg(temp_src);
-	//Chess_avg_pixvalue = _Avg_scalar.val[0];
-	//cvReleaseImage(&temp_src);
-	//cvReleaseMat(&warp_mat);*/
-
 	int count = 0;
 	long pix_total = 0;
 	for(register int i = 0; i < GrayImage->width; i++){
@@ -312,18 +279,6 @@ void CheckInChessboard::Calculate_BoardScore( IplImage *BinaryImage, IplImage *G
 			// 어느 좌표에 위치하는지 확인.
 			if (pixel_value != 0) {
 
-				////// 각 그리드의 센터포인트를 구함
-
-				//CvPoint _grid_center;
-				//// 픽셀값 커널 취하기. -> 커널의 median값을 취함
-				//for(register int k = 0; k < PIXEL_PICK_KERNEL_SIZE; k++){
-				//	for(register int l = 0; l < PIXEL_PICK_KERNEL_SIZE; l++){
-				//		_kernel[k][l] = (unsigned char)GrayImage->imageData[(_grid_center.x-(PIXEL_PICK_KERNEL_SIZE/2)+k) + (_grid_center.y-(PIXEL_PICK_KERNEL_SIZE/2)+l)*GrayImage->widthStep];
-				//	}
-				//}
-				//// median 추출
-				//unsigned char _Median_value = Get_MedianVaul_Inkernel(_kernel);
-
 				CvPoint chessbox_pos = Get_ChessboxPos(i, j, CrossPoint);
 				if (chessbox_pos.x != -1 || chessbox_pos.y != -1){
 					if(_TChess_gray[chessbox_pos.x][chessbox_pos.y] > Chess_avg_pixvalue)
@@ -332,7 +287,6 @@ void CheckInChessboard::Calculate_BoardScore( IplImage *BinaryImage, IplImage *G
 					{
 						ScoreBox[chessbox_pos.x][chessbox_pos.y] -= 1;
 					}
-					//ScoreBox[chessbox_pos.x][chessbox_pos.y]++;
 				}
 			}
 		}
@@ -341,10 +295,6 @@ void CheckInChessboard::Calculate_BoardScore( IplImage *BinaryImage, IplImage *G
 	for (register int i = 0 ; i < 8; i++) {
 		for (register int j = 0; j < 8; j++) {
 			ScoreBox[i][j] /= _TChess_Area[i][j];
-			/*if(ScoreBox[i][j] > 0)
-				ScoreBox[i][j] = 1;
-			else if(ScoreBox[i][j] < 0)
-				ScoreBox[i][j] = -1;*/
 		}
 	}
 }
