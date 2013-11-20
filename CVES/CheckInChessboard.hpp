@@ -42,16 +42,16 @@ private:
 	// 말이 어느 체스판에 있는지를 체크.
 	CvPoint	Get_ChessIndex(CvPoint Point, vector<ChessPoint> CrossPoint);
 	// width, height가 가리키는 픽셀이 어느 체스보드 인덱스를 가지는지를 계산하여 반환.
-//<<<<<<< HEAD
 	CvPoint Get_ChessBoxPosition(int Width, int Height, vector<ChessPoint> CrossPoint);
-//=======
 //	CvPoint Get_ChessboxPos(int Width, int Height, vector<ChessPoint> CrossPoint);
 	unsigned char Get_MedianVaul_Inkernel(unsigned char _kernel[][PIXEL_PICK_KERNEL_SIZE]);
 	float Get_GridPixelvalue(IplImage *gray, CvPoint Headpoint, CvPoint Head_right, CvPoint Head_down, CvPoint right_down);
 
 	// 사각형 내부 평균 픽셀값을 구함
 	float Get_AvgRect(IplImage *GrayImage, IplImage *edge, CvRect ROI);
-//>>>>>>> origin/CVES_NewEngine_Extended
+
+	// 사각형 내부 평균 중간값을 구함
+	unsigned char Get_MedianRect(IplImage *Gray, CvRect ROI);
 
 public:
 	CheckInChessboard();

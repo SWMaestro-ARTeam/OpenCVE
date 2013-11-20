@@ -202,6 +202,7 @@ void CheckInChessboard::Calculate_Movement(IplImage *BinaryImage, vector<ChessPo
 void CheckInChessboard::Calculate_BoardScore(IplImage *BinaryImage, IplImage *GrayImage, vector<ChessPoint> CrossPoint, float ScoreBox[][8]) {
 	float _TChess_Area[8][8]; // 체스 영역 저장 배열.
 	float _TChess_gray[8][8]; // 체스 그리드의 평균 색상값 저장
+	int _TChess_Blob[8][8];		// 체스 내부 blob의 갯수를 잡음
 	unsigned char _kernel[PIXEL_PICK_KERNEL_SIZE][PIXEL_PICK_KERNEL_SIZE]; // 픽셀값을 취할 커널
 
 	// 각 체스 영역 면적 계산부
@@ -215,11 +216,13 @@ void CheckInChessboard::Calculate_BoardScore(IplImage *BinaryImage, IplImage *Gr
 			ScoreBox[i][j] = 0;
 			_TChess_Area[i][j] = Get_TriangleArea(Head_point, Head_right, Head_down) + Get_TriangleArea(Head_right, right_down, Head_down);
 			_TChess_gray[i][j] = 0;
+			_TChess_Blob[i][j] = 0;
 		}
 	}
 
 	// 체스보드 내부 전체 평균을 계산
 	float Chess_avg_pixvalue; 
+
 	int count = 0;
 	long pix_total = 0;
 	for(register int i = 0; i < GrayImage->width; i++){
@@ -249,8 +252,21 @@ void CheckInChessboard::Calculate_BoardScore(IplImage *BinaryImage, IplImage *Gr
 		//_idx = Get_ChessboxPos(_center.x, _center.y, CrossPoint);
 		_idx = Get_ChessBoxPosition(_center.x, _center.y, CrossPoint);
 
-		_AvgPixValue = Get_AvgRect(GrayImage, BinaryImage, _Blob._LabelingInfomation[i]);
-		_TChess_gray[_idx.x][_idx.y] = _AvgPixValue;
+		_AvgPixValue = /*Get_AvgRect(GrayImage, BinaryImage, _Blob._LabelingInfomation[i])*/Get_MedianRect(GrayImage, _Blob._LabelingInfomation[i]);
+		_TChess_Blob[_idx.x][_idx.y]++;
+		_TChess_gray[_idx.x][_idx.y] += _AvgPixValue;
+
+		if(_AvgPixValue > Chess_avg_pixvalue){
+			cvDrawRect(GrayImage, cvPoint(_Blob._LabelingInfomation[i].x, _Blob._LabelingInfomation[i].y), cvPoint(_Blob._LabelingInfomation[i].x + _Blob._LabelingInfomation[i].width, _Blob._LabelingInfomation[i].y + _Blob._LabelingInfomation[i].height), cvScalarAll(255), -1);
+		}else{
+			cvDrawRect(GrayImage, cvPoint(_Blob._LabelingInfomation[i].x, _Blob._LabelingInfomation[i].y), cvPoint(_Blob._LabelingInfomation[i].x + _Blob._LabelingInfomation[i].width, _Blob._LabelingInfomation[i].y + _Blob._LabelingInfomation[i].height), cvScalarAll(0), -1);
+		}		
+	}
+
+	for(register int i = 0; i < 8; i++){
+		for(register int j = 0; j < 8; j++){
+			_TChess_gray[i][j] /= _TChess_Blob[i][j];
+		}
 	}
 
 	// 차영상 면적 계산부.
@@ -260,13 +276,9 @@ void CheckInChessboard::Calculate_BoardScore(IplImage *BinaryImage, IplImage *Gr
 
 			// 어느 좌표에 위치하는지 확인.
 			if (pixel_value != 0) {
-				// 각 그리드의 센터포인트를 구함
-				// median 추출
-				//unsigned char _Median_value = Get_MedianVaul_Inkernel(_kernel);
 
 				CvPoint chessbox_pos = Get_ChessBoxPosition(i, j, CrossPoint);
-				//CvPoint chessbox_pos = Get_ChessboxPos(i, j, CrossPoint);
-				if (chessbox_pos.x != -1 || chessbox_pos.y != -1) {
+				if (chessbox_pos.x != -1 || chessbox_pos.y != -1){
 					if(_TChess_gray[chessbox_pos.x][chessbox_pos.y] > Chess_avg_pixvalue)
 						ScoreBox[chessbox_pos.x][chessbox_pos.y] += 1;
 					else
@@ -282,9 +294,7 @@ void CheckInChessboard::Calculate_BoardScore(IplImage *BinaryImage, IplImage *Gr
 		}
 	}
 }
-//<<<<<<< HEAD
 #pragma endregion Private Functions
-//=======
 
 unsigned char CheckInChessboard::Get_MedianVaul_Inkernel(unsigned char _kernel[][PIXEL_PICK_KERNEL_SIZE]) {
 	std::vector<unsigned char> _Median_value;
@@ -399,4 +409,29 @@ float CheckInChessboard::Get_AvgRect(IplImage *GrayImage, IplImage *edge, CvRect
 	}
 
 	return total / count;
+}
+
+unsigned char CheckInChessboard::Get_MedianRect( IplImage *Gray, CvRect ROI )
+{
+	IplImage *ROI_Image = cvCreateImage(cvSize(ROI.width, ROI.height), IPL_DEPTH_8U, 1);
+
+	cvSetImageROI(Gray, ROI);
+	cvCopy(Gray, ROI_Image);
+	cvResetImageROI(Gray);
+
+	// 속력 문제 개선 여지
+	vector<unsigned char> _temp_vector;
+	
+	for(register int i = 0; i < ROI_Image->width; i++){
+		for(register int j = 0; j < ROI_Image->height; j++){
+			_temp_vector.push_back(ROI_Image->imageData[i + j * ROI_Image->widthStep]);
+		}
+	}
+	
+	sort(_temp_vector.begin(), _temp_vector.end());
+
+	unsigned char return_value = (unsigned char)_temp_vector.at((ROI_Image->width-1)*(ROI_Image->height-1) / 2);
+	cvReleaseImage(&ROI_Image);
+
+	return return_value;
 }
