@@ -29,6 +29,7 @@
 #if defined USING_QT
 #include "CVEO.hpp"
 #include <QApplication>
+
 #endif
 
 int AdapterO::Go_EngineO(int argc, char* argv[]) {
@@ -45,13 +46,16 @@ int AdapterO::Go_EngineO(int argc, char* argv[]) {
 	_EngineO->TEngineODataReceivedCallback = w.EngineODataReceivedCallback;
 #endif
 
+    ShowProjector *SP = new ShowProjector();
+    SP->ShowProjector_process();
+
 	// 2. Engine Enable.
 	_EngineO->EngineEnable = true;
 	// 3. Engine Start.
 	_EngineO->EngineO_Start();
 
 #if defined(USING_QT)
-	w.show();
+    w.show();
 	_TApplicationReturnValue = a.exec();
 	_EngineO->TEngineODataReceivedCallback = NULL;
 #endif

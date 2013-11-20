@@ -27,7 +27,9 @@
 #define _CVEO_hpp_
 
 #include "EngineO.hpp"
+#include "showprojector.h"
 
+#include <list>
 //#if defined(USING_QT)
 #include <QMainWindow>
 #include <QApplication>
@@ -52,6 +54,8 @@ private:
 	int _ChessGridMinY;
 	int _ChessGridMaxX;
 	int _ChessGridMaxY;
+    list<CvPoint> _ChessDisplayCalcultionPoint;
+    //ShowProjector *SP;
 
 public:
 	explicit CVEO(QWidget *parent = 0);

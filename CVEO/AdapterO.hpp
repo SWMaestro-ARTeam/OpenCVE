@@ -30,6 +30,7 @@
 
 #if defined(USING_QT)
 #include "CVEO.hpp"
+#include "showprojector.h"
 #include <QApplication>
 #endif
 

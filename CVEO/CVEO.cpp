@@ -26,13 +26,15 @@
 #include "CVEO.hpp"
 #include "ui_CVEO.h"
 
+#include <Qwidget>
+
 CVEO *G_CVEO;
 
 CVEO::CVEO(QWidget *parent) :
 QMainWindow(parent), ui(new Ui::CVEO) {
 	ui->setupUi(this);
 
-	G_CVEO = this;
+    G_CVEO = this;
 
 	_ChessGridMinX = 0;
 	_ChessGridMinY = 0;
@@ -43,13 +45,23 @@ QMainWindow(parent), ui(new Ui::CVEO) {
 
 	if (desktop->screenCount() == 1) {
 		// single monitor - use built in
-		showFullScreen();
+        QSize t;
+
+//t.scale(desktop()->screenGeometry().width(), desktop()->screenGeometry().height(), Qt::IgnoreAspectRatio);
+
+        ui->centralWidget->resize(QSize(t));
+
+        showFullScreen();
 	}
 	else {
 		QRect rect = desktop->screenGeometry(1);
 		move(rect.topLeft());
 		setWindowState(Qt::WindowFullScreen);
 	}
+
+    // ShowProjector 객체 생성
+
+
 }
 
 CVEO::~CVEO() {
@@ -61,6 +73,8 @@ void CVEO::EngineODataReceivedCallback(char *Buffer) {
 	memset(_TStrBuffer, NULL, sizeof(_TStrBuffer));
 	strcpy(_TStrBuffer, Buffer);
 
+   // ShowProjector *SP = new ShowProjector();
+
 	// Callback 명령어 감지.
 	StringTokenizer *_StringTokenizer = new StringTokenizer();
 
@@ -68,6 +82,7 @@ void CVEO::EngineODataReceivedCallback(char *Buffer) {
 	_StringTokenizer->SetSingleToken(" ");
 	if (_StringTokenizer->StringTokenGo() == false)
 		return ;
+
 
 	bool _IsMinX = false;
 	bool _IsMinY = false;
@@ -84,7 +99,8 @@ void CVEO::EngineODataReceivedCallback(char *Buffer) {
 		switch (_NSeek_EngineOToCVEO) {
 			case VALUE_I_DISP_MINX :
 				_IsMinX = true;
-				break;
+
+                break;
 			case VALUE_I_DISP_MINY :
 				_IsMinY = true;
 				break;
@@ -109,7 +125,7 @@ void CVEO::EngineODataReceivedCallback(char *Buffer) {
 					_TString.append(string((const char *)*_InternalProtocolCS->CharArrayListIter));
 					G_CVEO->_ChessGridMinX = atoi(G_CVEO->_StringTools.StringToConstCharPointer(_TString));
 					_TString.clear();
-				}
+                }
 				else if (_IsMinY) {
 					_IsMinY = false;
 					// MinX 값을 설정.
@@ -134,16 +150,20 @@ void CVEO::EngineODataReceivedCallback(char *Buffer) {
 				else if (_IsBlack) {
 					_IsBlack = false;
 					// Black의 Move가 갔음을 알린다.
-					// 고로 Black이 움직인 것을 표시해야 한다.
+                    // 고로 Black이 움직인 것을 표시해야 한다.
+
 				}
 				else if (_IsWhite) {
 					_IsWhite = false;
 					// White의 Move가 갔음을 알린다.
-					// 고로 White가 움직인 것을 표시해야 한다.
+                    // 고로 White가 움직인 것을 표시해야 한다.
+
 				}
 				break;
 		}
-	}
+    }
+    //ShowProjector *SP = new ShowProjector();
+    //SP->ShowProjector_process();
 
 	delete _InternalProtocolCS;
 	delete _StringTokenizer;
