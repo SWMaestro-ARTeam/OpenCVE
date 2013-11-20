@@ -166,7 +166,6 @@ void HoughLineBased::DrawLines(vector<pair<float, float> > Lines, IplImage* Targ
 	}
 }
 
-// 전역 변수와 완전 격리.
 void HoughLineBased::FindIntersections(vector<pair<float, float> > XLines, vector<pair<float, float> > YLines, vector<ChessPoint> *Point) {
 	// line fitting을 이용한 chessboard recognition의 경우 각 라인의 교점을 연산.
 	ChessPoint _TTemp_CP;

@@ -93,10 +93,7 @@ private:
 	void Moving_Enpassant(CvPoint Moving_Input[]);
 	void Moving_Default(CvPoint Moving_Input[]);
 
-	// 기본 이동 체스룰
-	bool Rule_DefaultMove(CvPoint before, CvPoint after);
-	// 
-	//bool check_return(CvPoint move_input[]);
+	bool Rule_DefaultMove(CvPoint before, CvPoint after); // 기본 이동 체스룰.
 	bool Check_Return(CvPoint move_input[]);
 public:
 	ChessGame();
@@ -112,6 +109,6 @@ public:
 	int Read_Mode();
 	void Draw_InvalidMove(IplImage *Source, vector<ChessPoint> _CP, int ROI_X, int ROI_Y); // 이미지에 잘못된 움직임을 정정하라는 UI를 그림
 	bool Return_errorFlag();		// 최근 움직임이 Invalild move라면 return true;
-	void drawArrow(IplImage *img, CvPoint pStart, CvPoint pEnd, int len, int alpha, CvScalar color, int thickness, int lineType); // 체스 화살표 그리기
+	void Draw_Arrow(IplImage *img, CvPoint pStart, CvPoint pEnd, int len, int alpha, CvScalar color, int thickness, int lineType); // 체스 화살표 그리기
 };
 #endif

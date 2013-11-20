@@ -30,7 +30,7 @@ LineSearchBased::LineSearchBased() {
 	Linefindcount_x1 = 0, Linefindcount_y1 = 0, Linefindcount_x2 = 0, Linefindcount_y2 = 0;
 	Linefindcount_x11 = 0, Linefindcount_y11 = 0, Linefindcount_x22 = 0, Linefindcount_y22 = 0;
 
-	refine == false;
+	refine = false;
 }
 
 LineSearchBased::~LineSearchBased() {
@@ -236,7 +236,6 @@ void LineSearchBased::Get_InCrossPoint(IplImage *chess_image, vector<ChessPoint>
 	// 찾은 모든 경계점들을 수직이 되는 라인의 경계점들과의 모든 교차점을 찾는다.
 	// 9 * 9 = 81
 	// 그후 모든 교차점을 point 변수에 넣는다.
-
 	for (register int i = 0; i < true_line_point_x1.size(); i++) {
 		for (register int j = 0; j < true_line_point_x1.size(); j++) {
 			MyLinePoint _TInLinePointX, _TInLinePointY;
@@ -277,7 +276,7 @@ bool LineSearchBased::Get_CrossPoint(MyLinePoint Line1, MyLinePoint Line2, MyPoi
 
 	float _T_C = (_T_X12 * _T_Y34) - (_T_Y12 * _T_X34);
 
-	if (fabs(_T_C) < 0.01)	{
+	if (fabs(_T_C) < 0.01) {
 		// No intersection
 		return false;
 	}
@@ -403,7 +402,7 @@ void LineSearchBased::Get_SideLinesAtGrayScale(IplImage *GrayImage, vector<MyGra
 
 						// 왼쪽과 오른쪽을 구분하여 따로 저장해준다
 
-						if(i%2 == 1){
+						if(i % 2 == 1){
 							_TT_in1.push_back(Set_MyPoint(_TT[i].x, _TT[i].y));
 							cvCircle(GrayImage, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(0, 0, 0));
 						}
@@ -411,10 +410,6 @@ void LineSearchBased::Get_SideLinesAtGrayScale(IplImage *GrayImage, vector<MyGra
 							_TT_in2.push_back(Set_MyPoint(_TT[i].x, _TT[i].y));
 							cvCircle(GrayImage, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(255, 255, 255));
 						}
-// 						if(XYFlag)
-// 							cvCircle(image, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(0, 0, 0));
-// 						else
-// 							cvCircle(image, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(0, 0, 0));
 
 						_TLineCount++;
 
@@ -509,8 +504,6 @@ void LineSearchBased::Get_SideLinesAtGrayScale(IplImage *GrayImage, vector<MyGra
 		}
 	}
 	else if (!XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)) {
-// 		_TT_in1_avg += abs(_TT_in1[0].y - _TT_in2[0].y);
-// 		_TT_in2_avg -= abs(_TT_in1[0].y - _TT_in2[0].y);
 		for (register int i = 0; i < _TT_in1.size() - 1; i++) {
 			if (_TT_in1_avg != 0 && abs(_TT_in1_avg - abs(_TT_in1[i].y - _TT_in1[i + 1].y)) > 15) {
 				_TT_in1[i + 1].y = _TT_in1[i].y + _TT_in1_avg;

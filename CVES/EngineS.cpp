@@ -647,7 +647,7 @@ void EngineS::DisplayInfomation() {
 		// 폰더가 있을 경우 초록색 화살표로 도움을 준다.
 		if(_ponder_exist == true){
 
-			_ChessGame->drawArrow(_DetectionResultOnlyImage, _ponder_before, _ponder_after, 10, 30, cvScalar(0, 255), 3, 8);
+			_ChessGame->Draw_Arrow(_DetectionResultOnlyImage, _ponder_before, _ponder_after, 10, 30, cvScalar(0, 255), 3, 8);
 		}
 	}
 #if !defined(USING_QT)

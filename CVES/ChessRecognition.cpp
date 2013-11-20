@@ -38,7 +38,6 @@ ChessRecognition::~ChessRecognition() {
 #pragma endregion Constructor & Destructor
 
 #pragma region Private Functions
-
 void ChessRecognition::DrawPoints(IplImage *Source, vector<ChessPoint> Point) {
 	if (_EnableThread != false) {
 		// src image에 chessboard의 교점과 각 교점의 index를 표기.

@@ -118,6 +118,7 @@ void ChessGame::Moving_Castling(CvPoint Moving_Input[]){
 			else if (_Board[Moving_Input[i].x][Moving_Input[i].y] == Ground)
 				_T_Ground.push_back(cvPoint(Moving_Input[i].x, Moving_Input[i].y));
 		}
+
 		if (_T_King.x != -1 && _T_Rook.x != -1 && _T_Ground.size()) {
 			if (_T_King.x < _T_Rook.x) {
 				if (_T_Ground[0].x < _T_Ground[1].x) {
@@ -229,11 +230,11 @@ void ChessGame::Moving_Enpassant(CvPoint Moving_Input[]) {
 	_TValue2 = _Board[Moving_Input[1].x][Moving_Input[1].y];
 	_TValue3 = _Board[Moving_Input[2].x][Moving_Input[2].y];
 
-	for(int i=0;i<3;i++){
-		for(int j=0;j<3;j++){
-			if(i == j) continue;
+	for (register int i = 0; i < 3; i++) {
+		for (register int j = 0; j < 3; j++) {
+			if (i == j) continue;
 
-			if(abs(Moving_Input[i].x - Moving_Input[j].x) > 1 || abs(Moving_Input[i].y - Moving_Input[j].y) > 1){
+			if (abs(Moving_Input[i].x - Moving_Input[j].x) > 1 || abs(Moving_Input[i].y - Moving_Input[j].y) > 1) {
 				Moving_Default(Moving_Input);
 				return;
 			}
@@ -246,7 +247,7 @@ void ChessGame::Moving_Enpassant(CvPoint Moving_Input[]) {
 		if (_TValue1 == Ground && Moving_Input[0].y - 1 == _BeforeMove._Position.y) {
 			if (_TValue2 == W_Pawn) {
 				// 1. 폰이 이동할 예정인 빈공간과 현재 이동한 폰의 위치를 스왑한다
-				// 2. 나머지 하나는 다른 색 폰이므로 제거를 해주기 위해 Ground로 바꾸어준다
+				// 2. 나머지 하나는 다른 색 폰이므로 제거를 해주기 위해 Ground로 바꾸어준다.
 
 				_V_SWAP(_Board[Moving_Input[0].x][Moving_Input[0].y],_Board[Moving_Input[1].x][Moving_Input[1].y]);
 				_Board[Moving_Input[2].x][Moving_Input[2].y] = Ground;
@@ -308,7 +309,7 @@ void ChessGame::Moving_Enpassant(CvPoint Moving_Input[]) {
 	else if (_Turn == BLACK_TURN) {
 		_TempMove._TurnFlag = BLACK_TURN;
 
-		if(_TValue1 == Ground && Moving_Input[0].y + 1 == _BeforeMove._Position.x){
+		if(_TValue1 == Ground && Moving_Input[0].y + 1 == _BeforeMove._Position.x) {
 			if(_TValue2 == B_Pawn){
 				_V_SWAP(_Board[Moving_Input[0].x][Moving_Input[0].y],_Board[Moving_Input[1].x][Moving_Input[1].y]);
 				_Board[Moving_Input[2].x][Moving_Input[2].y] = Ground;
@@ -406,11 +407,8 @@ void ChessGame::Moving_Default(CvPoint Moving_Input[]) {
 
 				_Turn = !_Turn;
 			}
-			else{
-
-				//////////////////////////////////////////////////////////////////////////
+			else {
 				// 체스룰에 반하는 무브가 들어왔을때
-
 				_error_move._Flag = true;
 				_error_move._Before = Moving_Input[1];
 				_error_move._After = Moving_Input[0];
@@ -432,8 +430,7 @@ void ChessGame::Moving_Default(CvPoint Moving_Input[]) {
 
 				_Turn = !_Turn;
 			}
-			else{
-
+			else {
 				_error_move._Flag = true;
 				_error_move._Before = Moving_Input[0];
 				_error_move._After = Moving_Input[1];
@@ -441,16 +438,16 @@ void ChessGame::Moving_Default(CvPoint Moving_Input[]) {
 				return;
 			}
 		}
-		else{
+		else {
 			//////////////////////////////////////////////////////////////////////////
 			// 현재 턴에 맞는 말이 아닌 다른 말을 움직였을 경우
 
-			if(_TValue1 == Ground){
+			if (_TValue1 == Ground) {
 				_error_move._Flag = true;
 				_error_move._Before = Moving_Input[0];
 				_error_move._After = Moving_Input[1];
 			}
-			else if(_TValue2 == Ground){
+			else if (_TValue2 == Ground) {
 				_error_move._Flag = true;
 				_error_move._Before = Moving_Input[1];
 				_error_move._After = Moving_Input[0];
@@ -505,12 +502,12 @@ void ChessGame::Moving_Default(CvPoint Moving_Input[]) {
 		}
 		else {
 			// 자신의 턴이 아닐때 체스말을 움직임.
-			if(_TValue1 == Ground){
+			if (_TValue1 == Ground) {
 				_error_move._Flag = true;
 				_error_move._Before = Moving_Input[0];
 				_error_move._After = Moving_Input[1];
 			}
-			else if(_TValue2 == Ground){
+			else if (_TValue2 == Ground) {
 				_error_move._Flag = true;
 				_error_move._Before = Moving_Input[1];
 				_error_move._After = Moving_Input[0];
@@ -589,88 +586,23 @@ bool ChessGame::Rule_DefaultMove(CvPoint Before, CvPoint After) {
 	return false;
 }
 
-//void ChessGame::cvQuiver(IplImage *Image, int _X, int _Y, int _U, int _V, CvScalar Colour, int Size, int Thickness) {
-//	CvPoint _TPt1, _TPt2;
-//	double _TTheta;
-//	double _TPI = 3.1416;
-//
-//	if (_U == 0)
-//		_TTheta = _TPI / 2;
-//	else
-//		_TTheta = atan2(double(_V),(double)(_U));
-//
-//	_TPt1.x = _X;
-//	_TPt1.y = _Y;
-//
-//	_TPt2.x = _X + _U;
-//	_TPt2.y = _Y + _V;
-//
-//	cvDrawLine(Image,_TPt1,_TPt2,Colour,Thickness,8);  //Draw Line
-//
-//	Size = (int)(Size * 0.707);
-//
-//	if (_TTheta == _TPI/2 && _TPt1.y > _TPt2.y){
-//		_TPt1.x = (int)((Size * cos(_TTheta)) - (Size * sin(_TTheta)) + _TPt2.x);
-//		_TPt1.y = (int)((Size * sin(_TTheta)) + (Size * cos(_TTheta)) + _TPt2.y);
-//		cvDrawLine(Image, _TPt1, _TPt2, Colour, Thickness, 8); //Draw Line
-//
-//		_TPt1.x = (int)(Size * cos(_TTheta) + Size * sin(_TTheta) + _TPt2.x);
-//		_TPt1.y = (int)(Size * sin(_TTheta) - Size * cos(_TTheta) + _TPt2.y);
-//		cvDrawLine(Image, _TPt1, _TPt2, Colour, Thickness, 8); //Draw Line
-//	}
-//	else{
-//		_TPt1.x = (int)(-Size * cos(_TTheta) - Size * sin(_TTheta) + _TPt2.x);
-//		_TPt1.y = (int)(-Size * sin(_TTheta) + Size * cos(_TTheta) + _TPt2.y);
-//		cvDrawLine(Image, _TPt1, _TPt2, Colour, Thickness, 8);  //Draw Line
-//
-//		_TPt1. x =(int)(-Size * cos(_TTheta) + Size * sin(_TTheta) + _TPt2.x);
-//		_TPt1.y = (int)(-Size * sin(_TTheta) - Size * cos(_TTheta) + _TPt2.y);
-//		cvDrawLine(Image, _TPt1, _TPt2, Colour, Thickness, 8);  //Draw Line
-//	}
-//=======
-//void ChessGame::cvQuiver(IplImage *Image, CvPoint pt1, CvPoint pt2, CvScalar Color,int Size,int Thickness){
-//	double Theta;
-//	double PI = 3.1416;
-//	if(pt2.x == 0)
-//		Theta = PI/2;
-//	else
-//	{
-//		Theta = atan2(double(pt2.y - pt1.y), (double)(pt2.x - pt1.x));
-//	}
-//	cvLine(Image, pt1, pt2, Color, Thickness, 8);
-//	Size = (int)(Size*0.707);
-//	double arrow_length = sqrt(pow((float)(pt1.y - pt2.y),2) + pow((float)(pt1.x - pt2.x), 2));
-//
-//	if(Theta = PI/2 && pt1.y > pt2.y){
-//		pt1.x = (int)(Size*cos(Theta) - Size*sin(Theta) + pt2.x);
-//		pt1.y = (int)(Size*sin(Theta) + Size*cos(Theta) + pt2.y);
-//		cvLine(Image, pt1, pt2, Color, Thickness, 8);
-//		pt1.x = (int)(Size*cos(Theta) + Size*sin(Theta) + pt2.x);
-//		pt1.y = (int)(Size*sin(Theta) - Size*cos(Theta) + pt2.y);
-//		cvLine(Image, pt1, pt2, Color, Thickness, 8);
-//	}
-//	else{
-//		pt1.x = (int)(-Size*cos(Theta) - Size*sin(Theta) + pt2.x);
-//		pt1.y = (int)(-Size*sin(Theta) + Size*cos(Theta) + pt2.y);
-//		cvLine(Image, pt1, pt2, Color, Thickness, 8);
-//		pt1.x = (int)(-Size*cos(Theta) + Size*sin(Theta) + pt2.x);
-//		pt1.y = (int)(-Size*sin(Theta) - Size*cos(Theta) + pt2.y);
-//		cvLine(Image, pt1, pt2, Color, Thickness, 8);
-//	}
-//}
-void ChessGame::drawArrow(IplImage *img, CvPoint pStart, CvPoint pEnd, int len, int alpha, CvScalar color, int thickness, int lineType)
-{    
-	const double PI = 3.1415926;    
-	CvPoint arrow;
-	double angle = atan2((double)(pStart.y - pEnd.y), (double)(pStart.x - pEnd.x));  
-	cvLine(img, pStart, pEnd, color, thickness, lineType);
-	arrow.x = pEnd.x + len * cos(angle + PI * alpha / 180);     
-	arrow.y = pEnd.y + len * sin(angle + PI * alpha / 180);  
-	cvLine(img, pEnd, arrow, color, thickness, lineType);   
-	arrow.x = pEnd.x + len * cos(angle - PI * alpha / 180);     
-	arrow.y = pEnd.y + len * sin(angle - PI * alpha / 180);    
-	cvLine(img, pEnd, arrow, color, thickness, lineType);
-//>>>>>>> origin/CVES_NewEngine_Extended
+bool ChessGame::Check_Return(CvPoint move_input[]) {
+	if (move_input[0].x == _error_move._After.x
+		&& move_input[0].y == _error_move._After.y
+		&& move_input[1].x == _error_move._Before.x
+		&& move_input[1].y == _error_move._Before.y) {
+			_error_move._Flag = false;
+			return true;
+	}
+	else if (move_input[0].x == _error_move._Before.x
+		&& move_input[0].y == _error_move._Before.y
+		&& move_input[1].x == _error_move._After.x
+		&& move_input[1].y == _error_move._After.y) {
+			_error_move._Flag = false;
+			return true;
+	}
+
+	return false;
 }
 #pragma endregion Private Functions
 
@@ -751,32 +683,6 @@ void ChessGame::Show_ChessImage() {
 	cvShowImage("ChessGame", _TTempGameBoard);
 #endif
 	cvReleaseImage(&_TTempGameBoard);
-}
-
-bool ChessGame::Check_Return(CvPoint move_input[]) {
-	/*if(move_input[0].x == _error_move.after.x && move_input[0].y == _error_move.after.y && move_input[1].x == _error_move.before.x && move_input[1].y == _error_move.before.y){
-		_error_move.flag = false;
-		return true;
-	}
-	else if(move_input[0].x == _error_move.before.x && move_input[0].y == _error_move.before.y && move_input[1].x == _error_move.after.x && move_input[1].y == _error_move.after.y){
-		_error_move.flag = false;
-		return true;*/
-	if (move_input[0].x == _error_move._After.x
-		&& move_input[0].y == _error_move._After.y
-		&& move_input[1].x == _error_move._Before.x
-		&& move_input[1].y == _error_move._Before.y) {
-		_error_move._Flag = false;
-		return true;
-	}
-	else if (move_input[0].x == _error_move._Before.x
-		&& move_input[0].y == _error_move._Before.y
-		&& move_input[1].x == _error_move._After.x
-		&& move_input[1].y == _error_move._After.y) {
-		_error_move._Flag = false;
-		return true;
-	}
-
-	return false;
 }
 
 string ChessGame::Get_RecentMove() {
@@ -881,7 +787,7 @@ void ChessGame::Draw_InvalidMove(IplImage *Source, vector<ChessPoint> _CP, int R
 
 	cvDrawCircle(Source, CP_before, 10, cvScalar(0,0,255), 2);
 	//cvQuiver(Source, CP_before, CP_after, cvScalar(0,0,255), 3, 3);
-	drawArrow(Source, CP_before, CP_after, 10, 30, cvScalar(0,0,255), 3, 8);
+	Draw_Arrow(Source, CP_before, CP_after, 10, 30, cvScalar(0,0,255), 3, 8);
 	//cvDrawLine(Source, CP_before, CP_after, cvScalar(0,0,255), 3);
 #if defined(DEBUG_MODE)
 	cvShowImage("source", Source);
@@ -893,4 +799,16 @@ bool ChessGame::Return_errorFlag() {
 	return _error_move._Flag;
 }
 
+void ChessGame::Draw_Arrow(IplImage *img, CvPoint pStart, CvPoint pEnd, int len, int alpha, CvScalar color, int thickness, int lineType) {    
+	const double PI = 3.1415926;    
+	CvPoint arrow;
+	double angle = atan2((double)(pStart.y - pEnd.y), (double)(pStart.x - pEnd.x));  
+	cvLine(img, pStart, pEnd, color, thickness, lineType);
+	arrow.x = pEnd.x + len * cos(angle + PI * alpha / 180);     
+	arrow.y = pEnd.y + len * sin(angle + PI * alpha / 180);  
+	cvLine(img, pEnd, arrow, color, thickness, lineType);   
+	arrow.x = pEnd.x + len * cos(angle - PI * alpha / 180);     
+	arrow.y = pEnd.y + len * sin(angle - PI * alpha / 180);    
+	cvLine(img, pEnd, arrow, color, thickness, lineType);
+}
 #pragma endregion Public Functions

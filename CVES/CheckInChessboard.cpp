@@ -72,9 +72,111 @@ CvPoint CheckInChessboard::Get_ChessBoxPosition(int Width, int Height, vector<Ch
 	//error return;
 	return cvPoint(-1,-1);
 }
+
+unsigned char CheckInChessboard::Get_MedianVaul_Inkernel(unsigned char _kernel[][PIXEL_PICK_KERNEL_SIZE]) {
+	std::vector<unsigned char> _Median_value;
+	for(register int i = 0; i < PIXEL_PICK_KERNEL_SIZE; i++){
+		for(register int j = 0; j < PIXEL_PICK_KERNEL_SIZE; j++ ){
+			_Median_value.push_back(_kernel[i][j]);
+		}
+	}
+
+	std::sort(_Median_value.begin(), _Median_value.end());
+
+	return _Median_value.at((PIXEL_PICK_KERNEL_SIZE*PIXEL_PICK_KERNEL_SIZE)/2 + 1);
+}
+
+float CheckInChessboard::Get_GridPixelvalue(IplImage *gray, CvPoint Headpoint, CvPoint Head_right, CvPoint Head_down, CvPoint right_down) {
+	IplImage *temp_src = cvCreateImage(cvSize(40, 40), IPL_DEPTH_8U, 1);
+	CvMat* warp_mat = cvCreateMat(3, 3, CV_32FC1);
+	int thickness = 3;
+
+	CvPoint2D32f srcTri[4], dstTri[4];
+
+	srcTri[0].x = Headpoint.x + thickness;              // X1
+	srcTri[0].y = Headpoint.y + thickness;
+	srcTri[1].x = Head_right.x + thickness;    // Y1
+	srcTri[1].y = Head_right.y - thickness;
+	srcTri[2].x = Head_down.x - thickness;              // Z1
+	srcTri[2].y = Head_down.y + thickness;
+	srcTri[3].x = right_down.x - thickness;
+	srcTri[3].y = right_down.y - thickness;
+
+	dstTri[0].x = 0;
+	dstTri[0].y = 0;
+	dstTri[1].x = 39;   // Y2
+	dstTri[1].y = 0;
+	dstTri[2].x = 0;   // Z2
+	dstTri[2].y = 39;
+	dstTri[3].x = 39;   // Z2
+	dstTri[3].y = 39;
+
+	cvGetPerspectiveTransform(srcTri, dstTri, warp_mat);
+	cvWarpPerspective(gray, temp_src, warp_mat);
+
+	//char buf[32];
+	//sprintf(buf, "%d_%d.jpg", Headpoint.x, Headpoint.y);
+	//cvSaveImage(buf, temp_src);
+	// 픽셀 picking
+	unsigned char _kernel[PIXEL_PICK_KERNEL_SIZE][PIXEL_PICK_KERNEL_SIZE];
+	for(int i = 0; i < PIXEL_PICK_KERNEL_SIZE; i++){
+		for(int j = 0; j < PIXEL_PICK_KERNEL_SIZE; j++){
+			_kernel[i][j] = temp_src->imageData[(20- PIXEL_PICK_KERNEL_SIZE/2 + i) + (20 - PIXEL_PICK_KERNEL_SIZE/2 + j) * temp_src->widthStep];
+		}
+	}
+
+	cvReleaseImage(&temp_src);
+	cvReleaseMat(&warp_mat);
+
+	return (float)	Get_MedianVaul_Inkernel(_kernel);
+}
+
+float CheckInChessboard::Get_AvgRect(IplImage *GrayImage, IplImage *edge, CvRect ROI) {
+	int count = 0;
+	long total = 0;
+
+	for(register int i = 0; i < ROI.width; i++){
+		for(register int j = 0; j < ROI.height; j++){
+			unsigned char _edgeValue = (unsigned char)edge->imageData[(ROI.x + i) + (ROI.y + j) * edge->widthStep];
+			unsigned char _pixelValue = (unsigned char)GrayImage->imageData[(ROI.x + i) + (ROI.y + j) * GrayImage->widthStep];
+
+
+			if(_edgeValue == 255){
+				count++;
+				total += _pixelValue;
+			}
+		}
+	}
+
+	return total / count;
+}
+
+unsigned char CheckInChessboard::Get_MedianRect(IplImage *Gray, CvRect ROI) {
+	IplImage *ROI_Image = cvCreateImage(cvSize(ROI.width, ROI.height), IPL_DEPTH_8U, 1);
+
+	cvSetImageROI(Gray, ROI);
+	cvCopy(Gray, ROI_Image);
+	cvResetImageROI(Gray);
+
+	// 속력 문제 개선 여지
+	vector<unsigned char> _temp_vector;
+
+	for (register int i = 0; i < ROI_Image->width; i++) {
+		for (register int j = 0; j < ROI_Image->height; j++) {
+			_temp_vector.push_back(ROI_Image->imageData[i + j * ROI_Image->widthStep]);
+		}
+	}
+
+	sort(_temp_vector.begin(), _temp_vector.end());
+
+	unsigned char return_value = (unsigned char)_temp_vector.at((ROI_Image->width-1)*(ROI_Image->height-1) / 2);
+	cvReleaseImage(&ROI_Image);
+
+	return return_value;
+}
 #pragma endregion Private Functions
 
-#pragma region Private Functions
+#pragma region Public Functions
 bool CheckInChessboard::Check_InChessboard(IplImage *Image, vector<ChessPoint> Point) {
 	// Chess_point를 통하여 binary image의 픽셀이 chess board 내부에 존재하는지를 확인.
 	// 1) 체스판 사각형의 크기를 연산하여 _TTriangleArea에 저장
@@ -247,7 +349,7 @@ void CheckInChessboard::Calculate_BoardScore(IplImage *BinaryImage, IplImage *Gr
 
 	CvPoint _center, _idx;
 	float _AvgPixValue;
-	for(register int i = 0; i < _Blob._LabelingQty; i++){
+	for (register int i = 0; i < _Blob._LabelingQty; i++) {
 		_center = cvPoint(_Blob._LabelingInfomation[i].x + _Blob._LabelingInfomation[i].width/2, _Blob._LabelingInfomation[i].y + _Blob._LabelingInfomation[i].height/2);
 		//_idx = Get_ChessboxPos(_center.x, _center.y, CrossPoint);
 		_idx = Get_ChessBoxPosition(_center.x, _center.y, CrossPoint);
@@ -256,9 +358,10 @@ void CheckInChessboard::Calculate_BoardScore(IplImage *BinaryImage, IplImage *Gr
 		_TChess_Blob[_idx.x][_idx.y]++;
 		_TChess_gray[_idx.x][_idx.y] += _AvgPixValue;
 
-		if(_AvgPixValue > Chess_avg_pixvalue){
+		if (_AvgPixValue > Chess_avg_pixvalue) {
 			cvDrawRect(GrayImage, cvPoint(_Blob._LabelingInfomation[i].x, _Blob._LabelingInfomation[i].y), cvPoint(_Blob._LabelingInfomation[i].x + _Blob._LabelingInfomation[i].width, _Blob._LabelingInfomation[i].y + _Blob._LabelingInfomation[i].height), cvScalarAll(255), -1);
-		}else{
+		}
+		else {
 			cvDrawRect(GrayImage, cvPoint(_Blob._LabelingInfomation[i].x, _Blob._LabelingInfomation[i].y), cvPoint(_Blob._LabelingInfomation[i].x + _Blob._LabelingInfomation[i].width, _Blob._LabelingInfomation[i].y + _Blob._LabelingInfomation[i].height), cvScalarAll(0), -1);
 		}		
 	}
@@ -293,65 +396,6 @@ void CheckInChessboard::Calculate_BoardScore(IplImage *BinaryImage, IplImage *Gr
 			ScoreBox[i][j] /= _TChess_Area[i][j];
 		}
 	}
-}
-#pragma endregion Private Functions
-
-unsigned char CheckInChessboard::Get_MedianVaul_Inkernel(unsigned char _kernel[][PIXEL_PICK_KERNEL_SIZE]) {
-	std::vector<unsigned char> _Median_value;
-	for(register int i = 0; i < PIXEL_PICK_KERNEL_SIZE; i++){
-		for(register int j = 0; j < PIXEL_PICK_KERNEL_SIZE; j++ ){
-			_Median_value.push_back(_kernel[i][j]);
-		}
-	}
-
-	std::sort(_Median_value.begin(), _Median_value.end());
-
-	return _Median_value.at((PIXEL_PICK_KERNEL_SIZE*PIXEL_PICK_KERNEL_SIZE)/2 + 1);
-}
-
-float CheckInChessboard::Get_GridPixelvalue(IplImage *gray, CvPoint Headpoint, CvPoint Head_right, CvPoint Head_down, CvPoint right_down) {
-	IplImage *temp_src = cvCreateImage(cvSize(40, 40), IPL_DEPTH_8U, 1);
-	CvMat* warp_mat = cvCreateMat(3, 3, CV_32FC1);
-	int thickness = 3;
-
-	CvPoint2D32f srcTri[4], dstTri[4];
-
-	srcTri[0].x = Headpoint.x + thickness;              // X1
-	srcTri[0].y = Headpoint.y + thickness;
-	srcTri[1].x = Head_right.x + thickness;    // Y1
-	srcTri[1].y = Head_right.y - thickness;
-	srcTri[2].x = Head_down.x - thickness;              // Z1
-	srcTri[2].y = Head_down.y + thickness;
-	srcTri[3].x = right_down.x - thickness;
-	srcTri[3].y = right_down.y - thickness;
-
-	dstTri[0].x = 0;
-	dstTri[0].y = 0;
-	dstTri[1].x = 39;   // Y2
-	dstTri[1].y = 0;
-	dstTri[2].x = 0;   // Z2
-	dstTri[2].y = 39;
-	dstTri[3].x = 39;   // Z2
-	dstTri[3].y = 39;
-
-	cvGetPerspectiveTransform(srcTri, dstTri, warp_mat);
-	cvWarpPerspective(gray, temp_src, warp_mat);
-
-	//char buf[32];
-	//sprintf(buf, "%d_%d.jpg", Headpoint.x, Headpoint.y);
-	//cvSaveImage(buf, temp_src);
-	// 픽셀 picking
-	unsigned char _kernel[PIXEL_PICK_KERNEL_SIZE][PIXEL_PICK_KERNEL_SIZE];
-	for(int i = 0; i < PIXEL_PICK_KERNEL_SIZE; i++){
-		for(int j = 0; j < PIXEL_PICK_KERNEL_SIZE; j++){
-			_kernel[i][j] = temp_src->imageData[(20- PIXEL_PICK_KERNEL_SIZE/2 + i) + (20 - PIXEL_PICK_KERNEL_SIZE/2 + j) * temp_src->widthStep];
-		}
-	}
-
-	cvReleaseImage(&temp_src);
-	cvReleaseMat(&warp_mat);
-
-	return (float)	Get_MedianVaul_Inkernel(_kernel);
 }
 
 void CheckInChessboard::Delete_Chessboard(IplImage *Image, vector<ChessPoint> Point) {
@@ -390,48 +434,4 @@ void CheckInChessboard::Delete_Chessboard(IplImage *Image, vector<ChessPoint> Po
 		}
 	}
 }
-
-float CheckInChessboard::Get_AvgRect(IplImage *GrayImage, IplImage *edge, CvRect ROI) {
-	int count = 0;
-	long total = 0;
-
-	for(register int i = 0; i < ROI.width; i++){
-		for(register int j = 0; j < ROI.height; j++){
-			unsigned char _edgeValue = (unsigned char)edge->imageData[(ROI.x + i) + (ROI.y + j) * edge->widthStep];
-			unsigned char _pixelValue = (unsigned char)GrayImage->imageData[(ROI.x + i) + (ROI.y + j) * GrayImage->widthStep];
-
-
-			if(_edgeValue == 255){
-				count++;
-				total += _pixelValue;
-			}
-		}
-	}
-
-	return total / count;
-}
-
-unsigned char CheckInChessboard::Get_MedianRect( IplImage *Gray, CvRect ROI )
-{
-	IplImage *ROI_Image = cvCreateImage(cvSize(ROI.width, ROI.height), IPL_DEPTH_8U, 1);
-
-	cvSetImageROI(Gray, ROI);
-	cvCopy(Gray, ROI_Image);
-	cvResetImageROI(Gray);
-
-	// 속력 문제 개선 여지
-	vector<unsigned char> _temp_vector;
-	
-	for(register int i = 0; i < ROI_Image->width; i++){
-		for(register int j = 0; j < ROI_Image->height; j++){
-			_temp_vector.push_back(ROI_Image->imageData[i + j * ROI_Image->widthStep]);
-		}
-	}
-	
-	sort(_temp_vector.begin(), _temp_vector.end());
-
-	unsigned char return_value = (unsigned char)_temp_vector.at((ROI_Image->width-1)*(ROI_Image->height-1) / 2);
-	cvReleaseImage(&ROI_Image);
-
-	return return_value;
-}
+#pragma endregion Public Functions
