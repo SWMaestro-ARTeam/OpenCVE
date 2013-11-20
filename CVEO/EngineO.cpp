@@ -44,7 +44,6 @@ bool EngineO::Initialize_TClient() {
 
 	if (_TelepathyClient->ClientInitialize() != true) {
 		// Server 연결 실패.
-		//SendToGUI("Client Initialize Failed.");
 		return false;
 	}
 
@@ -60,7 +59,7 @@ void EngineO::Deinitialize_TClient() {
 void EngineO::Engine_Initializing() {
 	// Initialize Client Socket.
 	if (Initialize_TClient() != true) {
-		//SendToGUI("Socket Initialization Failed.");
+		return ;
 	}
 }
 
@@ -125,9 +124,6 @@ void EngineO::ObserverDisconnectedCallback() {
 	bool _TIsConnected = false;
 	// 3. Parser가 살아있을 때 까지 무조건 계속 while 돌며 Process가 살아있는지, 통신이 살아있는지 Check 함.
 	// 간혹 Loop에 걸렸을때 갑자기 종료가 될 수 있기 때문에, 항상 전제를 Engine이 Enable일 때만 돌게 끔 작업.
-	//if (G_EngineC->EngineEnable == false)
-	//	G_EngineC->_TelepathyClient->IsConnectedClient = false;
-
 	while (G_EngineO->EngineEnable) {
 		if (G_EngineO->_TelepathyClient->IsConnectedClient != true && G_EngineO->EngineEnable == true) {
 			// CVES에 접속할 때까지 계속 돈다.
@@ -141,7 +137,7 @@ void EngineO::ObserverDisconnectedCallback() {
 			if (_TIsConnected == true)
 				break;
 		}
-		//Sleep(10);
+		Sleep(20);
 	}
 }
 
@@ -200,6 +196,13 @@ UINT WINAPI
 					}
 					_TEngine_O->TEngineODataReceivedCallback(_TEngine_O->_StringTools.StringToConstCharPointer(_TString));
 					break;
+				case VALUE_I_OUPDATECHESSBOARD :
+					// "OUudateChessBoard" 이후의 뒤에 있는 Data로 위치를 넘긴다.
+					_TString.append(*_InternalProtocolCS->CharArrayListIter);
+					_TString.append(" ");
+					_InternalProtocolCS->NextCharArrayIter();
+					_TString.append(*_InternalProtocolCS->CharArrayListIter);
+					_TEngine_O->TEngineODataReceivedCallback(_TEngine_O->_StringTools.StringToConstCharPointer(_TString));
 			}
 
 			delete _InternalProtocolCS;
@@ -252,20 +255,4 @@ void *
 
 void EngineO::EngineO_Start() {
 	_Thread.StartThread(CVEOProcessingThread, this);
-	/*
-#if defined(WINDOWS_SYS)
-	HANDLE _TThreadHandle = (HANDLE)_beginthreadex(NULL, 0, CVEOProcessingThread, this, 0, NULL);
-#elif defined(POSIX_SYS)
-	pthread_t _TThread;
-	pthread_attr_t _TThreadAttr;
-	// pthread attribute initialize.
-	pthread_attr_init(&_TThreadAttr);
-	// Detached thread.
-	pthread_attr_setdetachstate(&_TThreadAttr, PTHREAD_CREATE_DETACHED);
-	// User space thread.
-	pthread_attr_setscope(&_TThreadAttr, PTHREAD_SCOPE_SYSTEM);
-	// Create thread.
-	pthread_create(&_TThread, NULL, CVEOProcessingThread, (void *)this);
-#endif
-*/
 }

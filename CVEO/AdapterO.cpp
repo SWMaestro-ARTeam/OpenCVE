@@ -58,7 +58,7 @@ int AdapterO::Go_EngineO(int argc, char* argv[]) {
 	// Thread 처리 할 경우 Main Application이 Thread보다 먼저 죽어버리는 경우가 발생하므로,
 	// 이를 방지하기 위해 Engine이 Enable일 때까지 계속 멈춰 있게 하여야 한다.
 	// Main Thread가 Worker보다 빨리 떨어지는걸 방지하기 위해 Sleep 10을 줌.
-	while (!_EngineO->EngineEnd) Sleep(10);
+	while (!_EngineO->EngineEnd) Sleep(100);
 
 	// 4. Delete pointer.
 	delete _EngineO;

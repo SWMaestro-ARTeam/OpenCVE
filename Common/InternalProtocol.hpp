@@ -75,6 +75,7 @@
 
 #define STR_I_DISP "Disp"
 #define STR_I_OMOVE "OMove"
+#define STR_I_OUPDATECHESSBOARD "OUudateChessBoard"
 
 #define STR_I_DISP_MINX "MinX"
 #define STR_I_DISP_MINY "MinY"
@@ -140,6 +141,7 @@
 #define VALUE_I_TICTOKISOFF 3300
 #define VALUE_I_DISP 3400
 #define VALUE_I_OMOVE 3500
+#define VALUE_I_OUPDATECHESSBOARD 3600
 
 #define VALUE_I_DISP_MINX 3410
 #define VALUE_I_DISP_MINY 3420

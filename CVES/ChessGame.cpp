@@ -607,10 +607,14 @@ bool ChessGame::Check_Return(CvPoint move_input[]) {
 #pragma endregion Private Functions
 
 #pragma region Public Functions
-bool ChessGame::Chess_Process(CvPoint Input[], int MOVE_MODE) {
+bool ChessGame::Chess_Process(CvPoint Input[], int MOVE_MODE, bool AI_Mode) {
 	CvPoint _TMove[4];
 
-	switch (MOVE_MODE) {
+	if(AI_Mode && _Turn == BLACK_TURN){
+
+	}
+	else{
+		switch (MOVE_MODE) {
 		case CASTLING_MOVE:
 			for (register int i = 0; i < 4; i++)
 				_TMove[i] = cvPoint(Input[i].x, Input[i].y);
@@ -629,6 +633,7 @@ bool ChessGame::Chess_Process(CvPoint Input[], int MOVE_MODE) {
 
 			Moving_Default(_TMove);
 			break;
+		}
 	}
 
 	return !_Turn;
@@ -687,6 +692,52 @@ void ChessGame::Show_ChessImage() {
 
 string ChessGame::Get_RecentMove() {
 	return string(_RecentMove);
+}
+
+void ChessGame::Get_ChessBoard(int ChessBoard[][8]) {
+	ChessBoard = _Board;
+}
+
+void ChessGame::Set_ChessBoard(char *UCI_Moves) {
+	// 1. 해석.
+
+	// 0 : before, 1 : after
+	CvPoint move_input[2];
+
+	for (register int i = 0; i < 4; i++) {
+		if (i % 2 == 0) {
+			Mapping_UCIUnCharacter(UCI_Moves[i]);
+			move_input[i/2].x;
+		}
+		else {
+			move_input[i/2].y = atoi((const char *)UCI_Moves[i]) - 1;
+		}
+	}
+	
+	// 2. 보드 적용.
+	_Board[move_input[1].x][move_input[1].y] = Ground;
+	_V_SWAP(_Board[move_input[0].x][move_input[0].y],_Board[move_input[1].x][move_input[1].y]);
+}
+
+int ChessGame::Mapping_UCIUnCharacter(char Position){
+	switch(Position){
+	case 'a':
+		return 0;
+	case 'b':
+		return 1;
+	case 'c':
+		return 2;
+	case 'd':
+		return 3;
+	case 'e':
+		return 4;
+	case 'f':
+		return 5;
+	case 'g':
+		return 6;
+	case 'h':
+		return 7;
+	}
 }
 
 int ChessGame::Read_Mode() {

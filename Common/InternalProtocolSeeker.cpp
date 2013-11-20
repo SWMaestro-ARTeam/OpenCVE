@@ -150,6 +150,10 @@ int InternalProtocolSeeker::InternalProtocolString_Seeker(const char *Str) {
 			_SeekedNumber = VALUE_I_OMOVE_WHITE;
 			break;
 
+		CASE(STR_I_OUPDATECHESSBOARD)
+			_SeekedNumber = VALUE_I_OUPDATECHESSBOARD;
+			break;
+
 		CASE(STR_I_STATUSNOW)
 			_SeekedNumber = VALUE_I_STATUSNOW;
 			break;

@@ -85,7 +85,7 @@ private:
 
 	void Make_UCICoordinate(CvPoint Before, CvPoint After);
 	char Mapping_UCICharacter(int Position); // 글자 좌표로 매핑
-
+	int Mapping_UCIUnCharacter(char Position);	// UCI해석
 	// MODE 판독 함수 
 
 	// 각 체스 룰을 다루는 함수
@@ -101,11 +101,13 @@ public:
 
 	// chess board의 말 움직임 진행 함수.
 	// MOVE_MODE : CASTLING_MOVE - 캐슬링 detect, ENPASSANT_MOVE - 앙파상 detect, other - 두 가지 말의 이동만을 체크함.
-	bool Chess_Process(CvPoint input1[], int MOVE_MODE);
+	bool Chess_Process(CvPoint input1[], int MOVE_MODE, bool AI_Mode);
 	void Show_ChessBoard(); // cmd에 체스판을 그림.
 	void Show_ChessImage(); // chess UI를 Draw
-	bool Check_InvalidMove( IplImage *Source, vector<ChessPoint> _CP, CvPoint _out[], int ROI_X, int ROI_Y );
+	bool Check_InvalidMove(IplImage *Source, vector<ChessPoint> _CP, CvPoint _out[], int ROI_X, int ROI_Y);
 	string Get_RecentMove(); // list에 저장된 가장 최근 movement를 return; Dequeue와 같음.
+	void Get_ChessBoard(int Board[][8]);
+	void Set_ChessBoard(char *UCI_Moves);
 	int Read_Mode();
 	void Draw_InvalidMove(IplImage *Source, vector<ChessPoint> _CP, int ROI_X, int ROI_Y); // 이미지에 잘못된 움직임을 정정하라는 UI를 그림
 	bool Return_errorFlag();		// 최근 움직임이 Invalild move라면 return true;

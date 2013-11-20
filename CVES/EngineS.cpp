@@ -246,133 +246,140 @@ void EngineS::Process_Info(CommandString *IPCS, SOCKET Socket)	{
 		switch (_NSeek_GUIToEngine) {
 			// Go 뒤로 부터 오는 것들.
 			// e.g> "Info Go BlackTime(WhiteTime) xxxxx Turn xxxx"
-		case VALUE_I_INFO_GO :
-			// "Info Go"
-			_TIsInfoGo = true;
-			break;
-		case VALUE_I_INFO_BLACKTIME :
-			// "Info Go BlackTime xxxxx"
-			// 현재 들어오는 Socket이외의 다른 Client(상대편)의 표시창에 현재 멈춤 시각을 알려준다.
-			// 여기에 오면, 상대편(Black)의 시각이 들어오는 것이다.
-			_TIsBlackTime = true;
-			break;
-		case VALUE_I_INFO_WHITETIME :
-			// "Info Go White Time xxxxx"
-			// 현재 들어오는 Socket이외의 다른 Client(상대편)의 표시창에 현재 멈춤 시각을 알려준다.
-			// 여기에 오면, 상대편(White)의 시각이 들어오는 것이다.
-			_TIsWhiteTime = true;
-			break;
-		case VALUE_I_INFO_TURN :
-			// "Info Go Turn xxxx"
-			// 여기에 현재 자신의 Turn 수가 적힌다.
-			_TIsTurn = true;
-			break;
+			case VALUE_I_INFO_GO :
+				// "Info Go"
+				_TIsInfoGo = true;
+				break;
+			case VALUE_I_INFO_BLACKTIME :
+				// "Info Go BlackTime xxxxx"
+				// 현재 들어오는 Socket이외의 다른 Client(상대편)의 표시창에 현재 멈춤 시각을 알려준다.
+				// 여기에 오면, 상대편(Black)의 시각이 들어오는 것이다.
+				_TIsBlackTime = true;
+				break;
+			case VALUE_I_INFO_WHITETIME :
+				// "Info Go White Time xxxxx"
+				// 현재 들어오는 Socket이외의 다른 Client(상대편)의 표시창에 현재 멈춤 시각을 알려준다.
+				// 여기에 오면, 상대편(White)의 시각이 들어오는 것이다.
+				_TIsWhiteTime = true;
+				break;
+			case VALUE_I_INFO_TURN :
+				// "Info Go Turn xxxx"
+				// 여기에 현재 자신의 Turn 수가 적힌다.
+				_TIsTurn = true;
+				break;
 
-			// Position 뒤로부터 오는 것들.
-			// e.g> "Info Position MoveNULL"
-			// "Info Position EnemyMove xxxx"
-		case VALUE_I_INFO_POSITION :
-			// "Info Position"
-			_TIsInfoPosition = true;
-			break;
-		case VALUE_I_INFO_ENEMYMOVE :
-			// "Info Position EnemyMove xxxx"
-			// 적의 Move이므로.
-			// 틀리면 비교한다.
-			_TIsInfoEnemyMove = true;
-			break;
-			// "MoveNULL"이 있다면 불필요한 존재?!
-			// 추후 없에기로 한다.
-		case VALUE_I_INFO_MOVENULL :
-			// "Info Position NoveNULL"
-			// 이걸 게임의 시작으로 간주 해야 할 것 같다.
-			// Socket을 넘겨 해당하는 Client List에 White 라는 식별을 한다.
-			// 그외의 나머지(해봤자 1개 뿐..) Client는 Black으로 처리한다.
+				// Position 뒤로부터 오는 것들.
+				// e.g> "Info Position MoveNULL"
+				// "Info Position EnemyMove xxxx"
+			case VALUE_I_INFO_POSITION :
+				// "Info Position"
+				_TIsInfoPosition = true;
+				break;
+			case VALUE_I_INFO_ENEMYMOVE :
+				// "Info Position EnemyMove xxxx"
+				// 적의 Move이므로.
+				// 틀리면 비교한다.
+				_TIsInfoEnemyMove = true;
+				break;
+				// "MoveNULL"이 있다면 불필요한 존재?!
+				// 추후 없에기로 한다.
+			case VALUE_I_INFO_MOVENULL :
+				// "Info Position NoveNULL"
+				// 이걸 게임의 시작으로 간주 해야 할 것 같다.
+				// Socket을 넘겨 해당하는 Client List에 White 라는 식별을 한다.
+				// 그외의 나머지(해봤자 1개 뿐..) Client는 Black으로 처리한다.
 
-			break;
-		case VALUE_I_INFO_WHITE :
-			for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
-				if (_TVal->ClientSocket == Socket && strcmp(_TVal->ClientType, "Client") == 0) {
-					// White.
-					_TVal->ClientName = _StringTools.ConstCharToChar("White");
-				}
-			}
-			break;
-		case VALUE_I_INFO_BLACK :
-			for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
-				if (_TVal->ClientSocket == Socket && strcmp(_TVal->ClientType, "Client") == 0) {
-					// Null Move가 오면 일단 White.
-					_TVal->ClientName = _StringTools.ConstCharToChar("Black");
-				}
-			}
-			break;
-
-			// Type 뒤로부터 오는 것들.
-			// e.g> "Info Type Client(Observer)"
-		case VALUE_I_INFO_TYPE :
-			// "Info Type"
-			_TIsInfoType = true;
-			break;
-		case VALUE_I_INFO_TYPE_CLIENT :
-			// "Info Type Client"
-			if (_TIsInfoType == true) {
+				break;
+			case VALUE_I_INFO_WHITE :
 				for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
-					if (_TVal->ClientSocket == Socket) {
-						_TVal->ClientType = _StringTools.ConstCharToChar(STR_I_INFO_TYPE_CLIENT);
-						break;
+					if (_TVal->ClientSocket == Socket && strcmp(_TVal->ClientType, "Client") == 0) {
+						// White.
+						_TVal->ClientName = _StringTools.ConstCharToChar("White");
 					}
 				}
-			}
-			break;			
-		case VALUE_I_INFO_TYPE_OBSERVER :
-			// "Info Type Observer"
-			if (_TIsInfoType == true) {
+				break;
+			case VALUE_I_INFO_BLACK :
 				for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
-					if (_TVal->ClientSocket == Socket) {
-						_TVal->ClientType = _StringTools.ConstCharToChar(STR_I_INFO_TYPE_OBSERVER);
-						break;
+					if (_TVal->ClientSocket == Socket && strcmp(_TVal->ClientType, "Client") == 0) {
+						// Null Move가 오면 일단 White.
+						_TVal->ClientName = _StringTools.ConstCharToChar("Black");
 					}
 				}
-			}
-			break;
+				break;
 
-		case VALUE_I_ANYVALUES :
-			if (_TIsInfoGo) {
-				if (_TIsBlackTime) {
-					_TIsBlackTime = false;
-					// Black Time을 처리할 구문.
-					// Chess Game에 넘길 Data.
+				// Type 뒤로부터 오는 것들.
+				// e.g> "Info Type Client(Observer)"
+			case VALUE_I_INFO_TYPE :
+				// "Info Type"
+				_TIsInfoType = true;
+				break;
+			case VALUE_I_INFO_TYPE_CLIENT :
+				// "Info Type Client"
+				if (_TIsInfoType == true) {
+					for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
+						if (_TVal->ClientSocket == Socket) {
+							_TVal->ClientType = _StringTools.ConstCharToChar(STR_I_INFO_TYPE_CLIENT);
+							break;
+						}
+					}
 				}
-				else if (_TIsWhiteTime) {
-					_TIsWhiteTime = false;
-					// White Time을 처리할 구문.
-					// Chess Game에 넘길 Data.
+				break;			
+			case VALUE_I_INFO_TYPE_OBSERVER :
+				// "Info Type Observer"
+				if (_TIsInfoType == true) {
+					for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
+						if (_TVal->ClientSocket == Socket) {
+							_TVal->ClientType = _StringTools.ConstCharToChar(STR_I_INFO_TYPE_OBSERVER);
+							break;
+						}
+					}
 				}
-				else if (_TIsTurn) {
-					_TIsTurn = false;
-					// Turn을 처리할 구문.
-					// Chess Game에 넘길 Data.
-				}
-			}
-			else if (_TIsInfoPosition) {
-				if (_TIsInfoEnemyMove) {
+				break;
 
+			case VALUE_I_ANYVALUES :
+				if (_TIsInfoGo) {
+					if (_TIsBlackTime) {
+						_TIsBlackTime = false;
+						// Black Time을 처리할 구문.
+						// Chess Game에 넘길 Data.
+					}
+					else if (_TIsWhiteTime) {
+						_TIsWhiteTime = false;
+						// White Time을 처리할 구문.
+						// Chess Game에 넘길 Data.
+					}
+					else if (_TIsTurn) {
+						_TIsTurn = false;
+						// Turn을 처리할 구문.
+						// Chess Game에 넘길 Data.
+					}
 				}
-				else if (_TIsInfoEnemyMove) {
+				else if (_TIsInfoPosition) {
+					if (_TIsInfoEnemyMove) {
+						if (_AI_mode == true) {
+							string _TString = string("");
 
+							_ChessGame->Set_ChessBoard((char *)*IPCS->CharArrayListIter);
+							// 만약 AI와 대전을 할 때에는, AI전에 맞게 Observer에서 Chess Board의 변화를 주어야 한다.
+							int _TChessBoard[8][8] = {0};
+							memset(_TChessBoard, NULL, sizeof(_TChessBoard));
+							_ChessGame->Get_ChessBoard(_TChessBoard);
+							_TString.append(STR_I_OUPDATECHESSBOARD).append(" ").append((char *)_TChessBoard);
+							for_IterToEnd(list, ClientsList, _TelepathyServer->ClientList) {
+								if (_TVal->ClientSocket == Socket && strcmp(_TVal->ClientType, STR_I_INFO_TYPE_OBSERVER) == 0)
+									_TelepathyServer->SendDataToOne((char *)_StringTools.StringToConstCharPointer(_TString), Socket);
+							}
+						}
+					}
+					/*
+					else if (_TIsInfoEnemyMove) {
+
+					}*/
 				}
-			}
-			break;
+				break;
 		}
 	}
 }
-
-//bool EngineS::Check_Exit() {
-//	if (_ImageProcessMode == 3)
-//		return true;
-//	else
-//		return false;
-//}
 
 CvRect EngineS::Set_ROIRect(int ResolutionWidth, int ResolutionHeight, int ROIWidth, int ROIHeight) {
 	int _TCalculateROIWidth;
@@ -599,9 +606,8 @@ void EngineS::Evaluation() {
 		predicted_mode = (out_count < predicted_mode ? out_count : predicted_mode);
 
 		// chessgame 이동부.
-		//printf("predict: %d, out_count : %d\n", predicted_mode, out_count);
 		// Out 결과로, Turn을 출력한다.
-		_IsTrun = _ChessGame->Chess_Process(out, predicted_mode);
+		_IsTrun = _ChessGame->Chess_Process(out, predicted_mode, _AI_mode);
 		// 무언가를 놓았을때 ponder가 없음으로 초기화한다
 		_ponder_exist = false;
 
@@ -953,7 +959,6 @@ void *
 				int _TTick = _TEngine_S->_Time.GetTick();
 				
 				cvZero(_THandDetectionImage);
-				//_TEngine_S->_CamImageProtectMutex.lock();
 				
 				if (_TEngine_S->_OriginForHandDetection->empty() != true) {
 				 _THandOriginImage = _TEngine_S->_OriginForHandDetection->front();
@@ -995,24 +1000,14 @@ void *
 					else {
 						// 추후 해야할 작업 : 빠질때 어떻게 작업할 것인가.
 						// 손이 들어옴 판정 이후 작업.
-						// 오브젝트 디텍션에 사용되는 차영상 연산 수행.
-						//_TEngine_S->Sub_image(_TEngine_S->_PrevImage, _THandDetectionImage, _TEngine_S->_ImageSkin);
-
-						// 차영상 결과를 이미지 처리에 사용되는 이미지로 색 부여.
-						/*_TEngine_S->Compose_diffImage(_THandDetectionImage, _TEngine_S->_ImageSkin, cvScalar(0, 255, 255));*/
-
-						// BlobLabeling
-
-						// 손판정
-						// 손 정의 - 차영상 결과 디텍션된 오브젝트.
-						//          오브젝트 중 window 경계에 있는 물체
+						
+						// BlobLabeling for 손 판정
+						// 손 정의 - 차영상 결과 디텍션된 오브젝트. 오브젝트 중 window 경계에 있는 물체
 #if defined(DEBUG_MODE)
 						//_TEngine_S->Compose_diffImage(_THandDetectionImage, _TEngine_S->_ImageSkin, cvScalar(100, 100, 255)); // 손만 남은 이진 영상으로 원본 영상에 색을 부여
 #endif
 						// 이미지 처리에 사용되는 이미지에 Chessboard recognition 결과로 연산된 좌표를 표기
-						//_ChessRecognition.drawPoint(_ImageChess, _CrossPoint);
 						_TEngine_S->_HandRecognition->Detect_SkinColour(_THandDetectionImage, _TEngine_S->_ImageSkin);
-						//_TEngine_S->Sub_image(_TEngine_S->_PrevImage, _THandDetectionImage, _TEngine_S->_ImageSkin);
 						cvDilate(_TEngine_S->_ImageSkin, _TEngine_S->_ImageSkin, 0, 5);
 //#if !defined(USING_QT)
 #	if defined(DEBUG_MODE)
@@ -1045,13 +1040,9 @@ void *
 
 				cvCopy(_TEngine_S->_TempPrev, _TEngine_S->_TempPrev2);
 				cvCopy(_TEngine_S->_PureImage, _TEngine_S->_TempPrev);
-				//cvWaitKey(33); // Thread에서 Memory Leak을 유발.
 				
-				//cvShowImage("Skin Image", _TEngine_S->_ImageSkin);
-				//cvShowImage("Pure Image", _THandDetectionImage);
 				cvResetImageROI(_THandOriginImage);
 				
-				//_TEngine_S->_CamImageProtectMutex.unlock();
 				_TTick = _TEngine_S->_Time.GetTick() - _TTick;
 				_TEngine_S->_HandRecognitionProcessingFrames = 1000.0f/ (float)_TTick;
 
@@ -1059,7 +1050,6 @@ void *
 				cvReleaseImage(&_THandDetectionImage);
 			}
 		}
-		//Sleep(10);
 		cvWaitKey(33);
 	}
 	_TEngine_S->HandRecognitionInitialize = false;

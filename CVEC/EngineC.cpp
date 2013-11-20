@@ -825,7 +825,7 @@ void EngineC::ClientDisconnectedCallback() {
 			if (_TIsConnected == true)
 				break;
 		}
-		Sleep(10);
+		Sleep(20);
 	}
 }
 #pragma endregion Client Disconnented Callback

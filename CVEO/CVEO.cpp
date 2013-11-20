@@ -69,6 +69,7 @@ void CVEO::EngineODataReceivedCallback(char *Buffer) {
 	if (_StringTokenizer->StringTokenGo() == false)
 		return ;
 
+	bool _IsUpdateChess = false;
 	bool _IsMinX = false;
 	bool _IsMinY = false;
 	bool _IsMaxX = false;
@@ -82,6 +83,10 @@ void CVEO::EngineODataReceivedCallback(char *Buffer) {
 		int _NSeek_EngineOToCVEO = G_CVEO->_InternalProtocolSeeker.InternalProtocolString_Seeker((const char *)*_InternalProtocolCS->CharArrayListIter);
 
 		switch (_NSeek_EngineOToCVEO) {
+			case VALUE_I_OUPDATECHESSBOARD :
+				_IsUpdateChess = true;
+				break;
+
 			case VALUE_I_DISP_MINX :
 				_IsMinX = true;
 				break;
@@ -103,7 +108,15 @@ void CVEO::EngineODataReceivedCallback(char *Buffer) {
 				break;
 
 			default :
-				if (_IsMinX) {
+				if (_IsUpdateChess) {
+					_IsUpdateChess = false;
+					// 여기서 넘어온 Data 값이 바로 Chess Board의 값이다.
+					int _TChessBoard[8][8] = {0};
+					memset(_TChessBoard, NULL, sizeof(_TChessBoard));
+					//(int *)_TChessBoard = (int *)_InternalProtocolCS->CharArrayListIter;
+					// ChessBoard Update
+				}
+				else if (_IsMinX) {
 					_IsMinX = false;
 					// MinX 값을 설정.
 					_TString.append(string((const char *)*_InternalProtocolCS->CharArrayListIter));
