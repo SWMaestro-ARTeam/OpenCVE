@@ -886,6 +886,7 @@ void *
 				// ChessRecognition Module에 분석을 위한 Image를 보낸다.
 				_TEngine_S->_ChessRecognition->Copy_Image(_TChessBoardDetectionImage);
 				// Cross Point를 찾는다.
+				//if (_TEngine_S->_SubCheck != true)
 				_TEngine_S->_ChessRecognition->Find_ChessPoint(_TChessBoardOriginImage, &_TEngine_S->_CrossPoint);
 
 				if(_TEngine_S->_CrossPoint.size() == 81 && first_recognition == false){
