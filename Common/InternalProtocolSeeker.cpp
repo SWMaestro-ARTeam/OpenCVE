@@ -59,6 +59,9 @@ int InternalProtocolSeeker::InternalProtocolString_Seeker(const char *Str) {
 		CASE(STR_I_ISSERVERREADY)
 			_SeekedNumber = VALUE_I_ISSERVERREADY;
 			break;
+		CASE(STR_I_AIMODE)
+			_SeekedNumber = VALUE_I_AIMODE;
+			break;
 
 		CASE(STR_I_INFO_TYPE_CLIENT)
 			_SeekedNumber = VALUE_I_INFO_TYPE_CLIENT;

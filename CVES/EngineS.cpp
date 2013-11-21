@@ -34,8 +34,8 @@ EngineS::EngineS() {
 	// Engine을 시작을 위한 Switch 설정.
 	EngineEnable = false;
 	EngineEnd = false;
-	//IsStarted = false;
-	IsStarted = true;
+	IsStarted = false;
+	//IsStarted = true;
 	IsTictokEnable = false;
 	_AI_mode = false;
 	_CVEO_ready = false;
@@ -791,6 +791,10 @@ void *
 					// Server(CVES)가 모든 준비 되었을 때, ServerisReady를 보낸다.
 					_TEngine_S->_TelepathyServer->SendDataToOne((char *)_TEngine_S->_StringTools.StringToConstCharPointer(STR_I_SERVERISREADY), _TServerGetInformation->AnySocket);
 					break;
+
+				case VALUE_I_AIMODE :
+					_TEngine_S->_AI_mode = true;
+					break;
 				
 				// Any(CVEC, CVEO) -> CVES
 				case VALUE_I_INFO :
@@ -1118,14 +1122,13 @@ void *
 	}
 
 	_TEngine_S->Deinitialize_ImageProcessing();
-
+	// 가장 마지막으로, Engine이 End가 됨을 알림.
+	_TEngine_S->EngineEnd = true;
 #if defined(WINDOWS_SYS)
 	_endthread();
 #elif defined(POSIX_SYS)
 
 #endif
-	// 가장 마지막으로, Engine이 End가 됨을 알림.
-	_TEngine_S->EngineEnd = true;
 	return 0;
 }
 #pragma endregion CVES Processing Thread

@@ -127,6 +127,8 @@ private:
 	void Command_Ponderhit();
 	void Command_Quit();
 
+	void Evaluation_Option(EngineOptions _Options);
+
 	void Parsing_Command();
 
 	void SendToGUI(const char *Str, ...);

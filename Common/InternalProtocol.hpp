@@ -46,6 +46,7 @@
 #define STR_I_START "Start" // +
 #define STR_I_ISRESTOREPOSSIBLE "IsRestorePossible" // +
 #define STR_I_ISSERVERREADY "IsServerReady" // +
+#define STR_I_AIMODE "AIMode"
 // Info Command For 'CVEC' Only.
 #define STR_I_INFO_TYPE_CLIENT "Client" // +
 
@@ -111,6 +112,7 @@
 #define VALUE_I_START 1400
 #define VALUE_I_ISRESTOREPOSSIBLE 1500
 #define VALUE_I_ISSERVERREADY 1600
+#define VALUE_I_AIMODE 1700
 // Info Command For 'CVEC' Only.
 #define VALUE_I_INFO_TYPE_CLIENT 11110 //
 

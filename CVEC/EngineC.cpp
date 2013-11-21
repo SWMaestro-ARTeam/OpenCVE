@@ -298,8 +298,9 @@ void EngineC::Command_Setoption(CommandString *_UCICS) {
 			(const char *)NULL,
 			(const char *)NULL
 			);
-
+		
 		_Option->SetEngineValue(_TEngineOptions);
+		Evaluation_Option(_TEngineOptions);
 	}
 }
 
@@ -522,6 +523,13 @@ void EngineC::Command_Quit() {
 	EngineEnable = false;
 }
 #pragma endregion UCI Command Functions
+
+void EngineC::Evaluation_Option(EngineOptions _Options) {
+	if (strcmp(_Options._VariableName, "AI-Enable")) {
+		if (_Options._InitializeValue == "true")
+			_TelepathyClient->SendData((char *)_StringTools.StringToConstCharPointer(STR_I_AIMODE));
+	}
+}
 
 void EngineC::Parsing_Command() {
 	StringTokenizer *_TStringTokenizer = new StringTokenizer();
