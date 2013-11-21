@@ -8,118 +8,274 @@
     <Filter Include="Common">
       <UniqueIdentifier>{a51bfe60-54b8-412a-ba6c-ca06706e0e91}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Common\Header">
-      <UniqueIdentifier>{6f623609-1dd8-4f52-a2d6-958accdb0cf0}</UniqueIdentifier>
+    <Filter Include="CVEC_System">
+      <UniqueIdentifier>{89d4a727-2a9d-420b-90ec-3d07ba030c3d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Common\Source">
-      <UniqueIdentifier>{a534ef49-d4d2-4d2e-9d90-a9d1ea03b167}</UniqueIdentifier>
+    <Filter Include="CVEC_System\EngineC">
+      <UniqueIdentifier>{5b0c08e7-50c9-4bbf-b3ac-fcd66f30fd83}</UniqueIdentifier>
     </Filter>
-    <Filter Include="UCI">
-      <UniqueIdentifier>{50f65e19-5914-48a3-8f2e-450d383b5b79}</UniqueIdentifier>
+    <Filter Include="CVEC_System\EngineC\Header">
+      <UniqueIdentifier>{cb4c2da5-1ac7-4e14-9f8b-ecb1b455567c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="UCI\Header">
-      <UniqueIdentifier>{b3fce9e0-cd7d-45f2-bf48-d8de573cf72c}</UniqueIdentifier>
+    <Filter Include="CVEC_System\EngineC\Source">
+      <UniqueIdentifier>{e2e13681-1a99-4bc7-bbc1-38acb2a0b3eb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="UCI\Source">
-      <UniqueIdentifier>{d52ebf7f-570a-4d7c-8035-f5858f0b33f0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Main">
+    <Filter Include="CVEC_System\Main">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Main\Header">
+    <Filter Include="CVEC_System\Main\Header">
       <UniqueIdentifier>{368a755a-3b51-413a-86e8-e274f98e379e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Main\Source">
+    <Filter Include="CVEC_System\Main\Source">
       <UniqueIdentifier>{7e7bee56-f737-4098-953d-4d80a500ab14}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine">
-      <UniqueIdentifier>{5b0c08e7-50c9-4bbf-b3ac-fcd66f30fd83}</UniqueIdentifier>
+    <Filter Include="CVEC_System\UCI">
+      <UniqueIdentifier>{50f65e19-5914-48a3-8f2e-450d383b5b79}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Header">
-      <UniqueIdentifier>{cb4c2da5-1ac7-4e14-9f8b-ecb1b455567c}</UniqueIdentifier>
+    <Filter Include="CVEC_System\UCI\Header">
+      <UniqueIdentifier>{b3fce9e0-cd7d-45f2-bf48-d8de573cf72c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Source">
-      <UniqueIdentifier>{e2e13681-1a99-4bc7-bbc1-38acb2a0b3eb}</UniqueIdentifier>
+    <Filter Include="CVEC_System\UCI\Source">
+      <UniqueIdentifier>{d52ebf7f-570a-4d7c-8035-f5858f0b33f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVEC_System\CVEC_Dependent">
+      <UniqueIdentifier>{0817e1ce-d5d7-4157-9b81-9e1835ff6448}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\SystemDependency">
+      <UniqueIdentifier>{73b99358-5192-48e8-9ab1-2da20ecfe553}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Telepathy">
+      <UniqueIdentifier>{38218ac2-4b25-465d-a4c6-8f89f7b10162}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Telepathy\Source">
+      <UniqueIdentifier>{fdf333e2-77cf-4ace-bd97-ecb4323b786d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Telepathy\Header">
+      <UniqueIdentifier>{df14bafe-e8e3-472f-abe3-21f7830c5b26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\CVESystemCommon">
+      <UniqueIdentifier>{c8a8beba-ddb3-4197-ab58-76ec173b38c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Process">
+      <UniqueIdentifier>{b9921fc0-a071-47a5-86f4-5d358e114ce7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Process\Header">
+      <UniqueIdentifier>{562c8e9d-9e7e-4d70-86d4-df245e83c711}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Process\Source">
+      <UniqueIdentifier>{99604d6f-9c7b-4042-b7bf-a322e2c63035}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\File">
+      <UniqueIdentifier>{f2bc6ddb-bb4f-4399-92f8-10aef7569a40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\File\Source">
+      <UniqueIdentifier>{50736b21-2ef2-4458-b944-5b1ec40e0b60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\File\Header">
+      <UniqueIdentifier>{7fdf87dd-e970-40cf-b43c-8736bc902f97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Debug">
+      <UniqueIdentifier>{3476c711-a3da-4935-bcdc-08403099b7f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Debug\Source">
+      <UniqueIdentifier>{766c12f6-16f0-4b8f-b7b2-e4a52e5ad2fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Debug\Header">
+      <UniqueIdentifier>{549f4173-d428-4d36-94bc-09411ef7477e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Time">
+      <UniqueIdentifier>{d10a10c4-23ae-41d0-b867-743144f8f3ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Time\Header">
+      <UniqueIdentifier>{9265efdb-8202-4d65-aa45-10d8d35114b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Time\Source">
+      <UniqueIdentifier>{85324b7e-fef7-4a58-9622-bec99cba75f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\CodeConverter">
+      <UniqueIdentifier>{a7461f07-4c32-454f-8b68-4946a429dc7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\CodeConverter\Header">
+      <UniqueIdentifier>{dd000476-378b-4eb7-8445-9aedd18f7ef5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\CodeConverter\Source">
+      <UniqueIdentifier>{44807647-f087-4f7e-9b22-1400525c1af0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\InternalProtocolSeeker">
+      <UniqueIdentifier>{80e5935b-8f14-4147-ae21-9c5809d6f4d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\InternalProtocolSeeker\Header">
+      <UniqueIdentifier>{84e70219-34f7-4877-aca8-642f8a0d3fae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\InternalProtocolSeeker\Source">
+      <UniqueIdentifier>{091f5453-d967-4a38-a6c8-183fd1e948cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\StringTokenizer">
+      <UniqueIdentifier>{f8735282-a5fc-4734-8abd-a17b9fd8f4f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\StringTokenizer\Source">
+      <UniqueIdentifier>{2d64d772-96ba-415e-8692-88b5677f351c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\StringTokenizer\Header">
+      <UniqueIdentifier>{bfb3a4f6-b44b-43ec-96cb-4a2136d67bda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\StringTools">
+      <UniqueIdentifier>{c53242c9-95c7-4575-a13c-0ad38cc85c46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\StringTools\Header">
+      <UniqueIdentifier>{f04d8351-83fb-4adc-8a11-2f0d7de66d44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\StringTools\Source">
+      <UniqueIdentifier>{4b08f17b-6c23-407d-9a1a-e6585fb1f7b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVEC_System\Settings">
+      <UniqueIdentifier>{9aacf44a-de6a-46fb-8d78-87f862ae596a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVEC_System\Settings\Header">
+      <UniqueIdentifier>{42c40d48-0019-4a90-a1d3-324daa083c0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVEC_System\Settings\Source">
+      <UniqueIdentifier>{5aaf3882-aaba-4623-a486-bd4d6b87673d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVEC_System\AdapterC">
+      <UniqueIdentifier>{6f28cfd7-bb62-4d79-97b7-34ac3cd42051}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVEC_System\AdapterC\Header">
+      <UniqueIdentifier>{5fcd3ff5-cb61-4681-be24-25abae0212d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVEC_System\AdapterC\Source">
+      <UniqueIdentifier>{fb5b3e44-03b2-46ba-be85-86c9ea48be07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Thread">
+      <UniqueIdentifier>{ffab46f3-0424-4191-85be-998aa289048f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Thread\Source">
+      <UniqueIdentifier>{b3757bc9-b9cc-404c-a37d-26dd9181c382}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Thread\Header">
+      <UniqueIdentifier>{b71ec4e3-44fc-46cf-8987-178958d16548}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVEC_System\Option">
+      <UniqueIdentifier>{ba2dbe84-2fcf-4181-b676-100ec8c521dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVEC_System\Option\Header">
+      <UniqueIdentifier>{339060dc-00fe-41ed-8012-016c8f6eb746}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVEC_System\Option\Source">
+      <UniqueIdentifier>{1d48fa24-366d-4985-a516-0fddc2c0fc8a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Common\ProcessConfirm.cpp">
-      <Filter>Common\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Common\Telepathy.cpp">
-      <Filter>Common\Source</Filter>
-    </ClCompile>
     <ClCompile Include="UCICommandSesker.cpp">
-      <Filter>UCI\Source</Filter>
+      <Filter>CVEC_System\UCI\Source</Filter>
     </ClCompile>
     <ClCompile Include="UCICommandSeeker.hpp">
-      <Filter>UCI\Header</Filter>
+      <Filter>CVEC_System\UCI\Header</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>Main\Source</Filter>
+      <Filter>CVEC_System\Main\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\StringTokenizer.cpp">
-      <Filter>Common\Source</Filter>
+    <ClCompile Include="EngineC.cpp">
+      <Filter>CVEC_System\EngineC\Source</Filter>
     </ClCompile>
-    <ClCompile Include="Engine.cpp">
-      <Filter>Engine\Source</Filter>
+    <ClCompile Include="..\Common\Telepathy.cpp">
+      <Filter>Common\Telepathy\Source</Filter>
     </ClCompile>
-    <ClCompile Include="Option.cpp">
-      <Filter>Engine\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Common\InternalProtocolSeeker.cpp">
-      <Filter>Common\Source</Filter>
+    <ClCompile Include="..\Common\Process.cpp">
+      <Filter>Common\Process\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\File.cpp">
-      <Filter>Common\Source</Filter>
+      <Filter>Common\File\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Debug.cpp">
+      <Filter>Common\Debug\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Time.cpp">
+      <Filter>Common\Time\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\CodeConverter.cpp">
-      <Filter>Common\Source</Filter>
+      <Filter>Common\CodeConverter\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\InternalProtocolSeeker.cpp">
+      <Filter>Common\InternalProtocolSeeker\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\StringTokenizer.cpp">
+      <Filter>Common\StringTokenizer\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\StringTools.cpp">
+      <Filter>Common\StringTools\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="AdapterC.cpp">
+      <Filter>CVEC_System\AdapterC\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Thread.cpp">
+      <Filter>Common\Thread\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Option.cpp">
+      <Filter>CVEC_System\Option\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Common\Common.hpp">
-      <Filter>Common\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\ExtendedBlackBox.hpp">
-      <Filter>Common\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\ProcessConfirm.hpp">
-      <Filter>Common\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\Telepathy.hpp">
-      <Filter>Common\Header</Filter>
-    </ClInclude>
     <ClInclude Include="UCICommand.hpp">
-      <Filter>UCI\Header</Filter>
+      <Filter>CVEC_System\UCI\Header</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\StringTokenizer.hpp">
-      <Filter>Common\Header</Filter>
+    <ClInclude Include="EngineC.hpp">
+      <Filter>CVEC_System\EngineC\Header</Filter>
     </ClInclude>
-    <ClInclude Include="Engine.hpp">
-      <Filter>Engine\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Option.hpp">
-      <Filter>Engine\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\GlobalVariables.hpp">
-      <Filter>Common\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\InternalProtocol.hpp">
-      <Filter>Common\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\InternalProtocolSeeker.hpp">
-      <Filter>Common\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\File.hpp">
-      <Filter>Common\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\CodeConverter.hpp">
-      <Filter>Common\Header</Filter>
+    <ClInclude Include="CVECDependent.hpp">
+      <Filter>CVEC_System\CVEC_Dependent</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\SystemDependency.hpp">
-      <Filter>Common\Header</Filter>
+      <Filter>Common\SystemDependency</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Telepathy.hpp">
+      <Filter>Common\Telepathy\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Common.hpp">
+      <Filter>Common\CVESystemCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Process.hpp">
+      <Filter>Common\Process\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\File.hpp">
+      <Filter>Common\File\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Debug.hpp">
+      <Filter>Common\Debug\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Time.hpp">
+      <Filter>Common\Time\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\InternalProtocolSeeker.hpp">
+      <Filter>Common\InternalProtocolSeeker\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\CodeConverter.hpp">
+      <Filter>Common\CodeConverter\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\StringTokenizer.hpp">
+      <Filter>Common\StringTokenizer\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\GlobalVariables.hpp">
+      <Filter>Common\CVESystemCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\ExtendedBlackBox.hpp">
+      <Filter>Common\CVESystemCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\InternalProtocol.hpp">
+      <Filter>Common\CVESystemCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\StringTools.hpp">
+      <Filter>Common\StringTools\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="AdapterC.hpp">
+      <Filter>CVEC_System\AdapterC\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Thread.hpp">
+      <Filter>Common\Thread\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Option.hpp">
+      <Filter>CVEC_System\Option\Header</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

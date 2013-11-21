@@ -100,7 +100,7 @@
 
 //#define GUI_TO_ENGINE_COMMAND_HEAD_QTY 11
 
-static char *_GUIToEngineString[GUI_TO_ENGINE_COMMAND_HEAD_QTY] =
+static const char *_GUIToEngineString[GUI_TO_ENGINE_COMMAND_HEAD_QTY] =
 { 
 	// It's Head String.
 	STR_UCI, STR_DEBUG, STR_ISREADY, STR_SETOPTION, STR_UCINEWGAME,

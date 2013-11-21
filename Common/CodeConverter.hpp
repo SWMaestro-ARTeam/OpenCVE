@@ -27,18 +27,15 @@
 #define _CodeConverter_hpp_
 
 #include "SystemDependency.hpp"
-//#include "Common.hpp"
 
-#if WINDOWS_SYS
-	#ifdef _AFXDLL
-#include <afxwin.h>
-	#else
+#if defined(WINDOWS_SYS)
+//	#ifdef _AFXDLL
+//#include <afxwin.h>
+//	#else
 #include <windows.h>
-	#endif
+	//#endif
 #endif
 #include <cstdio>
-
-#define ASSERT(x)
 
 class CodeConverter {
 private:

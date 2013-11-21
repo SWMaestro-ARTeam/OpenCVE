@@ -1,96 +1,309 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="chess_game.cpp">
-      <Filter>ChessGame\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Common\StringTokenizer.cpp">
-      <Filter>Common\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Common\Telepathy.cpp">
-      <Filter>Common\Source</Filter>
-    </ClCompile>
     <ClCompile Include="BlobLabeling.cpp">
-      <Filter>Recognitions\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Chess_recognition.cpp">
-      <Filter>Recognitions\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Hand_recognition.cpp">
-      <Filter>Recognitions\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Img_Process.cpp">
-      <Filter>Recognitions\Source</Filter>
+      <Filter>CVES_System\Recognitions\Source</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>Main\Source</Filter>
+      <Filter>CVES_System\Main\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineS.cpp">
+      <Filter>CVES_System\EngineS\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="ChessRecognition.cpp">
+      <Filter>CVES_System\Recognitions\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="HandRecognition.cpp">
+      <Filter>CVES_System\Recognitions\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="ChessGame.cpp">
+      <Filter>CVES_System\ChessGame\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\File.cpp">
+      <Filter>Common\File\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Debug.cpp">
+      <Filter>Common\Debug\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\CodeConverter.cpp">
+      <Filter>Common\CodeConverter\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\InternalProtocolSeeker.cpp">
+      <Filter>Common\InternalProtocolSeeker\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\StringTokenizer.cpp">
+      <Filter>Common\StringTokenizer\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Time.cpp">
+      <Filter>Common\Time\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Process.cpp">
+      <Filter>Common\Process\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Telepathy.cpp">
+      <Filter>Common\Telepathy\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="CheckInChessboard.cpp">
+      <Filter>CVES_System\Recognitions\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\StringTools.cpp">
+      <Filter>Common\StringTools\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="ChessObjectDetection.cpp">
+      <Filter>CVES_System\Recognitions\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="LineSearchBased.cpp">
+      <Filter>CVES_System\Algorithm\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="HoughLineBased.cpp">
+      <Filter>CVES_System\Algorithm\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="AdapterS.cpp">
+      <Filter>CVES_System\AdapterS\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Common\Thread.cpp">
+      <Filter>Common\Thread\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="chess_game.hpp">
-      <Filter>ChessGame\Header</Filter>
+    <ClInclude Include="BlobLabeling.hpp">
+      <Filter>CVES_System\Recognitions\Header</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\StringTokenizer.hpp">
-      <Filter>Common\Header</Filter>
+    <ClInclude Include="EngineS.hpp">
+      <Filter>CVES_System\EngineS\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="ChessRecognition.hpp">
+      <Filter>CVES_System\Recognitions\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="HandRecognition.hpp">
+      <Filter>CVES_System\Recognitions\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="ChessGame.hpp">
+      <Filter>CVES_System\ChessGame\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="CVESDependent.hpp">
+      <Filter>CVES_System\CVES_Dependent</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\Common.hpp">
-      <Filter>Common\Header</Filter>
+      <Filter>Common\CVESystemCommon</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\Telepathy.hpp">
-      <Filter>Common\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Common\SystemDependency.hpp">
-      <Filter>Common\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="BlobLabeling.hpp">
-      <Filter>Recognitions\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Chess_recognition.hpp">
-      <Filter>Recognitions\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Hand_recognition.hpp">
-      <Filter>Recognitions\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="Img_Process.hpp">
-      <Filter>Recognitions\Header</Filter>
+    <ClInclude Include="..\Common\GlobalVariables.hpp">
+      <Filter>Common\CVESystemCommon</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\ExtendedBlackBox.hpp">
-      <Filter>Common\Header</Filter>
+      <Filter>Common\CVESystemCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\InternalProtocol.hpp">
+      <Filter>Common\CVESystemCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\File.hpp">
+      <Filter>Common\File\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Debug.hpp">
+      <Filter>Common\Debug\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\CodeConverter.hpp">
+      <Filter>Common\CodeConverter\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\InternalProtocolSeeker.hpp">
+      <Filter>Common\InternalProtocolSeeker\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\StringTokenizer.hpp">
+      <Filter>Common\StringTokenizer\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Time.hpp">
+      <Filter>Common\Time\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Process.hpp">
+      <Filter>Common\Process\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\SystemDependency.hpp">
+      <Filter>Common\SystemDependency</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Telepathy.hpp">
+      <Filter>Common\Telepathy\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckInChessboard.hpp">
+      <Filter>CVES_System\Recognitions\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\StringTools.hpp">
+      <Filter>Common\StringTools\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="ChessObjectDetection.hpp">
+      <Filter>CVES_System\Recognitions\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="LineSearchBased.hpp">
+      <Filter>CVES_System\Algorithm\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="HoughLineBased.hpp">
+      <Filter>CVES_System\Algorithm\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="AdapterS.hpp">
+      <Filter>CVES_System\AdapterS\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Thread.hpp">
+      <Filter>Common\Thread\Header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Common">
       <UniqueIdentifier>{2c9a0e40-1670-49ea-b0fe-026a82daee6a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Common\Source">
-      <UniqueIdentifier>{bd7fd967-73a7-4c1e-822f-739cd73b946c}</UniqueIdentifier>
+    <Filter Include="CVES_System">
+      <UniqueIdentifier>{2b3bb4ae-6487-4ccd-9dc7-9e3a10995d36}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Common\Header">
-      <UniqueIdentifier>{b36b6c18-1d77-4be5-ac0d-9b49ce17950b}</UniqueIdentifier>
+    <Filter Include="CVES_System\Algorithm">
+      <UniqueIdentifier>{63b086a0-3e7c-467e-90f8-a88cfddd4444}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ChessGame">
+    <Filter Include="CVES_System\Algorithm\Header">
+      <UniqueIdentifier>{f3aca67e-864f-4b4b-8b49-bea8cbf8b1fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVES_System\Algorithm\Source">
+      <UniqueIdentifier>{8b751af5-1b5b-464d-8709-9906b2565828}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVES_System\ChessGame">
       <UniqueIdentifier>{ed6c186a-4d6a-4617-8f8d-3b09d2c8a53c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ChessGame\Header">
+    <Filter Include="CVES_System\ChessGame\Header">
       <UniqueIdentifier>{2f6e38ec-d676-491e-befe-0088140bbe1a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ChessGame\Source">
+    <Filter Include="CVES_System\ChessGame\Source">
       <UniqueIdentifier>{caa25ecb-36f9-48ca-977b-26c5b964fbca}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Recognitions">
-      <UniqueIdentifier>{14c84c1e-ea68-4841-857d-3f7ce942d514}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Recognitions\Header">
-      <UniqueIdentifier>{b41915f8-a684-41a0-a28f-d9f3328123a1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Recognitions\Source">
-      <UniqueIdentifier>{1883e58b-dd5f-4e1c-9a08-e2c8c96482d1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Main">
+    <Filter Include="CVES_System\Main">
       <UniqueIdentifier>{a1405153-60c9-4510-8e19-960ec282c4c8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Main\Source">
+    <Filter Include="CVES_System\Main\Source">
       <UniqueIdentifier>{02632896-ce6a-43cd-9c1d-2f904d8e107e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVES_System\EngineS">
+      <UniqueIdentifier>{0d4d3e39-4e41-43f1-9afd-41abcd5c8774}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVES_System\EngineS\Header">
+      <UniqueIdentifier>{6332a42e-ee45-4263-a264-daea5e781f8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVES_System\EngineS\Source">
+      <UniqueIdentifier>{2a8a55aa-a8a1-4b34-8760-c08e1957a6e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVES_System\Recognitions">
+      <UniqueIdentifier>{14c84c1e-ea68-4841-857d-3f7ce942d514}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVES_System\Recognitions\Header">
+      <UniqueIdentifier>{b41915f8-a684-41a0-a28f-d9f3328123a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVES_System\Recognitions\Source">
+      <UniqueIdentifier>{1883e58b-dd5f-4e1c-9a08-e2c8c96482d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVES_System\CVES_Dependent">
+      <UniqueIdentifier>{abe32c43-e8f4-4c40-a354-320552978553}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\CVESystemCommon">
+      <UniqueIdentifier>{f3ab996a-be89-41a9-9862-edbc1a54ee06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\File">
+      <UniqueIdentifier>{b995603d-f820-48c1-b79e-5197b2686041}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\File\Source">
+      <UniqueIdentifier>{454a8b98-b696-4bf6-aecc-e524f8e2b688}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\File\Header">
+      <UniqueIdentifier>{57be2101-79de-4535-a910-40e484ce9633}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Debug">
+      <UniqueIdentifier>{cadded60-2777-4799-bded-b136134d697a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Debug\Source">
+      <UniqueIdentifier>{71b88aff-f8de-440d-b88b-5fd345e47f7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Debug\Header">
+      <UniqueIdentifier>{e32e9b69-b25e-4311-be39-a069ff9c751a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\CodeConverter">
+      <UniqueIdentifier>{cba80716-d87f-4281-9246-d64fc988175f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\CodeConverter\Header">
+      <UniqueIdentifier>{460afb7b-e41a-4dc9-ae58-6ee979d1a330}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\CodeConverter\Source">
+      <UniqueIdentifier>{309ba5da-586b-45e2-b293-71aa98dc57ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\InternalProtocolSeeker">
+      <UniqueIdentifier>{76ba41de-a8bb-4724-9c7b-1f6d3412b877}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\InternalProtocolSeeker\Header">
+      <UniqueIdentifier>{e6611090-8a2c-45aa-b504-2bdd2eed2a9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\InternalProtocolSeeker\Source">
+      <UniqueIdentifier>{40edadbb-7d98-4a7d-bf33-39f3307c3076}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\StringTokenizer">
+      <UniqueIdentifier>{519af92c-2721-40c3-9410-657aabd66764}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\StringTokenizer\Source">
+      <UniqueIdentifier>{76359f82-c5c9-4b38-b93e-14775ff9ba60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\StringTokenizer\Header">
+      <UniqueIdentifier>{bc2b5de5-d7ee-438c-9a95-947cb9b22665}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Time">
+      <UniqueIdentifier>{d3291b24-bb43-44c8-95a7-5b27f10ceb7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Time\Header">
+      <UniqueIdentifier>{85a62006-1bca-423b-99c7-89b2b8b9e57d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Time\Source">
+      <UniqueIdentifier>{674c7095-53f1-4fc4-be8b-b02095028e81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Process">
+      <UniqueIdentifier>{446cbd5b-56ed-489c-8add-c70d350e1f13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Process\Header">
+      <UniqueIdentifier>{0d6a74c7-745c-497e-9c99-934f6d194e76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Process\Source">
+      <UniqueIdentifier>{a8a5eba4-af5d-4457-9937-8578d448f479}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\SystemDependency">
+      <UniqueIdentifier>{2dbb1375-cdc2-42a4-8fd0-5b3ac07206cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Telepathy">
+      <UniqueIdentifier>{b45dcc07-0605-4758-8ea2-52a1f081621d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Telepathy\Source">
+      <UniqueIdentifier>{34fabb4e-2850-434b-800e-9aefce2afa2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Telepathy\Header">
+      <UniqueIdentifier>{e2b37a4d-2716-478d-8baa-8d62d07d3be6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\StringTools">
+      <UniqueIdentifier>{9d33169f-26c1-4921-b9b6-701d7dc4d812}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\StringTools\Header">
+      <UniqueIdentifier>{632758b5-2165-4494-9df4-98cf86f95157}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\StringTools\Source">
+      <UniqueIdentifier>{89fa566b-af7d-48ad-88d1-88f00e6baddb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVES_System\DrawView">
+      <UniqueIdentifier>{cec2b7ac-8e47-4f3a-8153-49e9e4e8d0a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVES_System\AdapterS">
+      <UniqueIdentifier>{f4d822e8-4e50-4061-bb5b-0e70e806e192}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVES_System\AdapterS\Header">
+      <UniqueIdentifier>{ac029929-e431-4ad6-8f63-70c3f0c394c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CVES_System\AdapterS\Source">
+      <UniqueIdentifier>{f5438f5a-f8b5-450b-adb3-7f6ec9ed659e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Thread">
+      <UniqueIdentifier>{9ae1e940-d697-486f-b6c3-f1deb2ba7b31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Thread\Source">
+      <UniqueIdentifier>{7426d2c0-16b7-4587-b0dd-ae20eb08100e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Thread\Header">
+      <UniqueIdentifier>{5d21e90c-e5b5-4fe1-80af-19c1b5734da5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

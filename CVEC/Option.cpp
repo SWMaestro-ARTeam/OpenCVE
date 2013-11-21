@@ -35,41 +35,20 @@ Option::~Option() {
 
 void Option::InitializeOptionValues() {
 	// Default Engine Settings.
-	// Test용 Engine Value.
-	// get Value at Fruit.
-	_EngineOptionValues.push_back(EO("Hash", true, "16", "spin", "min 4 max 1024", NULL));
+	_EngineOptionValues.push_back(EngineOptions("Hash", true, "16", "spin", "min 4 max 1024", (const char *)NULL));
 
-	_EngineOptionValues.push_back(EO("Ponder", true, "false", "check", "", NULL));
+	_EngineOptionValues.push_back(EngineOptions("Ponder", true, "false", "check", "", (const char *)NULL));
 
-	_EngineOptionValues.push_back(EO("OwnBook", true, "true", "check",  "", NULL));
-	_EngineOptionValues.push_back(EO("BookFile", true, "book_small.bin", "string", "", NULL));
+	_EngineOptionValues.push_back(EngineOptions("Save-Notation", true, "Notation.non ", "string", "", (const char *)NULL));
+	_EngineOptionValues.push_back(EngineOptions("Auto-Recovery", true, "true", "check", "", (const char *)NULL));
+	_EngineOptionValues.push_back(EngineOptions("Observer-Enable", true, "true", "check", "", (const char *)NULL));
+	_EngineOptionValues.push_back(EngineOptions("AI-Enable", true, "false", "check", "", (const char *)NULL));
+	_EngineOptionValues.push_back(EngineOptions("AR-Enable", true, "false", "check", "", (const char *)NULL));
+	_EngineOptionValues.push_back(EngineOptions("TicTok", true, "true", "check", "", (const char *)NULL));
+	_EngineOptionValues.push_back(EngineOptions("Video-Enable", true, "true", "check", "", (const char *)NULL));
 
-	_EngineOptionValues.push_back(EO("NullMove Pruning", true, "Fail High", "combo", "var Always var Fail High var Never", NULL));
-	_EngineOptionValues.push_back(EO("NullMove Reduction", true, "3", "spin", "min 1 max 3", NULL));
-	_EngineOptionValues.push_back(EO("Verification Search", true, "Endgame", "combo", "var Always var Endgame var Never", NULL));
-	_EngineOptionValues.push_back(EO("Verification Reduction", true, "5", "spin", "min 1 max 6", NULL));
-
-	_EngineOptionValues.push_back(EO("History Pruning", true, "true", "check", "", NULL));
-	_EngineOptionValues.push_back(EO("History Threshold", true, "60", "spin", "min 0 max 100", NULL));
-
-	_EngineOptionValues.push_back(EO("Futility Pruning", true, "false", "check", "", NULL));
-	_EngineOptionValues.push_back(EO("Futility Margin", true, "100", "spin", "min 0 max 500", NULL));
-
-	_EngineOptionValues.push_back(EO("Delta Pruning", true, "false", "check", "", NULL));
-	_EngineOptionValues.push_back(EO("Delta Margin", true, "50", "spin", "min 0 max 500", NULL));
-
-	_EngineOptionValues.push_back(EO("Quiescence Check Plies", true, "1", "spin", "min 0 max 2", NULL));
-
-	_EngineOptionValues.push_back(EO("Material", true, "100", "spin", "min 0 max 400", NULL));
-	_EngineOptionValues.push_back(EO("Piece Activity", true, "100", "spin", "min 0 max 400", NULL));
-	_EngineOptionValues.push_back(EO("King Safety", true, "100", "spin", "min 0 max 400", NULL));
-	_EngineOptionValues.push_back(EO("Pawn Structure", true, "100", "spin", "min 0 max 400", NULL));
-	_EngineOptionValues.push_back(EO("Passed Pawns", true, "100", "spin", "min 0 max 400", NULL));
-
-	list<EO>::iterator _TEOIter;
-	for (_TEOIter = _EngineOptionValues.begin();
-		_TEOIter != _EngineOptionValues.end(); _TEOIter++) {
-		_TEOIter->_CurrentVariable = _TEOIter->_InitializeValue;
+	for_IterToEnd(list, EngineOptions, _EngineOptionValues) {
+		_TVal->_CurrentVariable = _TVal->_InitializeValue;
 	}
 }
 
@@ -77,24 +56,43 @@ void Option::ClearEngineOptionValues() {
 	_EngineOptionValues.clear();
 }
 
-void Option::SetEngineValues(EO _EngineOptions) {
-	list<EO>::iterator _TEOIter;
+void Option::SetEngineValue(EngineOptions AnyEngineOptions) {
 	bool _IsInGameOption = false;
-	for (_TEOIter = _EngineOptionValues.begin();
-		_TEOIter != _EngineOptionValues.end(); _TEOIter++) {
-		if (_TEOIter->_VariableName == _EngineOptions._VariableName) {
-			*_TEOIter = _EngineOptions;
-			_IsInGameOption = true;
-		}
-	}
 
+	for_IterToEnd(list, EngineOptions, _EngineOptionValues) {
+		if (strcmp(_TVal->_VariableName, AnyEngineOptions._VariableName) == 0) {
+			//*_TVal = AnyEngineOptions;
+
+			if (AnyEngineOptions._ControlerType != NULL)
+				_TVal->_ControlerType = AnyEngineOptions._ControlerType;
+			if (AnyEngineOptions._CurrentVariable != NULL)
+				_TVal->_CurrentVariable = AnyEngineOptions._CurrentVariable;
+			if (AnyEngineOptions._InitializeValue != NULL)
+				_TVal->_InitializeValue = AnyEngineOptions._InitializeValue;
+			if (AnyEngineOptions._VariableName != NULL)
+				_TVal->_VariableName = AnyEngineOptions._VariableName;
+			if (AnyEngineOptions._VariableOptionString != NULL)
+				_TVal->_VariableOptionString = AnyEngineOptions._VariableOptionString;
+			_TVal->_OptionEnable = AnyEngineOptions._OptionEnable;
+			_IsInGameOption = true;
+		}		
+	}
+	
 	// EngineOptionValues에 포함이 되어 있지 않다면..
 	if (_IsInGameOption == false)
-		_EngineOptionValues.push_back(_EngineOptions);
+		_EngineOptionValues.push_back(AnyEngineOptions);
 }
 
-list<EO> Option::GetEngineValues() {
+list<EngineOptions> Option::GetEngineValues() {
 	return _EngineOptionValues;
+}
+
+bool Option::FindEngineOptionName(const char *VariableName) {
+	for_IterToEnd(list, EngineOptions, _EngineOptionValues) {
+		if (strcmp(_TVal->_VariableName, VariableName) == 0)
+			return true;
+	}
+	return false;
 }
 
 void Option::ReadOptionToINIFile() {

@@ -56,6 +56,9 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>./;../Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -67,10 +70,12 @@
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../Common;./;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -80,25 +85,54 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Common\CodeConverter.hpp" />
     <ClInclude Include="..\Common\Common.hpp" />
+    <ClInclude Include="..\Common\Debug.hpp" />
     <ClInclude Include="..\Common\ExtendedBlackBox.hpp" />
+    <ClInclude Include="..\Common\File.hpp" />
+    <ClInclude Include="..\Common\GlobalVariables.hpp" />
+    <ClInclude Include="..\Common\InternalProtocol.hpp" />
+    <ClInclude Include="..\Common\InternalProtocolSeeker.hpp" />
+    <ClInclude Include="..\Common\Process.hpp" />
     <ClInclude Include="..\Common\StringTokenizer.hpp" />
+    <ClInclude Include="..\Common\StringTools.hpp" />
     <ClInclude Include="..\Common\SystemDependency.hpp" />
     <ClInclude Include="..\Common\Telepathy.hpp" />
+    <ClInclude Include="..\Common\Thread.hpp" />
+    <ClInclude Include="..\Common\Time.hpp" />
+    <ClInclude Include="AdapterS.hpp" />
     <ClInclude Include="BlobLabeling.hpp" />
-    <ClInclude Include="chess_game.hpp" />
-    <ClInclude Include="Chess_recognition.hpp" />
-    <ClInclude Include="Hand_recognition.hpp" />
-    <ClInclude Include="Img_Process.hpp" />
+    <ClInclude Include="CheckInChessboard.hpp" />
+    <ClInclude Include="ChessGame.hpp" />
+    <ClInclude Include="ChessObjectDetection.hpp" />
+    <ClInclude Include="ChessRecognition.hpp" />
+    <ClInclude Include="LineSearchBased.hpp" />
+    <ClInclude Include="CVESDependent.hpp" />
+    <ClInclude Include="EngineS.hpp" />
+    <ClInclude Include="HandRecognition.hpp" />
+    <ClInclude Include="HoughLineBased.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Common\CodeConverter.cpp" />
+    <ClCompile Include="..\Common\Debug.cpp" />
+    <ClCompile Include="..\Common\File.cpp" />
+    <ClCompile Include="..\Common\InternalProtocolSeeker.cpp" />
+    <ClCompile Include="..\Common\Process.cpp" />
     <ClCompile Include="..\Common\StringTokenizer.cpp" />
+    <ClCompile Include="..\Common\StringTools.cpp" />
     <ClCompile Include="..\Common\Telepathy.cpp" />
+    <ClCompile Include="..\Common\Thread.cpp" />
+    <ClCompile Include="..\Common\Time.cpp" />
+    <ClCompile Include="AdapterS.cpp" />
     <ClCompile Include="BlobLabeling.cpp" />
-    <ClCompile Include="chess_game.cpp" />
-    <ClCompile Include="Chess_recognition.cpp" />
-    <ClCompile Include="Hand_recognition.cpp" />
-    <ClCompile Include="Img_Process.cpp" />
+    <ClCompile Include="CheckInChessboard.cpp" />
+    <ClCompile Include="ChessGame.cpp" />
+    <ClCompile Include="ChessObjectDetection.cpp" />
+    <ClCompile Include="ChessRecognition.cpp" />
+    <ClCompile Include="LineSearchBased.cpp" />
+    <ClCompile Include="EngineS.cpp" />
+    <ClCompile Include="HandRecognition.cpp" />
+    <ClCompile Include="HoughLineBased.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

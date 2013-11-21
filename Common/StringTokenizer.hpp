@@ -36,7 +36,6 @@ using namespace std;
 class StringTokenizer {
 private:
 	list<string> *_StringList;
-	//list<string> *_TokenList;
 	string _Token;
 
 	string _InternalInputString;

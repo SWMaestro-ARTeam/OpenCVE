@@ -2,6 +2,12 @@ CVEC/Debug/
 CVEC/Release/
 CVES/Debug/
 CVES/Release/
+CVEO/Debug/
+CVEO/Release/
+Celestials/Debug/
+Celestials/Release/
+CVES_Gui/
+CVES_Gui/CVES_Gui/
 Debug/
 Release/
 *.opensdf

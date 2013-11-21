@@ -24,23 +24,15 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 // main.cpp
-// OpenCVE main 진입점.
+// OpenCVE CVEC main 진입점.
 
 // Modules
-#include "Engine.hpp"
+#include "SystemDependency.hpp"
+//#if (defined(MAKE_CELESTIALS) && (MAKE_CELESTIALS == 0)) || !defined(USING_QT)
+#include "AdapterC.hpp"
 
 int main(int argc, char* argv[]) {
-	Engine *_UCIEngine;
-	
-	// 3. CVEC Parser 실행.
-	// 이때, Client Network도 같이 실행 된다.
-	_UCIEngine = new Engine();
-	// 처음에 이것을 실행해 주어야 내부에서 Parser가 Enable 된다.
-	_UCIEngine->EngineEnable = true;
-	_UCIEngine->Parser_Engine_Start();
-
-	// 5. Delete pointer.
-	delete _UCIEngine;
-	
-	return 0;
+	AdapterC _TAdapterC;
+	return _TAdapterC.Go_EngineC();
 }
+//#endif

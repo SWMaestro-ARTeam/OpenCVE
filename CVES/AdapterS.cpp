@@ -23,27 +23,43 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _chess_game_hpp_
-#define _chess_game_hpp_
+//#include "SystemDependency.hpp"
 
-#include <stdio.h>
-#include <cv.h>
+#include "AdapterS.hpp"
 
-class chess_game {
-	enum {
-		Ground, 
-		W_King, W_Queen, W_Rook, W_Bishop, W_Knight, W_Pawn,
-		B_King, B_Queen, B_Rook, B_Bishop, B_Knight, B_Pawn,
-	};
-private:
-	int board[8][8];
-	bool turn;
-	CvPoint before, after;
-public:
-	chess_game();
-	~chess_game();
+int AdapterS::Go_EngineS(int argc, char* argv[]) {
+	int _TApplicationReturnValue = 0;
+	EngineS *_EngineS;
 
-	void Chess_process(CvPoint input1, CvPoint input2);
-	void Show_chess_board();
-};
+	// 1. CVEC Engine 생성.
+	_EngineS = new EngineS();
+
+#if defined(USING_QT)
+	QApplication a(argc, argv);
+	CVES w;
+
+	// Engine Pointer를 넘겨준다.
+	w._EngineS = _EngineS;
+	// 영상이 들어올 CallBack의 주소를 넘겨준다.
+	_EngineS->TEngineSFrameCallback = w.EngineSFrameCallback;
 #endif
+
+	// 2. Engine Enable.
+	_EngineS->EngineEnable = true;
+	// 3. Engine Start.
+	_EngineS->EngineS_Start();
+
+#if defined(USING_QT)
+	w.show();
+	_TApplicationReturnValue = a.exec();
+	_EngineS->TEngineSFrameCallback = NULL;
+#endif
+	// Thread 처리 할 경우 Main Application이 Thread보다 먼저 죽어버리는 경우가 발생하므로,
+	// 이를 방지하기 위해 Engine이 End일 때까지 계속 멈춰 있게 하여야 한다.
+	while (!_EngineS->EngineEnd) Sleep(10);
+
+	// 4. Delete pointer.
+	delete _EngineS;
+
+	return _TApplicationReturnValue;
+}

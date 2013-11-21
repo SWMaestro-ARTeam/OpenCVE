@@ -23,112 +23,110 @@
 //	OR OTHER DEALINGS IN THE SOFTWARE.
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _Engine_hpp_
-#define _Engine_hpp_
+#ifndef _EngineO_hpp_
+#define _EngineO_hpp_
 
 #include <cstdio>
 #include <cstdlib>
 
 #include <list>
+#include <queue>
 
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
+#include "CVEODependent.hpp"
+
 // 공통 상수 정의
 #include "Common.hpp"
-
+// 공용 변수 정의
 #include "GlobalVariables.hpp"
-
+// Internal Protocol Seeker
 #include "InternalProtocolSeeker.hpp"
 // Process Confirm Module
-#include "ProcessConfirm.hpp"
-// File Utility
-#include "File.hpp"
-// UCI Command Seeker
-#include "UCICommandSeeker.hpp"
+//#include "Process.hpp"
+#include "Thread.hpp"
 // String Tokenizer
 #include "StringTokenizer.hpp"
 // Telepathy Module
 #include "Telepathy.hpp"
-// Option Module
-#include "Option.hpp"
+// String Tools
+#include "StringTools.hpp"
 
-class Engine {
+#include "Time.hpp"
+
+class EngineO {
 private:
-	// Variables
-	char *Command_Str;
+	Telepathy::Client *_TelepathyClient; // CVES 통신용.
+	Thread _Thread;
 
-	Option *_Option;
-	Telepathy::Client *_TelepathyClient;
-	ProcessConfirm *_ProcessConfirm;
-	UCICommandSeeker _UCICommandSeeker;
-	File _File;
-
-	// Functions
-	void Initialize_CommandStr();
-	void Deinitialize_CommandStr();
-	
-	void Initialize_CVEOption();
-	void Deinitialize_CVEOption();
+	InternalProtocolSeeker _InternalProtocolSeeker;
+	StringTools _StringTools;
 
 	bool Initialize_TClient();
 	void Deinitialize_TClient();
 
-	void Initialize_ProcessConfirm();
-	void Deinitialize_ProcessConfirm();
-
-	void Put_Author();
-
 	void Engine_Initializing();
 	void Engine_DeInitializing();
 
-	void Get_Command_Str();
-	void Clear_Str();
-
 	void Clear_ClientSocket();
 
-	void SendToGUI(const char *Str, ...);
+	// for Server Connect.
+	bool Connect_Server();
+	void Disconnect_Server();
+	bool Reconnect_Server();
 
-	void Command_UCI();
-	void Command_Debug();
-	void Command_Isready();
-	void Command_Setoption(CS *_UCICS); //
-	//void Command_Setoption(); //
-	void Command_Ucinewgame();
-	void Command_Register();
-	void Command_Position(CS *_UCICS); //
-	//void Command_Position(); //
-	void Command_Go(CS *_UCICS); //
-	//void Command_Go(); //
-	void Command_Stop();
-	void Command_Ponderhit();
-	void Command_Quit();
+	// ClientReceivedCallback
+	static void ObserverReceivedCallback(char *Buffer);
+	static void ObserverDisconnectedCallback();
 
-	void Parsing_Command();
+	static
+#if defined(WINDOWS_SYS)
+		UINT WINAPI
+		//DWORD WINAPI
+#elif defined(POSIX_SYS)
+		// using pthread
+		void *
+#endif
+		ObserverCommandQueueProcessingThread(
+#if defined(WINDOWS_SYS)
+		LPVOID
+#elif defined(POSIX_SYS)
+		void *
+#endif
+		Param);
+
+	static
+#if defined(WINDOWS_SYS)
+		UINT WINAPI
+		//DWORD WINAPI
+#elif defined(POSIX_SYS)
+		// using pthread
+		void *
+#endif
+		EngineO::CVEOProcessingThread(
+#if defined(WINDOWS_SYS)
+		LPVOID
+#elif defined(POSIX_SYS)
+		void *
+#endif
+		Param);
 
 public:
 	// Constructor
-	Engine();
-	~Engine();
+	EngineO();
+	~EngineO();
 
-	bool CVEC_CVESControlInitial;
-	//bool IsCVESProcessAlive;
-	//bool IsSocketInitialize;
-	//bool IsSocketConnented;
-	//bool IsGetCVESProcess;
-	//bool isServerOrClient;
 	bool EngineEnable;
-	// Functions
-	bool Connect_Server();
-	void Disconnect_Server();
+	bool EngineEnd;
 
-	bool Get_CVESProcessStatus();
-	bool Get_CVESConnectionStatus();
-	Telepathy::Client* Get_TelepathyClient();
-	bool CheckingCVESProcess();
-	void Parser_Engine_Start();
+	queue<char *> *CommandQueue;
+
+	typedef void (* _T_ENGINEODATARECEIVEDCALLBACK)(char *Buffer);
+	_T_ENGINEODATARECEIVEDCALLBACK TEngineODataReceivedCallback;
+
+	void EngineO_Start();
 };
 
-void ClientReceivedCallback(char *Buffer);
-
-#endif
+#endif // _EngineO_hpp_

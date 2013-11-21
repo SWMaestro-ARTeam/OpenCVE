@@ -32,7 +32,7 @@
 using namespace std;
 /*
  * 확장 구문이 더 많아 진다면 Black Box로 명명하고 따로 뺄 것.
- * - GabrielKim
+ * - GabrielKim(Doo hoon Kim)
  */
 
 /*
@@ -57,24 +57,24 @@ using namespace std;
 
 #define STRING_SWITCH_BEGIN(Str) \
 { \
-	static std::map<string, int> _SMap; \
-	static bool _SBInit = false; \
-	bool _BLoop = true; \
-	while (_BLoop) \
+	static std::map<string, int> _TMap; \
+	static bool _TInit = false; \
+	bool _TLoop = true; \
+	while (_TLoop) \
 	{ \
-		int _NStr = -1; \
-		if(_SBInit) { _NStr=_SMap[Str]; _BLoop = false; } \
-		switch(_NStr) \
+		int _TNumberOfStr = -1; \
+		if (_TInit) { _TNumberOfStr = _TMap[Str]; _TLoop = false; } \
+		switch (_TNumberOfStr) \
 		{ \
 			case -1: {
 
-#define CASE(_StrToken) } case __LINE__: if(!_SBInit) _SMap[_StrToken] = __LINE__; else {
-#define DEFAULT() } case 0: default: if(_SBInit) {
+#define CASE(_StrToken) } case __LINE__: if (!_TInit) _TMap[_StrToken] = __LINE__; else {
+#define DEFAULT() } case 0: default: if (_TInit) {
 
 #define STRING_SWITCH_END() \
 			} \
 		} \
-		if(!_SBInit) _SBInit=true; \
+		if (!_TInit) _TInit = true; \
 	} \
 }
 

@@ -25,40 +25,56 @@
 
 #include "CodeConverter.hpp"
 
-//  char -> wchar
+// char -> wchar
 wchar_t *CodeConverter::CharToWChar(const char *CharStr) {
-	ASSERT(CharStr);
 	wchar_t* _TWStr = NULL;
 	int _TWStrLength, _TCharLength;
 
 	_TCharLength = strlen(CharStr);
-	_TWStrLength = MultiByteToWideChar(CP_ACP, 0, CharStr, _TCharLength, NULL, 0);
+	_TWStrLength = 
+#if defined(WINDOWS_SYS)
+		MultiByteToWideChar(CP_ACP, 0, CharStr, _TCharLength, NULL, 0);
+#elif defined(POSIX_SYS)
 
+#endif
 	if(_TWStrLength > 0) {
 		_TWStr = (wchar_t*)malloc(sizeof(wchar_t) * (_TWStrLength+1));
+#if defined(WINDOWS_SYS)
 		MultiByteToWideChar(CP_ACP, 0, CharStr, _TCharLength, _TWStr, _TWStrLength);
+#elif defined(POSIX_SYS)
+
+#endif
 	}
 
-	_TWStr[_TWStrLength] = 0;
+	if (_TWStr != NULL)
+		_TWStr[_TWStrLength] = 0;
 
 	return _TWStr;
 }
 
 // wchar -> char
 char *CodeConverter::WCharToChar(const wchar_t* WcharStr) {
-	ASSERT(WcharStr);
 	char* _TStr = NULL;
 	int _TWStrLength, _TCharLength;
 
 	_TWStrLength = wcslen(WcharStr);
-	_TCharLength = WideCharToMultiByte(CP_ACP, 0, WcharStr, _TWStrLength, NULL, 0, NULL, FALSE);
+	_TCharLength =
+#if defined(WINDOWS_SYS)
+		WideCharToMultiByte(CP_ACP, 0, WcharStr, _TWStrLength, NULL, 0, NULL, FALSE);
+#elif defined(POSIX_SYS)
 
+#endif
 	if(_TCharLength > 0) {
 		_TStr = (char*)malloc(sizeof(char) * (_TCharLength+1));
+#if defined(WINDOWS_SYS)
 		WideCharToMultiByte(CP_ACP, 0, WcharStr, _TWStrLength, _TStr, _TCharLength, NULL, FALSE);
+#elif defined(POSIX_SYS)
+
+#endif
 	}
 
-	_TStr[_TCharLength] = 0;
+	if (_TStr != NULL)
+		_TStr[_TCharLength] = 0;
 
 	return _TStr;
 }

@@ -33,13 +33,13 @@
 
 #include <stdio.h>
 #include <string.h>
-#if WINDOWS_SYS
-	#ifdef _AFXDLL
-#include <afxwin.h>
-	#else
+#if defined(WINDOWS_SYS)
+//	#ifdef _AFXDLL
+//#include <afxwin.h>
+//	#else
 #include <windows.h>
-	#endif
-#else
+	//#endif
+#elif defined(POSIX_SYS)
 #include <unistd.h>
 #include <sys/types.h>
 #include <dirent.h>

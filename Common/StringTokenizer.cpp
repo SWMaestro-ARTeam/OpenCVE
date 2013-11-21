@@ -35,7 +35,6 @@ StringTokenizer::~StringTokenizer() {
 
 // 초기에 초기화 할 것에 대한 모든 것을 담는다.
 void StringTokenizer::StringTokenizerInitialize() {
-	//_Token = new list<string>();
 	TokenClear();
 	_StringList = new list<string>();
 
@@ -43,7 +42,6 @@ void StringTokenizer::StringTokenizerInitialize() {
 
 // 마지막에 없에야 할 모든것을 담는다.
 void StringTokenizer::StringTokenizerDeinitialize() {
-	//delete _Token;
 	delete _StringList;
 }
 
@@ -71,8 +69,6 @@ void StringTokenizer::SetInputString(string Str) {
 void StringTokenizer::SetSingleToken(const char *SingleToken) {
 	string _TempTokenString(SingleToken);
 	_Token = _TempTokenString;
-
-	//_Token->push_back(_TempTokenString);
 }
 
 // Implement me.
@@ -85,7 +81,7 @@ void StringTokenizer::SetMultiToken(const char *, ...) {
 bool StringTokenizer::StringTokenGo() {
 	string _TempString = _InternalInputString;
 	int _TTokenPointer = 0;
-	list<string>::iterator _StringIter;
+	// list<string>::iterator _StringIter;
 
 	// if, return Key or Empty that return false.
 	if (_TempString.c_str() == "\r" || _TempString.c_str() == "" || _TempString.empty())
@@ -101,6 +97,8 @@ bool StringTokenizer::StringTokenGo() {
 	// 마지막 String 넣기.
 	if (_TempString.length() > 0)
 		_StringList->push_back(_TempString.substr(0, _TTokenPointer));
+
+	return true;
 }
 
 list<string> *StringTokenizer::GetTokenedStringList() {

@@ -28,19 +28,59 @@
 
 #include "SystemDependency.hpp"
 
-#if WINDOWS_SYS
+// File 처리를 위한 값.
+#if defined(WINDOWS_SYS)
+	#if defined(USING_QT)
+	#define CELESTIALS_EXEC_FILENAME "Celestials.exe"
+	#else
 #define SERVER_ENGINE_EXEC_FILENAME "CVES.exe"
 #define CLIENT_ENGINE_EXEC_FILENAME "CVEC.exe"
-#elif POSIX_SYS
+#define OBSERVER_ENGINE_EXEC_FILENAME "CVEO.exe"
+#define AIADAPTER_ENGINE_EXEC_FILENAME "CVEA.exe"
+	#endif
+#elif defined(POSIX_SYS)
+	#if defined(USING_QT)
+	#define CELESTIALS_EXEC_FILENAME "Celestials"
+	#endif
 #define SERVER_ENGINE_EXEC_FILENAME "CVES"
 #define CLIENT_ENGINE_EXEC_FILENAME "CVEC"
+#define OBSERVER_ENGINE_EXEC_FILENAME "CVEO"
+#define AIADAPTER_ENGINE_EXEC_FILENAME "CVEA"
 #endif
 
-#define ENGINE_EXEC_VER "0.1.0"
+#if defined(USING_QT)
+#define SERVER_MODE "/Server"
+#define CLIENT_MODE "/Client"
+#define OBSERVER_MODE "/Observer"
+#endif
 
-#define CVE_PORT 8084//10080
+#define ENGINE_EXEC_VER "1.0.0"
+
+// 통신을 위한 값.
+#define CVE_PORT 10081
 #define LISTEN_QUEUE 10
-
 #define IP_ADDR_LOCAL "127.0.0.1"
+
+// 영상을 위한 값.
+#define SERVER_VIEW_DEFAULT_WIDTH 640
+#define SERVER_VIEW_DEFAULT_HEIGHT 480
+#define CAM_DEFAULT_NUMBER 0
+#define FLIP_MODE -1
+
+// Algorithm 선택 값.
+#define RECOGNITION_MODE 2 // 1 : hough Line, 2 : 규홍 recognition
+
+#define MAX_CORNER 5000
+
+#define MOP_NUM 2
+#define T_SKIN_NUM 10
+#define SUB_THRESHOLD 10
+#define SUB_LabTHRESHOLD 4
+
+#define _DEF_MAX_BLOBS 10000
+#define _DEF_MAX_LABEL 100
+
+// Thread를 위한 값.
+#define H_MAX_THREAD 12
 
 #endif

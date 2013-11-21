@@ -25,64 +25,151 @@
 
 #include "InternalProtocolSeeker.hpp"
 
+// 여기 있는 Protocol의 모든 명세는 InternalProtocol.hpp에 있음.
 int InternalProtocolSeeker::InternalProtocolString_Seeker(const char *Str) {
 	int _SeekedNumber = 0;
 
 	STRING_SWITCH_BEGIN(string((char *)Str)) {
-		CASE(STR_SREVERKILL)
-			_SeekedNumber = VALUE_SERVERKILL;
-			break;
-		CASE(STR_SERVERISALIVE)
-			_SeekedNumber = VALUE_SERVERISALIVE;
-			break;
-		CASE(STR_IMFIRST)
-			_SeekedNumber = VALUE_IMFIRST;
-			break;
-		CASE(STR_STOP)
-			_SeekedNumber = VALUE_STOP;
-			break;
-		CASE(STR_START)
-			_SeekedNumber = VALUE_START;
-			break;
-		CASE(STR_ISRESTOREPOSSIBLE)
-			_SeekedNumber = VALUE_ISRESTOREPOSSIBLE;
+		CASE(STR_I_PTYPE)
+			_SeekedNumber = VALUE_I_PTYPE;
 			break;
 
-		CASE(STR_ALIVE)
-			_SeekedNumber = VALUE_ALIVE;
-		break;
-		CASE(STR_BUSY)
-			_SeekedNumber = VALUE_BUSY;
-		break;
-		CASE(STR_MOVE)
-			_SeekedNumber = VALUE_MOVE;
-		break;
-		CASE(STR_RESTOREOK)
-			_SeekedNumber = VALUE_RESTOREOK;
-		break;
-		CASE(STR_RESTORENOT)
-			_SeekedNumber = VALUE_RESTORENOT;
-		break;
+		CASE(STR_I_INFO)
+			_SeekedNumber = VALUE_I_INFO;
+			break;
+		CASE(STR_I_INFO_TYPE)
+			_SeekedNumber = VALUE_I_INFO_TYPE;
+			break;
 
-		CASE(STR_STATUSNOW)
-			_SeekedNumber = VALUE_STATUSNOW;
-		break;
-		CASE(STR_TICTOKON)
-			_SeekedNumber = VALUE_TICTOKON;
-		break;
-		CASE(STR_TICTOKOFF)
-			_SeekedNumber = VALUE_TICTOKOFF;
+		CASE(STR_I_SERVERKILL)
+			_SeekedNumber = VALUE_I_SERVERKILL;
+			break;
+		CASE(STR_I_SERVERISALIVE)
+			_SeekedNumber = VALUE_I_SERVERISALIVE;
+			break;
+		CASE(STR_I_STOP)
+			_SeekedNumber = VALUE_I_STOP;
+			break;
+		CASE(STR_I_START)
+			_SeekedNumber = VALUE_I_START;
+			break;
+		CASE(STR_I_ISRESTOREPOSSIBLE)
+			_SeekedNumber = VALUE_I_ISRESTOREPOSSIBLE;
+			break;
+		CASE(STR_I_ISSERVERREADY)
+			_SeekedNumber = VALUE_I_ISSERVERREADY;
+			break;
+		CASE(STR_I_AIMODE)
+			_SeekedNumber = VALUE_I_AIMODE;
+			break;
 
-		break;
-		CASE(STR_TICTOK)
-			_SeekedNumber = VALUE_TICTOK;
-		break;
-		CASE(STR_TICTOKISON)
-			_SeekedNumber = VALUE_TICTOKISON;
-		break;
-		CASE(STR_TICTOKISOFF)
-			_SeekedNumber = VALUE_TICTOKISOFF;
-		break;
+		CASE(STR_I_INFO_TYPE_CLIENT)
+			_SeekedNumber = VALUE_I_INFO_TYPE_CLIENT;
+			break;
+
+		CASE(STR_I_INFO_GO)
+			_SeekedNumber = VALUE_I_INFO_GO;
+			break;
+		CASE(STR_I_INFO_BLACKTIME)
+			_SeekedNumber = VALUE_I_INFO_BLACKTIME;
+			break;
+		CASE(STR_I_INFO_WHITETIME)
+			_SeekedNumber = VALUE_I_INFO_WHITETIME;
+			break;
+		CASE(STR_I_INFO_TURN)
+			_SeekedNumber = VALUE_I_INFO_TURN;
+			break;
+
+		CASE(STR_I_INFO_POSITION)
+			_SeekedNumber = VALUE_I_INFO_POSITION;
+			break;
+		CASE(STR_I_INFO_ENEMYMOVE)
+			_SeekedNumber = VALUE_I_INFO_ENEMYMOVE;
+			break;
+		CASE(STR_I_INFO_MOVENULL)
+			_SeekedNumber = VALUE_I_INFO_MOVENULL;
+			break;
+		CASE(STR_I_INFO_WHITE)
+			_SeekedNumber = VALUE_I_INFO_WHITE;
+			break;
+		CASE(STR_I_INFO_BLACK)
+			_SeekedNumber = VALUE_I_INFO_BLACK;
+			break;
+
+		CASE(STR_I_ALIVE)
+			_SeekedNumber = VALUE_I_ALIVE;
+			break;
+		CASE(STR_I_BUSY)
+			_SeekedNumber = VALUE_I_BUSY;
+			break;
+		CASE(STR_I_MOVE)
+			_SeekedNumber = VALUE_I_MOVE;
+			break;
+		CASE(STR_I_RESTOREOK)
+			_SeekedNumber = VALUE_I_RESTOREOK;
+			break;
+		CASE(STR_I_RESTORENOT)
+			_SeekedNumber = VALUE_I_RESTORENOT;
+			break;
+		CASE(STR_I_SERVERISREADY)
+			_SeekedNumber = VALUE_I_SERVERISREADY;
+			break;
+
+		CASE(STR_I_TICTOK)
+			_SeekedNumber = VALUE_I_TICTOK;
+			break;
+		CASE(STR_I_TICTOKISON)
+			_SeekedNumber = VALUE_I_TICTOKISON;
+			break;
+		CASE(STR_I_TICTOKISOFF)
+			_SeekedNumber = VALUE_I_TICTOKISOFF;
+			break;
+
+		CASE(STR_I_DISP)
+			_SeekedNumber = VALUE_I_DISP;
+			break;
+
+		CASE(STR_I_DISP_MINX)
+			_SeekedNumber = VALUE_I_DISP_MINX;
+			break;
+		CASE(STR_I_DISP_MINY)
+			_SeekedNumber = VALUE_I_DISP_MINY;
+			break;
+		CASE(STR_I_DISP_MAXX)
+			_SeekedNumber = VALUE_I_DISP_MAXX;
+			break;
+		CASE(STR_I_DISP_MAXY)
+			_SeekedNumber = VALUE_I_DISP_MAXY;
+			break;
+
+		CASE(STR_I_OMOVE)
+			_SeekedNumber = VALUE_I_OMOVE;
+			break;
+
+		CASE(STR_I_OMOVE_BLACK)
+			_SeekedNumber = VALUE_I_OMOVE_BLACK;
+			break;
+		CASE(STR_I_OMOVE_WHITE)
+			_SeekedNumber = VALUE_I_OMOVE_WHITE;
+			break;
+
+		CASE(STR_I_OUPDATECHESSBOARD)
+			_SeekedNumber = VALUE_I_OUPDATECHESSBOARD;
+			break;
+
+		CASE(STR_I_STATUSNOW)
+			_SeekedNumber = VALUE_I_STATUSNOW;
+			break;
+		CASE(STR_I_TICTOKON)
+			_SeekedNumber = VALUE_I_TICTOKON;
+			break;
+		CASE(STR_I_TICTOKOFF)
+			_SeekedNumber = VALUE_I_TICTOKOFF;
+			break;
+
+		CASE(STR_I_INFO_TYPE_OBSERVER)
+			_SeekedNumber = VALUE_I_INFO_TYPE_OBSERVER;
+			break;
 		
 		// Here is No Command string.
 		DEFAULT()
