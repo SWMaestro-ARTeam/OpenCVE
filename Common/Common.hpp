@@ -77,6 +77,8 @@
 #define SUB_THRESHOLD 10
 #define SUB_LabTHRESHOLD 4
 
+#define DEBUG_OUTPUT_RES_QTY 8
+
 #define _DEF_MAX_BLOBS 10000
 #define _DEF_MAX_LABEL 100
 

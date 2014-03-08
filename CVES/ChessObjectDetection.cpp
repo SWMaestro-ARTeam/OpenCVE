@@ -102,7 +102,7 @@ void ChessObjectDetection::Detect_Movement(float BeforeScore[][8], float AfterSc
 	for (register int i = 0; i < 8; i++) {
 		for (register int j = 0; j < 8; j++) {
 			if (fabs(BeforeScore[i][j] - AfterScore[i][j]) > 0) {
-				if (count < 4) {
+				if (count < DEBUG_OUTPUT_RES_QTY) {
 					Result[count] = cvPoint(i,j);
 					count++;
 				}
@@ -111,7 +111,7 @@ void ChessObjectDetection::Detect_Movement(float BeforeScore[][8], float AfterSc
 	}
 
 	// 면적 기반 정렬
-	float sub_out[4];
+	float sub_out[DEBUG_OUTPUT_RES_QTY];
 	for (register int i = 0; i < count; i++) {
 		sub_out[i] = _TSubScore[Result[i].x][Result[i].y];
 	}

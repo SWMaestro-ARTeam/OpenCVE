@@ -581,8 +581,11 @@ void EngineS::See() {
 void EngineS::Evaluation() {
 	// 손이 들어온 이후, 빠져나간 상황에서 judge.
 	// 차영상의 결과에 체스말의 이동경로 추적. 캐슬링, 앙파상 처리를 위하여 4개의 오브젝트를 디텍션
-	CvPoint out[4];
-	out[0] = out[1] = out[2] = out[3] = cvPoint(-1, -1);
+	CvPoint out[DEBUG_OUTPUT_RES_QTY]; 
+
+	for (register int i = 0; i <DEBUG_OUTPUT_RES_QTY; i++)
+		out[i] = cvPoint(-1, -1);
+
 	// 체스말의 움직임을 계산.
 	_ChessObjectDetection->Get_Movement(_PrevImage, _PureImage, _CrossPoint, out);
 
@@ -640,7 +643,7 @@ void EngineS::Evaluation() {
 
 void EngineS::DisplayInfomation() {
 	_DetectionResultOnlyImageProtectMutex.lock();
-	if (IsStarted == true) {
+	//if (IsStarted == true) {
 		Draw_ROI(_DetectionResultOnlyImage, 
 			(_ChessRecognitionProcessingFrames > _HandRecognitionProcessingFrames)
 			? _ChessRecognitionProcessingFrames : _HandRecognitionProcessingFrames
@@ -655,7 +658,7 @@ void EngineS::DisplayInfomation() {
 
 			_ChessGame->Draw_Arrow(_DetectionResultOnlyImage, _ponder_before, _ponder_after, 10, 30, cvScalar(0, 255), 3, 8);
 		}
-	}
+	//}
 #if !defined(USING_QT)
 	// 화면을 표시한다.
 	cvShowImage("CVES", _DetectionResultOnlyImage);
@@ -957,7 +960,7 @@ void *
 	_TEngine_S->HandRecognitionInitialize = true;
 
 	while (_TEngine_S->EngineEnable != false) {
-		if (_TEngine_S->IsStarted == true && _TEngine_S->_OriginForHandDetection->empty() != true) {
+		if (/*_TEngine_S->IsStarted == true &&*/ _TEngine_S->_OriginForHandDetection->empty() != true) {
 			if (_TEngine_S->_CamOriginImage != NULL || _TEngine_S->_CamOriginImage->imageData != '\0') {
 				IplImage *_THandOriginImage;
 				IplImage *_THandDetectionImage = cvCreateImage(cvSize(_TEngine_S->_ROIRect.width, _TEngine_S->_ROIRect.height), IPL_DEPTH_8U, 3);

@@ -822,6 +822,8 @@ void ChessGame::Draw_InvalidMove(IplImage *Source, vector<ChessPoint> _CP, int R
 	after_complete = before_complete = false;
 
 	for (register int i = 0; i < 81; i++) {
+		if(_CP.size() == 0) return;
+
 		ChessPoint _temp_CP = _CP.at(i);
 
 		if(_temp_CP.Index.x == p_after.y && _temp_CP.Index.y == p_after.x){
