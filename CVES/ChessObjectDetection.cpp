@@ -61,12 +61,10 @@ void ChessObjectDetection::Delete_ChessLine(IplImage *Edge, vector<_ChessPoint> 
 				cvDrawLine(Edge, _temp_CP.Cordinate, CrossPoint.at(i+9).Cordinate, cvScalarAll(0), _Thickness);
 			}
 		}
-	}catch(cv::Exception& e){
-		printf("Delete_ChessLine function error");
-
-		return;
 	}
-	
+	catch (cv::Exception& e){
+		printf("Delete_ChessLine function error");
+	}
 }
 
 void ChessObjectDetection::Thresholding_Score(float Score[][8], float Threshold) {
@@ -148,7 +146,7 @@ void ChessObjectDetection::Detect_Movement(float BeforeScore[][8], float AfterSc
 }
 
 void ChessObjectDetection::Detect_SobelCannyScore(IplImage *Source, vector<_ChessPoint> CrossPoint, float ScoreOut[][8]) {
-	try{
+	try {
 		if (CrossPoint.size() != 0) {
 			IplImage *_TGray = cvCreateImage(cvGetSize(Source), IPL_DEPTH_8U, 1);
 			IplImage *_TSobel = cvCreateImage(cvGetSize(Source), IPL_DEPTH_8U, 1);
@@ -197,10 +195,9 @@ void ChessObjectDetection::Detect_SobelCannyScore(IplImage *Source, vector<_Ches
 			cvReleaseImage(&_TSobel);
 			cvReleaseImage(&_TAdd_Canny);
 		}
-	}catch(cv::Exception& e){
+	}
+	catch(cv::Exception& e){
 		printf("Detect_SobelCannyScore Function error");
-
-		return;
 	}
 	
 }
