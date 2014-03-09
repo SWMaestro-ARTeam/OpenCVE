@@ -556,18 +556,8 @@ void LineSearchBased::Get_SideLinesAtGrayScale(IplImage *GrayImage, vector<MyGra
 			}
 		}
 	}catch(cv::Exception& e){
-<<<<<<< HEAD
-		printf("Get_SideLinesAtGrayScale Function error");
-	}catch(std::out_of_range& oor){
-		printf("Get_SideLinesAtGrayScale Function out_of_range error");
-	}
-=======
-		
 		printf("Get_SideLinesAtGrayScale function error.\ncv Exception : ", e.what());
-
-		return;
-}
->>>>>>> CVES_EngineS_Revise
+	}
 }
 
 void LineSearchBased::Get_TrueLines(vector<MyPoint> in_line_point1, vector<MyPoint> in_line_point2, vector<MyPoint> *Ture_in_line_point) {
