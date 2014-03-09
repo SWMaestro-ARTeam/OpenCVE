@@ -103,49 +103,55 @@ void HandRecognition::Initialize_Differential_Image() {
 }
 
 void HandRecognition::Detect_SkinColour(IplImage *Source, IplImage *Destination) {
-	if (_IsInitialize != false) {
-		// skin color detection을 진행.
-		// RGB-H-CbCr Skin Colour Model for Human Face Detection 논문 참조.
-		// http://pesona.mmu.edu.my/~johnsee/research/papers/files/rgbhcbcr_m2usic06.pdf 
-		cvCvtColor(Source, _Image_YCrCb, CV_BGR2YCrCb);
-		cvCvtColor(Source, _Image_HSV, CV_BGR2HSV);
+	try{
+		if (_IsInitialize != false) {
+			// skin color detection을 진행.
+			// RGB-H-CbCr Skin Colour Model for Human Face Detection 논문 참조.
+			// http://pesona.mmu.edu.my/~johnsee/research/papers/files/rgbhcbcr_m2usic06.pdf 
+			cvCvtColor(Source, _Image_YCrCb, CV_BGR2YCrCb);
+			cvCvtColor(Source, _Image_HSV, CV_BGR2HSV);
 
-		cvZero(Destination);
+			cvZero(Destination);
 
-		for (register int i = 0; i < Destination->height; i++) {
-			for (register int j = 0; j < Destination->width; j++) {
-				// RGB 색상계를 이용하여 skin이 아닌 픽셀들을 걸러냄.
-				_Plane_B_Value = (unsigned char)Source->imageData[(j * 3) + (i * Source->widthStep)];
-				_Plane_G_Value = (unsigned char)Source->imageData[(j * 3) + (i * Source->widthStep) + 1];
-				_Plane_R_Value = (unsigned char)Source->imageData[(j * 3) + (i * Source->widthStep) + 2];
+			for (register int i = 0; i < Destination->height; i++) {
+				for (register int j = 0; j < Destination->width; j++) {
+					// RGB 색상계를 이용하여 skin이 아닌 픽셀들을 걸러냄.
+					_Plane_B_Value = (unsigned char)Source->imageData[(j * 3) + (i * Source->widthStep)];
+					_Plane_G_Value = (unsigned char)Source->imageData[(j * 3) + (i * Source->widthStep) + 1];
+					_Plane_R_Value = (unsigned char)Source->imageData[(j * 3) + (i * Source->widthStep) + 2];
 
-				if (RangeDetectionOfRGBSkinColour(_Plane_R_Value, _Plane_G_Value, _Plane_B_Value)) {
-					// HSV 색상계에 H를 이용하여 피부 영역 검출
-					_Plane_H_Value = (unsigned char)_Image_HSV->imageData[(j * 3) + (i * _Image_HSV->widthStep)];
-					_Plane_S_Value = (unsigned char)_Image_HSV->imageData[(j * 3) + (i * _Image_HSV->widthStep) + 1];
-					_Plane_V_Value = (unsigned char)_Image_HSV->imageData[(j * 3) + (i * _Image_HSV->widthStep) + 2];
+					if (RangeDetectionOfRGBSkinColour(_Plane_R_Value, _Plane_G_Value, _Plane_B_Value)) {
+						// HSV 색상계에 H를 이용하여 피부 영역 검출
+						_Plane_H_Value = (unsigned char)_Image_HSV->imageData[(j * 3) + (i * _Image_HSV->widthStep)];
+						_Plane_S_Value = (unsigned char)_Image_HSV->imageData[(j * 3) + (i * _Image_HSV->widthStep) + 1];
+						_Plane_V_Value = (unsigned char)_Image_HSV->imageData[(j * 3) + (i * _Image_HSV->widthStep) + 2];
 
-					if (RangeDetectionOfHSVSkinColour(_Plane_H_Value, _Plane_S_Value, _Plane_V_Value)) {
-						// YCbCr 색상계를 사용하여 최종 피부색 판정.
-						_Plane_Y_Value = (unsigned char)_Image_YCrCb->imageData[(j * 3) + (i * _Image_YCrCb->widthStep)];
-						_Plane_Cr_Value = (unsigned char)_Image_YCrCb->imageData[(j * 3) + (i * _Image_YCrCb->widthStep) + 1];
-						_Plane_Cb_Value = (unsigned char)_Image_YCrCb->imageData[(j * 3) + (i * _Image_YCrCb->widthStep) + 2];
+						if (RangeDetectionOfHSVSkinColour(_Plane_H_Value, _Plane_S_Value, _Plane_V_Value)) {
+							// YCbCr 색상계를 사용하여 최종 피부색 판정.
+							_Plane_Y_Value = (unsigned char)_Image_YCrCb->imageData[(j * 3) + (i * _Image_YCrCb->widthStep)];
+							_Plane_Cr_Value = (unsigned char)_Image_YCrCb->imageData[(j * 3) + (i * _Image_YCrCb->widthStep) + 1];
+							_Plane_Cb_Value = (unsigned char)_Image_YCrCb->imageData[(j * 3) + (i * _Image_YCrCb->widthStep) + 2];
 
-						if (RangeDetectionOfYCrCbSkinColour(_Plane_Y_Value, _Plane_Cr_Value, _Plane_Cb_Value)) {
-							Destination->imageData[j + (i * Destination->widthStep)] = (unsigned char) 255;
+							if (RangeDetectionOfYCrCbSkinColour(_Plane_Y_Value, _Plane_Cr_Value, _Plane_Cb_Value)) {
+								Destination->imageData[j + (i * Destination->widthStep)] = (unsigned char) 255;
+							}
 						}
 					}
 				}
 			}
+
+			// noise에 의한 영향을 줄이기 위해 모폴로지 연산 적용.
+			cvErode(Destination, Destination, 0, MOP_NUM);
+			cvDilate(Destination, Destination, 0, MOP_NUM);
+			cvDilate(Destination, Destination, 0, 5);
 		}
+		else {
 
-		// noise에 의한 영향을 줄이기 위해 모폴로지 연산 적용.
-		cvErode(Destination, Destination, 0, MOP_NUM);
-		cvDilate(Destination, Destination, 0, MOP_NUM);
-		cvDilate(Destination, Destination, 0, 5);
-	}
-	else {
-
+		}
+	}catch(cv::Exception& e){
+		printf("Detect_SkinColour Function error");
+		
+		return ;
 	}
 }
 
@@ -172,7 +178,8 @@ bool HandRecognition::IsHand(IplImage *Source) {
 
 // rebuild 대상.
 void HandRecognition::Subtraction_PreviousFrame(IplImage *Source, IplImage *Destination, bool First) {
-	if (_IsInitialize != false) {
+	try{
+		if (_IsInitialize != false) {
 		// 손을 검출하기 위한 차영상 적용.
 		// RGB image src를 입력받아 binary image dst를 반환.
 		static int _TFrameCount = 0;
@@ -240,6 +247,11 @@ void HandRecognition::Subtraction_PreviousFrame(IplImage *Source, IplImage *Dest
 		cvReleaseImage(&Lab_src);
 	}
 	else {
+	}
+	}catch(cv::Exception& e){
+		printf("Subtraction_PreviousFrame Function error");
+
+		return ;
 	}
 }
 #pragma endregion Public Functions

@@ -87,48 +87,54 @@ unsigned char CheckInChessboard::Get_MedianVaul_Inkernel(unsigned char _kernel[]
 }
 
 float CheckInChessboard::Get_GridPixelvalue(IplImage *gray, CvPoint Headpoint, CvPoint Head_right, CvPoint Head_down, CvPoint right_down) {
-	IplImage *temp_src = cvCreateImage(cvSize(40, 40), IPL_DEPTH_8U, 1);
-	CvMat* warp_mat = cvCreateMat(3, 3, CV_32FC1);
-	int thickness = 3;
+	try{
+		IplImage *temp_src = cvCreateImage(cvSize(40, 40), IPL_DEPTH_8U, 1);
+		CvMat* warp_mat = cvCreateMat(3, 3, CV_32FC1);
+		int thickness = 3;
 
-	CvPoint2D32f srcTri[4], dstTri[4];
+		CvPoint2D32f srcTri[4], dstTri[4];
 
-	srcTri[0].x = Headpoint.x + thickness;              // X1
-	srcTri[0].y = Headpoint.y + thickness;
-	srcTri[1].x = Head_right.x + thickness;    // Y1
-	srcTri[1].y = Head_right.y - thickness;
-	srcTri[2].x = Head_down.x - thickness;              // Z1
-	srcTri[2].y = Head_down.y + thickness;
-	srcTri[3].x = right_down.x - thickness;
-	srcTri[3].y = right_down.y - thickness;
+		srcTri[0].x = Headpoint.x + thickness;              // X1
+		srcTri[0].y = Headpoint.y + thickness;
+		srcTri[1].x = Head_right.x + thickness;    // Y1
+		srcTri[1].y = Head_right.y - thickness;
+		srcTri[2].x = Head_down.x - thickness;              // Z1
+		srcTri[2].y = Head_down.y + thickness;
+		srcTri[3].x = right_down.x - thickness;
+		srcTri[3].y = right_down.y - thickness;
 
-	dstTri[0].x = 0;
-	dstTri[0].y = 0;
-	dstTri[1].x = 39;   // Y2
-	dstTri[1].y = 0;
-	dstTri[2].x = 0;   // Z2
-	dstTri[2].y = 39;
-	dstTri[3].x = 39;   // Z2
-	dstTri[3].y = 39;
+		dstTri[0].x = 0;
+		dstTri[0].y = 0;
+		dstTri[1].x = 39;   // Y2
+		dstTri[1].y = 0;
+		dstTri[2].x = 0;   // Z2
+		dstTri[2].y = 39;
+		dstTri[3].x = 39;   // Z2
+		dstTri[3].y = 39;
 
-	cvGetPerspectiveTransform(srcTri, dstTri, warp_mat);
-	cvWarpPerspective(gray, temp_src, warp_mat);
+		cvGetPerspectiveTransform(srcTri, dstTri, warp_mat);
+		cvWarpPerspective(gray, temp_src, warp_mat);
 
-	//char buf[32];
-	//sprintf(buf, "%d_%d.jpg", Headpoint.x, Headpoint.y);
-	//cvSaveImage(buf, temp_src);
-	// 픽셀 picking
-	unsigned char _kernel[PIXEL_PICK_KERNEL_SIZE][PIXEL_PICK_KERNEL_SIZE];
-	for(int i = 0; i < PIXEL_PICK_KERNEL_SIZE; i++){
-		for(int j = 0; j < PIXEL_PICK_KERNEL_SIZE; j++){
-			_kernel[i][j] = temp_src->imageData[(20- PIXEL_PICK_KERNEL_SIZE/2 + i) + (20 - PIXEL_PICK_KERNEL_SIZE/2 + j) * temp_src->widthStep];
+		//char buf[32];
+		//sprintf(buf, "%d_%d.jpg", Headpoint.x, Headpoint.y);
+		//cvSaveImage(buf, temp_src);
+		// 픽셀 picking
+		unsigned char _kernel[PIXEL_PICK_KERNEL_SIZE][PIXEL_PICK_KERNEL_SIZE];
+		for(int i = 0; i < PIXEL_PICK_KERNEL_SIZE; i++){
+			for(int j = 0; j < PIXEL_PICK_KERNEL_SIZE; j++){
+				_kernel[i][j] = temp_src->imageData[(20- PIXEL_PICK_KERNEL_SIZE/2 + i) + (20 - PIXEL_PICK_KERNEL_SIZE/2 + j) * temp_src->widthStep];
+			}
 		}
+
+		cvReleaseImage(&temp_src);
+		cvReleaseMat(&warp_mat);
+
+		return (float)	Get_MedianVaul_Inkernel(_kernel);
+	}catch(cv::Exception& e){
+		printf("Get_GridPixelvalue Function error");
+
+		return NULL;
 	}
-
-	cvReleaseImage(&temp_src);
-	cvReleaseMat(&warp_mat);
-
-	return (float)	Get_MedianVaul_Inkernel(_kernel);
 }
 
 float CheckInChessboard::Get_AvgRect(IplImage *GrayImage, IplImage *edge, CvRect ROI) {
@@ -152,27 +158,33 @@ float CheckInChessboard::Get_AvgRect(IplImage *GrayImage, IplImage *edge, CvRect
 }
 
 unsigned char CheckInChessboard::Get_MedianRect(IplImage *Gray, CvRect ROI) {
-	IplImage *ROI_Image = cvCreateImage(cvSize(ROI.width, ROI.height), IPL_DEPTH_8U, 1);
+	try{
+		IplImage *ROI_Image = cvCreateImage(cvSize(ROI.width, ROI.height), IPL_DEPTH_8U, 1);
 
-	cvSetImageROI(Gray, ROI);
-	cvCopy(Gray, ROI_Image);
-	cvResetImageROI(Gray);
+		cvSetImageROI(Gray, ROI);
+		cvCopy(Gray, ROI_Image);
+		cvResetImageROI(Gray);
 
-	// 속력 문제 개선 여지
-	vector<unsigned char> _temp_vector;
+		// 속력 문제 개선 여지
+		vector<unsigned char> _temp_vector;
 
-	for (register int i = 0; i < ROI_Image->width; i++) {
-		for (register int j = 0; j < ROI_Image->height; j++) {
-			_temp_vector.push_back(ROI_Image->imageData[i + j * ROI_Image->widthStep]);
+		for (register int i = 0; i < ROI_Image->width; i++) {
+			for (register int j = 0; j < ROI_Image->height; j++) {
+				_temp_vector.push_back(ROI_Image->imageData[i + j * ROI_Image->widthStep]);
+			}
 		}
+
+		sort(_temp_vector.begin(), _temp_vector.end());
+
+		unsigned char return_value = (unsigned char)_temp_vector.at((ROI_Image->width-1)*(ROI_Image->height-1) / 2);
+		cvReleaseImage(&ROI_Image);
+
+		return return_value;
+	}catch(cv::Exception& e){
+		printf("Get_MedianRect Function error");
+
+		return NULL;
 	}
-
-	sort(_temp_vector.begin(), _temp_vector.end());
-
-	unsigned char return_value = (unsigned char)_temp_vector.at((ROI_Image->width-1)*(ROI_Image->height-1) / 2);
-	cvReleaseImage(&ROI_Image);
-
-	return return_value;
 }
 #pragma endregion Private Functions
 

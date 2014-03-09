@@ -46,19 +46,27 @@ ChessObjectDetection::~ChessObjectDetection() {
 #pragma region Private Functions
 
 void ChessObjectDetection::Delete_ChessLine(IplImage *Edge, vector<_ChessPoint> CrossPoint) {
-	if (CrossPoint.size() == 0) // 체스보드 인식 좌표가 없다면 return error
+	
+	try{
+		if (CrossPoint.size() == 0) // 체스보드 인식 좌표가 없다면 return error
+			return;
+
+		for (register int i = 0; i < CrossPoint.size() - 1; i++) {
+			ChessPoint _temp_CP = CrossPoint.at(i);
+			if (_temp_CP.Index.y != 8) {
+				cvDrawLine(Edge, _temp_CP.Cordinate, CrossPoint.at(i+1).Cordinate, cvScalarAll(0), _Thickness);
+			}
+
+			if (_temp_CP.Index.x != 8) {
+				cvDrawLine(Edge, _temp_CP.Cordinate, CrossPoint.at(i+9).Cordinate, cvScalarAll(0), _Thickness);
+			}
+		}
+	}catch(cv::Exception& e){
+		printf("Delete_ChessLine function error");
+
 		return;
-
-	for (register int i = 0; i < CrossPoint.size() - 1; i++) {
-		ChessPoint _temp_CP = CrossPoint.at(i);
-		if (_temp_CP.Index.y != 8) {
-			cvDrawLine(Edge, _temp_CP.Cordinate, CrossPoint.at(i+1).Cordinate, cvScalarAll(0), _Thickness);
-		}
-
-		if (_temp_CP.Index.x != 8) {
-			cvDrawLine(Edge, _temp_CP.Cordinate, CrossPoint.at(i+9).Cordinate, cvScalarAll(0), _Thickness);
-		}
 	}
+	
 }
 
 void ChessObjectDetection::Thresholding_Score(float Score[][8], float Threshold) {
@@ -140,54 +148,61 @@ void ChessObjectDetection::Detect_Movement(float BeforeScore[][8], float AfterSc
 }
 
 void ChessObjectDetection::Detect_SobelCannyScore(IplImage *Source, vector<_ChessPoint> CrossPoint, float ScoreOut[][8]) {
-	if (CrossPoint.size() != 0) {
-		IplImage *_TGray = cvCreateImage(cvGetSize(Source), IPL_DEPTH_8U, 1);
-		IplImage *_TSobel = cvCreateImage(cvGetSize(Source), IPL_DEPTH_8U, 1);
-		IplImage *_TAdd_Canny = cvCreateImage(cvGetSize(Source), IPL_DEPTH_8U, 1);
+	try{
+		if (CrossPoint.size() != 0) {
+			IplImage *_TGray = cvCreateImage(cvGetSize(Source), IPL_DEPTH_8U, 1);
+			IplImage *_TSobel = cvCreateImage(cvGetSize(Source), IPL_DEPTH_8U, 1);
+			IplImage *_TAdd_Canny = cvCreateImage(cvGetSize(Source), IPL_DEPTH_8U, 1);
 
-		cvCvtColor(Source, _TGray, CV_BGR2GRAY);
-		// sobel->canny.
-		for(register int i = 0; i < NUM_GAUSS; i++){
-			cvSmooth(_TGray, _TGray, CV_MEDIAN);
-		}
-		for(register int i = 0; i < NUM_MEDIAN; i++){
-			cvSmooth(_TGray, _TGray, CV_GAUSSIAN);
-		}
-		cvSobel(_TGray, _TSobel, 1, 1, 5);
-		cvCanny(_TSobel, _TAdd_Canny, 100, 150);
+			cvCvtColor(Source, _TGray, CV_BGR2GRAY);
+			// sobel->canny.
+			for(register int i = 0; i < NUM_GAUSS; i++){
+				cvSmooth(_TGray, _TGray, CV_MEDIAN);
+			}
+			for(register int i = 0; i < NUM_MEDIAN; i++){
+				cvSmooth(_TGray, _TGray, CV_GAUSSIAN);
+			}
+			cvSobel(_TGray, _TSobel, 1, 1, 5);
+			cvCanny(_TSobel, _TAdd_Canny, 100, 150);
 
-		// 체스보드의 라인영향을 최소화시킴.
-		Delete_ChessLine(_TAdd_Canny, CrossPoint);
+			// 체스보드의 라인영향을 최소화시킴.
+			Delete_ChessLine(_TAdd_Canny, CrossPoint);
 
-		// 체스보드 이외의 영역을 모두 지워냄
-		_CheckChessboard.Delete_Chessboard(_TGray, CrossPoint);
-		_CheckChessboard.Delete_Chessboard(_TAdd_Canny, CrossPoint);
-		cvDilate(_TAdd_Canny, _TAdd_Canny, 0, 7);
-		cvErode(_TAdd_Canny, _TAdd_Canny, 0, 6);
+			// 체스보드 이외의 영역을 모두 지워냄
+			_CheckChessboard.Delete_Chessboard(_TGray, CrossPoint);
+			_CheckChessboard.Delete_Chessboard(_TAdd_Canny, CrossPoint);
+			cvDilate(_TAdd_Canny, _TAdd_Canny, 0, 7);
+			cvErode(_TAdd_Canny, _TAdd_Canny, 0, 6);
 
-		// 오브젝트 유무를 확인하기 위해서
-		// 각 체스보드 그리드 안에 엣지가 존재하는 면적비를 연산.
-		float score_board[8][8]; // 엣지 / 체스그리드 면적 => 스코어
+			// 오브젝트 유무를 확인하기 위해서
+			// 각 체스보드 그리드 안에 엣지가 존재하는 면적비를 연산.
+			float score_board[8][8]; // 엣지 / 체스그리드 면적 => 스코어
 
-		_CheckChessboard.Calculate_BoardScore(_TAdd_Canny, _TGray, CrossPoint, score_board);
+			_CheckChessboard.Calculate_BoardScore(_TAdd_Canny, _TGray, CrossPoint, score_board);
 
-		// 스코어 thresholding
-		Thresholding_Score(score_board, _ScoreThreshold);
+			// 스코어 thresholding
+			Thresholding_Score(score_board, _ScoreThreshold);
 
-		// 출력으로 복사
-		for (register int i = 0; i < 8; i++)
-			for (register int j = 0; j < 8; j++)
-				ScoreOut[i][j] = score_board[i][j];
+			// 출력으로 복사
+			for (register int i = 0; i < 8; i++)
+				for (register int j = 0; j < 8; j++)
+					ScoreOut[i][j] = score_board[i][j];
 
 #if defined(DEBUG_MODE)
-		cvShowImage("gray", _TGray);
-		cvShowImage("Add_Canny", _TAdd_Canny);
+			cvShowImage("gray", _TGray);
+			cvShowImage("Add_Canny", _TAdd_Canny);
 #endif
 
-		cvReleaseImage(&_TGray);
-		cvReleaseImage(&_TSobel);
-		cvReleaseImage(&_TAdd_Canny);
+			cvReleaseImage(&_TGray);
+			cvReleaseImage(&_TSobel);
+			cvReleaseImage(&_TAdd_Canny);
+		}
+	}catch(cv::Exception& e){
+		printf("Detect_SobelCannyScore Function error");
+
+		return;
 	}
+	
 }
 #pragma endregion Private Functions
 

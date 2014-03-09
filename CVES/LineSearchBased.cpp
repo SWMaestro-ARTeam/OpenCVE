@@ -296,250 +296,259 @@ bool LineSearchBased::Get_CrossPoint(MyLinePoint Line1, MyLinePoint Line2, MyPoi
 }
 
 void LineSearchBased::Get_SideLinesAtGrayScale(IplImage *GrayImage, vector<MyGrayPoint> *Line, MyLinePoint *LinePoint, vector<MyPoint> *InLinePoint, bool XYFlag) {
-	// 경계를 찾은 후 어느 정도의 경계에는 계산을 하지 않는다.
-	int _TLineCount = 0, _TJumpCountP = 0, _TJumpCountM = 0, JumpCount = 0;
+	
+	try{
+	
+		// 경계를 찾은 후 어느 정도의 경계에는 계산을 하지 않는다.
+		int _TLineCount = 0, _TJumpCountP = 0, _TJumpCountM = 0, JumpCount = 0;
 
-	// 기본적으로 계산을 해줄 필요가 없는 최소 픽셀을 jump_count에 저장한다 
-	// line_point 에는 해당 축라인에서만 위치가 바뀌니 고정 값을 저장한다
-	if (XYFlag) {
-		JumpCount = 30;/*image->width / 12;*/
-		LinePoint->x1 = GrayImage->width / 2;
-	}
-	else {
-		JumpCount = 30;/*image->height / 12;*/
-		LinePoint->y1 = GrayImage->height / 2;
-	}
-
-	// 교차되는 체스판의 경계를 검출 할 때 체스 말이 판과 대비가 될 경우,
-	// 경계선으로 인식 되는 경우를 막는다.
-	bool _TChangeFlagLineT1, _TChangeFlagLineT2, _TChangeFlagLineT3;
-
-	// line vector함수 차수 변환.
-	vector<MyGrayPoint> _TT = *((vector<MyGrayPoint> *)Line);
-	vector<MyPoint> _TT_in = *((vector<MyPoint> *)InLinePoint);
-	vector<MyPoint> _TT_in1,_TT_in2;
-
-	// 처음 중심이 되는 위치를 저장해준다 짝수는 오른쪽 홀수는 왼쪽으로 나가는 기준점이다.
-	_TT[0].grayscale;
-	_TT[1].grayscale;
-
-	// grayscale의 교차를 탐색에 도움을 주기 위해 양쪽 방향의 기준 grayscale을 잡아준다.
-	_TChangeFlagLineT2 = 255 >= _TT[0].grayscale ? true : false;
-	_TChangeFlagLineT3 = 255 >= _TT[1].grayscale ? true : false;
-
-	// 여기선 추가로 탐색되지 말아야할 라인을 걸러준다.
-	// 홀수면 오른쪽 짝수면 왼쪽으로 판단하여 계산해준다
-	for (register int i = 0; i < Line->size() - 10; i++) {
-		// jump_count 가 유효할 경우 탐색을 하지 않아도 될 영역으로 판단 하여 넘긴다.
-		// 해당되는 jump_count를 건너 뛰며 홀수와 짝수로 판단하여 변수를 분리하였으므로 양쪽 탐색에 문제가 되지 않는다.
-		if ((i % 2 == 1) && (_TJumpCountP > 0)) {
-			_TJumpCountP--;
-		}
-		else if ((i % 2 == 0) && (_TJumpCountM > 0)) {
-			_TJumpCountM--;
+		// 기본적으로 계산을 해줄 필요가 없는 최소 픽셀을 jump_count에 저장한다 
+		// line_point 에는 해당 축라인에서만 위치가 바뀌니 고정 값을 저장한다
+		if (XYFlag) {
+			JumpCount = 30;/*image->width / 12;*/
+			LinePoint->x1 = GrayImage->width / 2;
 		}
 		else {
-			bool change_flag_t;
+			JumpCount = 30;/*image->height / 12;*/
+			LinePoint->y1 = GrayImage->height / 2;
+		}
 
-			// 기존에 저장되어있는 grayscale과 비교를 위해 해당 위치의 grayscale을 저장한다 
-			change_flag_t = 255 >= _TT[i].grayscale ? true : false;
+		// 교차되는 체스판의 경계를 검출 할 때 체스 말이 판과 대비가 될 경우,
+		// 경계선으로 인식 되는 경우를 막는다.
+		bool _TChangeFlagLineT1, _TChangeFlagLineT2, _TChangeFlagLineT3;
 
-			// 전에 기준이 된 grayscale을 비교하기 위해 직접 비교를 하는 변수에 저장한다
-			if (i % 2 == 0)
-				_TChangeFlagLineT1 = _TChangeFlagLineT2;
-			else
-				_TChangeFlagLineT1 = _TChangeFlagLineT3;
+		// line vector함수 차수 변환.
+		vector<MyGrayPoint> _TT = *((vector<MyGrayPoint> *)Line);
+		vector<MyPoint> _TT_in = *((vector<MyPoint> *)InLinePoint);
+		vector<MyPoint> _TT_in1,_TT_in2;
 
-			// vector에 교차적으로 저장이 되었기 때문에 2씩 증가해 비교를한다
-			if (_TT[i].grayscale != _TT[i + 2].grayscale) {
-				int _TFlag = true;
+		// 처음 중심이 되는 위치를 저장해준다 짝수는 오른쪽 홀수는 왼쪽으로 나가는 기준점이다.
+		_TT[0].grayscale;
+		_TT[1].grayscale;
 
-				// 해당 위치에서 그다음 픽셀이 대비가 된다면 경계선으로 인식.
-				// 이 부분에서 대각선 방향을 처리해 준다 XYFlag가 ture 면 x축, false이면 y축.
-				// 해당 방향으로 뻗어있는 두 대각선 방향의 색을 비교하여 차이가나면 경계선으로 인식한다.
-				// 기준점에서 왼쪽과 오른쪽을 비교해야 하기 때문에 양 쪽으로 1픽셀씩 비교를 해주기 위해 +- 2를 비교한다
+		// grayscale의 교차를 탐색에 도움을 주기 위해 양쪽 방향의 기준 grayscale을 잡아준다.
+		_TChangeFlagLineT2 = 255 >= _TT[0].grayscale ? true : false;
+		_TChangeFlagLineT3 = 255 >= _TT[1].grayscale ? true : false;
+
+		// 여기선 추가로 탐색되지 말아야할 라인을 걸러준다.
+		// 홀수면 오른쪽 짝수면 왼쪽으로 판단하여 계산해준다
+		for (register int i = 0; i < Line->size() - 10; i++) {
+			// jump_count 가 유효할 경우 탐색을 하지 않아도 될 영역으로 판단 하여 넘긴다.
+			// 해당되는 jump_count를 건너 뛰며 홀수와 짝수로 판단하여 변수를 분리하였으므로 양쪽 탐색에 문제가 되지 않는다.
+			if ((i % 2 == 1) && (_TJumpCountP > 0)) {
+				_TJumpCountP--;
+			}
+			else if ((i % 2 == 0) && (_TJumpCountM > 0)) {
+				_TJumpCountM--;
+			}
+			else {
+				bool change_flag_t;
+
+				// 기존에 저장되어있는 grayscale과 비교를 위해 해당 위치의 grayscale을 저장한다 
+				change_flag_t = 255 >= _TT[i].grayscale ? true : false;
+
+				// 전에 기준이 된 grayscale을 비교하기 위해 직접 비교를 하는 변수에 저장한다
+				if (i % 2 == 0)
+					_TChangeFlagLineT1 = _TChangeFlagLineT2;
+				else
+					_TChangeFlagLineT1 = _TChangeFlagLineT3;
+
+				// vector에 교차적으로 저장이 되었기 때문에 2씩 증가해 비교를한다
+				if (_TT[i].grayscale != _TT[i + 2].grayscale) {
+					int _TFlag = true;
+
+					// 해당 위치에서 그다음 픽셀이 대비가 된다면 경계선으로 인식.
+					// 이 부분에서 대각선 방향을 처리해 준다 XYFlag가 ture 면 x축, false이면 y축.
+					// 해당 방향으로 뻗어있는 두 대각선 방향의 색을 비교하여 차이가나면 경계선으로 인식한다.
+					// 기준점에서 왼쪽과 오른쪽을 비교해야 하기 때문에 양 쪽으로 1픽셀씩 비교를 해주기 위해 +- 2를 비교한다
 				
-				// vector 예외처리
-				if (_TT[i].x + 2 > GrayImage->width || _TT[i].x - 2 < 0 || _TT[i].y + 2 > GrayImage->height || _TT[i].y - 2 < 0)
-					return;
+					// vector 예외처리
+					if (_TT[i].x + 2 > GrayImage->width || _TT[i].x - 2 < 0 || _TT[i].y + 2 > GrayImage->height || _TT[i].y - 2 < 0)
+						return;
 
-				if (XYFlag) {
-					if (i % 2 == 1 && (Get_GrayScale(GrayImage, _TT[i].x + 2, _TT[i].y - 2) != Get_GrayScale(GrayImage, _TT[i].x + 2, _TT[i].y + 2)))
-						return;
-					else if (i % 2 == 0 && (Get_GrayScale(GrayImage, _TT[i].x - 2, _TT[i].y - 2) != Get_GrayScale(GrayImage, _TT[i].x - 2, _TT[i].y + 2)))
-						return;
-				}
-				else {
-					if (i % 2 == 1 && (Get_GrayScale(GrayImage, _TT[i].x + 2, _TT[i].y + 2) != Get_GrayScale(GrayImage, _TT[i].x - 2, _TT[i].y + 2))) 
-						return;
-					else if (i % 2 == 0 && (Get_GrayScale(GrayImage, _TT[i].x - 2, _TT[i].y - 2) != Get_GrayScale(GrayImage, _TT[i].x + 2, _TT[i].y - 2)))
-						return;
-				}
-
-				// 확실히 하기위해 최소 2픽셀 까지 대비가 되면 경계선으로 인식한다.
-				for (register int j = 1; j <= 2; j++) {
-					if(i + (j * 2) > _TT.size())
-						continue;
-
-					// 만약 기준이 된 grayscale에서 정확한 판단을 위한 검사에 grayscale이 같게 되면 가면 break를 해준다.
-					if (_TT[i].grayscale == _TT[i + (j * 2)].grayscale && change_flag_t == _TChangeFlagLineT1) {
-						_TFlag = false;
-						break;
+					if (XYFlag) {
+						if (i % 2 == 1 && (Get_GrayScale(GrayImage, _TT[i].x + 2, _TT[i].y - 2) != Get_GrayScale(GrayImage, _TT[i].x + 2, _TT[i].y + 2)))
+							return;
+						else if (i % 2 == 0 && (Get_GrayScale(GrayImage, _TT[i].x - 2, _TT[i].y - 2) != Get_GrayScale(GrayImage, _TT[i].x - 2, _TT[i].y + 2)))
+							return;
 					}
-				}
-				if (_TFlag) {
-					// 체스판 경계에 필요한 경계는 9개 이므로 그 이상은 받지 않는다.
-					if (_TLineCount < 9){
-						if (LinePoint->x1 > _TT[i].x) {
-							LinePoint->x1 = _TT[i].x;
-							LinePoint->y1 = _TT[i].y;
+					else {
+						if (i % 2 == 1 && (Get_GrayScale(GrayImage, _TT[i].x + 2, _TT[i].y + 2) != Get_GrayScale(GrayImage, _TT[i].x - 2, _TT[i].y + 2))) 
+							return;
+						else if (i % 2 == 0 && (Get_GrayScale(GrayImage, _TT[i].x - 2, _TT[i].y - 2) != Get_GrayScale(GrayImage, _TT[i].x + 2, _TT[i].y - 2)))
+							return;
+					}
+
+					// 확실히 하기위해 최소 2픽셀 까지 대비가 되면 경계선으로 인식한다.
+					for (register int j = 1; j <= 2; j++) {
+						if(i + (j * 2) > _TT.size())
+							continue;
+
+						// 만약 기준이 된 grayscale에서 정확한 판단을 위한 검사에 grayscale이 같게 되면 가면 break를 해준다.
+						if (_TT[i].grayscale == _TT[i + (j * 2)].grayscale && change_flag_t == _TChangeFlagLineT1) {
+							_TFlag = false;
+							break;
+						}
+					}
+					if (_TFlag) {
+						// 체스판 경계에 필요한 경계는 9개 이므로 그 이상은 받지 않는다.
+						if (_TLineCount < 9){
+							if (LinePoint->x1 > _TT[i].x) {
+								LinePoint->x1 = _TT[i].x;
+								LinePoint->y1 = _TT[i].y;
+							}
+
+							if (LinePoint->x2 < _TT[i].x) {
+								LinePoint->x2 = _TT[i].x;
+								LinePoint->y2 = _TT[i].y;
+							}
+
+							// 왼쪽과 오른쪽을 구분하여 따로 저장해준다
+
+							if(i % 2 == 1){
+								_TT_in1.push_back(Set_MyPoint(_TT[i].x, _TT[i].y));
+								cvCircle(GrayImage, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(0, 0, 0));
+							}
+							else{
+								_TT_in2.push_back(Set_MyPoint(_TT[i].x, _TT[i].y));
+								cvCircle(GrayImage, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(255, 255, 255));
+							}
+
+							_TLineCount++;
+
+							// 위의 조건을 통과 하였으면 경계가 되는 면 다음의 grayscale을 적용해준다
+
+							if (i % 2 == 0)
+								_TChangeFlagLineT2 = !change_flag_t;
+							else
+								_TChangeFlagLineT3 = !change_flag_t;
 						}
 
-						if (LinePoint->x2 < _TT[i].x) {
-							LinePoint->x2 = _TT[i].x;
-							LinePoint->y2 = _TT[i].y;
-						}
+						// 경계점을 찾으면 최소한의 범위는 탐색할 필요가 없기 때문에 넘겨준다
 
-						// 왼쪽과 오른쪽을 구분하여 따로 저장해준다
-
-						if(i % 2 == 1){
-							_TT_in1.push_back(Set_MyPoint(_TT[i].x, _TT[i].y));
-							cvCircle(GrayImage, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(0, 0, 0));
-						}
-						else{
-							_TT_in2.push_back(Set_MyPoint(_TT[i].x, _TT[i].y));
-							cvCircle(GrayImage, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(255, 255, 255));
-						}
-
-						_TLineCount++;
-
-						// 위의 조건을 통과 하였으면 경계가 되는 면 다음의 grayscale을 적용해준다
-
-						if (i % 2 == 0)
-							_TChangeFlagLineT2 = !change_flag_t;
+						if (i % 2 == 1)
+							_TJumpCountP = JumpCount;
 						else
-							_TChangeFlagLineT3 = !change_flag_t;
+							_TJumpCountM = JumpCount;	
 					}
+				}
+			}
 
-					// 경계점을 찾으면 최소한의 범위는 탐색할 필요가 없기 때문에 넘겨준다
+			// 경계선을 9개 다 찾으면 더 이상 찾을 필요가 없으므로 캔슬한다.
+			if (_TLineCount == 9) {
+				break;
+			}
+		}
 
-					if (i % 2 == 1)
-						_TJumpCountP = JumpCount;
-					else
-						_TJumpCountM = JumpCount;	
+		// 점들 사이의 거리가 일정부분이상 떨어져있어야 적합한 라인이라고 인식한다.
+		// 35px ~ 50px
+		// 단 경계점이 두개 이상 탐색이 된 상태여야 하기 때문에 조건을 걸어준다.
+		int SumFlag = true;
+		int _TT_in1_avg = 0, _TT_in2_avg = 0;
+
+		if (XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)) {
+			for (register int i = 0; i < _TT_in1.size() - 1; i++) {
+				// _TT는 각 라인의 중심에서 양쪽으로 뻗어나가며 찾은 경계점들이 순차적으로 push가 되어있으므로 자신과 그 이후에 탐색된 점과 비교를 한다
+				if (abs(_TT_in1[i].x - _TT_in1[i + 1].x) < 30 || abs(_TT_in1[i].x - _TT_in1[i + 1].x) > 50) {
+					SumFlag = false;
+				}
+			}
+			for (register int i = 0; i < _TT_in2.size() - 1; i++) {
+				if (abs(_TT_in2[i].x - _TT_in2[i + 1].x) < 30 || abs(_TT_in2[i].x - _TT_in2[i + 1].x) > 50) {
+					SumFlag = false;
+				}
+			}
+			if (abs(_TT_in1[0].x - _TT_in2[0].x) < 30 || abs(_TT_in1[0].x - _TT_in2[0].x) > 50) {
+				SumFlag = false;
+			}
+		}
+		else if (!XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)) {
+			for (register int i = 0; i < _TT_in1.size() - 1; i++) {
+				if (abs(_TT_in1[i].y - _TT_in1[i + 1].y) < 30 || abs(_TT_in1[i].y - _TT_in1[i + 1].y) > 50) {
+					SumFlag = false;
+				}
+			}
+			for (register int i = 0; i <_TT_in2.size() - 1; i++) {
+				if (abs(_TT_in2[i].y - _TT_in2[i + 1].y) < 30 || abs(_TT_in2[i].y - _TT_in2[i + 1].y) > 50) {
+					SumFlag = false;
+				}
+			}
+			if (abs(_TT_in1[0].y - _TT_in2[0].y) < 30 || abs(_TT_in1[0].y - _TT_in2[0].y) > 50) {
+				SumFlag = false;
+			}
+		}
+
+		// 교점 기울기 강제값 제어 부분.
+		if (XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)) {
+			_TT_in1_avg += abs(_TT_in1[0].x - _TT_in2[0].x);
+			_TT_in2_avg -= abs(_TT_in1[0].x - _TT_in2[0].x);
+
+			for (register int i = 0; i < _TT_in1.size() - 1; i++) {
+				if (_TT_in1_avg != 0 && abs(_TT_in1_avg - abs(_TT_in1[i].x - _TT_in1[i + 1].x)) > 5) {
+					_TT_in1[i + 1].x = _TT_in1[i].x + _TT_in1_avg;
+				}
+				else if (_TT_in1_avg == 0) {
+					_TT_in1_avg += abs(_TT_in1[i].x - _TT_in1[i + 1].x);
+				}
+				else if(_TT_in1_avg != 0) {
+					_TT_in1_avg = abs(_TT_in1[i].x - _TT_in1[i + 1].x) + abs(_TT_in1_avg - abs(_TT_in1[i].x - _TT_in1[i + 1].x));				
+				}
+			}
+			for (register int i = 0; i < _TT_in2.size() - 1; i++) {
+				if (_TT_in2_avg != 0 && abs(_TT_in2_avg - abs(_TT_in2[i].x - _TT_in2[i + 1].x)) > 5) {
+					_TT_in2[i + 1].x = _TT_in2[i].x + _TT_in2_avg;
+				}
+				else if (_TT_in2_avg == 0) {
+					_TT_in2_avg -= abs(_TT_in2[i].x - _TT_in2[i + 1].x);
+				}
+				else if(_TT_in2_avg != 0){
+					_TT_in2_avg = abs(_TT_in2[i].x - _TT_in2[i + 1].x) - abs(_TT_in2_avg - abs(_TT_in2[i].x - _TT_in2[i + 1].x));
 				}
 			}
 		}
+		else if (!XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)) {
+			for (register int i = 0; i < _TT_in1.size() - 1; i++) {
+				if (_TT_in1_avg != 0 && abs(_TT_in1_avg - abs(_TT_in1[i].y - _TT_in1[i + 1].y)) > 15) {
+					_TT_in1[i + 1].y = _TT_in1[i].y + _TT_in1_avg;
+				}
+				else if (_TT_in1_avg == 0) {
+					_TT_in1_avg += abs(_TT_in1[i].y - _TT_in1[i + 1].y);
+				}
+				else if (_TT_in1_avg != 0) {
+					_TT_in1_avg = abs(_TT_in1[i].y - _TT_in1[i + 1].y) - abs(_TT_in1_avg - abs(_TT_in1[i].y - _TT_in1[i + 1].y));
+				}
+			}
 
-		// 경계선을 9개 다 찾으면 더 이상 찾을 필요가 없으므로 캔슬한다.
-		if (_TLineCount == 9) {
-			break;
-		}
-	}
-
-	// 점들 사이의 거리가 일정부분이상 떨어져있어야 적합한 라인이라고 인식한다.
-	// 35px ~ 50px
-	// 단 경계점이 두개 이상 탐색이 된 상태여야 하기 때문에 조건을 걸어준다.
-	int SumFlag = true;
-	int _TT_in1_avg = 0, _TT_in2_avg = 0;
-
-	if (XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)) {
-		for (register int i = 0; i < _TT_in1.size() - 1; i++) {
-			// _TT는 각 라인의 중심에서 양쪽으로 뻗어나가며 찾은 경계점들이 순차적으로 push가 되어있으므로 자신과 그 이후에 탐색된 점과 비교를 한다
-			if (abs(_TT_in1[i].x - _TT_in1[i + 1].x) < 30 || abs(_TT_in1[i].x - _TT_in1[i + 1].x) > 50) {
-				SumFlag = false;
+			for (register int i = 0; i <_TT_in2.size() - 1; i++) {
+				if (_TT_in2_avg != 0 && abs(_TT_in2_avg - abs(_TT_in2[i].y - _TT_in2[i + 1].y)) > 15) {
+					_TT_in2[i + 1].y = _TT_in2[i].y + _TT_in2_avg;
+				}
+				else if (_TT_in2_avg == 0) {
+					_TT_in2_avg -= abs(_TT_in2[i].y - _TT_in2[i + 1].y);
+				}
+				else if(_TT_in2_avg != 0){
+					_TT_in2_avg = abs(_TT_in2[i].y - _TT_in2[i + 1].y) + abs(_TT_in2_avg - abs(_TT_in2[i].y - _TT_in2[i + 1].y));
+				}
 			}
 		}
-		for (register int i = 0; i < _TT_in2.size() - 1; i++) {
-			if (abs(_TT_in2[i].x - _TT_in2[i + 1].x) < 30 || abs(_TT_in2[i].x - _TT_in2[i + 1].x) > 50) {
-				SumFlag = false;
-			}
-		}
-		if (abs(_TT_in1[0].x - _TT_in2[0].x) < 30 || abs(_TT_in1[0].x - _TT_in2[0].x) > 50) {
-			SumFlag = false;
-		}
-	}
-	else if (!XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)) {
-		for (register int i = 0; i < _TT_in1.size() - 1; i++) {
-			if (abs(_TT_in1[i].y - _TT_in1[i + 1].y) < 30 || abs(_TT_in1[i].y - _TT_in1[i + 1].y) > 50) {
-				SumFlag = false;
-			}
-		}
-		for (register int i = 0; i <_TT_in2.size() - 1; i++) {
-			if (abs(_TT_in2[i].y - _TT_in2[i + 1].y) < 30 || abs(_TT_in2[i].y - _TT_in2[i + 1].y) > 50) {
-				SumFlag = false;
-			}
-		}
-		if (abs(_TT_in1[0].y - _TT_in2[0].y) < 30 || abs(_TT_in1[0].y - _TT_in2[0].y) > 50) {
-			SumFlag = false;
-		}
-	}
-
-	// 교점 기울기 강제값 제어 부분.
-	if (XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)) {
-		_TT_in1_avg += abs(_TT_in1[0].x - _TT_in2[0].x);
-		_TT_in2_avg -= abs(_TT_in1[0].x - _TT_in2[0].x);
-
-		for (register int i = 0; i < _TT_in1.size() - 1; i++) {
-			if (_TT_in1_avg != 0 && abs(_TT_in1_avg - abs(_TT_in1[i].x - _TT_in1[i + 1].x)) > 5) {
-				_TT_in1[i + 1].x = _TT_in1[i].x + _TT_in1_avg;
-			}
-			else if (_TT_in1_avg == 0) {
-				_TT_in1_avg += abs(_TT_in1[i].x - _TT_in1[i + 1].x);
-			}
-			else if(_TT_in1_avg != 0) {
-				_TT_in1_avg = abs(_TT_in1[i].x - _TT_in1[i + 1].x) + abs(_TT_in1_avg - abs(_TT_in1[i].x - _TT_in1[i + 1].x));				
-			}
-		}
-		for (register int i = 0; i < _TT_in2.size() - 1; i++) {
-			if (_TT_in2_avg != 0 && abs(_TT_in2_avg - abs(_TT_in2[i].x - _TT_in2[i + 1].x)) > 5) {
-				_TT_in2[i + 1].x = _TT_in2[i].x + _TT_in2_avg;
-			}
-			else if (_TT_in2_avg == 0) {
-				_TT_in2_avg -= abs(_TT_in2[i].x - _TT_in2[i + 1].x);
-			}
-			else if(_TT_in2_avg != 0){
-				_TT_in2_avg = abs(_TT_in2[i].x - _TT_in2[i + 1].x) - abs(_TT_in2_avg - abs(_TT_in2[i].x - _TT_in2[i + 1].x));
-			}
-		}
-	}
-	else if (!XYFlag && (_TT_in1.size() >= 2 && _TT_in2.size() >= 2)) {
-		for (register int i = 0; i < _TT_in1.size() - 1; i++) {
-			if (_TT_in1_avg != 0 && abs(_TT_in1_avg - abs(_TT_in1[i].y - _TT_in1[i + 1].y)) > 15) {
-				_TT_in1[i + 1].y = _TT_in1[i].y + _TT_in1_avg;
-			}
-			else if (_TT_in1_avg == 0) {
-				_TT_in1_avg += abs(_TT_in1[i].y - _TT_in1[i + 1].y);
-			}
-			else if (_TT_in1_avg != 0) {
-				_TT_in1_avg = abs(_TT_in1[i].y - _TT_in1[i + 1].y) - abs(_TT_in1_avg - abs(_TT_in1[i].y - _TT_in1[i + 1].y));
-			}
-		}
-
-		for (register int i = 0; i <_TT_in2.size() - 1; i++) {
-			if (_TT_in2_avg != 0 && abs(_TT_in2_avg - abs(_TT_in2[i].y - _TT_in2[i + 1].y)) > 15) {
-				_TT_in2[i + 1].y = _TT_in2[i].y + _TT_in2_avg;
-			}
-			else if (_TT_in2_avg == 0) {
-				_TT_in2_avg -= abs(_TT_in2[i].y - _TT_in2[i + 1].y);
-			}
-			else if(_TT_in2_avg != 0){
-				_TT_in2_avg = abs(_TT_in2[i].y - _TT_in2[i + 1].y) + abs(_TT_in2_avg - abs(_TT_in2[i].y - _TT_in2[i + 1].y));
-			}
-		}
-	}
 	
-	// 만약 위의 조건에 벗어나는 경계점을 찾지 않았을 경우 return 해주는 in_line_point 변수에 합하여 return 해준다.
-	if (SumFlag) {
-		if (_TT_in1.size() != 0) {
-			for (register int i = 0; i < _TT_in1.size(); i++)
-				InLinePoint->push_back(_TT_in1[i]);
+		// 만약 위의 조건에 벗어나는 경계점을 찾지 않았을 경우 return 해주는 in_line_point 변수에 합하여 return 해준다.
+		if (SumFlag) {
+			if (_TT_in1.size() != 0) {
+				for (register int i = 0; i < _TT_in1.size(); i++)
+					InLinePoint->push_back(_TT_in1[i]);
+			}
+			if (_TT_in2.size() != 0) {
+				for (register int i = 0; i < _TT_in2.size(); i++)
+					InLinePoint->push_back(_TT_in2[i]);
+			}
 		}
-		if (_TT_in2.size() != 0) {
-			for (register int i = 0; i < _TT_in2.size(); i++)
-				InLinePoint->push_back(_TT_in2[i]);
-		}
-	}
+	}catch(cv::Exception& e){
+		
+		printf("Get_SideLinesAtGrayScale function error");
+
+		return;
+}
 }
 
 void LineSearchBased::Get_TrueLines(vector<MyPoint> in_line_point1, vector<MyPoint> in_line_point2, vector<MyPoint> *Ture_in_line_point) {

@@ -39,21 +39,27 @@ ChessRecognition::~ChessRecognition() {
 
 #pragma region Private Functions
 void ChessRecognition::DrawPoints(IplImage *Source, vector<ChessPoint> Point) {
-	if (_EnableThread != false) {
-		// src image에 chessboard의 교점과 각 교점의 index를 표기.
-		char buf[32];
+	try{
+		if (_EnableThread != false) {
+			// src image에 chessboard의 교점과 각 교점의 index를 표기.
+			char buf[32];
 
-		// display the points in an image 
-		for (register int i = 0; i < Point.size(); i++) {
-			cvCircle(Source, Point.at(i).Cordinate, 4, cvScalar(0, 255), 1);
-			sprintf(buf, "(%d,%d)", Point.at(i).Index.x, Point.at(i).Index.y);
-			CvFont _TCvFont = cvFont(1.0);
-			cvPutText(Source, buf, Point.at(i).Cordinate, &_TCvFont, cvScalar(255, 0, 0));
+			// display the points in an image 
+			for (register int i = 0; i < Point.size(); i++) {
+				cvCircle(Source, Point.at(i).Cordinate, 4, cvScalar(0, 255), 1);
+				sprintf(buf, "(%d,%d)", Point.at(i).Index.x, Point.at(i).Index.y);
+				CvFont _TCvFont = cvFont(1.0);
+				cvPutText(Source, buf, Point.at(i).Cordinate, &_TCvFont, cvScalar(255, 0, 0));
+			}
 		}
-	}
-	else {
-		// Not Initialize.
-		// Not Enabled Thread.
+		else {
+			// Not Initialize.
+			// Not Enabled Thread.
+		}
+	}catch(cv::Exception& e){
+		printf("DrawPoints Function error");
+
+		return;
 	}
 }
 
