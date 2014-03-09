@@ -311,10 +311,15 @@ void ChessRecognition::Initialize_ChessRecognition(int Width, int Height, int Mo
 	// 관심영역의 width와 height를 입력받고, ChessRecogniton mode를 설정함. 현재 모드 1,2 제공
 	_EnableThread = true;
 
-	// 내부 연산에 사용되는 이미지.
-	_ChessBoardDetectionInternalImage = cvCreateImage(cvSize(Width, Height), IPL_DEPTH_8U, 1);
-	cvZero(_ChessBoardDetectionInternalImage);
-
+	try {
+		// 내부 연산에 사용되는 이미지.
+		_ChessBoardDetectionInternalImage = cvCreateImage(cvSize(Width, Height), IPL_DEPTH_8U, 1);
+		cvZero(_ChessBoardDetectionInternalImage);
+	}
+	catch (cv::Exception& e) {
+		printf("Initialize_ChessRecognition Function error");
+	}
+	
 	_MODE = Mode;
 	_Width = Width;
 	_Height = Height;
