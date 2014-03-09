@@ -37,116 +37,134 @@ BlobLabeling::~BlobLabeling() {
 
 #pragma region Private Functions
 void BlobLabeling::Initialize_VisitPoint(int nWidth, int nHeight) {
-	_VisitPoint = new Visited[nWidth * nHeight];
+	try {
+		_VisitPoint = new Visited[nWidth * nHeight];
 
-	for(int nY = 0; nY < nHeight; nY++) {
-		for(int nX = 0; nX < nWidth; nX++) {
-			_VisitPoint[(nY * nWidth) + nX].bVisitedFlag = false;
-			_VisitPoint[(nY * nWidth) + nX].ptReturnPoint.x	= nX;
-			_VisitPoint[(nY * nWidth) + nX].ptReturnPoint.y	= nY;
+		for (int nY = 0; nY < nHeight; nY++) {
+			for (int nX = 0; nX < nWidth; nX++) {
+				_VisitPoint[(nY * nWidth) + nX].bVisitedFlag = false;
+				_VisitPoint[(nY * nWidth) + nX].ptReturnPoint.x = nX;
+				_VisitPoint[(nY * nWidth) + nX].ptReturnPoint.y = nY;
+			}
 		}
+	}
+	catch (cv::Exception& e) {
+		printf("Initialize_VisitPoint function error.\ncv Exception : ", e.what());
 	}
 }
 
 void BlobLabeling::DeletevPoint() {
-	delete _VisitPoint;
+	try {
+		delete _VisitPoint;
+	}
+	catch (cv::Exception& e) {
+		printf("DeletevPoint function error.\ncv Exception : ", e.what());
+	}
+	catch (const std::out_of_range& oor) {
+		std::cerr << "DeletevPoint function Out of Range error: " << oor.what() << '\n';
+	}
 }
 
 int BlobLabeling::NRFIndNeighbor(unsigned char *DataBuf, int nWidth, int nHeight, int nPosX, int nPosY, int *StartX, int *StartY, int *EndX, int *EndY) {
-	// Blob Labeling을 실제 행하는 function.
-	// 2000년 정보처리학회에 실린 논문 참조.
-	CvPoint _TCurrentPoint;
+	try {
+		// Blob Labeling을 실제 행하는 function.
+		// 2000년 정보처리학회에 실린 논문 참조.
+		CvPoint _TCurrentPoint;
 
-	_TCurrentPoint.x = nPosX;
-	_TCurrentPoint.y = nPosY;
+		_TCurrentPoint.x = nPosX;
+		_TCurrentPoint.y = nPosY;
 
-	_VisitPoint[(_TCurrentPoint.y * nWidth) +  _TCurrentPoint.x].bVisitedFlag = true;
-	_VisitPoint[(_TCurrentPoint.y * nWidth) +  _TCurrentPoint.x].ptReturnPoint.x = nPosX;
-	_VisitPoint[(_TCurrentPoint.y * nWidth) +  _TCurrentPoint.x].ptReturnPoint.y = nPosY;
+		_VisitPoint[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x].bVisitedFlag = true;
+		_VisitPoint[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x].ptReturnPoint.x = nPosX;
+		_VisitPoint[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x].ptReturnPoint.y = nPosY;
 
-	while (1) {
-		// -X 방향
-		if ((_TCurrentPoint.x != 0) && (DataBuf[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x - 1] == 255)) {
-			if (_VisitPoint[(_TCurrentPoint.y * nWidth) +  _TCurrentPoint.x - 1].bVisitedFlag == false) {
-				DataBuf[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x - 1] = DataBuf[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x];	// If so, mark it
-				_VisitPoint[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x - 1].bVisitedFlag = true;
-				_VisitPoint[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x - 1].ptReturnPoint	= _TCurrentPoint;
-				_TCurrentPoint.x--;
+		while (1) {
+			// -X 방향
+			if ((_TCurrentPoint.x != 0) && (DataBuf[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x - 1] == 255)) {
+				if (_VisitPoint[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x - 1].bVisitedFlag == false) {
+					DataBuf[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x - 1] = DataBuf[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x];	// If so, mark it
+					_VisitPoint[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x - 1].bVisitedFlag = true;
+					_VisitPoint[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x - 1].ptReturnPoint = _TCurrentPoint;
+					_TCurrentPoint.x--;
 
-				if (_TCurrentPoint.x <= 0)
-					_TCurrentPoint.x = 0;
+					if (_TCurrentPoint.x <= 0)
+						_TCurrentPoint.x = 0;
 
-				if (*StartX >= _TCurrentPoint.x)
-					*StartX = _TCurrentPoint.x;
+					if (*StartX >= _TCurrentPoint.x)
+						*StartX = _TCurrentPoint.x;
 
-				continue;
+					continue;
+				}
 			}
-		}
 
-		// -X 방향
-		if ((_TCurrentPoint.x != nWidth - 1) && (DataBuf[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x + 1] == 255)) {
-			if (_VisitPoint[(_TCurrentPoint.y * nWidth) +  _TCurrentPoint.x + 1].bVisitedFlag == false) {
+			// -X 방향
+			if ((_TCurrentPoint.x != nWidth - 1) && (DataBuf[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x + 1] == 255)) {
+				if (_VisitPoint[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x + 1].bVisitedFlag == false) {
 
-				DataBuf[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x + 1]	= DataBuf[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x];	// If so, mark it
-				_VisitPoint[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x + 1].bVisitedFlag	= true;
-				_VisitPoint[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x + 1].ptReturnPoint	= _TCurrentPoint;
-				_TCurrentPoint.x++;
+					DataBuf[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x + 1] = DataBuf[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x];	// If so, mark it
+					_VisitPoint[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x + 1].bVisitedFlag = true;
+					_VisitPoint[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x + 1].ptReturnPoint = _TCurrentPoint;
+					_TCurrentPoint.x++;
 
-				if (_TCurrentPoint.x >= nWidth - 1)
-					_TCurrentPoint.x = nWidth - 1;
+					if (_TCurrentPoint.x >= nWidth - 1)
+						_TCurrentPoint.x = nWidth - 1;
 
-				if (*EndX <= _TCurrentPoint.x)
-					*EndX = _TCurrentPoint.x;
+					if (*EndX <= _TCurrentPoint.x)
+						*EndX = _TCurrentPoint.x;
 
-				continue;
+					continue;
+				}
 			}
-		}
 
-		// -X 방향
-		if ((_TCurrentPoint.y != 0) && (DataBuf[((_TCurrentPoint.y - 1) * nWidth) + _TCurrentPoint.x] == 255)) {
-			if (_VisitPoint[((_TCurrentPoint.y - 1) * nWidth) +  _TCurrentPoint.x].bVisitedFlag == false) {
-				DataBuf[((_TCurrentPoint.y - 1) * nWidth) + _TCurrentPoint.x] = DataBuf[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x];	// If so, mark it
-				_VisitPoint[((_TCurrentPoint.y - 1) * nWidth) + _TCurrentPoint.x].bVisitedFlag = true;
-				_VisitPoint[((_TCurrentPoint.y - 1) * nWidth) + _TCurrentPoint.x].ptReturnPoint = _TCurrentPoint;
-				_TCurrentPoint.y--;
+			// -X 방향
+			if ((_TCurrentPoint.y != 0) && (DataBuf[((_TCurrentPoint.y - 1) * nWidth) + _TCurrentPoint.x] == 255)) {
+				if (_VisitPoint[((_TCurrentPoint.y - 1) * nWidth) + _TCurrentPoint.x].bVisitedFlag == false) {
+					DataBuf[((_TCurrentPoint.y - 1) * nWidth) + _TCurrentPoint.x] = DataBuf[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x];	// If so, mark it
+					_VisitPoint[((_TCurrentPoint.y - 1) * nWidth) + _TCurrentPoint.x].bVisitedFlag = true;
+					_VisitPoint[((_TCurrentPoint.y - 1) * nWidth) + _TCurrentPoint.x].ptReturnPoint = _TCurrentPoint;
+					_TCurrentPoint.y--;
 
-				if(_TCurrentPoint.y <= 0)
-					_TCurrentPoint.y = 0;
+					if (_TCurrentPoint.y <= 0)
+						_TCurrentPoint.y = 0;
 
-				if(*StartY >= _TCurrentPoint.y)
-					*StartY = _TCurrentPoint.y;
+					if (*StartY >= _TCurrentPoint.y)
+						*StartY = _TCurrentPoint.y;
 
-				continue;
+					continue;
+				}
 			}
-		}
 
-		// -X 방향
-		if ((_TCurrentPoint.y != nHeight - 1) && (DataBuf[((_TCurrentPoint.y + 1) * nWidth) + _TCurrentPoint.x] == 255)) {
-			if (_VisitPoint[((_TCurrentPoint.y + 1) * nWidth) +  _TCurrentPoint.x].bVisitedFlag == false) {
-				DataBuf[((_TCurrentPoint.y + 1) * nWidth) + _TCurrentPoint.x] = DataBuf[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x];	// If so, mark it
-				_VisitPoint[((_TCurrentPoint.y + 1) * nWidth) +  _TCurrentPoint.x].bVisitedFlag	= true;
-				_VisitPoint[((_TCurrentPoint.y + 1) * nWidth) +  _TCurrentPoint.x].ptReturnPoint = _TCurrentPoint;
-				_TCurrentPoint.y++;
+			// -X 방향
+			if ((_TCurrentPoint.y != nHeight - 1) && (DataBuf[((_TCurrentPoint.y + 1) * nWidth) + _TCurrentPoint.x] == 255)) {
+				if (_VisitPoint[((_TCurrentPoint.y + 1) * nWidth) + _TCurrentPoint.x].bVisitedFlag == false) {
+					DataBuf[((_TCurrentPoint.y + 1) * nWidth) + _TCurrentPoint.x] = DataBuf[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x];	// If so, mark it
+					_VisitPoint[((_TCurrentPoint.y + 1) * nWidth) + _TCurrentPoint.x].bVisitedFlag = true;
+					_VisitPoint[((_TCurrentPoint.y + 1) * nWidth) + _TCurrentPoint.x].ptReturnPoint = _TCurrentPoint;
+					_TCurrentPoint.y++;
 
-				if (_TCurrentPoint.y >= nHeight - 1)
-					_TCurrentPoint.y = nHeight - 1;
+					if (_TCurrentPoint.y >= nHeight - 1)
+						_TCurrentPoint.y = nHeight - 1;
 
-				if (*EndY <= _TCurrentPoint.y)
-					*EndY = _TCurrentPoint.y;
+					if (*EndY <= _TCurrentPoint.y)
+						*EndY = _TCurrentPoint.y;
 
-				continue;
+					continue;
+				}
 			}
-		}
 
-		if ((_TCurrentPoint.x == _VisitPoint[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x].ptReturnPoint.x) 
-			&& (_TCurrentPoint.y == _VisitPoint[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x].ptReturnPoint.y)) {
+			if ((_TCurrentPoint.x == _VisitPoint[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x].ptReturnPoint.x)
+				&& (_TCurrentPoint.y == _VisitPoint[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x].ptReturnPoint.y)) {
 				break;
-		}
-		else {
-			_TCurrentPoint = _VisitPoint[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x].ptReturnPoint;
+			}
+			else {
+				_TCurrentPoint = _VisitPoint[(_TCurrentPoint.y * nWidth) + _TCurrentPoint.x].ptReturnPoint;
+			}
 		}
 	}
-
+	catch (cv::Exception& e) {
+		printf("NRFIndNeighbor function error.\ncv Exception : ", e.what());
+	}
+	
 	return 0;
 }
 
@@ -206,15 +224,17 @@ int BlobLabeling::LabelingActivate(IplImage *image, int nThreshold) {
 	if (image->nChannels != 1)
 		return 0;
 
-	int _TNumber;
-	int _TWidth = image->width;
-	int _THeight = image->height;
+	try {
+		int _TNumber;
+		int _TWidth = image->width;
+		int _THeight = image->height;
 
-	unsigned char *_TBuffer = new unsigned char[_TWidth * _THeight];
+		unsigned char *_TBuffer = new unsigned char[_TWidth * _THeight];
 
-	for (register int j = 0; j < _THeight; j++)
-		for (register int i = 0; i < _TWidth; i++) {
-			_TBuffer[(j * _TWidth) + i] = (unsigned char)image->imageData[(j * image->widthStep) + i];
+		for (register int j = 0; j < _THeight; j++) {
+			for (register int i = 0; i < _TWidth; i++) {
+				_TBuffer[(j * _TWidth) + i] = (unsigned char)image->imageData[(j * image->widthStep) + i];
+			}
 		}
 
 		// 레이블링을 위한 포인트 초기화
@@ -232,14 +252,21 @@ int BlobLabeling::LabelingActivate(IplImage *image, int nThreshold) {
 		if (_TNumber != 0)
 			DetectLabelingRegion(_TNumber, _TBuffer, _TWidth, _THeight);
 
-		for (register int j = 0; j < _THeight; j++)
+		for (register int j = 0; j < _THeight; j++) {
 			for (register int i = 0; i < _TWidth; i++) {
-
 				image->imageData[(j * image->widthStep) + i] = _TBuffer[(j * _TWidth) + i];
 			}
+		}
 
-			delete _TBuffer;
-			return _TNumber;
+		delete _TBuffer;
+		return _TNumber;
+	}
+	catch (cv::Exception& e) {
+		printf("LabelingActivate function error.\ncv Exception : ", e.what());
+	}
+	catch (const std::out_of_range& oor) {
+		std::cerr << "LabelingActivate function Out of Range error: " << oor.what() << '\n';
+	}
 }
 
 void BlobLabeling::DetectLabelingRegion(int nLabelNumber, unsigned char *DataBuf, int nWidth, int nHeight) {
@@ -247,131 +274,153 @@ void BlobLabeling::DetectLabelingRegion(int nLabelNumber, unsigned char *DataBuf
 	int _TLabelIndex;
 	bool _TFirstFlag[255] = {false, };
 
-	for (register int nY = 1; nY < nHeight - 1; nY++) {
-		for (register int nX = 1; nX < nWidth - 1; nX++) {
-			_TLabelIndex = DataBuf[(nY * nWidth) + nX];
+	try {
+		for (register int nY = 1; nY < nHeight - 1; nY++) {
+			for (register int nX = 1; nX < nWidth - 1; nX++) {
+				_TLabelIndex = DataBuf[(nY * nWidth) + nX];
 
-			// Is this a new component?, 255 == Object
-			if (_TLabelIndex != 0) {
-				if (_TFirstFlag[_TLabelIndex] == false) {
-					_LabelingInfomation[_TLabelIndex - 1].x	= nX;
-					_LabelingInfomation[_TLabelIndex - 1].y	= nY;
-					_LabelingInfomation[_TLabelIndex - 1].width	= 0;
-					_LabelingInfomation[_TLabelIndex - 1].height = 0;
+				// Is this a new component?, 255 == Object
+				if (_TLabelIndex != 0) {
+					if (_TFirstFlag[_TLabelIndex] == false) {
+						_LabelingInfomation[_TLabelIndex - 1].x = nX;
+						_LabelingInfomation[_TLabelIndex - 1].y = nY;
+						_LabelingInfomation[_TLabelIndex - 1].width = 0;
+						_LabelingInfomation[_TLabelIndex - 1].height = 0;
 
-					_TFirstFlag[_TLabelIndex] = true;
-				}
-				else {
-					int _TLeft = _LabelingInfomation[_TLabelIndex - 1].x;
-					int _TRight	= _TLeft + _LabelingInfomation[_TLabelIndex - 1].width;
-					int _TTop	= _LabelingInfomation[_TLabelIndex - 1].y;
-					int _TBottom = _TTop + _LabelingInfomation[_TLabelIndex - 1].height;
+						_TFirstFlag[_TLabelIndex] = true;
+					}
+					else {
+						int _TLeft = _LabelingInfomation[_TLabelIndex - 1].x;
+						int _TRight = _TLeft + _LabelingInfomation[_TLabelIndex - 1].width;
+						int _TTop = _LabelingInfomation[_TLabelIndex - 1].y;
+						int _TBottom = _TTop + _LabelingInfomation[_TLabelIndex - 1].height;
 
-					if (_TLeft >= nX) _TLeft = nX;
-					if (_TRight <= nX) _TRight = nX;
-					if (_TTop >= nY) _TTop = nY;
-					if (_TBottom <= nY) _TBottom = nY;
+						if (_TLeft >= nX) _TLeft = nX;
+						if (_TRight <= nX) _TRight = nX;
+						if (_TTop >= nY) _TTop = nY;
+						if (_TBottom <= nY) _TBottom = nY;
 
-					_LabelingInfomation[_TLabelIndex - 1].x = _TLeft;
-					_LabelingInfomation[_TLabelIndex - 1].y	= _TTop;
-					_LabelingInfomation[_TLabelIndex - 1].width = _TRight - _TLeft;
-					_LabelingInfomation[_TLabelIndex - 1].height = _TBottom - _TTop;
+						_LabelingInfomation[_TLabelIndex - 1].x = _TLeft;
+						_LabelingInfomation[_TLabelIndex - 1].y = _TTop;
+						_LabelingInfomation[_TLabelIndex - 1].width = _TRight - _TLeft;
+						_LabelingInfomation[_TLabelIndex - 1].height = _TBottom - _TTop;
+					}
 				}
 			}
 		}
+	}
+	catch (const std::out_of_range& oor) {
+		std::cerr << "DetectLabelingRegion function Out of Range error: " << oor.what() << '\n';
 	}
 }
 #pragma endregion Private Functions
 
 #pragma region Pubilc Functions
 void BlobLabeling::Get_SideBlob(IplImage *TargetImage, std::vector<int> *PieceIndex, IplImage *OtherImage) {
-	if (_IsInitialized == true) {
-		int _TIndex = 0;
+	try {
+		if (_IsInitialized == true) {
+			int _TIndex = 0;
 
-		PieceIndex->clear();
-		cvZero(OtherImage);
+			PieceIndex->clear();
+			cvZero(OtherImage);
 
-		for (register int i = 0; i < _LabelingQty; i++) {
-			CvRect _TTempRect = _LabelingInfomation[i];
-			_TTempRect.width++;
-			_TTempRect.height++;
+			for (register int i = 0; i < _LabelingQty; i++) {
+				CvRect _TTempRect = _LabelingInfomation[i];
+				_TTempRect.width++;
+				_TTempRect.height++;
 
-			if (_TTempRect.x == 1) {
-				_TIndex = i;
-				continue;
-			}
-			else if (_TTempRect.y == 1) {
-				_TIndex = i;
-				continue;
-			}
-			else if (_TTempRect.x + _TTempRect.width >= _ROI_Width - 1) {
-				_TIndex = i;
-				continue;
-			}
-			else if (_TTempRect.y + _TTempRect.height >= _ROI_Height - 1) {
-				_TIndex = i;
-				continue;
-			}
-			else {    //지우기
-				/*for(int j = 0; j < temp.width; j++)
-					for(int k = 0; k < temp.height; k++){
-						unsigned char pixel = (unsigned char)img->imageData[(temp.x + j) + (temp.y + k) * img->widthStep];
-						if(pixel != 0)
-							img->imageData[(temp.x + j) + (temp.y + k) * img->widthStep] = 255;
-					}*/
-				cvSetImageROI(TargetImage, _TTempRect);
-				cvSetImageROI(OtherImage, _TTempRect);
-				cvCopy(TargetImage, OtherImage);
-				cvZero(TargetImage);
-				cvResetImageROI(TargetImage);
-				cvResetImageROI(OtherImage);
-
-				PieceIndex->push_back(i);
-			}
-		}
-
-		for (register int i = 0; i < TargetImage->width; i++) {
-			for (register int j = 0; j < TargetImage->height; j++) {
-				if (_LabelingInfomation[_TIndex].x <= i 
-					&& _LabelingInfomation[_TIndex].x + _LabelingInfomation[_TIndex].width >= i 
-					&& _LabelingInfomation[_TIndex].y <= j
-					&& _LabelingInfomation[_TIndex].y + _LabelingInfomation[_TIndex].height >= j)
+				if (_TTempRect.x == 1) {
+					_TIndex = i;
 					continue;
-				else {
-					TargetImage->imageData[i + (j * TargetImage->widthStep)];
+				}
+				else if (_TTempRect.y == 1) {
+					_TIndex = i;
+					continue;
+				}
+				else if (_TTempRect.x + _TTempRect.width >= _ROI_Width - 1) {
+					_TIndex = i;
+					continue;
+				}
+				else if (_TTempRect.y + _TTempRect.height >= _ROI_Height - 1) {
+					_TIndex = i;
+					continue;
+				}
+				else {    //지우기
+					/*for(int j = 0; j < temp.width; j++)
+					for(int k = 0; k < temp.height; k++){
+					unsigned char pixel = (unsigned char)img->imageData[(temp.x + j) + (temp.y + k) * img->widthStep];
+					if(pixel != 0)
+					img->imageData[(temp.x + j) + (temp.y + k) * img->widthStep] = 255;
+					}*/
+					cvSetImageROI(TargetImage, _TTempRect);
+					cvSetImageROI(OtherImage, _TTempRect);
+					cvCopy(TargetImage, OtherImage);
+					cvZero(TargetImage);
+					cvResetImageROI(TargetImage);
+					cvResetImageROI(OtherImage);
+
+					PieceIndex->push_back(i);
+				}
+			}
+
+			for (register int i = 0; i < TargetImage->width; i++) {
+				for (register int j = 0; j < TargetImage->height; j++) {
+					if (_LabelingInfomation[_TIndex].x <= i
+						&& _LabelingInfomation[_TIndex].x + _LabelingInfomation[_TIndex].width >= i
+						&& _LabelingInfomation[_TIndex].y <= j
+						&& _LabelingInfomation[_TIndex].y + _LabelingInfomation[_TIndex].height >= j)
+						continue;
+					else {
+						TargetImage->imageData[i + (j * TargetImage->widthStep)];
+					}
 				}
 			}
 		}
 	}
-	
+	catch (cv::Exception& e) {
+		printf("Get_SideBlob function error.\ncv Exception : ", e.what());
+	}
+	catch (const std::out_of_range& oor) {
+		std::cerr << "Get_SideBlob function Out of Range error: " << oor.what() << '\n';
+	}
 }
 
 void BlobLabeling::Set_Parameter(IplImage *TargetImage, int Threshold) {
-	if (_IsInitialized == true) {
-		if (_LabelingInfomation != NULL) {
-			delete _LabelingInfomation;
+	try {
+		if (_IsInitialized == true) {
+			if (_LabelingInfomation != NULL) {
+				delete _LabelingInfomation;
 
-			_LabelingInfomation = NULL;
-			_LabelingQty = _DEF_MAX_BLOBS;
+				_LabelingInfomation = NULL;
+				_LabelingQty = _DEF_MAX_BLOBS;
+			}
+
+			if (_LabelingImage != NULL)
+				cvReleaseImage(&_LabelingImage);
+
+			_LabelingImage = cvCloneImage(TargetImage);
+
+			_LabelingThreshold = Threshold;
 		}
-
-		if (_LabelingImage != NULL)
-			cvReleaseImage(&_LabelingImage);
-
-		_LabelingImage	= cvCloneImage(TargetImage);
-
-		_LabelingThreshold = Threshold;
+	}
+	catch (cv::Exception& e) {
+		printf("Set_Parameter function error.\ncv Exception : ", e.what());
 	}
 }
 
 void BlobLabeling::DrawLabel(IplImage *Image, CvScalar RGB) {
-	if (_IsInitialized == true) {
-		//printf("n_blobs : %d\n", m_nBlobs);
-		for (register int i = 0; i < _LabelingQty; i++) {
-			//cvDrawCircle(img, cvPoint(m_recBlobs[i].x, m_recBlobs[i].y), 10, RGB);
-			cvDrawRect(Image, cvPoint(_LabelingInfomation[i].x, _LabelingInfomation[i].y),
-				cvPoint(_LabelingInfomation[i].x + _LabelingInfomation[i].width, _LabelingInfomation[i].y + _LabelingInfomation[i].height), RGB);
+	try {
+		if (_IsInitialized == true) {
+			//printf("n_blobs : %d\n", m_nBlobs);
+			for (register int i = 0; i < _LabelingQty; i++) {
+				//cvDrawCircle(img, cvPoint(m_recBlobs[i].x, m_recBlobs[i].y), 10, RGB);
+				cvDrawRect(Image, cvPoint(_LabelingInfomation[i].x, _LabelingInfomation[i].y),
+					cvPoint(_LabelingInfomation[i].x + _LabelingInfomation[i].width, _LabelingInfomation[i].y + _LabelingInfomation[i].height), RGB);
+			}
 		}
+	}
+	catch (cv::Exception& e) {
+		printf("Get_SideBlob function error.\ncv Exception : ", e.what());
 	}
 }
 
