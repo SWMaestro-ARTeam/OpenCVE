@@ -556,10 +556,10 @@ void LineSearchBased::Get_SideLinesAtGrayScale(IplImage *GrayImage, vector<MyGra
 			}
 		}
 	}catch(cv::Exception& e){
-		printf("Get_SideLinesAtGrayScale function error");
-
-		return;
-}
+		printf("Get_SideLinesAtGrayScale Function error");
+	}catch(std::out_of_range& oor){
+		printf("Get_SideLinesAtGrayScale Function out_of_range error");
+	}
 }
 
 void LineSearchBased::Get_TrueLines(vector<MyPoint> in_line_point1, vector<MyPoint> in_line_point2, vector<MyPoint> *Ture_in_line_point) {
@@ -683,8 +683,6 @@ void LineSearchBased::GrayImageBinarization(IplImage *GrayImage) {
 		}
 	}catch(cv::Exception& e){
 		printf("GrayImageBinarization Function error");
-		
-		return;
 	}
 }
 
@@ -850,8 +848,8 @@ void LineSearchBased::ChessLineSearchProcess(IplImage *Source, vector<ChessPoint
 		MemoryClear();
 	}catch(cv::Exception& e){
 		printf("ChessLineSearchProcess Function error");
-
-		return;
+	}catch(std::out_of_range& oor){
+		printf("ChessLineSearchProcess Function out_of_range error");
 	}
 }
 #pragma endregion Public Functions
