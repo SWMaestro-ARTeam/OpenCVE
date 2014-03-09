@@ -131,7 +131,7 @@ float CheckInChessboard::Get_GridPixelvalue(IplImage *gray, CvPoint Headpoint, C
 
 		return (float)	Get_MedianVaul_Inkernel(_kernel);
 	}catch(cv::Exception& e){
-		printf("Get_GridPixelvalue Function error");
+		printf("Get_GridPixelvalue function error.\ncv Exception : ", e.what());
 
 		return NULL;
 	}
@@ -181,7 +181,7 @@ unsigned char CheckInChessboard::Get_MedianRect(IplImage *Gray, CvRect ROI) {
 
 		return return_value;
 	}catch(cv::Exception& e){
-		printf("Get_MedianRect Function error");
+		printf("Get_MedianRect function error.\ncv Exception : ", e.what());
 
 		return NULL;
 	}

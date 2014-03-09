@@ -150,7 +150,7 @@ void HandRecognition::Detect_SkinColour(IplImage *Source, IplImage *Destination)
 		}
 	}
 	catch(cv::Exception& e){
-		printf("Detect_SkinColour Function error");
+		printf("Detect_SkinColour function error.\ncv Exception : ", e.what());
 	}
 }
 
@@ -248,8 +248,8 @@ void HandRecognition::Subtraction_PreviousFrame(IplImage *Source, IplImage *Dest
 		else {
 		}
 	}
-	catch (cv::Exception& e) {
-		printf("Subtraction_PreviousFrame Function error");
+	catch(cv::Exception& e){
+		printf("Subtraction_PreviousFrame function error.\ncv Exception : ", e.what());
 	}
 }
 #pragma endregion Public Functions

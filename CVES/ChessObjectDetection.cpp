@@ -63,7 +63,7 @@ void ChessObjectDetection::Delete_ChessLine(IplImage *Edge, vector<_ChessPoint> 
 		}
 	}
 	catch (cv::Exception& e){
-		printf("Delete_ChessLine function error");
+		printf("Delete_ChessLine function error.\ncv Exception : ", e.what());
 	}
 }
 
@@ -197,7 +197,7 @@ void ChessObjectDetection::Detect_SobelCannyScore(IplImage *Source, vector<_Ches
 		}
 	}
 	catch(cv::Exception& e){
-		printf("Detect_SobelCannyScore Function error");
+		printf("Detect_SobelCannyScore function error.\ncv Exception : ", e.what());
 	}
 	
 }

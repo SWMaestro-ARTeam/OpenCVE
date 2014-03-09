@@ -545,7 +545,7 @@ void LineSearchBased::Get_SideLinesAtGrayScale(IplImage *GrayImage, vector<MyGra
 		}
 	}catch(cv::Exception& e){
 		
-		printf("Get_SideLinesAtGrayScale function error");
+		printf("Get_SideLinesAtGrayScale function error.\ncv Exception : ", e.what());
 
 		return;
 }

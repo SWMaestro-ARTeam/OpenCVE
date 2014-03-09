@@ -411,7 +411,7 @@ CvRect EngineS::Set_ROIRect(int ResolutionWidth, int ResolutionHeight, int ROIWi
 		_TRectResult = cvRect((ResolutionWidth - _TCalculateROIWidth) / 2, (ResolutionHeight - _TCalculateROIHeight) / 2, _TCalculateROIWidth, _TCalculateROIHeight);
 	}
 	catch (cv::Exception& e) {
-		printf("Set_ROIRect Function error");
+		printf("Set_ROIRect function error.\ncv Exception : ", e.what());
 	}
 	
 	return _TRectResult;
@@ -433,7 +433,7 @@ void EngineS::Alloc_CVESImages() {
 		_ImageSub = cvCreateImage(cvSize(_ROIRect.width, _ROIRect.height), IPL_DEPTH_8U, 1);
 	}
 	catch (cv::Exception& e) {
-		printf("Alloc_CVESImages Function error");
+		printf("Alloc_CVESImages function error.\ncv Exception : ", e.what());
 	}
 }
 
@@ -469,7 +469,7 @@ void EngineS::Draw_ROI(IplImage *Source, float FramePerSecond, CvScalar RGB) {
 		cvPutText(Source, _TBuffer, cvPoint(30, 30), &_TCvFont, cvScalar(0, 0, 255));
 	}
 	catch (cv::Exception &e) {
-		printf("Draw_ROI Function error");
+		printf("Draw_ROI function error.\ncv Exception : ", e.what());
 	}
 }
 
@@ -481,7 +481,7 @@ void EngineS::InternalImageCraete(int roi_width, int roi_height) {
 		_ImageSub = cvCreateImage(cvSize(roi_width, roi_height), IPL_DEPTH_8U, 1);
 	}
 	catch (cv::Exception& e) {
-		printf("InternalImageCraete Function error");
+		printf("InternalImageCraete function error.\ncv Exception : ", e.what());
 	}
 }
 
@@ -524,7 +524,7 @@ void EngineS::Sub_image(IplImage *Source1, IplImage *Source2, IplImage *Destinat
 		cvReleaseImage(&Lab_src2);
 	}
 	catch (cv::Exception& e) {
-		printf("Sub_image Function error");
+		printf("Sub_image function error.\ncv Exception : ", e.what());
 	}
 }
 
@@ -546,7 +546,7 @@ void EngineS::Compose_diffImage(IplImage *rgb, IplImage *bin, CvScalar RGB) {
 		}
 	}
 	catch (cv::Exception& e) {
-		printf("Compose_diffImage Function error");
+		printf("Compose_diffImage function error.\ncv Exception : ", e.what());
 	}
 }
 
@@ -614,7 +614,7 @@ void EngineS::See() {
 		//cvShowImage("HSV", _CamHSV);
 	}
 	catch (cv::Exception& e) {
-		printf("See Function error");
+		printf("See function error.\ncv Exception : ", e.what());
 	}
 }
 
@@ -682,7 +682,7 @@ void EngineS::Evaluation() {
 		// 구현 예정.
 	}
 	catch (cv::Exception& e) {
-		printf("Evaluation Function error");
+		printf("Evaluation function error.\ncv Exception : ", e.what());
 	}
 }
 
@@ -717,7 +717,7 @@ void EngineS::DisplayInfomation() {
 		_DetectionResultOnlyImageProtectMutex.unlock();
 	}
 	catch (cv::Exception& e) {
-		printf("Evaluation Function error");
+		printf("Evaluation function error.\ncv Exception : ", e.what());
 	}
 }
 
@@ -970,7 +970,7 @@ void *
 			Sleep(10);
 		}
 		catch (cv::Exception& e) {
-			printf("ChessRecognitionProcessingThread Function error");
+			printf("ChessRecognitionProcessingThread function error.\ncv Exception : ", e.what());
 		}
 	}
 	_TEngine_S->ChessRecognitionInitialize = false;
@@ -1115,7 +1115,7 @@ void *
 				}
 			}
 			catch (cv::Exception& e) {
-				printf("HandRecognitionProcessingThread Function error");
+				printf("HandRecognitionProcessingThread function error.\ncv Exception : ", e.what());
 			}
 		}
 		cvWaitKey(33);
@@ -1213,7 +1213,7 @@ IplImage *EngineS::Get_FrameImage() {
 		_DetectionResultOnlyImageProtectMutex.unlock();
 	}
 	catch (cv::Exception& e) {
-		printf("Get_FrameImage Function error");
+		printf("Get_FrameImage function error.\ncv Exception : ", e.what());
 	}
 	
 	return _TFrame;
