@@ -32,7 +32,7 @@
 //#if !defined(USING_QT)
 #include "AdapterS.hpp"
 
-int main(int argc, char* argv[]){
+int main(int argc, char* argv[]) {
 	AdapterS _TAdapterS;
 	return _TAdapterS.Go_EngineS(argc, argv);
 }

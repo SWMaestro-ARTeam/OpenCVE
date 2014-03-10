@@ -39,7 +39,7 @@ ChessRecognition::~ChessRecognition() {
 
 #pragma region Private Functions
 void ChessRecognition::DrawPoints(IplImage *Source, vector<ChessPoint> Point) {
-	try{
+	try {
 		if (_EnableThread != false) {
 			// src image에 chessboard의 교점과 각 교점의 index를 표기.
 			char buf[32];
@@ -56,10 +56,9 @@ void ChessRecognition::DrawPoints(IplImage *Source, vector<ChessPoint> Point) {
 			// Not Initialize.
 			// Not Enabled Thread.
 		}
-	}catch(cv::Exception& e){
+	}
+	catch (cv::Exception& e) {
 		printf("DrawPoints function error.\ncv Exception : ", e.what());
-
-		return;
 	}
 }
 

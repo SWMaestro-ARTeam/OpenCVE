@@ -37,8 +37,8 @@ wchar_t *CodeConverter::CharToWChar(const char *CharStr) {
 #elif defined(POSIX_SYS)
 
 #endif
-	if(_TWStrLength > 0) {
-		_TWStr = (wchar_t*)malloc(sizeof(wchar_t) * (_TWStrLength+1));
+	if (_TWStrLength > 0) {
+		_TWStr = (wchar_t*)malloc(sizeof(wchar_t) * (_TWStrLength + 1));
 #if defined(WINDOWS_SYS)
 		MultiByteToWideChar(CP_ACP, 0, CharStr, _TCharLength, _TWStr, _TWStrLength);
 #elif defined(POSIX_SYS)
@@ -64,8 +64,8 @@ char *CodeConverter::WCharToChar(const wchar_t* WcharStr) {
 #elif defined(POSIX_SYS)
 
 #endif
-	if(_TCharLength > 0) {
-		_TStr = (char*)malloc(sizeof(char) * (_TCharLength+1));
+	if (_TCharLength > 0) {
+		_TStr = (char *)malloc(sizeof(char) * (_TCharLength + 1));
 #if defined(WINDOWS_SYS)
 		WideCharToMultiByte(CP_ACP, 0, WcharStr, _TWStrLength, _TStr, _TCharLength, NULL, FALSE);
 #elif defined(POSIX_SYS)

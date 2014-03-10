@@ -47,7 +47,7 @@ ChessObjectDetection::~ChessObjectDetection() {
 
 void ChessObjectDetection::Delete_ChessLine(IplImage *Edge, vector<_ChessPoint> CrossPoint) {
 	
-	try{
+	try {
 		if (CrossPoint.size() == 0) // 체스보드 인식 좌표가 없다면 return error
 			return;
 
@@ -62,7 +62,7 @@ void ChessObjectDetection::Delete_ChessLine(IplImage *Edge, vector<_ChessPoint> 
 			}
 		}
 	}
-	catch (cv::Exception& e){
+	catch (cv::Exception& e) {
 		printf("Delete_ChessLine function error.\ncv Exception : ", e.what());
 	}
 }
@@ -82,8 +82,8 @@ void ChessObjectDetection::Detect_Movement(float BeforeScore[][8], float AfterSc
 	// 스코어를 면적으로 나눠줘서 비율을 구함.
 	// 가장 비율이 큰 두 좌표를 리턴. -> num 개의 좌표를 리턴
 
-	for (register int i = 0; i < 8; i++){
-		for(register int j = 0; j < 8; j++){
+	for (register int i = 0; i < 8; i++) {
+		for (register int j = 0; j < 8; j++) {
 			_TSubScore[i][j] = fabs(BeforeScore[i][j] - AfterScore[i][j]);
 		}
 	}
@@ -154,10 +154,10 @@ void ChessObjectDetection::Detect_SobelCannyScore(IplImage *Source, vector<_Ches
 
 			cvCvtColor(Source, _TGray, CV_BGR2GRAY);
 			// sobel->canny.
-			for(register int i = 0; i < NUM_GAUSS; i++){
+			for (register int i = 0; i < NUM_GAUSS; i++) {
 				cvSmooth(_TGray, _TGray, CV_MEDIAN);
 			}
-			for(register int i = 0; i < NUM_MEDIAN; i++){
+			for (register int i = 0; i < NUM_MEDIAN; i++) {
 				cvSmooth(_TGray, _TGray, CV_GAUSSIAN);
 			}
 			cvSobel(_TGray, _TSobel, 1, 1, 5);
@@ -196,7 +196,7 @@ void ChessObjectDetection::Detect_SobelCannyScore(IplImage *Source, vector<_Ches
 			cvReleaseImage(&_TAdd_Canny);
 		}
 	}
-	catch(cv::Exception& e){
+	catch (cv::Exception& e) {
 		printf("Detect_SobelCannyScore function error.\ncv Exception : ", e.what());
 	}
 	

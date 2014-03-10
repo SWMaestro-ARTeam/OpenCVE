@@ -154,7 +154,7 @@ void EngineS::Initialize_ImageProcessing() {
 	Alloc_CVESImages();
 }
 
-void EngineS::Deinitialize_ImageProcessing(){
+void EngineS::Deinitialize_ImageProcessing() {
 	//이미지 처리를 보여주기 위한 모든 window 삭제
 	//연결된 Cam Disconnect
 	//연산에 사용된 모든 이미지 할당해제
@@ -656,7 +656,7 @@ void EngineS::Evaluation() {
 			_ponder_exist = false;
 
 			// Check_InvalidMove가 false일 때는 정상움직임, Check_InvalildMove가 true일때는 InvalidMove
-			if (_ChessGame->Check_InvalidMove(_DetectionResultOnlyImage, _CrossPoint, out, 100, 20) == false){
+			if (_ChessGame->Check_InvalidMove(_DetectionResultOnlyImage, _CrossPoint, out, 100, 20) == false) {
 				string _TString = string("Move ").append(string(_ChessGame->Get_RecentMove()));
 				// Game을 하고 있는 Client를 검색한다.
 				// 들어온 Client 중에 알맞은 Client에게 답을 보낸다.
@@ -695,12 +695,12 @@ void EngineS::DisplayInfomation() {
 			? _ChessRecognitionProcessingFrames : _HandRecognitionProcessingFrames
 			, _ROIRectColour);
 
-		if (_ChessGame->Return_errorFlag() == true){
+		if (_ChessGame->Return_errorFlag() == true) {
 			_ChessGame->Draw_InvalidMove(_DetectionResultOnlyImage, _CrossPoint, 100, 20);
 		}
 
 		// 폰더가 있을 경우 초록색 화살표로 도움을 준다.
-		if (_ponder_exist == true){
+		if (_ponder_exist == true) {
 
 			_ChessGame->Draw_Arrow(_DetectionResultOnlyImage, _ponder_before, _ponder_after, 10, 30, cvScalar(0, 255), 3, 8);
 		}
@@ -943,7 +943,7 @@ void *
 					//if (_TEngine_S->_SubCheck != true)
 					_TEngine_S->_ChessRecognition->Find_ChessPoint(_TChessBoardOriginImage, &_TEngine_S->_CrossPoint);
 
-					if (_TEngine_S->_CrossPoint.size() == 81 && first_recognition == false){
+					if (_TEngine_S->_CrossPoint.size() == 81 && first_recognition == false) {
 						// 체스판이 디텍션됬을 때는 색상을 초록색으로 변경한다
 						_TEngine_S->_ROIRectColour = cvScalar(0, 255);
 						first_recognition = true;

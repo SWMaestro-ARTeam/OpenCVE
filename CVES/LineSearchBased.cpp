@@ -39,7 +39,7 @@ LineSearchBased::~LineSearchBased() {
 
 #pragma region Private Functions
 void LineSearchBased::Get_LineAtGrayScale(IplImage *gray_image, int linefindcount_x1, int linefindcount_y1, int linefindcount_x2, int linefindcount_y2, int linefindcount_x11, int linefindcount_y11, int linefindcount_x22, int linefindcount_y22) {
-	try{
+	try {
 		int image_y = gray_image->height, image_x = gray_image->width;
 		int x1, x2, y1, y2, x11, x22, y11, y22;
 
@@ -97,10 +97,9 @@ void LineSearchBased::Get_LineAtGrayScale(IplImage *gray_image, int linefindcoun
 			line_y22.push_back(Set_MyPointAtGrayScale(Get_GrayScale(gray_image, x22, (image_y / 2) + y), x22, (image_y / 2) + y));
 			line_y22.push_back(Set_MyPointAtGrayScale(Get_GrayScale(gray_image, x22, (image_y / 2) - y), x22, (image_y / 2) - y));
 		}
-	}catch(cv::Exception& e){
-		printf("Get_LineAtGrayScale Function error");
-		
-		return;
+	}
+	catch (cv::Exception& e) {
+		printf("Get_LineAtGrayScalefunction error.\ncv Exception : ", e.what());
 	}
 }
 
@@ -266,17 +265,16 @@ void LineSearchBased::Get_InCrossPoint(IplImage *chess_image, vector<ChessPoint>
 }
 
 int LineSearchBased::Get_GrayScale(IplImage *GrayImage, int XPoint, int YPoint) {
-	try{
+	try {
 		// 해당 grayscale의 위치를 반환해 주기위해 x,y 해당 위치를 영상에서 찾아 grayscale의 데이터를 받아 value에 저장해준다.
 		int _TIndex = XPoint + (YPoint * GrayImage->widthStep);
 		unsigned char _TValue = GrayImage->imageData[_TIndex];
 
 		// grayscale 정수형으로 이루어져 있으므로 int형으로 반환해준다
 		return (int)_TValue;
-	}catch(cv::Exception& e){
-		printf("Get_GrayScale Function error");
-
-		return;
+	}
+	catch (cv::Exception& e) {
+		printf("Get_GrayScalefunction error.\ncv Exception : ", e.what());
 	}
 }
 
@@ -308,9 +306,7 @@ bool LineSearchBased::Get_CrossPoint(MyLinePoint Line1, MyLinePoint Line2, MyPoi
 }
 
 void LineSearchBased::Get_SideLinesAtGrayScale(IplImage *GrayImage, vector<MyGrayPoint> *Line, MyLinePoint *LinePoint, vector<MyPoint> *InLinePoint, bool XYFlag) {
-	
-	try{
-	
+	try {
 		// 경계를 찾은 후 어느 정도의 경계에는 계산을 하지 않는다.
 		int _TLineCount = 0, _TJumpCountP = 0, _TJumpCountM = 0, JumpCount = 0;
 
@@ -393,7 +389,7 @@ void LineSearchBased::Get_SideLinesAtGrayScale(IplImage *GrayImage, vector<MyGra
 
 					// 확실히 하기위해 최소 2픽셀 까지 대비가 되면 경계선으로 인식한다.
 					for (register int j = 1; j <= 2; j++) {
-						if(i + (j * 2) > _TT.size())
+						if (i + (j * 2) > _TT.size())
 							continue;
 
 						// 만약 기준이 된 grayscale에서 정확한 판단을 위한 검사에 grayscale이 같게 되면 가면 break를 해준다.
@@ -404,7 +400,7 @@ void LineSearchBased::Get_SideLinesAtGrayScale(IplImage *GrayImage, vector<MyGra
 					}
 					if (_TFlag) {
 						// 체스판 경계에 필요한 경계는 9개 이므로 그 이상은 받지 않는다.
-						if (_TLineCount < 9){
+						if (_TLineCount < 9) {
 							if (LinePoint->x1 > _TT[i].x) {
 								LinePoint->x1 = _TT[i].x;
 								LinePoint->y1 = _TT[i].y;
@@ -417,11 +413,11 @@ void LineSearchBased::Get_SideLinesAtGrayScale(IplImage *GrayImage, vector<MyGra
 
 							// 왼쪽과 오른쪽을 구분하여 따로 저장해준다
 
-							if(i % 2 == 1){
+							if (i % 2 == 1) {
 								_TT_in1.push_back(Set_MyPoint(_TT[i].x, _TT[i].y));
 								cvCircle(GrayImage, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(0, 0, 0));
 							}
-							else{
+							else {
 								_TT_in2.push_back(Set_MyPoint(_TT[i].x, _TT[i].y));
 								cvCircle(GrayImage, cvPoint(_TT[i].x, _TT[i].y), 5, cvScalar(255, 255, 255));
 							}
@@ -502,7 +498,7 @@ void LineSearchBased::Get_SideLinesAtGrayScale(IplImage *GrayImage, vector<MyGra
 				else if (_TT_in1_avg == 0) {
 					_TT_in1_avg += abs(_TT_in1[i].x - _TT_in1[i + 1].x);
 				}
-				else if(_TT_in1_avg != 0) {
+				else if (_TT_in1_avg != 0) {
 					_TT_in1_avg = abs(_TT_in1[i].x - _TT_in1[i + 1].x) + abs(_TT_in1_avg - abs(_TT_in1[i].x - _TT_in1[i + 1].x));				
 				}
 			}
@@ -513,7 +509,7 @@ void LineSearchBased::Get_SideLinesAtGrayScale(IplImage *GrayImage, vector<MyGra
 				else if (_TT_in2_avg == 0) {
 					_TT_in2_avg -= abs(_TT_in2[i].x - _TT_in2[i + 1].x);
 				}
-				else if(_TT_in2_avg != 0){
+				else if (_TT_in2_avg != 0) {
 					_TT_in2_avg = abs(_TT_in2[i].x - _TT_in2[i + 1].x) - abs(_TT_in2_avg - abs(_TT_in2[i].x - _TT_in2[i + 1].x));
 				}
 			}
@@ -538,7 +534,7 @@ void LineSearchBased::Get_SideLinesAtGrayScale(IplImage *GrayImage, vector<MyGra
 				else if (_TT_in2_avg == 0) {
 					_TT_in2_avg -= abs(_TT_in2[i].y - _TT_in2[i + 1].y);
 				}
-				else if(_TT_in2_avg != 0){
+				else if (_TT_in2_avg != 0) {
 					_TT_in2_avg = abs(_TT_in2[i].y - _TT_in2[i + 1].y) + abs(_TT_in2_avg - abs(_TT_in2[i].y - _TT_in2[i + 1].y));
 				}
 			}
@@ -555,13 +551,14 @@ void LineSearchBased::Get_SideLinesAtGrayScale(IplImage *GrayImage, vector<MyGra
 					InLinePoint->push_back(_TT_in2[i]);
 			}
 		}
-	}catch(cv::Exception& e){
+	}
+	catch (cv::Exception& e) {
 		printf("Get_SideLinesAtGrayScale function error.\ncv Exception : ", e.what());
 	}
 }
 
 void LineSearchBased::Get_TrueLines(vector<MyPoint> in_line_point1, vector<MyPoint> in_line_point2, vector<MyPoint> *Ture_in_line_point) {
-	if (in_line_point1.size() == 9){
+	if (in_line_point1.size() == 9) {
 		for (register int i = 0; i < in_line_point1.size(); i++)
 			Ture_in_line_point->push_back(in_line_point1[i]);
 	}
@@ -602,7 +599,7 @@ MyPoint LineSearchBased::Set_MyPoint(int x, int y) {
 }
 
 void LineSearchBased::GrayImageBinarization(IplImage *GrayImage) {
-	try{
+	try {
 		// 이미지의 grayscale을 저장할 변수.
 		float _THist[256] = {0, };
 		int _TTemp[256];
@@ -679,8 +676,9 @@ void LineSearchBased::GrayImageBinarization(IplImage *GrayImage) {
 				GrayImage->imageData[_TIndex] = Get_GrayScale(GrayImage, i, j) > _TT - 20 ? 255 : 0;
 			}
 		}
-	}catch(cv::Exception& e){
-		printf("GrayImageBinarization Function error");
+	}
+	catch (cv::Exception& e) {
+		printf("GrayImageBinarizationfunction error.\ncv Exception : ", e.what());
 	}
 }
 
@@ -723,7 +721,7 @@ void *
 
 #pragma region Public Functions
 void LineSearchBased::ChessLineSearchProcess(IplImage *Source, vector<ChessPoint> *ChessPoint) {
-	try{
+	try {
 		// 영상 이진화.
 		GrayImageBinarization(Source);
 
@@ -844,10 +842,12 @@ void LineSearchBased::ChessLineSearchProcess(IplImage *Source, vector<ChessPoint
 
 		// 메모리 초기화.
 		MemoryClear();
-	}catch(cv::Exception& e){
-		printf("ChessLineSearchProcess Function error");
-	}catch(std::out_of_range& oor){
-		printf("ChessLineSearchProcess Function out_of_range error");
+	}
+	catch (cv::Exception& e) {
+		printf("ChessLineSearchProcessfunction error.\ncv Exception : ", e.what());
+	}
+	catch (const std::out_of_range& oor) {
+		std::cerr << "ChessLineSearchProcessfunction function Out of Range error: " << oor.what() << '\n';
 	}
 }
 #pragma endregion Public Functions

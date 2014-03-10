@@ -103,7 +103,7 @@ void HandRecognition::Initialize_Differential_Image() {
 }
 
 void HandRecognition::Detect_SkinColour(IplImage *Source, IplImage *Destination) {
-	try{
+	try {
 		if (_IsInitialize != false) {
 			// skin color detection을 진행.
 			// RGB-H-CbCr Skin Colour Model for Human Face Detection 논문 참조.
@@ -149,7 +149,7 @@ void HandRecognition::Detect_SkinColour(IplImage *Source, IplImage *Destination)
 
 		}
 	}
-	catch(cv::Exception& e){
+	catch (cv::Exception& e) {
 		printf("Detect_SkinColour function error.\ncv Exception : ", e.what());
 	}
 }
@@ -177,7 +177,7 @@ bool HandRecognition::IsHand(IplImage *Source) {
 
 // rebuild 대상.
 void HandRecognition::Subtraction_PreviousFrame(IplImage *Source, IplImage *Destination, bool First) {
-	try{
+	try {
 		if (_IsInitialize != false) {
 			// 손을 검출하기 위한 차영상 적용.
 			// RGB image src를 입력받아 binary image dst를 반환.
@@ -224,7 +224,7 @@ void HandRecognition::Subtraction_PreviousFrame(IplImage *Source, IplImage *Dest
 						unsigned char SUB_a = abs((unsigned char)Lab_src->imageData[(i * 3) + (j * Lab_src->widthStep) + 1] - (unsigned char)Lab_prev->imageData[(i * 3) + (j * Lab_prev->widthStep) + 1]);
 						unsigned char SUB_b = abs((unsigned char)Lab_src->imageData[(i * 3) + (j * Lab_src->widthStep) + 2] - (unsigned char)Lab_prev->imageData[(i * 3) + (j * Lab_prev->widthStep) + 2]);
 
-						/*if(SUB_B > SUB_THRESHOLD || SUB_G > SUB_THRESHOLD || SUB_R > SUB_THRESHOLD) {
+						/*if (SUB_B > SUB_THRESHOLD || SUB_G > SUB_THRESHOLD || SUB_R > SUB_THRESHOLD) {
 						Destination->imageData[i + (j * Destination->widthStep)] = (unsigned char)255;
 						}*/
 
@@ -248,7 +248,7 @@ void HandRecognition::Subtraction_PreviousFrame(IplImage *Source, IplImage *Dest
 		else {
 		}
 	}
-	catch(cv::Exception& e){
+	catch (cv::Exception& e) {
 		printf("Subtraction_PreviousFrame function error.\ncv Exception : ", e.what());
 	}
 }

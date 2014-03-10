@@ -80,10 +80,10 @@ using namespace std;
 
 // Iter name using "_TVal"
 #define for_IterToEnd(_TTemplate, _TType, _TTypeObject) \
-	for(_TTemplate<_TType>::iterator _TVal = _TTypeObject.begin(); \
+	for (_TTemplate<_TType>::iterator _TVal = _TTypeObject.begin(); \
 		_TVal != _TTypeObject.end(); _TVal++)
 
 #define for_IterToBegin(_TTemplate, _TType, _TTypeObject) \
-	for(_TTemplate<_TType>::iterator _TVal = _TTypeObject.end(); \
+	for (_TTemplate<_TType>::iterator _TVal = _TTypeObject.end(); \
 		_TVal != _TTypeObject.begin(); _TVal--)
 #endif

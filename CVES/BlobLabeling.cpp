@@ -346,10 +346,10 @@ void BlobLabeling::Get_SideBlob(IplImage *TargetImage, std::vector<int> *PieceIn
 					continue;
 				}
 				else {    //지우기
-					/*for(int j = 0; j < temp.width; j++)
-					for(int k = 0; k < temp.height; k++){
+					/*for (int j = 0; j < temp.width; j++)
+					for (int k = 0; k < temp.height; k++) {
 					unsigned char pixel = (unsigned char)img->imageData[(temp.x + j) + (temp.y + k) * img->widthStep];
-					if(pixel != 0)
+					if (pixel != 0)
 					img->imageData[(temp.x + j) + (temp.y + k) * img->widthStep] = 255;
 					}*/
 					cvSetImageROI(TargetImage, _TTempRect);

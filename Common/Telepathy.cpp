@@ -38,7 +38,7 @@ Telepathy::Server::Server() {
 
 // destructor
 Telepathy::Server::~Server() {
-	if (IsInitializeServer == true){
+	if (IsInitializeServer == true) {
 		ServerClose();
 	}
 }
@@ -177,7 +177,7 @@ bool Telepathy::Server::ServerStart() {
 
 // Server 종료.
 void Telepathy::Server::ServerClose() {
-	if (_ServerSocket != NULL){
+	if (_ServerSocket != NULL) {
 		closesocket(_ServerSocket);
 		WSACleanup();
 		IsInitializeServer = false;
@@ -361,7 +361,7 @@ Telepathy::Client *G_TelepathyClient;
 
 #pragma region Constructor & Destructor
 // constructor
-Telepathy::Client::Client(){
+Telepathy::Client::Client() {
 	IsInitializeClient = false;
 	IsConnectedClient = false;
 
@@ -369,7 +369,7 @@ Telepathy::Client::Client(){
 }
 
 // deconstructor
-Telepathy::Client::~Client(){
+Telepathy::Client::~Client() {
 	if (IsConnectedClient == true)
 		ClientClose();
 	IsInitializeClient = false;
@@ -431,7 +431,7 @@ bool Telepathy::Client::ClientInitialize() {
 	// get host entry.
 	_HostEntry = gethostbyaddr((char *)&_Address, sizeof(_Address), AF_INET);
 
-	if (_HostEntry == NULL){
+	if (_HostEntry == NULL) {
 		ClientClose();
 		return false;
 	}

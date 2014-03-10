@@ -111,7 +111,7 @@ bool WindowsProcess::GetProcessInformations(const DWORD PID, SProcessInformation
 	// Attempt to access process
 	HANDLE _TProcess = OpenProcess(PROCESS_QUERY_INFORMATION | 
 		PROCESS_VM_READ, FALSE, PID);
-	if(_TProcess == INVALID_HANDLE_VALUE) {
+	if (_TProcess == INVALID_HANDLE_VALUE) {
 		return FALSE;
 	}
 
@@ -124,7 +124,7 @@ bool WindowsProcess::GetProcessInformations(const DWORD PID, SProcessInformation
 		HEAP_ZERO_MEMORY,
 		_TSize);
 	// Did we successfully allocate memory
-	if(!_TPBI) {
+	if (!_TPBI) {
 		CloseHandle(_TProcess);
 		return FALSE;
 	}
@@ -138,14 +138,13 @@ bool WindowsProcess::GetProcessInformations(const DWORD PID, SProcessInformation
 
 	// If we had error and buffer was too small, try again
 	// with larger buffer size (dwSizeNeeded)
-	if(_TStatus >= 0 && _TSize < _TSizeNeeded)
-	{
-		if(_TPBI)
+	if (_TStatus >= 0 && _TSize < _TSizeNeeded) {
+		if (_TPBI)
 			HeapFree(_THeap, 0, _TPBI);
 		_TPBI = (SPProcessBasicInformations)HeapAlloc(_THeap,
 			HEAP_ZERO_MEMORY,
 			_TSizeNeeded);
-		if(!_TPBI) {
+		if (!_TPBI) {
 			CloseHandle(_TProcess);
 			return FALSE;
 		}
@@ -156,8 +155,7 @@ bool WindowsProcess::GetProcessInformations(const DWORD PID, SProcessInformation
 	}
 
 	// Did we successfully get basic info on process
-	if(_TStatus >= 0)
-	{
+	if (_TStatus >= 0)	{
 		// Basic Info
 		// spi.dwPID			 = (DWORD)pbi->UniqueProcessId;
 		_TSPI.ParentPID		 = (DWORD)_TPBI->InheritedFromUniqueProcessId;
@@ -174,7 +172,7 @@ bool WindowsProcess::GetProcessInformations(const DWORD PID, SProcessInformation
 
 				// Here we could access PEB_LDR_DATA, i.e., module list for process
 				//				dwBytesRead = 0;
-				//				if(ReadProcessMemory(hProcess,
+				//				if (ReadProcessMemory(hProcess,
 				//									 pbi->PebBaseAddress->Ldr,
 				//									 &peb_ldr,
 				//									 sizeof(peb_ldr),
@@ -242,7 +240,7 @@ bool WindowsProcess::GetProcessInformations(const DWORD PID, SProcessInformation
 								HEAP_ZERO_MEMORY,
 								_TPEB_UPP.ImagePathName.Length);
 							if (_TBuffer) {
-								if(ReadProcessMemory(_TProcess,
+								if (ReadProcessMemory(_TProcess,
 									_TPEB_UPP.ImagePathName.Buffer,
 									_TBuffer,
 									_TPEB_UPP.ImagePathName.Length,
@@ -302,12 +300,12 @@ gnpiFreeMemFailed:
 			// failed to free memory
 		}
 
-		CloseHandle(_TProcess);
+	CloseHandle(_TProcess);
 
-		// Return filled in structure to caller
-		*ProcessInfo = _TSPI;
+	// Return filled in structure to caller
+	*ProcessInfo = _TSPI;
 
-		return _TReturnStatus;
+	return _TReturnStatus;
 }
 
 DWORD WindowsProcess::GetProcessStatus(HANDLE ProcessPID) {
@@ -437,7 +435,7 @@ unsigned long
 		return false;
 }
 
-bool Process::CheckProcessExistByFileName(char *ProcessName){
+bool Process::CheckProcessExistByFileName(char *ProcessName) {
 #if defined(WINDOWS_SYS)
 	_ProcessHandle = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 	_ProcessEntry32.dwSize = sizeof(PROCESSENTRY32);

@@ -37,17 +37,18 @@ CheckInChessboard::~CheckInChessboard() {
 
 #pragma region Private Functions
 float CheckInChessboard::Get_TriangleArea(CvPoint Value_P, CvPoint Value_Q, CvPoint Value_R) {
-	try{
+	try {
 		// 2차원 좌표 p,q,r로 생성되는 삼각형의 넓이를 구함.
 		return (float)abs(((Value_P.x * Value_Q.y) + (Value_Q.x * Value_R.y) + (Value_R.x * Value_P.y))
 			- ((Value_P.y * Value_Q.x) + (Value_Q.y * Value_R.x) + (Value_R.y * Value_P.x))) / 2.0;
-	}catch(cv::Exception& e){
-		printf("Get_TriangleArea Function error");
+	}
+	catch (cv::Exception& e) {
+		printf("Get_TriangleAreafunction error.\ncv Exception : ", e.what());
 	}
 }
 
 CvPoint CheckInChessboard::Get_ChessIndex(CvPoint Point, vector<ChessPoint> CrossPoint) {
-	try{
+	try {
 		// chessboard의 교점의 index를 부여.
 		// left-top이 원점인 좌표계로 index를 부여
 		for (register int i = 0; i < CrossPoint.size() - 10; i++) {
@@ -58,15 +59,17 @@ CvPoint CheckInChessboard::Get_ChessIndex(CvPoint Point, vector<ChessPoint> Cros
 		}
 
 		return cvPoint(-1, -1);
-	}catch(cv::Exception& e){
-		printf("Get_ChessIndex Function error");
-	}catch(std::out_of_range& oor){
-		printf("Get_ChessIndex Function out_of_range error");
+	}
+	catch (cv::Exception& e) {
+		printf("Get_ChessIndexfunction error.\ncv Exception : ", e.what());
+	}
+	catch (const std::out_of_range& oor) {
+		std::cerr << "Get_ChessIndex function Out of Range error: " << oor.what() << '\n';
 	}
 }
 
 CvPoint CheckInChessboard::Get_ChessBoxPosition(int Width, int Height, vector<ChessPoint> CrossPoint) {
-	try{
+	try {
 		// width, height가 가리키는 픽셀이 어느 체스보드 인덱스를 가지는지를 계산하여 반환.
 		// 차영상 결과로 이진화된 이미지의 true 값을 가지는 픽셀의 좌표로 체스판의 인덱스 반환.
 		for (register int i = 0; i < 8; i++) {
@@ -82,18 +85,20 @@ CvPoint CheckInChessboard::Get_ChessBoxPosition(int Width, int Height, vector<Ch
 
 		//error return;
 		return cvPoint(-1,-1);
-	}catch(cv::Exception& e){
-		printf("Get_ChessBoxPosition Function error");
-	}catch(std::out_of_range& oor){
-		printf("Get_ChessBoxPosition Function out_of_range error");
+	}
+	catch (cv::Exception& e) {
+		printf("Get_ChessBoxPositionfunction error.\ncv Exception : ", e.what());
+	}
+	catch (const std::out_of_range& oor) {
+		std::cerr << "Get_ChessBoxPosition function Out of Range error: " << oor.what() << '\n';
 	}
 }
 
 unsigned char CheckInChessboard::Get_MedianVaul_Inkernel(unsigned char _kernel[][PIXEL_PICK_KERNEL_SIZE]) {
-	try{
+	try {
 		std::vector<unsigned char> _Median_value;
-		for(register int i = 0; i < PIXEL_PICK_KERNEL_SIZE; i++){
-			for(register int j = 0; j < PIXEL_PICK_KERNEL_SIZE; j++ ){
+		for (register int i = 0; i < PIXEL_PICK_KERNEL_SIZE; i++) {
+			for (register int j = 0; j < PIXEL_PICK_KERNEL_SIZE; j++ ) {
 				_Median_value.push_back(_kernel[i][j]);
 			}
 		}
@@ -101,13 +106,14 @@ unsigned char CheckInChessboard::Get_MedianVaul_Inkernel(unsigned char _kernel[]
 		std::sort(_Median_value.begin(), _Median_value.end());
 
 		return _Median_value.at((PIXEL_PICK_KERNEL_SIZE*PIXEL_PICK_KERNEL_SIZE)/2 + 1);
-	}catch(std::out_of_range& oor){
-		printf("Get_MedianVaul_Inkernel Function out_of_range error");
+	}
+	catch (const std::out_of_range& oor) {
+		std::cerr << "Get_MedianVaul_Inkernel function Out of Range error: " << oor.what() << '\n';
 	}
 }
 
 float CheckInChessboard::Get_GridPixelvalue(IplImage *gray, CvPoint Headpoint, CvPoint Head_right, CvPoint Head_down, CvPoint right_down) {
-	try{
+	try {
 		IplImage *temp_src = cvCreateImage(cvSize(40, 40), IPL_DEPTH_8U, 1);
 		CvMat* warp_mat = cvCreateMat(3, 3, CV_32FC1);
 		int thickness = 3;
@@ -140,8 +146,8 @@ float CheckInChessboard::Get_GridPixelvalue(IplImage *gray, CvPoint Headpoint, C
 		//cvSaveImage(buf, temp_src);
 		// 픽셀 picking
 		unsigned char _kernel[PIXEL_PICK_KERNEL_SIZE][PIXEL_PICK_KERNEL_SIZE];
-		for(int i = 0; i < PIXEL_PICK_KERNEL_SIZE; i++){
-			for(int j = 0; j < PIXEL_PICK_KERNEL_SIZE; j++){
+		for (int i = 0; i < PIXEL_PICK_KERNEL_SIZE; i++) {
+			for (int j = 0; j < PIXEL_PICK_KERNEL_SIZE; j++) {
 				_kernel[i][j] = temp_src->imageData[(20- PIXEL_PICK_KERNEL_SIZE/2 + i) + (20 - PIXEL_PICK_KERNEL_SIZE/2 + j) * temp_src->widthStep];
 			}
 		}
@@ -150,8 +156,8 @@ float CheckInChessboard::Get_GridPixelvalue(IplImage *gray, CvPoint Headpoint, C
 		cvReleaseMat(&warp_mat);
 
 		return (float)	Get_MedianVaul_Inkernel(_kernel);
-	}catch(cv::Exception& e){
-		printf("Get_GridPixelvalue Function error");
+	}catch (cv::Exception& e) {
+		printf("Get_GridPixelvaluefunction error.\ncv Exception : ", e.what());
 	}
 }
 
@@ -160,28 +166,28 @@ float CheckInChessboard::Get_AvgRect(IplImage *GrayImage, IplImage *edge, CvRect
 	int count = 0;
 	long total = 0;
 
-	try{
-		for(register int i = 0; i < ROI.width; i++){
-			for(register int j = 0; j < ROI.height; j++){
+	try {
+		for (register int i = 0; i < ROI.width; i++) {
+			for (register int j = 0; j < ROI.height; j++) {
 				unsigned char _edgeValue = (unsigned char)edge->imageData[(ROI.x + i) + (ROI.y + j) * edge->widthStep];
 				unsigned char _pixelValue = (unsigned char)GrayImage->imageData[(ROI.x + i) + (ROI.y + j) * GrayImage->widthStep];
 
 
-				if(_edgeValue == 255){
+				if (_edgeValue == 255) {
 					count++;
 					total += _pixelValue;
 				}
 			}
 		}
-	}catch(cv::Exception& e){
-		printf("Get_AvgRect Function error");
+	}catch (cv::Exception& e) {
+		printf("Get_AvgRectfunction error.\ncv Exception : ", e.what());
 	}
 
 	return total / count;
 }
 
 unsigned char CheckInChessboard::Get_MedianRect(IplImage *Gray, CvRect ROI) {
-	try{
+	try {
 		IplImage *ROI_Image = cvCreateImage(cvSize(ROI.width, ROI.height), IPL_DEPTH_8U, 1);
 
 		cvSetImageROI(Gray, ROI);
@@ -203,23 +209,19 @@ unsigned char CheckInChessboard::Get_MedianRect(IplImage *Gray, CvRect ROI) {
 		cvReleaseImage(&ROI_Image);
 
 		return return_value;
-	}catch(cv::Exception& e){
-<<<<<<< HEAD
-		printf("Get_MedianRect Function error");
-	}catch(std::out_of_range oor){
-		printf("Get_MedianRect Function out_of_range error");
-=======
-		printf("Get_MedianRect function error.\ncv Exception : ", e.what());
-
-		return NULL;
->>>>>>> CVES_EngineS_Revise
+	}
+	catch (cv::Exception& e) {
+		printf("Get_MedianRectfunction error.\ncv Exception : ", e.what());
+	}
+	catch (const std::out_of_range& oor) {
+		std::cerr << "Get_MedianRectfunction function Out of Range error: " << oor.what() << '\n';
 	}
 }
 #pragma endregion Private Functions
 
 #pragma region Public Functions
 bool CheckInChessboard::Check_InChessboard(IplImage *Image, vector<ChessPoint> Point) {
-	try{
+	try {
 		// Chess_point를 통하여 binary image의 픽셀이 chess board 내부에 존재하는지를 확인.
 		// 1) 체스판 사각형의 크기를 연산하여 _TTriangleArea에 저장
 		// 2) 차영상 결과 Detection된 픽셀의 좌표와 체스판 사각형의 끝점들로 이루어진 삼각형의 넓이를 각각 계산
@@ -263,10 +265,12 @@ bool CheckInChessboard::Check_InChessboard(IplImage *Image, vector<ChessPoint> P
 		//_InChessBoardCalculateProtectMutex.unlock();
 		// binary image의 픽셀이 chessboard 내부에 존재하지 않음.
 		return false;
-	}catch(cv::Exception& e){
-		printf("Check_InChessboard Function error");
-	}catch(std::out_of_range& oor){
-		printf("Check_InChessboard Function out_of_range error");
+	}
+	catch (cv::Exception& e) {
+		printf("Check_InChessboardfunction error.\ncv Exception : ", e.what());
+	}
+	catch (const std::out_of_range& oor) {
+		std::cerr << "Check_InChessboardfunction function Out of Range error: " << oor.what() << '\n';
 	}
 }
 
@@ -274,7 +278,7 @@ bool CheckInChessboard::Check_ImageZero(IplImage *Image) {
 	// binary image에 픽셀값이 모드 0인지를 확인
 	unsigned char _TPixelValue;
 
-	try{
+	try {
 		for (register int i = 0; i < Image->width; i++)
 			for (register int j = 0; j < Image->height; j++) {
 				_TPixelValue = (unsigned char)Image->imageData[i + (j * Image->widthStep)];
@@ -282,8 +286,8 @@ bool CheckInChessboard::Check_ImageZero(IplImage *Image) {
 				if (_TPixelValue != 0)
 					return false;
 			}
-	}catch(cv::Exception& e){
-		printf("Check_ImageZero Function error");
+	}catch (cv::Exception& e) {
+		printf("Check_ImageZerofunction error.\ncv Exception : ", e.what());
 	}
 		return true;
 }
@@ -299,7 +303,7 @@ void CheckInChessboard::Calculate_Movement(IplImage *BinaryImage, vector<ChessPo
 	CvPoint _TPMax[4];
 
 	// 초기화
-	for (register int i = 0; i < 4; i++){
+	for (register int i = 0; i < 4; i++) {
 		_TPMax[i] = cvPoint(-1,-1);
 		_TTempMax[i] = -1.0;
 	}
@@ -345,18 +349,19 @@ void CheckInChessboard::Calculate_Movement(IplImage *BinaryImage, vector<ChessPo
 		}
 	}
 
-	try{
+	try {
 		// 4개에 할당.
 		for (register int i = 0; i < 4; i++) {
 			Result[i] = _TPMax[i];
 		}
-	}catch(std::out_of_range& oor){
-		printf("Calculate_Movement Function out_of_range error");
+	}
+	catch (const std::out_of_range& oor) {
+		std::cerr << "Calculate_Movement function Out of Range error: " << oor.what() << '\n';
 	}
 }
 
 void CheckInChessboard::Calculate_BoardScore(IplImage *BinaryImage, IplImage *GrayImage, vector<ChessPoint> CrossPoint, float ScoreBox[][8]) {
-	try{
+	try {
 		float _TChess_Area[8][8]; // 체스 영역 저장 배열.
 		float _TChess_gray[8][8]; // 체스 그리드의 평균 색상값 저장
 		int _TChess_Blob[8][8];		// 체스 내부 blob의 갯수를 잡음
@@ -382,11 +387,11 @@ void CheckInChessboard::Calculate_BoardScore(IplImage *BinaryImage, IplImage *Gr
 
 		int count = 0;
 		long pix_total = 0;
-		for(register int i = 0; i < GrayImage->width; i++){
-			for(register int j = 0; j < GrayImage->height; j++){
+		for (register int i = 0; i < GrayImage->width; i++) {
+			for (register int j = 0; j < GrayImage->height; j++) {
 				unsigned char pixel_value = (unsigned char)GrayImage->imageData[i + j * GrayImage->widthStep];
 
-				if(pixel_value != 0){
+				if (pixel_value != 0) {
 					count++;
 					pix_total += pixel_value;
 				}
@@ -421,8 +426,8 @@ void CheckInChessboard::Calculate_BoardScore(IplImage *BinaryImage, IplImage *Gr
 			}		
 		}
 
-		for(register int i = 0; i < 8; i++){
-			for(register int j = 0; j < 8; j++){
+		for (register int i = 0; i < 8; i++) {
+			for (register int j = 0; j < 8; j++) {
 				_TChess_gray[i][j] /= _TChess_Blob[i][j];
 			}
 		}
@@ -436,8 +441,8 @@ void CheckInChessboard::Calculate_BoardScore(IplImage *BinaryImage, IplImage *Gr
 				if (pixel_value != 0) {
 
 					CvPoint chessbox_pos = Get_ChessBoxPosition(i, j, CrossPoint);
-					if (chessbox_pos.x != -1 || chessbox_pos.y != -1){
-						if(_TChess_gray[chessbox_pos.x][chessbox_pos.y] > Chess_avg_pixvalue)
+					if (chessbox_pos.x != -1 || chessbox_pos.y != -1) {
+						if (_TChess_gray[chessbox_pos.x][chessbox_pos.y] > Chess_avg_pixvalue)
 							ScoreBox[chessbox_pos.x][chessbox_pos.y] += 1;
 						else
 							ScoreBox[chessbox_pos.x][chessbox_pos.y] -= 1;
@@ -451,10 +456,12 @@ void CheckInChessboard::Calculate_BoardScore(IplImage *BinaryImage, IplImage *Gr
 				ScoreBox[i][j] /= _TChess_Area[i][j];
 			}
 		}
-	}catch(cv::Exception& e){
-		printf("Calculate_BoardScore Function error");
-	}catch(std::out_of_range& oor){
-		printf("Calculate_BoardScore Function out_of_range error");
+	}
+	catch (cv::Exception& e) {
+		printf("Calculate_BoardScorefunction error.\ncv Exception : ", e.what());
+	}
+	catch (const std::out_of_range& oor) {
+		std::cerr << "Calculate_BoardScore function Out of Range error: " << oor.what() << '\n';
 	}
 }
 
@@ -464,14 +471,15 @@ void CheckInChessboard::Delete_Chessboard(IplImage *Image, vector<ChessPoint> Po
 	// tArea : chessboard 전체 넓이, 나머지 : 삼각형 넓이.
 	float _TTriangleArea, _TTriangle1Area, _TTriangle2Area, _TTriangle3Area, _TTriangle4Area;
 
-	try{
+	try {
 		// chessboard의 코너점을 구함.
 		_T_LeftTop = Point.at(0).Cordinate;
 		_T_RightTop = Point.at(8).Cordinate;
 		_T_LeftBottom = Point.at(72).Cordinate;
 		_T_RightBottom = Point.at(80).Cordinate;
-	}catch(std::out_of_range& oor){
-		printf("Delete_Chessboard Function out_of_range error");
+	}
+	catch (const std::out_of_range& oor) {
+		std::cerr << "Delete_Chessboard function Out of Range error: " << oor.what() << '\n';
 	}
 
 	// 코너점을 이용하여 chessboard의 넓이 연산.
