@@ -14,7 +14,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(OPENCV_BUILD_X86)\vc11\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_stitching246.lib;opencv_core246.lib;opencv_legacy246.lib;opencv_gpu246.lib;opencv_ts246.lib;opencv_videostab246.lib;opencv_ocl246.lib;opencv_contrib246.lib;opencv_features2d246.lib;opencv_superres246.lib;opencv_nonfree246.lib;opencv_imgproc246.lib;opencv_ml246.lib;opencv_calib3d246.lib;opencv_video246.lib;opencv_highgui246.lib;opencv_photo246.lib;opencv_flann246.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_stitching248.lib;opencv_core248.lib;opencv_legacy248.lib;opencv_gpu248.lib;opencv_ts248.lib;opencv_videostab248.lib;opencv_ocl248.lib;opencv_contrib248.lib;opencv_features2d248.lib;opencv_superres248.lib;opencv_nonfree248.lib;opencv_imgproc248.lib;opencv_ml248.lib;opencv_calib3d248.lib;opencv_video248.lib;opencv_highgui248.lib;opencv_photo248.lib;opencv_flann248.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup />

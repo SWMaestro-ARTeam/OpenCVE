@@ -695,6 +695,7 @@ void EngineS::DisplayInfomation() {
 			? _ChessRecognitionProcessingFrames : _HandRecognitionProcessingFrames
 			, _ROIRectColour);
 
+		/*
 		if (_ChessGame->Return_errorFlag() == true) {
 			_ChessGame->Draw_InvalidMove(_DetectionResultOnlyImage, _CrossPoint, 100, 20);
 		}
@@ -704,6 +705,7 @@ void EngineS::DisplayInfomation() {
 
 			_ChessGame->Draw_Arrow(_DetectionResultOnlyImage, _ponder_before, _ponder_after, 10, 30, cvScalar(0, 255), 3, 8);
 		}
+		*/
 		//}
 #if !defined(USING_QT)
 		// 화면을 표시한다.
