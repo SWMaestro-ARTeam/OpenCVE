@@ -238,6 +238,33 @@ void LineSearchBased::Get_InCrossPoint(IplImage *chess_image, vector<ChessPoint>
 		}
 	}
 
+	// 마주보는 true_line_point에서 각 칸과 칸사이에서 차이가 5이상 나면 return
+
+// 	for (register int i = 0; i < true_line_point_x1.size(); i++) {
+// 		for (register int j = i + 1; j < true_line_point_x1.size(); j++) {
+// 			if(abs(abs(true_line_point_x1[i].x - true_line_point_x1[j].x) - abs(true_line_point_x2[i].x - true_line_point_x2[j].x)) > 5){
+// 				if(abs(true_line_point_x1[i].x - true_line_point_x1[j].x) > abs(true_line_point_x2[i].x - true_line_point_x2[j].x))
+// 					in_line_point_x1.clear();
+// 				else
+// 					in_line_point_x2.clear();
+// 
+// 				reSearchFlag = true;
+// 				return;
+// 			}
+// 			if(abs(abs(true_line_point_y1[i].y - true_line_point_y1[j].y) - abs(true_line_point_y2[i].y - true_line_point_y2[j].y)) > 5){
+// 				if(abs(true_line_point_y1[i].y - true_line_point_y1[j].y) > abs(true_line_point_y2[i].y - true_line_point_y2[j].y))
+// 					in_line_point_y1.clear();
+// 				else
+// 					in_line_point_y2.clear();
+// 				
+// 				reSearchFlag = true;
+// 				return;
+// 			}
+// 		}
+// 	}
+// 
+// 	reSearchFlag = false;
+
 	// 찾은 모든 경계점들을 수직이 되는 라인의 경계점들과의 모든 교차점을 찾는다.
 	// 9 * 9 = 81
 	// 그후 모든 교차점을 point 변수에 넣는다.
@@ -313,11 +340,11 @@ void LineSearchBased::Get_SideLinesAtGrayScale(IplImage *GrayImage, vector<MyGra
 		// 기본적으로 계산을 해줄 필요가 없는 최소 픽셀을 jump_count에 저장한다 
 		// line_point 에는 해당 축라인에서만 위치가 바뀌니 고정 값을 저장한다
 		if (XYFlag) {
-			JumpCount = 30;/*image->width / 12;*/
+			JumpCount = 35;/*image->width / 12;*/
 			LinePoint->x1 = GrayImage->width / 2;
 		}
 		else {
-			JumpCount = 30;/*image->height / 12;*/
+			JumpCount = 35;/*image->height / 12;*/
 			LinePoint->y1 = GrayImage->height / 2;
 		}
 
@@ -335,8 +362,8 @@ void LineSearchBased::Get_SideLinesAtGrayScale(IplImage *GrayImage, vector<MyGra
 		_TT[1].grayscale;
 
 		// grayscale의 교차를 탐색에 도움을 주기 위해 양쪽 방향의 기준 grayscale을 잡아준다.
-		_TChangeFlagLineT2 = 255 >= _TT[0].grayscale ? true : false;
-		_TChangeFlagLineT3 = 255 >= _TT[1].grayscale ? true : false;
+		_TChangeFlagLineT2 = 255 > _TT[0].grayscale ? true : false;
+		_TChangeFlagLineT3 = 255 > _TT[1].grayscale ? true : false;
 
 		// 여기선 추가로 탐색되지 말아야할 라인을 걸러준다.
 		// 홀수면 오른쪽 짝수면 왼쪽으로 판단하여 계산해준다
@@ -353,11 +380,13 @@ void LineSearchBased::Get_SideLinesAtGrayScale(IplImage *GrayImage, vector<MyGra
 				bool change_flag_t;
 
 				// 기존에 저장되어있는 grayscale과 비교를 위해 해당 위치의 grayscale을 저장한다 
-				change_flag_t = 255 >= _TT[i].grayscale ? true : false;
+				change_flag_t = 255 > _TT[i].grayscale ? true : false;
 
 				// 전에 기준이 된 grayscale을 비교하기 위해 직접 비교를 하는 변수에 저장한다
-				if (i % 2 == 0)
+				if (i % 2 == 0){
 					_TChangeFlagLineT1 = _TChangeFlagLineT2;
+					//printf("%d",_TChangeFlagLineT2);
+				}
 				else
 					_TChangeFlagLineT1 = _TChangeFlagLineT3;
 
@@ -427,9 +456,9 @@ void LineSearchBased::Get_SideLinesAtGrayScale(IplImage *GrayImage, vector<MyGra
 							// 위의 조건을 통과 하였으면 경계가 되는 면 다음의 grayscale을 적용해준다
 
 							if (i % 2 == 0)
-								_TChangeFlagLineT2 = !change_flag_t;
+								_TChangeFlagLineT2 = change_flag_t;
 							else
-								_TChangeFlagLineT3 = !change_flag_t;
+								_TChangeFlagLineT3 = change_flag_t;
 						}
 
 						// 경계점을 찾으면 최소한의 범위는 탐색할 필요가 없기 때문에 넘겨준다
@@ -710,7 +739,7 @@ void *
 	_TGraySideLinesPointStruct->T_ChessLineSearchAlg->Get_SideLinesAtGrayScale(_TGraySideLinesPointStruct->ChessImage, _TGraySideLinesPointStruct->Lines, _TGraySideLinesPointStruct->LinePoint, _TGraySideLinesPointStruct->InLinePoints, _TGraySideLinesPointStruct->XYflag);
 
 #if defined(WINDOWS_SYS)
-	_endthread();
+	//_endthread();
 #elif defined(POSIX_SYS)
 
 #endif
@@ -731,6 +760,13 @@ void LineSearchBased::ChessLineSearchProcess(IplImage *Source, vector<ChessPoint
 		// 체스판의 경계를 구하여 in_line_point 변수들에 저장.
 		Get_SideLinesPointAtGrayScale(Source);
 
+#if defined(DEBUG_MODE)
+
+		cvShowImage("a",Source);
+		cvWaitKey(15);
+#endif
+
+		
 		// 해당 라인에서 9곳의 체스판 경계를 찾지 못 하였으면,
 		// 탐색라인을 이동시켜 적절한 탐색라인을 찾는다.
 		// flag의 값에 따라 Linefindcount의 값을 변경한다.

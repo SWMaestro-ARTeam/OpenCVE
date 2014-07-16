@@ -223,7 +223,7 @@ void *
 
 			double rho = 1.0; // distance resolution in pixel-related units.
 			double theta = 1.0; // angle resolution measured in radians.
-			int threshold = 20;
+			int threshold = 5;
 
 			if (threshold == 0)
 				threshold = 1;
